@@ -39,7 +39,7 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 	campaign.IncrementCampaignCurrentAmount(amountSum)
 	campaign.IncrementCampaignTotalAmount(amountSum)
 	k.SetCampaign(ctx, *campaign)
-
+	k.Logger(ctx).Debug("increment campaign amounts", "campaignId", campaignId, "amount", amountSum.String())
 	err = k.setupAndSendFeegrant(ctx, ownerAddress, campaign, feegrantSum, claimRecordEntries, feegrantDenom)
 	if err != nil {
 		return err
@@ -56,8 +56,7 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 		ClaimRecordsNumber:      strconv.FormatInt(int64(len(claimRecordEntries)), 10),
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
+	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
 		k.Logger(ctx).Debug("add claim records emit event error", "event", event, "error", err.Error())
 	}
 
@@ -68,18 +67,18 @@ func (k Keeper) addClaimRecordsToVestingPoolCampaign(ctx sdk.Context, campaign *
 	feegrantFeesSum sdk.Coins, amount sdk.Coins) error {
 
 	vestingDenom := k.vestingKeeper.Denom(ctx)
-	balances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
-	if !feegrantFeesSum.IsAllLTE(balances) {
-		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", balances, feegrantFeesSum)
+	spendableCoins := k.bankKeeper.SpendableCoins(ctx, ownerAddress)
+	if !feegrantFeesSum.IsAllLTE(spendableCoins) {
+		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", spendableCoins, feegrantFeesSum)
 	}
 	return k.vestingKeeper.AddVestingPoolReservation(ctx, ownerAddress.String(), campaign.VestingPoolName, campaign.Id, amount.AmountOf(vestingDenom))
 }
 
 func (k Keeper) addClaimRecordsToDefaultCampaign(ctx sdk.Context, ownerAddress sdk.AccAddress, feegrantFeesSum sdk.Coins, amount sdk.Coins) error {
 	feesAndClaimRecordsAmountSum := amount.Add(feegrantFeesSum...)
-	balances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
-	if !feesAndClaimRecordsAmountSum.IsAllLTE(balances) {
-		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", balances, feesAndClaimRecordsAmountSum)
+	spendableCoins := k.bankKeeper.SpendableCoins(ctx, ownerAddress)
+	if !feesAndClaimRecordsAmountSum.IsAllLTE(spendableCoins) {
+		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", spendableCoins, feesAndClaimRecordsAmountSum)
 	}
 	return k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, amount)
 }
@@ -115,6 +114,7 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 	campaign.DecrementCampaignCurrentAmount(amount)
 	campaign.DecrementCampaignTotalAmount(amount)
 	k.SetCampaign(ctx, *campaign)
+	k.Logger(ctx).Debug("delete claim record decrement campaign amounts", "campaignId", campaignId, "amount", amount)
 
 	event := &types.DeleteClaimRecord{
 		Owner:             owner,

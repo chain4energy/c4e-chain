@@ -11,16 +11,18 @@ import (
 
 func TestMsgEnableCampaign_ValidateBasic(t *testing.T) {
 	tests := []struct {
-		name string
-		msg  types.MsgEnableCampaign
-		err  error
+		name   string
+		msg    types.MsgEnableCampaign
+		err    error
+		errMsg string
 	}{
 		{
 			name: "invalid address",
 			msg: types.MsgEnableCampaign{
 				Owner: "invalid_address",
 			},
-			err: sdkerrors.ErrInvalidAddress,
+			err:    sdkerrors.ErrInvalidAddress,
+			errMsg: "invalid owner address (decoding bech32 failed: invalid separator index -1): invalid address",
 		}, {
 			name: "valid address",
 			msg: types.MsgEnableCampaign{
@@ -33,6 +35,7 @@ func TestMsgEnableCampaign_ValidateBasic(t *testing.T) {
 			err := tt.msg.ValidateBasic()
 			if tt.err != nil {
 				require.ErrorIs(t, err, tt.err)
+				require.EqualError(t, err, tt.errMsg)
 				return
 			}
 			require.NoError(t, err)

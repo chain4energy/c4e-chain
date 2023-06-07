@@ -4,14 +4,13 @@ import (
 	"cosmossdk.io/math"
 	"encoding/binary"
 	"fmt"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v2"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v3"
 	"math/rand"
 	"strconv"
 	"testing"
 	"time"
-
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 
@@ -191,9 +190,9 @@ func generateOldAccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPe
 
 func generateRandomOldVestingPool(accuntId int, vestingId int) v2.VestingPool {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	vested := int(helpers.RandIntBetweenWith0(r, 1, 10000000))
+	vested := int(utils.RandIntBetweenWith0(r, 1, 10000000))
 	withdrawn := r.Intn(vested)
-	sent := helpers.RandIntWith0(r, vested-withdrawn)
+	sent := utils.RandIntWith0(r, vested-withdrawn)
 
 	return v2.VestingPool{
 		Name:            "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),

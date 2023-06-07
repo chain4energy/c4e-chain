@@ -2,6 +2,7 @@
 import _m0 from "protobufjs/minimal";
 import { Coin } from "../../cosmos/base/v1beta1/coin";
 import { Timestamp } from "../../google/protobuf/timestamp";
+import { VestingPoolReservation } from "./account_vesting_pool";
 import { GenesisVestingType } from "./genesis";
 import { Params } from "./params";
 
@@ -41,6 +42,7 @@ export interface VestingPoolInfo {
   initiallyLocked: Coin | undefined;
   currentlyLocked: string;
   sentAmount: string;
+  reservations: VestingPoolReservation[];
 }
 
 export interface QueryVestingsSummaryRequest {
@@ -358,6 +360,7 @@ function createBaseVestingPoolInfo(): VestingPoolInfo {
     initiallyLocked: undefined,
     currentlyLocked: "",
     sentAmount: "",
+    reservations: [],
   };
 }
 
@@ -386,6 +389,9 @@ export const VestingPoolInfo = {
     }
     if (message.sentAmount !== "") {
       writer.uint32(66).string(message.sentAmount);
+    }
+    for (const v of message.reservations) {
+      VestingPoolReservation.encode(v!, writer.uint32(74).fork()).ldelim();
     }
     return writer;
   },
@@ -421,6 +427,9 @@ export const VestingPoolInfo = {
         case 8:
           message.sentAmount = reader.string();
           break;
+        case 9:
+          message.reservations.push(VestingPoolReservation.decode(reader, reader.uint32()));
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -439,6 +448,9 @@ export const VestingPoolInfo = {
       initiallyLocked: isSet(object.initiallyLocked) ? Coin.fromJSON(object.initiallyLocked) : undefined,
       currentlyLocked: isSet(object.currentlyLocked) ? String(object.currentlyLocked) : "",
       sentAmount: isSet(object.sentAmount) ? String(object.sentAmount) : "",
+      reservations: Array.isArray(object?.reservations)
+        ? object.reservations.map((e: any) => VestingPoolReservation.fromJSON(e))
+        : [],
     };
   },
 
@@ -453,6 +465,11 @@ export const VestingPoolInfo = {
       && (obj.initiallyLocked = message.initiallyLocked ? Coin.toJSON(message.initiallyLocked) : undefined);
     message.currentlyLocked !== undefined && (obj.currentlyLocked = message.currentlyLocked);
     message.sentAmount !== undefined && (obj.sentAmount = message.sentAmount);
+    if (message.reservations) {
+      obj.reservations = message.reservations.map((e) => e ? VestingPoolReservation.toJSON(e) : undefined);
+    } else {
+      obj.reservations = [];
+    }
     return obj;
   },
 
@@ -468,6 +485,7 @@ export const VestingPoolInfo = {
       : undefined;
     message.currentlyLocked = object.currentlyLocked ?? "";
     message.sentAmount = object.sentAmount ?? "";
+    message.reservations = object.reservations?.map((e) => VestingPoolReservation.fromPartial(e)) || [];
     return message;
   },
 };

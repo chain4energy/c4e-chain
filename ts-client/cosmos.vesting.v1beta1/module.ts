@@ -11,6 +11,12 @@ import { MsgCreateVestingAccount } from "./types/cosmos/vesting/v1beta1/tx";
 import { MsgCreatePeriodicVestingAccount } from "./types/cosmos/vesting/v1beta1/tx";
 import { MsgCreatePermanentLockedAccount } from "./types/cosmos/vesting/v1beta1/tx";
 
+import { BaseVestingAccount as typeBaseVestingAccount} from "./types"
+import { ContinuousVestingAccount as typeContinuousVestingAccount} from "./types"
+import { DelayedVestingAccount as typeDelayedVestingAccount} from "./types"
+import { Period as typePeriod} from "./types"
+import { PeriodicVestingAccount as typePeriodicVestingAccount} from "./types"
+import { PermanentLockedAccount as typePermanentLockedAccount} from "./types"
 
 export { MsgCreateVestingAccount, MsgCreatePeriodicVestingAccount, MsgCreatePermanentLockedAccount };
 
@@ -48,6 +54,18 @@ type msgCreatePermanentLockedAccountParams = {
 
 export const registry = new Registry(msgTypes);
 
+type Field = {
+	name: string;
+	type: unknown;
+}
+function getStructure(template) {
+	const structure: {fields: Field[]} = { fields: [] }
+	for (let [key, value] of Object.entries(template)) {
+		let field = { name: key, type: typeof value }
+		structure.fields.push(field)
+	}
+	return structure
+}
 const defaultFee = {
   amount: [],
   gas: "200000",
@@ -144,13 +162,22 @@ export const queryClient = ({ addr: addr }: QueryClientOptions = { addr: "http:/
 class SDKModule {
 	public query: ReturnType<typeof queryClient>;
 	public tx: ReturnType<typeof txClient>;
-	
+	public structure: Record<string,unknown>;
 	public registry: Array<[string, GeneratedType]> = [];
 
 	constructor(client: IgniteClient) {		
 	
 		this.query = queryClient({ addr: client.env.apiURL });		
 		this.updateTX(client);
+		this.structure =  {
+						BaseVestingAccount: getStructure(typeBaseVestingAccount.fromPartial({})),
+						ContinuousVestingAccount: getStructure(typeContinuousVestingAccount.fromPartial({})),
+						DelayedVestingAccount: getStructure(typeDelayedVestingAccount.fromPartial({})),
+						Period: getStructure(typePeriod.fromPartial({})),
+						PeriodicVestingAccount: getStructure(typePeriodicVestingAccount.fromPartial({})),
+						PermanentLockedAccount: getStructure(typePermanentLockedAccount.fromPartial({})),
+						
+		};
 		client.on('signer-changed',(signer) => {			
 		 this.updateTX(client);
 		})

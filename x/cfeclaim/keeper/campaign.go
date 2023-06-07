@@ -20,7 +20,7 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 		return nil, err
 	}
 
-	if err := validateEndTimeInTheFuture(ctx, endTime); err != nil {
+	if err := validateEndTimeAfterBlockTime(endTime, ctx.BlockTime()); err != nil {
 		return nil, err
 	}
 
@@ -44,7 +44,7 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 	campaign.Id = k.AppendNewCampaign(ctx, campaign)
 	// Adding the inititalClaim mission to a campaign is done automatically as this mission is required for every campaign
 	k.AppendNewMission(ctx, campaign.Id, *types.NewInitialMission(campaign.Id))
-
+	k.Logger(ctx).Debug("create campaign ret", "campaignId", campaign.Id)
 	event := &types.NewCampaign{
 		Id:                     strconv.FormatUint(campaign.Id, 10),
 		Owner:                  campaign.Owner,
@@ -64,6 +64,7 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 		k.Logger(ctx).Error("create campaign emit event error", "event", event, "error", err.Error())
 	}
 
+	k.Logger(ctx).Debug("create campaign ret", "campaignId", campaign.Id)
 	return &campaign, nil
 }
 
@@ -82,6 +83,7 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64) 
 	campaign.DecrementCampaignCurrentAmount(campaign.CampaignCurrentAmount)
 	campaign.Enabled = false
 	k.SetCampaign(ctx, *campaign)
+	k.Logger(ctx).Debug("closed campaign", "campaignId", campaignId, "decrementedCampaignCurrentAmount", campaign.CampaignCurrentAmount)
 	return nil
 }
 
@@ -106,7 +108,7 @@ func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64)
 }
 
 func (k Keeper) EnableCampaign(ctx sdk.Context, owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) error {
-	k.Logger(ctx).Debug("start campaign", "owner", owner, "campaignId", campaignId)
+	k.Logger(ctx).Debug("enable campaign", "owner", owner, "campaignId", campaignId, "startTime", &startTime, "endTime", &endTime)
 
 	campaign, err := k.MustGetCampaign(ctx, campaignId)
 	if err != nil {
@@ -127,17 +129,22 @@ func (k Keeper) EnableCampaign(ctx sdk.Context, owner string, campaignId uint64,
 
 	campaign.Enabled = true
 	k.SetCampaign(ctx, *campaign)
+	k.Logger(ctx).Debug("enabled campaign", "campaignId", campaignId, "startTime", campaign.StartTime, "endTime", campaign.EndTime)
 	return nil
 }
 
 func (k Keeper) returnAllToOwner(ctx sdk.Context, campaign *types.Campaign) error {
+	k.Logger(ctx).Debug("return all to owner", "campaignId", campaign.Id)
 	if err := k.sendCampaignCurrentAmountToOwner(ctx, campaign, campaign.CampaignCurrentAmount); err != nil {
 		return err
 	}
-	return k.closeCampaignSendFeegrant(ctx, campaign)
+	return k.sendCampaignFeegrantToOwner(ctx, campaign)
 }
 
 func (k Keeper) sendCampaignCurrentAmountToOwner(ctx sdk.Context, campaign *types.Campaign, amount sdk.Coins) error {
+	if amount.IsZero() {
+		return nil
+	}
 	if !amount.IsAllLTE(campaign.CampaignCurrentAmount) {
 		return errors.Wrapf(c4eerrors.ErrAmount,
 			"cannot send campaign current amount to owner, campaign current amount is lower than amount (%s < %s)", campaign.CampaignCurrentAmount, amount)
@@ -153,6 +160,8 @@ func (k Keeper) sendCampaignCurrentAmountToOwner(ctx sdk.Context, campaign *type
 			return err
 		}
 	}
+
+	k.Logger(ctx).Debug("send campaign current amount to owner", "campaignId", campaign.Id, "owner", campaign.Owner, "amount", amount)
 	return nil
 }
 
@@ -183,9 +192,9 @@ func (k Keeper) ValidateVestingPoolCampaign(ctx sdk.Context, owner string, vesti
 	return vestingType.ValidateVestingFree(free)
 }
 
-func validateEndTimeInTheFuture(ctx sdk.Context, endTime time.Time) error {
-	if endTime.Before(ctx.BlockTime()) {
-		return errors.Wrapf(c4eerrors.ErrParam, "end time in the past error (%s < %s)", endTime, ctx.BlockTime())
+func validateEndTimeAfterBlockTime(endTime time.Time, blockTime time.Time) error {
+	if endTime.Before(blockTime) {
+		return errors.Wrapf(c4eerrors.ErrParam, "end time in the past error (%s < %s)", endTime, blockTime)
 	}
 	return nil
 }
@@ -194,7 +203,7 @@ func (k Keeper) validateEnableCampaignParams(ctx sdk.Context, campaign *types.Ca
 	if err := campaign.ValidateEnableCampaignParams(owner); err != nil {
 		return err
 	}
-	return campaign.ValidateEndTimeInTheFuture(ctx)
+	return campaign.ValidateEndTimeAfterBlockTime(ctx.BlockTime())
 }
 
 func (k Keeper) validateCloseCampaignParams(ctx sdk.Context, campaign *types.Campaign, owner string) error {

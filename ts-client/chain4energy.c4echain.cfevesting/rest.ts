@@ -9,6 +9,13 @@
  * ---------------------------------------------------------------
  */
 
+/**
+ * Params defines the parameters for the module.
+ */
+export interface C4EchaincfevestingParams {
+  denom?: string;
+}
+
 export interface CfevestingGenesisVestingType {
   /** vesting type name */
   name?: string;
@@ -55,13 +62,6 @@ export interface CfevestingMsgWithdrawAllAvailableResponse {
   withdrawn?: string;
 }
 
-/**
- * Params defines the parameters for the module.
- */
-export interface CfevestingParams {
-  denom?: string;
-}
-
 export interface CfevestingQueryGenesisVestingsSummaryResponse {
   vesting_all_amount?: string;
   vesting_in_pools_amount?: string;
@@ -74,7 +74,7 @@ export interface CfevestingQueryGenesisVestingsSummaryResponse {
  */
 export interface CfevestingQueryParamsResponse {
   /** params holds all the parameters of this module. */
-  params?: CfevestingParams;
+  params?: C4EchaincfevestingParams;
 }
 
 export interface CfevestingQueryVestingPoolsResponse {
@@ -112,6 +112,13 @@ export interface CfevestingVestingPoolInfo {
   initially_locked?: V1Beta1Coin;
   currently_locked?: string;
   sent_amount?: string;
+  reservations?: CfevestingVestingPoolReservation[];
+}
+
+export interface CfevestingVestingPoolReservation {
+  /** @format uint64 */
+  id?: string;
+  amount?: string;
 }
 
 /**

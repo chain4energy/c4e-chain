@@ -2,7 +2,6 @@ package types
 
 import (
 	"cosmossdk.io/errors"
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -47,7 +46,7 @@ func (msg *MsgInitialClaim) ValidateBasic() error {
 	}
 	_, err = sdk.AccAddressFromBech32(msg.DestinationAddress)
 	if err != nil {
-		return errors.Wrapf(c4eerrors.ErrParsing, "destAddress parsing error: %s", msg.DestinationAddress)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid destination address (%s)", err)
 	}
 	return nil
 }

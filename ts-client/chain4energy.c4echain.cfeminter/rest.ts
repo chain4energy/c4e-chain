@@ -88,6 +88,8 @@ export interface CfeminterMinterState {
   remainder_from_previous_minter?: string;
 }
 
+export type CfeminterMsgBurnResponse = object;
+
 export type CfeminterMsgUpdateMintersParamsResponse = object;
 
 export type CfeminterMsgUpdateParamsResponse = object;
@@ -239,6 +241,17 @@ export interface RpcStatus {
   code?: number;
   message?: string;
   details?: ProtobufAny[];
+}
+
+/**
+* Coin defines a token with a denomination and an amount.
+
+NOTE: The amount field is an Int which implements the custom method
+signatures required by gogoproto.
+*/
+export interface V1Beta1Coin {
+  denom?: string;
+  amount?: string;
 }
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, ResponseType } from "axios";

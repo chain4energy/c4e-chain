@@ -3,7 +3,7 @@ package v2_test
 import (
 	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
 	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	v1 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v1"
 	v2 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v2"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
@@ -118,7 +118,7 @@ func createOldSubDistributor(
 
 	for i := 0; i < 5; i++ {
 		share := v1.Share{
-			Name: helpers.RandStringOfLength(10),
+			Name: utils.RandStringOfLength(10),
 			Account: v1.Account{
 				Id:   cfedistributortestutils.GetAccountTestId(id+"_custom_siffix_"+strconv.Itoa(i), "", destinationShareType),
 				Type: destinationShareType,
@@ -129,7 +129,7 @@ func createOldSubDistributor(
 	}
 
 	return v1.SubDistributor{
-		Name: helpers.RandStringOfLength(10),
+		Name: utils.RandStringOfLength(10),
 		Destination: v1.Destination{
 			Account: v1.Account{
 				Id:   cfedistributortestutils.GetAccountTestId(id, "", destinationType),

@@ -1,11 +1,11 @@
 package types_test
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"testing"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -604,7 +604,7 @@ func TestValidateUniquenessOfSubdistributors(t *testing.T) {
 
 		sameShares := createSubDistributor(CUSTOM_ACCOUNT, CUSTOM_ACCOUNT_2, accType, CUSTOM_ID, false)
 		copiedShare := *sameShares.Destinations.Shares[0]
-		copiedShare.Name = helpers.RandStringOfLength(10)
+		copiedShare.Name = utils.RandStringOfLength(10)
 		sameShares.Destinations.Shares = append(sameShares.Destinations.Shares, &copiedShare)
 		subDistributorCases[4] = []types.SubDistributor{
 			sameShares,
@@ -670,7 +670,7 @@ func TestValidateUniquenessOfSubdistributorsBaseAccountType(t *testing.T) {
 
 	sameShares := createSubDistributor(CUSTOM_ACCOUNT, CUSTOM_ACCOUNT_2, accType, CUSTOM_ID, false)
 	copiedShare := *sameShares.Destinations.Shares[0]
-	copiedShare.Name = helpers.RandStringOfLength(10)
+	copiedShare.Name = utils.RandStringOfLength(10)
 	sameShares.Destinations.Shares = append(sameShares.Destinations.Shares, &copiedShare)
 	sameSourceDestinationShareDestinations := []types.SubDistributor{
 		sameShares,
@@ -803,7 +803,7 @@ func createSubDistributor(
 	addIdSuffix bool,
 ) types.SubDistributor {
 	return types.SubDistributor{
-		Name: helpers.RandStringOfLength(10),
+		Name: utils.RandStringOfLength(10),
 		Destinations: types.Destinations{
 			PrimaryShare: types.Account{
 				Id:   cfedistributortestutils.GetAccountTestId(id, getAccountSuffix("-mainDst", addIdSuffix), primaryShareType),
@@ -812,7 +812,7 @@ func createSubDistributor(
 			BurnShare: sdk.ZeroDec(),
 			Shares: []*types.DestinationShare{
 				{
-					Name: helpers.RandStringOfLength(10),
+					Name: utils.RandStringOfLength(10),
 					Destination: types.Account{
 						Id:   cfedistributortestutils.GetAccountTestId(id, getAccountSuffix("-shareDst", addIdSuffix), destinationShareType),
 						Type: destinationShareType,

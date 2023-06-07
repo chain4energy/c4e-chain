@@ -22,6 +22,26 @@ import { MsgUpdateGroupAdmin } from "./types/cosmos/group/v1/tx";
 import { MsgUpdateGroupPolicyDecisionPolicy } from "./types/cosmos/group/v1/tx";
 import { MsgCreateGroup } from "./types/cosmos/group/v1/tx";
 
+import { EventCreateGroup as typeEventCreateGroup} from "./types"
+import { EventUpdateGroup as typeEventUpdateGroup} from "./types"
+import { EventCreateGroupPolicy as typeEventCreateGroupPolicy} from "./types"
+import { EventUpdateGroupPolicy as typeEventUpdateGroupPolicy} from "./types"
+import { EventSubmitProposal as typeEventSubmitProposal} from "./types"
+import { EventWithdrawProposal as typeEventWithdrawProposal} from "./types"
+import { EventVote as typeEventVote} from "./types"
+import { EventExec as typeEventExec} from "./types"
+import { EventLeaveGroup as typeEventLeaveGroup} from "./types"
+import { Member as typeMember} from "./types"
+import { MemberRequest as typeMemberRequest} from "./types"
+import { ThresholdDecisionPolicy as typeThresholdDecisionPolicy} from "./types"
+import { PercentageDecisionPolicy as typePercentageDecisionPolicy} from "./types"
+import { DecisionPolicyWindows as typeDecisionPolicyWindows} from "./types"
+import { GroupInfo as typeGroupInfo} from "./types"
+import { GroupMember as typeGroupMember} from "./types"
+import { GroupPolicyInfo as typeGroupPolicyInfo} from "./types"
+import { Proposal as typeProposal} from "./types"
+import { TallyResult as typeTallyResult} from "./types"
+import { Vote as typeVote} from "./types"
 
 export { MsgCreateGroupWithPolicy, MsgUpdateGroupPolicyAdmin, MsgSubmitProposal, MsgLeaveGroup, MsgUpdateGroupPolicyMetadata, MsgCreateGroupPolicy, MsgUpdateGroupMetadata, MsgVote, MsgExec, MsgWithdrawProposal, MsgUpdateGroupMembers, MsgUpdateGroupAdmin, MsgUpdateGroupPolicyDecisionPolicy, MsgCreateGroup };
 
@@ -169,6 +189,18 @@ type msgCreateGroupParams = {
 
 export const registry = new Registry(msgTypes);
 
+type Field = {
+	name: string;
+	type: unknown;
+}
+function getStructure(template) {
+	const structure: {fields: Field[]} = { fields: [] }
+	for (let [key, value] of Object.entries(template)) {
+		let field = { name: key, type: typeof value }
+		structure.fields.push(field)
+	}
+	return structure
+}
 const defaultFee = {
   amount: [],
   gas: "200000",
@@ -507,13 +539,36 @@ export const queryClient = ({ addr: addr }: QueryClientOptions = { addr: "http:/
 class SDKModule {
 	public query: ReturnType<typeof queryClient>;
 	public tx: ReturnType<typeof txClient>;
-	
+	public structure: Record<string,unknown>;
 	public registry: Array<[string, GeneratedType]> = [];
 
 	constructor(client: IgniteClient) {		
 	
 		this.query = queryClient({ addr: client.env.apiURL });		
 		this.updateTX(client);
+		this.structure =  {
+						EventCreateGroup: getStructure(typeEventCreateGroup.fromPartial({})),
+						EventUpdateGroup: getStructure(typeEventUpdateGroup.fromPartial({})),
+						EventCreateGroupPolicy: getStructure(typeEventCreateGroupPolicy.fromPartial({})),
+						EventUpdateGroupPolicy: getStructure(typeEventUpdateGroupPolicy.fromPartial({})),
+						EventSubmitProposal: getStructure(typeEventSubmitProposal.fromPartial({})),
+						EventWithdrawProposal: getStructure(typeEventWithdrawProposal.fromPartial({})),
+						EventVote: getStructure(typeEventVote.fromPartial({})),
+						EventExec: getStructure(typeEventExec.fromPartial({})),
+						EventLeaveGroup: getStructure(typeEventLeaveGroup.fromPartial({})),
+						Member: getStructure(typeMember.fromPartial({})),
+						MemberRequest: getStructure(typeMemberRequest.fromPartial({})),
+						ThresholdDecisionPolicy: getStructure(typeThresholdDecisionPolicy.fromPartial({})),
+						PercentageDecisionPolicy: getStructure(typePercentageDecisionPolicy.fromPartial({})),
+						DecisionPolicyWindows: getStructure(typeDecisionPolicyWindows.fromPartial({})),
+						GroupInfo: getStructure(typeGroupInfo.fromPartial({})),
+						GroupMember: getStructure(typeGroupMember.fromPartial({})),
+						GroupPolicyInfo: getStructure(typeGroupPolicyInfo.fromPartial({})),
+						Proposal: getStructure(typeProposal.fromPartial({})),
+						TallyResult: getStructure(typeTallyResult.fromPartial({})),
+						Vote: getStructure(typeVote.fromPartial({})),
+						
+		};
 		client.on('signer-changed',(signer) => {			
 		 this.updateTX(client);
 		})

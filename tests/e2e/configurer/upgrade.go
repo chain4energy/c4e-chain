@@ -4,7 +4,7 @@ import (
 	"cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/app/params"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"os"
 	"testing"
@@ -119,9 +119,9 @@ func (uc *UpgradeConfigurer) runProposalUpgrade() error {
 				}
 				chainConfig.UpgradePropHeight = currentHeight + int64(chainConfig.VotingPeriod) + int64(config.PropSubmitBlocks) + int64(config.PropBufferBlocks)
 				if uc.upgradeLegacyProposal { // TODO: fix after new upgrade
-					node.SubmitLegacyUpgradeProposal(uc.upgradeVersion, chainConfig.UpgradePropHeight, sdk.NewCoin(params.CoinDenom, math.NewInt(config.InitialMinDeposit)))
+					node.SubmitLegacyUpgradeProposal(uc.upgradeVersion, chainConfig.UpgradePropHeight, sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(config.InitialMinDeposit)))
 				} else {
-					node.SubmitUpgradeProposal(uc.upgradeVersion, chainConfig.UpgradePropHeight, sdk.NewCoin(params.CoinDenom, math.NewInt(config.InitialMinDeposit)))
+					node.SubmitUpgradeProposal(uc.upgradeVersion, chainConfig.UpgradePropHeight, sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(config.InitialMinDeposit)))
 				}
 				chainConfig.LatestProposalNumber += 1
 				node.DepositProposal(chainConfig.LatestProposalNumber)

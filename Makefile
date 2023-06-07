@@ -90,7 +90,7 @@ go.sum: go.mod
 		GO111MODULE=on go mod verify
 
 test:
-	@go test -coverprofile=coverage.out -mod=readonly $(PACKAGES)
+	@go test -coverprofile=coverage.out -mod=readonly $(PACKAGES) -coverpkg ./...
 
 release:
 	@echo "--> Prepare release linux amd64"
@@ -105,7 +105,7 @@ release:
 
 # blockchain simulation tests
 
-SIM_NUM_BLOCKS = 100
+SIM_NUM_BLOCKS = 200
 SIM_BLOCK_SIZE = 100
 SIM_COMMIT = true
 SIM_SEED = 1234
@@ -177,8 +177,8 @@ test-e2e-migration: e2e-setup
 test-e2e-migration-chaining: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationChainingSuite"
 
-SPECIFIC_TEST_NAME=TestMinterAndDistributorCustom
-SPECIFIC_TESTING_SUITE_NAME=TestParamsChangeSuite
+SPECIFIC_TEST_NAME=TestCampaignRemovableClaimRecords
+SPECIFIC_TESTING_SUITE_NAME=TestClaimSuite
 test-e2e-run-specific-test: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=true go test -mod=readonly -timeout=25m -v $ -run $(SPECIFIC_TESTING_SUITE_NAME) $(PACKAGES_E2E) -testify.m $(SPECIFIC_TEST_NAME)
 

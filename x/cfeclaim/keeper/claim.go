@@ -44,6 +44,7 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 		if err = k.revokeFeeAllowance(ctx, accountAddr, granteeAddr); err != nil {
 			return nil, err
 		}
+
 	}
 
 	k.SetUserEntry(ctx, *userEntry)
@@ -54,8 +55,7 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 		AddressToClaim: destinationAddress,
 		Amount:         claimableAmount.String(),
 	}
-	err = ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
+	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
 		k.Logger(ctx).Debug("initial claim emit event error", "event", event, "error", err.Error())
 	}
 
@@ -97,8 +97,7 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 		MissionId:  strconv.FormatUint(missionId, 10),
 		Amount:     claimableAmount.String(),
 	}
-	err = ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
+	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
 		k.Logger(ctx).Debug("claim emit event error", "event", event, "error", err.Error())
 	}
 	return claimableAmount, nil
@@ -130,7 +129,8 @@ func (k Keeper) CompleteMissionFromHook(ctx sdk.Context, campaignId uint64, miss
 
 func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission *types.Mission, claimRecord *types.ClaimRecord,
 	claimableAmount sdk.Coins, free sdk.Dec) error {
-
+	k.Logger(ctx).Debug("claim mission", "campaignId", campaign.Id, "missionid", mission.Id, "claimRecordAddress", claimRecord.Address,
+		"claimRecordDestinationAddress", claimRecord.Address, "claimableAmount", claimableAmount, "free", free)
 	if err := claimRecord.ClaimMission(campaign.Id, mission.Id); err != nil {
 		return errors.Wrapf(types.ErrMissionClaiming, err.Error())
 	}

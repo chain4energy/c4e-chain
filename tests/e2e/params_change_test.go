@@ -9,7 +9,7 @@ import (
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-	testhelpers "github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	testhelpers "github.com/chain4energy/c4e-chain/testutil/utils"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -124,7 +124,7 @@ func (s *ParamsSetupSuite) TestMinterAndDistributorMainnetShort() {
 	s.NoError(err)
 	node.SubmitDepositAndVoteOnProposal(proposalJSON, initialization.ValidatorWalletName, chainA)
 
-	totalSupplyBefore, err := node.QuerySupplyOf(appparams.CoinDenom)
+	totalSupplyBefore, err := node.QuerySupplyOf(appparams.MicroC4eUnit)
 	time.Sleep(time.Minute * 1)
 	totalSupplyAfter, err := node.QuerySupplyOf(newDenom)
 	s.Greater(totalSupplyAfter.Int64(), totalSupplyBefore.Int64())
@@ -185,7 +185,7 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenomVestingPoolsExist() {
 	// set previous denom
 	proposalMessage := cfevestingtypes.MsgUpdateDenomParam{
 		Authority: appparams.GetAuthority(),
-		Denom:     appparams.CoinDenom,
+		Denom:     appparams.MicroC4eUnit,
 	}
 	proposalJSON, err := util.NewProposalJSON([]sdk.Msg{&proposalMessage})
 	s.NoError(err)
@@ -195,12 +195,12 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenomVestingPoolsExist() {
 	// transfer funds and create vesting pool
 	creatorWalletName := testhelpers.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 
 	vestingTypes := node.QueryVestingTypes()
 	s.NoError(err)
-	balanceBeforeAmount := balanceBefore.AmountOf(appparams.CoinDenom)
+	balanceBeforeAmount := balanceBefore.AmountOf(appparams.MicroC4eUnit)
 	randVestingPoolName := testhelpers.RandStringOfLength(5)
 	vestingAmount := balanceBeforeAmount.Quo(math.NewInt(4))
 	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), (10 * time.Minute).String(), vestingTypes[0].Name, creatorWalletName)

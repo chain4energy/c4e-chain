@@ -1,6 +1,9 @@
 package config
 
 import (
+	"cosmossdk.io/math"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 )
 
@@ -24,4 +27,5 @@ const (
 var (
 	MinDepositValue   = govv1.DefaultMinDepositTokens
 	InitialMinDeposit = MinDepositValue.Int64() / 4
+	BaseBalance       = sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(10000000000))
 )

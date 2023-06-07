@@ -2,12 +2,11 @@ package v2_test
 
 import (
 	"cosmossdk.io/math"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"math/rand"
 	"strconv"
 	"testing"
 	"time"
-
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 
 	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v1"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v2"
@@ -240,10 +239,10 @@ func generateOldVestingTypes(numberOfVestingTypes int, startId int) []*v1.Vestin
 
 func generateRandomOldVestingPool(accuntId int, vestingId int) v1.VestingPool {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	vested := int(helpers.RandIntBetweenWith0(r, 1, 10000000))
+	vested := int(utils.RandIntBetweenWith0(r, 1, 10000000))
 	withdrawn := r.Intn(vested)
-	sent := helpers.RandIntWith0(r, vested-withdrawn)
-	randWith := helpers.RandIntWith0(r, withdrawn)
+	sent := utils.RandIntWith0(r, vested-withdrawn)
+	randWith := utils.RandIntWith0(r, withdrawn)
 	lastModificationVested := vested - sent - randWith
 	lastModificationWithdrawn := withdrawn - randWith
 

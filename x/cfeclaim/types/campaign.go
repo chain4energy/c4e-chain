@@ -193,9 +193,9 @@ func (c *Campaign) ValidateEnableCampaignParams(owner string) error {
 	return nil
 }
 
-func (c *Campaign) ValidateEndTimeInTheFuture(ctx sdk.Context) error {
-	if c.EndTime.Before(ctx.BlockTime()) {
-		return errors.Wrapf(c4eerrors.ErrParam, "end time in the past error (%s < %s)", c.EndTime, ctx.BlockTime())
+func (c *Campaign) ValidateEndTimeAfterBlockTime(blockTime time.Time) error {
+	if c.EndTime.Before(blockTime) {
+		return errors.Wrapf(c4eerrors.ErrParam, "end time in the past error (%s < %s)", c.EndTime, blockTime)
 	}
 	return nil
 }
@@ -244,10 +244,8 @@ func (c *Campaign) ValidateMissionClaimStartDate(claimStartDate *time.Time) erro
 }
 
 func (c *Campaign) ValidateRemovableClaimRecords() error {
-	if c.Enabled {
-		if !c.RemovableClaimRecords {
-			return errors.Wrap(sdkerrors.ErrInvalidType, "campaign must have RemovableClaimRecords flag set to true to be able to delete its entries")
-		}
+	if c.Enabled && !c.RemovableClaimRecords {
+		return errors.Wrap(sdkerrors.ErrInvalidType, "campaign must have RemovableClaimRecords flag set to true to be able to delete its entries")
 	}
 	return nil
 }

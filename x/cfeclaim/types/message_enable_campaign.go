@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-const TypeMsgEnableCampaign = "start_claim_campaign"
+const TypeMsgEnableCampaign = "enable_campaign"
 
 var _ sdk.Msg = &MsgEnableCampaign{}
 

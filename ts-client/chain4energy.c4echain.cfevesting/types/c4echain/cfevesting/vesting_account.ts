@@ -2,13 +2,14 @@
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { Coin } from "../../cosmos/base/v1beta1/coin";
-import { Any } from "../../google/protobuf/any";
+import { BaseVestingAccount } from "../../cosmos/vesting/v1beta1/vesting";
 
 export const protobufPackage = "chain4energy.c4echain.cfevesting";
 
 export interface VestingAccountTrace {
   id: number;
   address: string;
+  periodsToTrace: number[];
   genesis: boolean;
   fromGenesisPool: boolean;
   fromGenesisAccount: boolean;
@@ -31,23 +32,8 @@ export interface PeriodicContinuousVestingAccount {
   vestingPeriods: ContinuousVestingPeriod[];
 }
 
-export interface BaseVestingAccount {
-  baseAccount: AuthBaseAccount | undefined;
-  originalVesting: Coin[];
-  delegatedFree: Coin[];
-  delegatedVesting: Coin[];
-  endTime: number;
-}
-
-export interface AuthBaseAccount {
-  address: string;
-  pubKey: Any | undefined;
-  accountNumber: number;
-  sequence: number;
-}
-
 function createBaseVestingAccountTrace(): VestingAccountTrace {
-  return { id: 0, address: "", genesis: false, fromGenesisPool: false, fromGenesisAccount: false };
+  return { id: 0, address: "", periodsToTrace: [], genesis: false, fromGenesisPool: false, fromGenesisAccount: false };
 }
 
 export const VestingAccountTrace = {
@@ -58,14 +44,19 @@ export const VestingAccountTrace = {
     if (message.address !== "") {
       writer.uint32(18).string(message.address);
     }
+    writer.uint32(26).fork();
+    for (const v of message.periodsToTrace) {
+      writer.uint64(v);
+    }
+    writer.ldelim();
     if (message.genesis === true) {
-      writer.uint32(24).bool(message.genesis);
+      writer.uint32(32).bool(message.genesis);
     }
     if (message.fromGenesisPool === true) {
-      writer.uint32(32).bool(message.fromGenesisPool);
+      writer.uint32(40).bool(message.fromGenesisPool);
     }
     if (message.fromGenesisAccount === true) {
-      writer.uint32(40).bool(message.fromGenesisAccount);
+      writer.uint32(48).bool(message.fromGenesisAccount);
     }
     return writer;
   },
@@ -84,12 +75,22 @@ export const VestingAccountTrace = {
           message.address = reader.string();
           break;
         case 3:
-          message.genesis = reader.bool();
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.periodsToTrace.push(longToNumber(reader.uint64() as Long));
+            }
+          } else {
+            message.periodsToTrace.push(longToNumber(reader.uint64() as Long));
+          }
           break;
         case 4:
-          message.fromGenesisPool = reader.bool();
+          message.genesis = reader.bool();
           break;
         case 5:
+          message.fromGenesisPool = reader.bool();
+          break;
+        case 6:
           message.fromGenesisAccount = reader.bool();
           break;
         default:
@@ -104,6 +105,7 @@ export const VestingAccountTrace = {
     return {
       id: isSet(object.id) ? Number(object.id) : 0,
       address: isSet(object.address) ? String(object.address) : "",
+      periodsToTrace: Array.isArray(object?.periodsToTrace) ? object.periodsToTrace.map((e: any) => Number(e)) : [],
       genesis: isSet(object.genesis) ? Boolean(object.genesis) : false,
       fromGenesisPool: isSet(object.fromGenesisPool) ? Boolean(object.fromGenesisPool) : false,
       fromGenesisAccount: isSet(object.fromGenesisAccount) ? Boolean(object.fromGenesisAccount) : false,
@@ -114,6 +116,11 @@ export const VestingAccountTrace = {
     const obj: any = {};
     message.id !== undefined && (obj.id = Math.round(message.id));
     message.address !== undefined && (obj.address = message.address);
+    if (message.periodsToTrace) {
+      obj.periodsToTrace = message.periodsToTrace.map((e) => Math.round(e));
+    } else {
+      obj.periodsToTrace = [];
+    }
     message.genesis !== undefined && (obj.genesis = message.genesis);
     message.fromGenesisPool !== undefined && (obj.fromGenesisPool = message.fromGenesisPool);
     message.fromGenesisAccount !== undefined && (obj.fromGenesisAccount = message.fromGenesisAccount);
@@ -124,6 +131,7 @@ export const VestingAccountTrace = {
     const message = createBaseVestingAccountTrace();
     message.id = object.id ?? 0;
     message.address = object.address ?? "";
+    message.periodsToTrace = object.periodsToTrace?.map((e) => e) || [];
     message.genesis = object.genesis ?? false;
     message.fromGenesisPool = object.fromGenesisPool ?? false;
     message.fromGenesisAccount = object.fromGenesisAccount ?? false;
@@ -279,188 +287,6 @@ export const PeriodicContinuousVestingAccount = {
       : undefined;
     message.startTime = object.startTime ?? 0;
     message.vestingPeriods = object.vestingPeriods?.map((e) => ContinuousVestingPeriod.fromPartial(e)) || [];
-    return message;
-  },
-};
-
-function createBaseBaseVestingAccount(): BaseVestingAccount {
-  return { baseAccount: undefined, originalVesting: [], delegatedFree: [], delegatedVesting: [], endTime: 0 };
-}
-
-export const BaseVestingAccount = {
-  encode(message: BaseVestingAccount, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.baseAccount !== undefined) {
-      AuthBaseAccount.encode(message.baseAccount, writer.uint32(10).fork()).ldelim();
-    }
-    for (const v of message.originalVesting) {
-      Coin.encode(v!, writer.uint32(18).fork()).ldelim();
-    }
-    for (const v of message.delegatedFree) {
-      Coin.encode(v!, writer.uint32(26).fork()).ldelim();
-    }
-    for (const v of message.delegatedVesting) {
-      Coin.encode(v!, writer.uint32(34).fork()).ldelim();
-    }
-    if (message.endTime !== 0) {
-      writer.uint32(40).int64(message.endTime);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): BaseVestingAccount {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseBaseVestingAccount();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.baseAccount = AuthBaseAccount.decode(reader, reader.uint32());
-          break;
-        case 2:
-          message.originalVesting.push(Coin.decode(reader, reader.uint32()));
-          break;
-        case 3:
-          message.delegatedFree.push(Coin.decode(reader, reader.uint32()));
-          break;
-        case 4:
-          message.delegatedVesting.push(Coin.decode(reader, reader.uint32()));
-          break;
-        case 5:
-          message.endTime = longToNumber(reader.int64() as Long);
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): BaseVestingAccount {
-    return {
-      baseAccount: isSet(object.baseAccount) ? AuthBaseAccount.fromJSON(object.baseAccount) : undefined,
-      originalVesting: Array.isArray(object?.originalVesting)
-        ? object.originalVesting.map((e: any) => Coin.fromJSON(e))
-        : [],
-      delegatedFree: Array.isArray(object?.delegatedFree) ? object.delegatedFree.map((e: any) => Coin.fromJSON(e)) : [],
-      delegatedVesting: Array.isArray(object?.delegatedVesting)
-        ? object.delegatedVesting.map((e: any) => Coin.fromJSON(e))
-        : [],
-      endTime: isSet(object.endTime) ? Number(object.endTime) : 0,
-    };
-  },
-
-  toJSON(message: BaseVestingAccount): unknown {
-    const obj: any = {};
-    message.baseAccount !== undefined
-      && (obj.baseAccount = message.baseAccount ? AuthBaseAccount.toJSON(message.baseAccount) : undefined);
-    if (message.originalVesting) {
-      obj.originalVesting = message.originalVesting.map((e) => e ? Coin.toJSON(e) : undefined);
-    } else {
-      obj.originalVesting = [];
-    }
-    if (message.delegatedFree) {
-      obj.delegatedFree = message.delegatedFree.map((e) => e ? Coin.toJSON(e) : undefined);
-    } else {
-      obj.delegatedFree = [];
-    }
-    if (message.delegatedVesting) {
-      obj.delegatedVesting = message.delegatedVesting.map((e) => e ? Coin.toJSON(e) : undefined);
-    } else {
-      obj.delegatedVesting = [];
-    }
-    message.endTime !== undefined && (obj.endTime = Math.round(message.endTime));
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<BaseVestingAccount>, I>>(object: I): BaseVestingAccount {
-    const message = createBaseBaseVestingAccount();
-    message.baseAccount = (object.baseAccount !== undefined && object.baseAccount !== null)
-      ? AuthBaseAccount.fromPartial(object.baseAccount)
-      : undefined;
-    message.originalVesting = object.originalVesting?.map((e) => Coin.fromPartial(e)) || [];
-    message.delegatedFree = object.delegatedFree?.map((e) => Coin.fromPartial(e)) || [];
-    message.delegatedVesting = object.delegatedVesting?.map((e) => Coin.fromPartial(e)) || [];
-    message.endTime = object.endTime ?? 0;
-    return message;
-  },
-};
-
-function createBaseAuthBaseAccount(): AuthBaseAccount {
-  return { address: "", pubKey: undefined, accountNumber: 0, sequence: 0 };
-}
-
-export const AuthBaseAccount = {
-  encode(message: AuthBaseAccount, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.address !== "") {
-      writer.uint32(10).string(message.address);
-    }
-    if (message.pubKey !== undefined) {
-      Any.encode(message.pubKey, writer.uint32(18).fork()).ldelim();
-    }
-    if (message.accountNumber !== 0) {
-      writer.uint32(24).uint64(message.accountNumber);
-    }
-    if (message.sequence !== 0) {
-      writer.uint32(32).uint64(message.sequence);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): AuthBaseAccount {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAuthBaseAccount();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.address = reader.string();
-          break;
-        case 2:
-          message.pubKey = Any.decode(reader, reader.uint32());
-          break;
-        case 3:
-          message.accountNumber = longToNumber(reader.uint64() as Long);
-          break;
-        case 4:
-          message.sequence = longToNumber(reader.uint64() as Long);
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): AuthBaseAccount {
-    return {
-      address: isSet(object.address) ? String(object.address) : "",
-      pubKey: isSet(object.pubKey) ? Any.fromJSON(object.pubKey) : undefined,
-      accountNumber: isSet(object.accountNumber) ? Number(object.accountNumber) : 0,
-      sequence: isSet(object.sequence) ? Number(object.sequence) : 0,
-    };
-  },
-
-  toJSON(message: AuthBaseAccount): unknown {
-    const obj: any = {};
-    message.address !== undefined && (obj.address = message.address);
-    message.pubKey !== undefined && (obj.pubKey = message.pubKey ? Any.toJSON(message.pubKey) : undefined);
-    message.accountNumber !== undefined && (obj.accountNumber = Math.round(message.accountNumber));
-    message.sequence !== undefined && (obj.sequence = Math.round(message.sequence));
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<AuthBaseAccount>, I>>(object: I): AuthBaseAccount {
-    const message = createBaseAuthBaseAccount();
-    message.address = object.address ?? "";
-    message.pubKey = (object.pubKey !== undefined && object.pubKey !== null)
-      ? Any.fromPartial(object.pubKey)
-      : undefined;
-    message.accountNumber = object.accountNumber ?? 0;
-    message.sequence = object.sequence ?? 0;
     return message;
   },
 };

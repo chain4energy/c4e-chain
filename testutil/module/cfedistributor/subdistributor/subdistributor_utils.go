@@ -2,7 +2,7 @@ package subdistributor
 
 import (
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -92,7 +92,7 @@ func PrepareBurningDistributor(destinationType DestinationType) types.SubDistrib
 	}
 
 	distributor1 := types.SubDistributor{
-		Name:         helpers.RandStringOfLength(10),
+		Name:         utils.RandStringOfLength(10),
 		Sources:      []*types.Account{{Id: authtypes.FeeCollectorName, Type: types.ModuleAccount}},
 		Destinations: destination,
 	}
@@ -137,7 +137,7 @@ func PrepareInflationToPassAcoutSubDistr(passThroughAccoutType DestinationType) 
 		BurnShare:    burnShare,
 	}
 	return types.SubDistributor{
-		Name:         helpers.RandStringOfLength(10),
+		Name:         utils.RandStringOfLength(10),
 		Sources:      []*types.Account{&source},
 		Destinations: destination,
 	}
@@ -188,7 +188,7 @@ func PrepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 	}
 
 	shareDevelopmentFund := types.DestinationShare{
-		Name:        helpers.RandStringOfLength(10),
+		Name:        utils.RandStringOfLength(10),
 		Share:       sdk.MustNewDecFromStr("0.10345"),
 		Destination: shareDevelopmentFundAccount,
 	}
@@ -200,7 +200,7 @@ func PrepareInflationSubDistributor(sourceAccoutType DestinationType, toValidato
 	}
 
 	return types.SubDistributor{
-		Name:         helpers.RandStringOfLength(10),
+		Name:         utils.RandStringOfLength(10),
 		Sources:      []*types.Account{&source},
 		Destinations: destination,
 	}

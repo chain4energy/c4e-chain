@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const TypeMsgCreateCampaign = "create_claim_campaign"
+const TypeMsgCreateCampaign = "create_campaign"
 
 var _ sdk.Msg = &MsgCreateCampaign{}
 
