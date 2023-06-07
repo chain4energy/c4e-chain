@@ -8,6 +8,7 @@ import (
 	cfeclaimmoduletypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"io"
 	"net/http"
 	"time"
@@ -24,6 +25,8 @@ import (
 
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 )
+
+const outputJsonFlag = "--output=json"
 
 func (n *NodeConfig) QueryGRPCGateway(path string, parameters ...string) ([]byte, error) {
 	if len(parameters)%2 != 0 {
@@ -305,7 +308,7 @@ func (n *NodeConfig) QueryUserEntries() []cfeclaimmoduletypes.UserEntry {
 }
 
 func (n *NodeConfig) QueryCfevestingParams(moduleParams *cfevestingmoduletypes.QueryParamsResponse) {
-	cmd := []string{"c4ed", "query", "cfevesting", "params", "--output=json"}
+	cmd := []string{"c4ed", "query", "cfevesting", "params", outputJsonFlag}
 
 	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
 	require.NoError(n.t, err)
@@ -314,7 +317,7 @@ func (n *NodeConfig) QueryCfevestingParams(moduleParams *cfevestingmoduletypes.Q
 }
 
 func (n *NodeConfig) QueryCfeminterParams(moduleParams *cfemintermoduletypes.QueryParamsResponse) {
-	cmd := []string{"c4ed", "query", "cfeminter", "params", "--output=json"}
+	cmd := []string{"c4ed", "query", "cfeminter", "params", outputJsonFlag}
 
 	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
 	require.NoError(n.t, err)
@@ -323,7 +326,7 @@ func (n *NodeConfig) QueryCfeminterParams(moduleParams *cfemintermoduletypes.Que
 }
 
 func (n *NodeConfig) QueryCfedistributorParams(moduleParams *cfedistributormoduletypes.QueryParamsResponse) {
-	cmd := []string{"c4ed", "query", "cfedistributor", "params", "--output=json"}
+	cmd := []string{"c4ed", "query", "cfedistributor", "params", outputJsonFlag}
 
 	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
 	require.NoError(n.t, err)
@@ -331,12 +334,12 @@ func (n *NodeConfig) QueryCfedistributorParams(moduleParams *cfedistributormodul
 	require.NoError(n.t, err)
 }
 
-func (n *NodeConfig) QueryFeegrant(moduleParams *cfedistributormoduletypes.QueryParamsResponse) {
-	cmd := []string{"c4ed", "query", "cfedistributor", "params", "--output=json"}
+func (n *NodeConfig) QueryFeegrant(granter, grantee string, feegrantResponse *feegrant.QueryAllowanceRequest) {
+	cmd := []string{"c4ed", "query", "feegrant", "grant", granter, grantee, outputJsonFlag}
 
 	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
 	require.NoError(n.t, err)
-	err = json.Unmarshal(out.Bytes(), &moduleParams)
+	err = json.Unmarshal(out.Bytes(), &feegrantResponse)
 	require.NoError(n.t, err)
 }
 

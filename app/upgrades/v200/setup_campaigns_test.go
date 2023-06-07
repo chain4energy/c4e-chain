@@ -102,7 +102,7 @@ func TestSetupCampaigns(t *testing.T) {
 	require.NoError(t, err)
 	err = v200.MigrateAirdropModuleAccount(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
-	err = claim.SetupCampaigns(testHelper.Context, testHelper.App)
+	err = claim.SetupAirdrops(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
 
 	campaigns = testHelper.C4eClaimUtils.GetCampaigns()
@@ -125,7 +125,7 @@ func TestSetupCampaignsNoTeamdropVestingAccount(t *testing.T) {
 	require.NoError(t, err)
 	err = v200.MigrateAirdropModuleAccount(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
-	err = claim.SetupCampaigns(testHelper.Context, testHelper.App)
+	err = claim.SetupAirdrops(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
 
 	campaigns = testHelper.C4eClaimUtils.GetCampaigns()
@@ -145,7 +145,7 @@ func TestSetupCampaignsNoAirdropModuleAccount(t *testing.T) {
 	require.NoError(t, err)
 	err = v200.MigrateTeamdropVestingAccount(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
-	err = claim.SetupCampaigns(testHelper.Context, testHelper.App)
+	err = claim.SetupAirdrops(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
 
 	campaigns = testHelper.C4eClaimUtils.GetCampaigns()

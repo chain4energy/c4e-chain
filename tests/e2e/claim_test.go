@@ -73,7 +73,7 @@ func (s *ClaimSetupSuite) TestDefaultCampaign() {
 	destinationAddress := testcosmos.CreateRandomAccAddress()
 
 	claimer := claimRecordEntriesWalletNames[2]
-	node.ClaimInitialMissionError(campaignIdString, destinationAddress, claimer, "not found: key not found")
+	node.ValidateClaimInitialClaimerNotFound(campaignIdString, destinationAddress, claimer)
 	userEntriesJSONString, err := util.NewClaimRecordsListJson(claimRecordEntries)
 	s.NoError(err)
 	node.AddClaimRecordsError(campaignIdString, userEntriesJSONString, creatorWalletName, "owner balance is too small")
@@ -82,7 +82,7 @@ func (s *ClaimSetupSuite) TestDefaultCampaign() {
 	node.AddClaimRecordsError(campaignIdString, userEntriesJSONString, creatorWalletName, fmt.Sprintf("campaignId %s already exists for address", campaignIdString))
 
 	node.DeleteClaimRecord(campaignIdString, claimRecordEntries[0].UserEntryAddress, creatorWalletName)
-	node.DeleteClaimRecordError(campaignIdString, claimRecordEntries[0].UserEntryAddress, creatorWalletName, fmt.Sprintf("claim record with campaign id %s not found for address %s", campaignIdString, claimRecordEntries[0].UserEntryAddress))
+	node.ValidateDeleteClaimerNotFound(campaignIdString, claimRecordEntries[0].UserEntryAddress, creatorWalletName)
 
 	node.ClaimInitialMissionError(campaignIdString, destinationAddress, claimer, "campaign is disabled")
 
@@ -91,7 +91,7 @@ func (s *ClaimSetupSuite) TestDefaultCampaign() {
 	node.DeleteClaimRecordError(campaignIdString, claimRecordEntries[2].UserEntryAddress, creatorWalletName,
 		"campaign must have RemovableClaimRecords flag set to true to be able to delete its entries")
 
-	node.ClaimInitialMissionError(campaignIdString, destinationAddress, claimer, fmt.Sprintf("campaign %s not started yet", campaignIdString))
+	node.ValidateClaimInitialCampaignNotStartedYet(campaignIdString, destinationAddress, claimer)
 	node.WaitUntilSpecifiedTime(startTime)
 
 	node.ClaimInitialMission(campaignIdString, destinationAddress, claimer)
@@ -101,7 +101,7 @@ func (s *ClaimSetupSuite) TestDefaultCampaign() {
 	node.WaitUntilSpecifiedTime(claimStartDate)
 	node.ClaimMission(campaignIdString, "1", claimer)
 	node.ClaimMissionError(campaignIdString, "1", claimer, "missionId: 1: mission already completed")
-	node.CloseCampaignError(campaignIdString, creatorWalletName, "campaign is not over yet")
+	node.ValidateCampaignIsNotOverYet(campaignIdString, creatorWalletName)
 	node.WaitUntilSpecifiedTime(endTime)
 	node.CloseCampaign(campaignIdString, creatorWalletName)
 	node.RemoveCampaign(campaignIdString, creatorWalletName)
@@ -141,18 +141,18 @@ func (s *ClaimSetupSuite) TestDefaultCampaignNoFeegrantAndUpdatedEnableTimes() {
 	destinationAddress := testcosmos.CreateRandomAccAddress()
 	randomUserEntryIndex := utils.RandInt(10)
 	claimer := claimRecordEntriesWalletNames[randomUserEntryIndex]
-	node.ClaimInitialMissionError(campaignIdString, destinationAddress, claimer, "not found: key not found")
+	node.ValidateClaimInitialClaimerNotFound(campaignIdString, destinationAddress, claimer)
 	userEntriesJSONString, err := util.NewClaimRecordsListJson(claimRecordEntries)
 	s.NoError(err)
 	node.AddClaimRecords(campaignIdString, userEntriesJSONString, creatorWalletName)
-	node.ClaimInitialMissionError(campaignIdString, destinationAddress, claimer, "not found: key not found")
+	node.ValidateClaimInitialClaimerNotFound(campaignIdString, destinationAddress, claimer)
 	node.BankSendBaseBalanceFromNode(claimRecordEntries[randomUserEntryIndex].UserEntryAddress)
 
 	updatedStartTime := time.Now().Add(time.Minute)
 	updatedEndTime := updatedStartTime.Add(time.Minute * 2)
 	node.EnableCampaign(campaignIdString, updatedStartTime.Format(cfeclaimcli.TimeLayout), updatedEndTime.Format(cfeclaimcli.TimeLayout), creatorWalletName)
 	node.WaitUntilSpecifiedTime(campaignStartTimeBefore)
-	node.ClaimInitialMissionError(campaignIdString, destinationAddress, claimer, fmt.Sprintf("campaign %s not started yet", campaignIdString))
+	node.ValidateClaimInitialCampaignNotStartedYet(campaignIdString, destinationAddress, claimer)
 	node.WaitUntilSpecifiedTime(updatedStartTime)
 	node.ClaimInitialMission(campaignIdString, destinationAddress, claimer)
 }
@@ -199,7 +199,7 @@ func (s *ClaimSetupSuite) TestCampaignRemovableClaimRecords() {
 	destinationAddress := testcosmos.CreateRandomAccAddress()
 
 	claimer := claimRecordEntriesWalletNames[2]
-	node.ClaimInitialMissionError(campaignIdString, destinationAddress, claimer, "not found: key not found")
+	node.ValidateClaimInitialClaimerNotFound(campaignIdString, destinationAddress, claimer)
 	userEntriesJSONString, err := util.NewClaimRecordsListJson(claimRecordEntries)
 	s.NoError(err)
 	node.BankSendBaseBalanceFromNode(creatorAddress)
@@ -207,7 +207,7 @@ func (s *ClaimSetupSuite) TestCampaignRemovableClaimRecords() {
 	node.DeleteClaimRecord(campaignIdString, claimRecordEntries[0].UserEntryAddress, creatorWalletName)
 	node.EnableCampaign(campaignIdString, "", "", creatorWalletName)
 	node.DeleteClaimRecord(campaignIdString, claimRecordEntries[1].UserEntryAddress, creatorWalletName)
-	node.ClaimInitialMissionError(campaignIdString, destinationAddress, claimer, fmt.Sprintf("campaign %s not started yet", campaignIdString))
+	node.ValidateClaimInitialCampaignNotStartedYet(campaignIdString, destinationAddress, claimer)
 	node.WaitUntilSpecifiedTime(startTime)
 
 	node.ClaimInitialMission(campaignIdString, destinationAddress, claimer)
@@ -268,21 +268,6 @@ func (s *ClaimSetupSuite) TestRemoveCampaign() {
 	node.RemoveCampaignError(campaignIdString, creatorWalletName, "")
 }
 
-func prepareNClaimRecords(node *chain.NodeConfig, n int, allEntriesAmountSum math.Int) (claimRecordEntries []types.ClaimRecordEntry, claimRecordEntriesWalletNames []string) {
-	amountPerClaimRecord := allEntriesAmountSum.Quo(math.NewInt(int64(n)))
-	for i := 0; i < n; i++ {
-		walletName := utils.RandStringOfLength(10)
-		address := node.CreateWallet(walletName)
-		claimRecordEntry := types.ClaimRecordEntry{
-			UserEntryAddress: address,
-			Amount:           sdk.NewCoins(sdk.NewCoin(appparams.MicroC4eUnit, amountPerClaimRecord)),
-		}
-		claimRecordEntries = append(claimRecordEntries, claimRecordEntry)
-		claimRecordEntriesWalletNames = append(claimRecordEntriesWalletNames, walletName)
-	}
-	return
-}
-
 func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 	chainA := s.configurer.GetChainConfig(0)
 	node, err := chainA.GetDefaultNode()
@@ -330,7 +315,7 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 	destinationAddress := testcosmos.CreateRandomAccAddress()
 
 	claimer := claimRecordEntriesWalletNames[2]
-	node.ClaimInitialMissionError(campaignIdString, destinationAddress, claimer, "not found: key not found")
+	node.ValidateClaimInitialClaimerNotFound(campaignIdString, destinationAddress, claimer)
 	userEntriesJSONString, err := util.NewClaimRecordsListJson(claimRecordEntries)
 	s.NoError(err)
 	node.AddClaimRecordsError(campaignIdString, userEntriesJSONString, creatorWalletName, "owner balance is too small")
@@ -339,7 +324,7 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 	node.AddClaimRecordsError(campaignIdString, userEntriesJSONString, creatorWalletName, fmt.Sprintf("campaignId %s already exists for address", campaignIdString))
 
 	node.DeleteClaimRecord(campaignIdString, claimRecordEntries[0].UserEntryAddress, creatorWalletName)
-	node.DeleteClaimRecordError(campaignIdString, claimRecordEntries[0].UserEntryAddress, creatorWalletName, fmt.Sprintf("claim record with campaign id %s not found for address %s", campaignIdString, claimRecordEntries[0].UserEntryAddress))
+	node.ValidateDeleteClaimerNotFound(campaignIdString, claimRecordEntries[0].UserEntryAddress, creatorWalletName)
 
 	node.ClaimInitialMissionError(campaignIdString, destinationAddress, claimer, "campaign is disabled")
 
@@ -348,7 +333,7 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 	node.DeleteClaimRecordError(campaignIdString, claimRecordEntries[2].UserEntryAddress, creatorWalletName,
 		"campaign must have RemovableClaimRecords flag set to true to be able to delete its entries")
 
-	node.ClaimInitialMissionError(campaignIdString, destinationAddress, claimer, fmt.Sprintf("campaign %s not started yet", campaignIdString))
+	node.ValidateClaimInitialCampaignNotStartedYet(campaignIdString, destinationAddress, claimer)
 	node.WaitUntilSpecifiedTime(startTime)
 
 	node.ClaimInitialMission(campaignIdString, destinationAddress, claimer)
@@ -358,8 +343,23 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 	node.WaitUntilSpecifiedTime(claimStartDate)
 	node.ClaimMission(campaignIdString, "1", claimer)
 	node.ClaimMissionError(campaignIdString, "1", claimer, "missionId: 1: mission already completed")
-	node.CloseCampaignError(campaignIdString, creatorWalletName, "campaign is not over yet")
+	node.ValidateCampaignIsNotOverYet(campaignIdString, creatorWalletName)
 	node.WaitUntilSpecifiedTime(endTime)
 	node.CloseCampaign(campaignIdString, creatorWalletName)
 	node.RemoveCampaign(campaignIdString, creatorWalletName)
+}
+
+func prepareNClaimRecords(node *chain.NodeConfig, n int, allEntriesAmountSum math.Int) (claimRecordEntries []types.ClaimRecordEntry, claimRecordEntriesWalletNames []string) {
+	amountPerClaimRecord := allEntriesAmountSum.Quo(math.NewInt(int64(n)))
+	for i := 0; i < n; i++ {
+		walletName := utils.RandStringOfLength(10)
+		address := node.CreateWallet(walletName)
+		claimRecordEntry := types.ClaimRecordEntry{
+			UserEntryAddress: address,
+			Amount:           sdk.NewCoins(sdk.NewCoin(appparams.MicroC4eUnit, amountPerClaimRecord)),
+		}
+		claimRecordEntries = append(claimRecordEntries, claimRecordEntry)
+		claimRecordEntriesWalletNames = append(claimRecordEntriesWalletNames, walletName)
+	}
+	return
 }

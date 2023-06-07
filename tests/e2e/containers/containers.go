@@ -20,6 +20,7 @@ const (
 	// The maximum number of times debug logs are printed to console
 	// per CLI command.
 	maxDebugLogsPerCommand = 3
+	rootUser               = "root:root"
 )
 
 var errRegex = regexp.MustCompile(`(E|e)rror`)
@@ -162,7 +163,7 @@ func (m *Manager) RunHermesResource(chainAID, c4eARelayerNodeName, c4eAValMnemon
 			Cmd: []string{
 				"start",
 			},
-			User: "root:root",
+			User: rootUser,
 			Mounts: []string{
 				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),
 			},
@@ -203,7 +204,7 @@ func (m *Manager) RunNodeResource(containerName, valCondifDir string) (*dockerte
 		Repository: m.C4eRepository,
 		Tag:        m.C4eTag,
 		NetworkID:  m.network.Network.ID,
-		User:       "root:root",
+		User:       rootUser,
 		Cmd:        []string{"start"},
 		Mounts: []string{
 			fmt.Sprintf("%s/:/chain4energy/.c4e-chain", valCondifDir),
@@ -246,7 +247,7 @@ func (m *Manager) RunChainInitResource(chainId string, chainVotingPeriod, chainE
 				fmt.Sprintf("--voting-period=%v", votingPeriodDuration),
 				fmt.Sprintf("--app-state=%s", appStateBytes),
 			},
-			User: "root:root",
+			User: rootUser,
 			Mounts: []string{
 				fmt.Sprintf("%s:%s", mountDir, mountDir),
 			},

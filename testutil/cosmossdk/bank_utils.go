@@ -114,16 +114,6 @@ func (bu *BankUtils) VerifyAccountDefultDenomLocked(ctx sdk.Context, addr sdk.Ac
 	bu.VerifyAccountLockedByDenom(ctx, addr, testenv.DefaultTestDenom, expectedAmount)
 }
 
-func (bu *ContextBankUtils) DisableDefaultSend() {
-	bu.BankUtils.DisableDefaultSend(bu.testContext.GetContext())
-}
-
-func (bu *BankUtils) DisableDefaultSend(ctx sdk.Context) {
-	params := bu.helperBankKeeper.GetParams(ctx)
-	params.DefaultSendEnabled = false
-	bu.helperBankKeeper.SetParams(ctx, params)
-}
-
 func (bu *BankUtils) VerifyAccountLockedByDenom(ctx sdk.Context, addr sdk.AccAddress, denom string, expectedAmount math.Int) {
 	locked := bu.helperBankKeeper.LockedCoins(ctx, addr).AmountOf(denom)
 	require.Truef(bu.t, expectedAmount.Equal(locked), "expectedAmount %s <> account locked %s", expectedAmount, locked)

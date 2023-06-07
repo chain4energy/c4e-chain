@@ -92,7 +92,7 @@ func (m *ClaimRecord) CompleteMission(campaignId uint64, missionId uint64) error
 	return nil
 }
 
-// CompleteMission checks if the specified mission ID is completed for the claim record
+// CalculateInitialClaimClaimableAmount calculates the initial claimable amount for the claim record
 func (m *ClaimRecord) CalculateInitialClaimClaimableAmount(weightSum sdk.Dec) sdk.Coins {
 	allMissionsAmountSum := sdk.NewCoins()
 	for _, amount := range m.Amount {
@@ -101,16 +101,7 @@ func (m *ClaimRecord) CalculateInitialClaimClaimableAmount(weightSum sdk.Dec) sd
 	return m.Amount.Sub(allMissionsAmountSum...)
 }
 
-// CompleteMission checks if the specified mission ID is completed for the claim record
-func (m *ClaimRecord) CalculateInitialClaimFree(weightSum sdk.Dec) sdk.Coins {
-	allMissionsAmountSum := sdk.NewCoins()
-	for _, amount := range m.Amount {
-		allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, weightSum.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
-	}
-	return m.Amount.Sub(allMissionsAmountSum...)
-}
-
-// IsMissionCompleted checks if the specified mission ID is completed for the claim record
+// ClaimMission claims the specified mission ID for the claim record
 func (m *ClaimRecord) ClaimMission(campaignId uint64, missionId uint64) error {
 	if !m.IsMissionCompleted(missionId) {
 		return errors.Wrapf(ErrMissionNotCompleted, "campaignId: %d, missionId: %d", campaignId, missionId)
@@ -141,6 +132,7 @@ func (cr *UserEntry) GetClaimRecord(campaignId uint64) *ClaimRecord {
 	return nil
 }
 
+// DeleteClaimRecord deletes the claim record for the specified campaign ID
 func (cr *UserEntry) DeleteClaimRecord(campaignId uint64) {
 	for i, claimRecord := range cr.ClaimRecords {
 		if claimRecord.CampaignId == campaignId {

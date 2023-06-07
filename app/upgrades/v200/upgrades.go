@@ -29,6 +29,6 @@ func CreateUpgradeHandler(
 		if err = MigrateTeamdropVestingAccount(ctx, appKeepers); err != nil {
 			return vmResult, err
 		}
-		return vmResult, claim.SetupCampaigns(ctx, appKeepers)
+		return vmResult, claim.SetupAirdrops(ctx, appKeepers)
 	}
 }

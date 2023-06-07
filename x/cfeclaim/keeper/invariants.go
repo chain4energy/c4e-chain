@@ -7,6 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+const campaignCurrentAmountSumInvariant = "campaigns current amount sum"
+
 // RegisterInvariants register cfedistribution invariants
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 	ir.RegisterRoute(types.ModuleName, "campaigns-current-amount",
@@ -18,7 +20,7 @@ func CampaignCurrentAmountSumCheckInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		campaigns := k.GetAllCampaigns(ctx)
 		if len(campaigns) == 0 {
-			return sdk.FormatInvariant(types.ModuleName, "campaigns current amount sum", "campaigns list is empty"), false
+			return sdk.FormatInvariant(types.ModuleName, campaignCurrentAmountSumInvariant, "campaigns list is empty"), false
 		}
 
 		var vestingCampaignsCurrentAmount = sdk.NewCoins()
@@ -28,7 +30,7 @@ func CampaignCurrentAmountSumCheckInvariant(k Keeper) sdk.Invariant {
 		for _, campaign := range campaigns {
 			if campaign.CampaignType == types.VestingPoolCampaign {
 				vestingCampaignsCurrentAmount = vestingCampaignsCurrentAmount.Add(campaign.CampaignCurrentAmount...)
-				reservation, err := k.vestingKeeper.GetVestingPoolReservation(ctx, campaign.Owner, campaign.VestingPoolName, campaign.Id)
+				reservation, err := k.vestingKeeper.MustGetVestingPoolReservation(ctx, campaign.Owner, campaign.VestingPoolName, campaign.Id)
 				if err == nil {
 					lockedInReservations = lockedInReservations.Add(reservation.Amount)
 				}
@@ -38,15 +40,15 @@ func CampaignCurrentAmountSumCheckInvariant(k Keeper) sdk.Invariant {
 		}
 		cfeaidropAccountCoins := k.GetAccountCoinsForModuleAccount(ctx, types.ModuleName)
 		if !cfeaidropAccountCoins.IsEqual(defaultCampaignsCurrentAmount) {
-			return sdk.FormatInvariant(types.ModuleName, "campaigns current amount sum",
+			return sdk.FormatInvariant(types.ModuleName, campaignCurrentAmountSumInvariant,
 				fmt.Sprintf("campaigns current amount sum is not equal to cfeclaim module account balance (%v != %v)", defaultCampaignsCurrentAmount, cfeaidropAccountCoins)), true
 		}
 
 		if !vestingCampaignsCurrentAmount.AmountOf(k.vestingKeeper.Denom(ctx)).Equal(lockedInReservations) {
-			return sdk.FormatInvariant(types.ModuleName, "campaigns current amount sum",
+			return sdk.FormatInvariant(types.ModuleName, campaignCurrentAmountSumInvariant,
 				fmt.Sprintf("campaigns current amount sum is not equal to lock tokens in vesting pools reservations (%v != %v)", vestingCampaignsCurrentAmount, lockedInReservations)), true
 		}
 
-		return sdk.FormatInvariant(types.ModuleName, "campaigns current amount sum", "claim claims left sum is equal to cfeclaim module account balance"), false
+		return sdk.FormatInvariant(types.ModuleName, campaignCurrentAmountSumInvariant, "claim claims left sum is equal to cfeclaim module account balance"), false
 	}
 }
