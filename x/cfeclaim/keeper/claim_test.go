@@ -354,6 +354,31 @@ func TestVestingPoolCampaignClaimMissionVote(t *testing.T) {
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
+func TestVestingPoolCampaignEverythingClaimed(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	claimEntries, _ := createTestClaimRecordEntries(acountsAddresses, 30)
+	campaign := prepareTestCampaign(testHelper.Context)
+	ownerAddress := acountsAddresses[0]
+
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
+
+	campaign.CampaignType = cfeclaimtypes.VestingPoolCampaign
+	campaign.VestingPoolName = vPool1
+
+	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
+
+	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
+
+	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 31)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[0], 0, 30)
+	testHelper.SetContextBlockTime(campaign.EndTime.Add(time.Minute))
+	testHelper.C4eClaimUtils.CloseCampaign(ownerAddress.String(), 0)
+
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
 func TestVestingPoolCampaignClaimMissionDelegate(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, validatorAddresses := testcosmos.CreateAccounts(11, 1)

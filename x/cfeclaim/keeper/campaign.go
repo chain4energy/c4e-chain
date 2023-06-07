@@ -142,6 +142,9 @@ func (k Keeper) returnAllToOwner(ctx sdk.Context, campaign *types.Campaign) erro
 }
 
 func (k Keeper) sendCampaignCurrentAmountToOwner(ctx sdk.Context, campaign *types.Campaign, amount sdk.Coins) error {
+	if amount.IsZero() {
+		return nil
+	}
 	if !amount.IsAllLTE(campaign.CampaignCurrentAmount) {
 		return errors.Wrapf(c4eerrors.ErrAmount,
 			"cannot send campaign current amount to owner, campaign current amount is lower than amount (%s < %s)", campaign.CampaignCurrentAmount, amount)
