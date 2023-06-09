@@ -51,7 +51,6 @@ func ValidateMsgSplitVesting(fromAddress string, toAddress string,
 	if amount.IsAnyNil() {
 		return nil, nil, errors.Wrapf(ErrParam, "split vesting - amount cannot be nil")
 	}
-	sdk.NewCoin().Validate()
 	err := amount.Validate()
 	if err != nil {
 		return nil, nil, errors.Wrapf(ErrParam, "split vesting - invalid amount (%s)", err)

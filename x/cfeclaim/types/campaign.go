@@ -161,7 +161,7 @@ func validateInitialClaimFreeAmount(initialClaimFreeAmount math.Int) error {
 
 func (c *Campaign) ValidateOwner(owner string) error {
 	if c.Owner != owner {
-		return errors.Wrapf(c4eerrors.ErrWrongSigner, "address %s is not owner of campaign with id %d", owner, c.Id)
+		return errors.Wrapf(sdkerrors.ErrorInvalidSigner, "address %s is not owner of campaign with id %d", owner, c.Id)
 	}
 	return nil
 }

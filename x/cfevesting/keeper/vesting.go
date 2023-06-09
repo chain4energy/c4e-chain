@@ -3,7 +3,6 @@ package keeper
 import (
 	"cosmossdk.io/errors"
 	"fmt"
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"strconv"
 	"time"
 
@@ -370,13 +369,13 @@ func (k Keeper) newContinuousVestingAccount(ctx sdk.Context, to sdk.AccAddress, 
 func (k Keeper) MustGetVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64) (*types.VestingPoolReservation, error) {
 	_, vestingPool, found := k.GetAccountVestingPool(ctx, owner, vestingPoolName)
 	if !found {
-		return nil, errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
+		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "vesting pools not found for address %s", owner)
 	}
 
 	reservation := vestingPool.GetReservation(reservationId)
 
 	if reservation == nil {
-		return nil, errors.Wrapf(c4eerrors.ErrNotExists, "reservation %d not found vesting pool %s", reservationId, vestingPoolName)
+		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "reservation %d not found vesting pool %s", reservationId, vestingPoolName)
 	}
 	return reservation, nil
 }
@@ -385,7 +384,7 @@ func (k Keeper) AddVestingPoolReservation(ctx sdk.Context, owner string, vesting
 	vestingDenom := k.Denom(ctx)
 	accountVestingPools, vestingPool, found := k.GetAccountVestingPool(ctx, owner, vestingPoolName)
 	if !found {
-		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
+		return errors.Wrapf(sdkerrors.ErrNotFound, "vesting pools not found for address %s", owner)
 	}
 
 	currentlyLocked := vestingPool.GetLockedNotReserved()
@@ -402,7 +401,7 @@ func (k Keeper) AddVestingPoolReservation(ctx sdk.Context, owner string, vesting
 func (k Keeper) RemoveVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64, amout math.Int) error {
 	accountVestingPools, vestingPool, found := k.GetAccountVestingPool(ctx, owner, vestingPoolName)
 	if !found {
-		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
+		return errors.Wrapf(sdkerrors.ErrNotFound, "vesting pools not found for address %s", owner)
 	}
 	if err := vestingPool.SubstractFromReservation(reservationId, amout); err != nil {
 		return err

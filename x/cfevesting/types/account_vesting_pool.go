@@ -150,7 +150,7 @@ func (pool *VestingPool) SubstractFromReservation(reservationId uint64, amount m
 			return nil
 		}
 	}
-	return errors.Wrapf(c4eerrors.ErrNotExists, "reservation with id %d not found", reservationId)
+	return errors.Wrapf(sdkerrors.ErrNotFound, "reservation with id %d not found", reservationId)
 }
 
 func (pool *VestingPool) DecrementReservedAndSent(reservationId uint64, amount math.Int) error {

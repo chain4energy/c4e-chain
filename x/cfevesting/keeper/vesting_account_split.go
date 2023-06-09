@@ -3,7 +3,6 @@ package keeper
 import (
 	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
-	errortypes "github.com/chain4energy/c4e-chain/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
@@ -22,7 +21,7 @@ func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, own
 	ownerAccount := k.account.GetAccount(ctx, ownerAddress)
 	if ownerAccount == nil {
 		k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins - account doesn't exist", "ownerAddress", ownerAddress)
-		return nil, errors.Wrapf(errortypes.ErrNotExists, "account %s doesn't exist", ownerAddress)
+		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "account %s doesn't exist", ownerAddress)
 	}
 
 	vestingAcc, ok := ownerAccount.(*vestingtypes.ContinuousVestingAccount)

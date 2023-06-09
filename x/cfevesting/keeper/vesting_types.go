@@ -3,8 +3,6 @@ package keeper
 import (
 	"cosmossdk.io/errors"
 	"fmt"
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
-
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -43,7 +41,7 @@ func (k Keeper) MustGetVestingTypeForVestingPool(ctx sdk.Context, address string
 	vestingPoolName string) (*types.VestingType, error) {
 	_, vestingPool, found := k.GetAccountVestingPool(ctx, address, vestingPoolName)
 	if !found {
-		return nil, errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, address)
+		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "vesting pool %s not found for address %s", vestingPoolName, address)
 	}
 	return k.MustGetVestingType(ctx, vestingPool.VestingType)
 }
