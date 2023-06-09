@@ -81,11 +81,11 @@ $ %s tx %s create-campaign "My Campaign" "Campaign description" "default" true "
 			if err != nil {
 				return err
 			}
-			argLockupPeriod, err := time.ParseDuration(args[9])
+			argLockupPeriod, err := parseDuration(args[9])
 			if err != nil {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
-			argVestingPeriod, err := time.ParseDuration(args[10])
+			argVestingPeriod, err := parseDuration(args[9])
 			if err != nil {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
@@ -106,8 +106,8 @@ $ %s tx %s create-campaign "My Campaign" "Campaign description" "default" true "
 				&argFree,
 				&argStartTime,
 				&argEndTime,
-				&argLockupPeriod,
-				&argVestingPeriod,
+				argLockupPeriod,
+				argVestingPeriod,
 				argVestingPoolName,
 			)
 			if err := msg.ValidateBasic(); err != nil {
@@ -120,4 +120,12 @@ $ %s tx %s create-campaign "My Campaign" "Campaign description" "default" true "
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
+}
+
+func parseDuration(arg string) (*time.Duration, error) {
+	parsedDuration, err := time.ParseDuration(arg)
+	if err != nil {
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+	}
+	return &parsedDuration, nil
 }

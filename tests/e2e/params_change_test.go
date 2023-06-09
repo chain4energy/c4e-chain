@@ -165,16 +165,11 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenom() {
 
 	node.SubmitDepositAndVoteOnProposal(proposalJSON, initialization.ValidatorWalletName, chainA)
 
-	s.Eventually(
-		func() bool {
-			var params cfevestingtypes.QueryParamsResponse
-			node.QueryCfevestingParams(&params)
-			return s.Equal(params.Params.Denom, newVestingDenom)
-		},
-		time.Minute,
-		time.Second*5,
-		"C4e node failed to validate params",
-	)
+	s.validateParams(func() bool {
+		var params cfevestingtypes.QueryParamsResponse
+		node.QueryCfevestingParams(&params)
+		return s.Equal(params.Params.Denom, newVestingDenom)
+	})
 }
 
 func (s *ParamsSetupSuite) TestCfevestingNewDenomVestingPoolsExist() {
@@ -590,11 +585,11 @@ func validateMinterParams(expectedMinters []*cfemintertypes.Minter, paramsMinter
 
 func (s *ParamsSetupSuite) ValidateSubdistributorParams(node *chain.NodeConfig, subDistributors []cfedistributortypes.SubDistributor) {
 	var params cfedistributortypes.QueryParamsResponse
-	validationFunction := func() bool {
+
+	s.validateParams(func() bool {
 		node.QueryCfedistributorParams(&params)
 		return assert.ObjectsAreEqualValues(subDistributors, params.Params.SubDistributors)
-	}
-	s.validateParams(validationFunction)
+	})
 }
 
 func (s *ParamsSetupSuite) ValidateProposalStatusFailed(node *chain.NodeConfig, proposalId int) {

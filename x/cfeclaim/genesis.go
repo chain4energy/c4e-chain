@@ -10,8 +10,13 @@ import (
 // InitGenesis initializes the capability module's state from a provided genesis
 // state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
-	// Set all the campaigns
-	for _, campaign := range genState.Campaigns {
+	setCampaigns(ctx, k, genState.Campaigns)
+	setMissions(ctx, k, genState.Missions)
+	setUsersEntries(ctx, k, genState.UsersEntries)
+}
+
+func setCampaigns(ctx sdk.Context, k keeper.Keeper, campaigns []types.Campaign) {
+	for _, campaign := range campaigns {
 		if err := k.ValidateCampaignParams(ctx, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount,
 			campaign.Free, campaign.StartTime, campaign.EndTime, campaign.CampaignType, campaign.Owner,
 			campaign.VestingPoolName, campaign.LockupPeriod, campaign.VestingPeriod); err != nil {
@@ -19,8 +24,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		}
 		k.SetCampaign(ctx, campaign)
 	}
-	// Set all the missions
-	for _, mission := range genState.Missions {
+}
+
+func setMissions(ctx sdk.Context, k keeper.Keeper, missions []types.Mission) {
+	for _, mission := range missions {
 		campaign, err := k.MustGetCampaign(ctx, mission.CampaignId)
 		if err != nil {
 			panic(errors.Wrapf(err, "mission %s", mission.Name))
@@ -31,30 +38,36 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		}
 		k.SetMission(ctx, mission)
 	}
-	// Set all user entries
-	for userEntryIndex, usersEntry := range genState.UsersEntries {
+}
+
+func setUsersEntries(ctx sdk.Context, k keeper.Keeper, usersEntries []types.UserEntry) {
+	for userEntryIndex, usersEntry := range usersEntries {
 		if err := types.ValidateUserEntry(usersEntry); err != nil {
 			panic(errors.Wrapf(err, "userEntry index: %d", userEntryIndex))
 		}
-		for claimRecordIndex, claimRecord := range usersEntry.ClaimRecords {
-			_, err := k.MustGetCampaign(ctx, claimRecord.CampaignId)
+		validateClaimRecords(ctx, k, usersEntry.ClaimRecords, int64(userEntryIndex))
+		k.SetUserEntry(ctx, usersEntry)
+	}
+}
+
+func validateClaimRecords(ctx sdk.Context, k keeper.Keeper, claimRecords []*types.ClaimRecord, userEntryIndex int64) {
+	for claimRecordIndex, claimRecord := range claimRecords {
+		_, err := k.MustGetCampaign(ctx, claimRecord.CampaignId)
+		if err != nil {
+			panic(errors.Wrapf(err, "userEntry index: %d, claimRecord index: %d", userEntryIndex, claimRecordIndex))
+		}
+		for i, missionId := range claimRecord.ClaimedMissions {
+			_, err = k.MustGetMission(ctx, claimRecord.CampaignId, missionId)
 			if err != nil {
-				panic(errors.Wrapf(err, "userEntry index: %d, claimRecord index: %d", userEntryIndex, claimRecordIndex))
-			}
-			for i, missionId := range claimRecord.ClaimedMissions {
-				_, err = k.MustGetMission(ctx, claimRecord.CampaignId, missionId)
-				if err != nil {
-					panic(errors.Wrapf(err, "userEntry index: %d, claimRecord index: %d, claimed mission index: %d", userEntryIndex, claimRecordIndex, i))
-				}
-			}
-			for i, missionId := range claimRecord.CompletedMissions {
-				_, err = k.MustGetMission(ctx, claimRecord.CampaignId, missionId)
-				if err != nil {
-					panic(errors.Wrapf(err, "userEntry index: %d, claimRecord index: %d, completed mission index: %d", userEntryIndex, claimRecordIndex, i))
-				}
+				panic(errors.Wrapf(err, "userEntry index: %d, claimRecord index: %d, claimed mission index: %d", userEntryIndex, claimRecordIndex, i))
 			}
 		}
-		k.SetUserEntry(ctx, usersEntry)
+		for i, missionId := range claimRecord.CompletedMissions {
+			_, err = k.MustGetMission(ctx, claimRecord.CampaignId, missionId)
+			if err != nil {
+				panic(errors.Wrapf(err, "userEntry index: %d, claimRecord index: %d, completed mission index: %d", userEntryIndex, claimRecordIndex, i))
+			}
+		}
 	}
 }
 

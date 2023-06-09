@@ -55,15 +55,9 @@ $ %s tx %s add-mission 1 "Mission Name" "Mission Description" "delegate" "0.5"" 
 			if err != nil {
 				return err
 			}
-			var argClaimStartDate *time.Time
-			if args[5] == "" {
-				argClaimStartDate = nil
-			} else {
-				parsedTime, err := time.Parse(TimeLayout, args[5])
-				if err != nil {
-					return err
-				}
-				argClaimStartDate = &parsedTime
+			argClaimStartDate, err := parseOptionalTime(args[5])
+			if err != nil {
+				return err
 			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -90,4 +84,16 @@ $ %s tx %s add-mission 1 "Mission Name" "Mission Description" "delegate" "0.5"" 
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
+}
+
+func parseOptionalTime(optionalTimeString string) (*time.Time, error) {
+	if optionalTimeString == "" {
+		return nil, nil
+	}
+	parsedTime, err := time.Parse(TimeLayout, optionalTimeString)
+	if err != nil {
+		return nil, err
+	}
+	return &parsedTime, nil
+
 }

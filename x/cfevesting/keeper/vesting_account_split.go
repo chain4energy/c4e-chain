@@ -42,7 +42,7 @@ func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, own
 	orignalVestings := vestingAcc.OriginalVesting
 
 	for _, coin := range amountToUnlock {
-		if coin.Amount.GT(math.ZeroInt()) {
+		if coin.Amount.IsPositive() {
 			orignalVesting := orignalVestings.AmountOf(coin.Denom)
 			vestingCoin := vestingCoins.AmountOf(coin.Denom)
 			originalVestingDiffDec := sdk.NewDecFromInt(coin.Amount).Mul(sdk.NewDecFromInt(orignalVesting)).Quo(sdk.NewDecFromInt(vestingCoin))
