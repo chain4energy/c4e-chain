@@ -3,6 +3,7 @@ package keeper
 import (
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	cfemintertestutils "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v2"
 	"testing"
 
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -72,7 +73,6 @@ func CfeminterKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, testenv.Additio
 		cdc,
 		storeKey,
 		memStoreKey,
-		paramsSubspace,
 		nil,
 		nil,
 		"test",
@@ -82,7 +82,7 @@ func CfeminterKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, testenv.Additio
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
 
 	k.SetParams(ctx, types.DefaultParams())
-	keyTable := types.ParamKeyTable()
+	keyTable := v2.ParamKeyTable()
 	paramsSubspace.WithKeyTable(keyTable)
 
 	return k, ctx, testenv.AdditionalKeeperData{

@@ -1,43 +1,26 @@
 package v3_test
 
 import (
-	"github.com/chain4energy/c4e-chain/app"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/exported"
-	v3 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v3"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
-	"testing"
+	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
+	v2 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v2"
 
-	"github.com/cosmos/cosmos-sdk/testutil"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	v3 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v3"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
-type mockSubspace struct {
-	ps types.Params
-}
-
-func newMockSubspace(ps types.Params) mockSubspace {
-	return mockSubspace{ps: ps}
-}
-
-func (ms mockSubspace) GetParamSet(ctx sdk.Context, ps exported.ParamSet) {
-	*ps.(*types.Params) = ms.ps
-}
-
 func TestMigrate(t *testing.T) {
-	encCfg := app.MakeEncodingConfig()
-	cdc := encCfg.Codec
+	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
+	testUtil.ParamsStore.WithKeyTable(v2.ParamKeyTable())
+	testUtil.ParamsStore.Set(ctx, v2.KeyDenom, v2.DefaultDenom)
+	require.NoError(t, v3.MigrateParams(ctx, testUtil.StoreKey, testUtil.ParamsStore, testUtil.Cdc))
+	store := ctx.KVStore(testUtil.StoreKey)
 
-	storeKey := sdk.NewKVStoreKey(types.ModuleName)
-	tKey := sdk.NewTransientStoreKey("transient_test")
-	ctx := testutil.DefaultContext(storeKey, tKey)
-	store := ctx.KVStore(storeKey)
+	var res v2.Params
+	bz := store.Get(v3.ParamsKey)
+	require.NoError(t, testUtil.Cdc.Unmarshal(bz, &res))
 
-	legacySubspace := newMockSubspace(types.DefaultParams())
-	require.NoError(t, v3.MigrateParams(ctx, storeKey, legacySubspace, cdc))
-
-	var res types.Params
-	bz := store.Get(types.ParamsKey)
-	require.NoError(t, cdc.Unmarshal(bz, &res))
-	require.Equal(t, legacySubspace.ps, res)
+	var params v2.Params
+	testUtil.ParamsStore.GetParamSet(ctx, &params)
+	require.Equal(t, params, res)
 }

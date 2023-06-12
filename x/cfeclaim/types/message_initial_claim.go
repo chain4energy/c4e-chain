@@ -10,11 +10,11 @@ const TypeMsgInitialClaim = "initial_claim"
 
 var _ sdk.Msg = &MsgInitialClaim{}
 
-func NewMsgInitialClaim(claimer string, campaignId uint64, addressToClaim string) *MsgInitialClaim {
+func NewMsgInitialClaim(claimer string, campaignId uint64, destinationAddress string) *MsgInitialClaim {
 	return &MsgInitialClaim{
-		Claimer:        claimer,
-		CampaignId:     campaignId,
-		AddressToClaim: addressToClaim,
+		Claimer:            claimer,
+		CampaignId:         campaignId,
+		DestinationAddress: destinationAddress,
 	}
 }
 
@@ -43,6 +43,10 @@ func (msg *MsgInitialClaim) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Claimer)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid claimer address (%s)", err)
+	}
+	_, err = sdk.AccAddressFromBech32(msg.DestinationAddress)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid destination address (%s)", err)
 	}
 	return nil
 }

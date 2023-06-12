@@ -21,7 +21,7 @@ func NewProposalJSON(messages []sdk.Msg) (string, error) {
 	return string(proposalJSON), nil
 }
 
-func NewClaimRecordsListJson(userEntries []cfeclaimmoduletypes.ClaimRecord) (string, error) {
+func NewClaimRecordsListJson(userEntries []cfeclaimmoduletypes.ClaimRecordEntry) (string, error) {
 	proposalJSON, err := json.Marshal(userEntries)
 	if err != nil {
 		return "", err

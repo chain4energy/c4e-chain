@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -25,9 +26,10 @@ var _ stakingtypes.StakingHooks = MissionDelegationHooks{}
 func (h MissionDelegationHooks) BeforeDelegationCreated(ctx sdk.Context, delAddr sdk.AccAddress, _ sdk.ValAddress) error {
 	missions := h.k.GetAllMission(ctx)
 	for _, mission := range missions {
-		// TODO error handling
 		if mission.MissionType == types.MissionDelegate {
-			_ = h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, delAddr.String())
+			if err := h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, delAddr.String()); err != nil {
+				ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName)).Debug("mission delegation hook error", "error", err)
+			}
 		}
 	}
 	return nil

@@ -8,7 +8,6 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
 	v1 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v1"
 	v2 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v2"
-	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/stretchr/testify/require"
 
@@ -61,46 +60,6 @@ func TestMigrationLinearMintingAndExponentialStepMinting(t *testing.T) {
 	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, false, "")
 }
 
-func TestMigrationNoMinters(t *testing.T) {
-	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	startTime := time.Now()
-	V1MintingPeriods := []*v1.MintingPeriod{}
-	setV1MinterConfig(t, ctx, &keeperData, startTime, V1MintingPeriods)
-	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, true, "no minters defined")
-}
-
-func TestMigrationWrongMinterPosition(t *testing.T) {
-	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV1TimeLinearMinter(math.NewInt(10000))
-	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), math.NewInt(10000))
-	startTime := time.Now()
-	endTime1 := startTime.Add(time.Hour)
-	endTime2 := endTime1.Add(time.Hour)
-	V1MintingPeriods := []*v1.MintingPeriod{
-		createV100MinterPeriod(1, &endTime1, "TIME_LINEAR_MINTER", nil, timeLinearMinter),
-		createV100MinterPeriod(1, &endTime2, "PERIODIC_REDUCTION_MINTER", periodicReductionMinter, nil),
-		createV100MinterPeriod(3, nil, "NO_MINTING", nil, nil),
-	}
-	setV1MinterConfig(t, ctx, &keeperData, startTime, V1MintingPeriods)
-	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, true, "missing minter with sequence id 2")
-}
-
-func TestMigrationWrongMintingStartTime(t *testing.T) {
-	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV1TimeLinearMinter(math.NewInt(10000))
-	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 100000, sdk.MustNewDecFromStr("0.5"), math.NewInt(10000))
-	startTime := time.Now()
-	endTime1 := startTime.Add(time.Hour)
-	endTime2 := endTime1.Add(time.Hour)
-	V1MintingPeriods := []*v1.MintingPeriod{
-		createV100MinterPeriod(1, &endTime1, "TIME_LINEAR_MINTER", nil, timeLinearMinter),
-		createV100MinterPeriod(2, &endTime2, "PERIODIC_REDUCTION_MINTER", periodicReductionMinter, nil),
-		createV100MinterPeriod(3, nil, "NO_MINTING", nil, nil),
-	}
-	setV1MinterConfig(t, ctx, &keeperData, endTime2, V1MintingPeriods)
-	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, true, "first minter end must be bigger than minter start")
-}
-
 func TestMigrationWrongMinterType(t *testing.T) {
 	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
 	timeLinearMinter := createV1TimeLinearMinter(math.NewInt(10000))
@@ -111,33 +70,6 @@ func TestMigrationWrongMinterType(t *testing.T) {
 	}
 	setV1MinterConfig(t, ctx, &keeperData, startTime, V1MintingPeriods)
 	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, true, "wrong minting period type")
-}
-
-func TestMigrationWrongExponentialStepMinting(t *testing.T) {
-	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	periodicReductionMinter := createV1TimePeriodicReductionMinter(4, 0, sdk.MustNewDecFromStr("0.5"), math.NewInt(10000))
-	startTime := time.Now()
-	endTime1 := startTime.Add(time.Hour)
-	V1MintingPeriods := []*v1.MintingPeriod{
-		createV100MinterPeriod(1, &endTime1, "PERIODIC_REDUCTION_MINTER", periodicReductionMinter, nil),
-		createV100MinterPeriod(2, nil, "NO_MINTING", nil, nil),
-	}
-	setV1MinterConfig(t, ctx, &keeperData, startTime, V1MintingPeriods)
-	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: ExponentialStepMintingType error: stepDuration must be bigger than 0")
-}
-
-func TestMigrationWrongLinearMinting(t *testing.T) {
-	k, ctx, keeperData := testkeeper.CfeminterKeeper(t)
-	timeLinearMinter := createV1TimeLinearMinter(math.NewInt(-10000))
-	startTime := time.Now()
-	endTime1 := startTime.Add(time.Hour)
-	V1MintingPeriods := []*v1.MintingPeriod{
-		createV100MinterPeriod(1, &endTime1, "TIME_LINEAR_MINTER", nil, timeLinearMinter),
-		createV100MinterPeriod(3, nil, "NO_MINTING", nil, nil),
-	}
-
-	setV1MinterConfig(t, ctx, &keeperData, startTime, V1MintingPeriods)
-	MigrateParamsV100ToV1(t, ctx, *k, &keeperData, true, "minter with id 1 validation error: LinearMintingType error: amount cannot be less than 0")
 }
 
 func setV1MinterConfig(t *testing.T, ctx sdk.Context, keeperData *testenv.AdditionalKeeperData, startTime time.Time, mintingPeriods []*v1.MintingPeriod) {
@@ -178,8 +110,8 @@ func MigrateParamsV100ToV1(
 		return
 	}
 	require.NoError(t, err)
-	var newMinterConfig types.MinterConfig
-	newMinterConfigRaw := store.Get(types.KeyMinterConfig)
+	var newMinterConfig v2.MinterConfig
+	newMinterConfigRaw := store.Get(v2.KeyMinterConfig)
 	err = codec.NewLegacyAmino().UnmarshalJSON(newMinterConfigRaw, &newMinterConfig)
 	require.NoError(t, err)
 
@@ -191,14 +123,11 @@ func MigrateParamsV100ToV1(
 
 		switch oldMinterPeriod.Type {
 		case "TIME_LINEAR_MINTER":
-			require.EqualValues(t, newMinters[i].Type, types.LinearMintingType)
-			break
+			require.EqualValues(t, newMinters[i].Type, v2.LinearMintingType)
 		case "PERIODIC_REDUCTION_MINTER":
-			require.EqualValues(t, newMinters[i].Type, types.ExponentialStepMintingType)
-			break
+			require.EqualValues(t, newMinters[i].Type, v2.ExponentialStepMintingType)
 		case "NO_MINTING":
-			require.EqualValues(t, newMinters[i].Type, types.NoMintingType)
-			break
+			require.EqualValues(t, newMinters[i].Type, v2.NoMintingType)
 		}
 
 		if oldMinterPeriod.TimeLinearMinter == nil {

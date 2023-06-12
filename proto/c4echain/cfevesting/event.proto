@@ -15,12 +15,13 @@ message NewVestingPool {
   string vestingType = 5;
 }
 
-message NewVestingAccountFromVestingPool {
+message NewVestingPeriodFromVestingPool {
   string owner = 1;
   string address = 2;
   string vesting_pool_name = 3;
   string amount = 4;
   string restart_vesting = 5;
+  uint64 period_id = 6;
 }
 
 message WithdrawAvailable{

@@ -3,59 +3,46 @@ package keeper
 import (
 	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
+	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	"strconv"
 )
-
-func validateFeegrantAmount(feeGrantAmount *math.Int) (math.Int, error) {
-	if feeGrantAmount == nil {
-		return math.ZeroInt(), nil
-	}
-
-	if feeGrantAmount.IsNil() {
-		return math.ZeroInt(), nil
-	}
-
-	if feeGrantAmount.IsNegative() {
-		return math.ZeroInt(), errors.Wrapf(c4eerrors.ErrParam, "feegrant amount (%s) cannot be negative", feeGrantAmount.String())
-	}
-
-	return *feeGrantAmount, nil
-}
 
 func CreateFeegrantAccountAddress(campaignId uint64) (string, sdk.AccAddress) {
 	moduleAddressName := types.ModuleName + "-fee-grant-" + strconv.FormatUint(campaignId, 10)
 	return moduleAddressName, authtypes.NewModuleAddress(moduleAddressName)
 }
 
-func calculateFeegrantFeesSum(feegrantAmount math.Int, claimRecordsNumber int64, feegrantDenom string) (feesSum sdk.Coins) {
-	if feegrantAmount.GT(math.ZeroInt()) {
-		feesSum = feesSum.Add(sdk.NewCoin(feegrantDenom, feegrantAmount.MulRaw(claimRecordsNumber)))
+func calculateFeegrantFeesSum(feegrantAmount math.Int, claimRecordEntriesNumber int64, feegrantDenom string) sdk.Coins {
+	if feegrantAmount.IsPositive() {
+		return sdk.NewCoins(sdk.NewCoin(feegrantDenom, feegrantAmount.MulRaw(claimRecordEntriesNumber)))
 	}
-	return
+	return nil
 }
 
-func (k Keeper) setupAndSendFeegrant(ctx sdk.Context, ownerAcc sdk.AccAddress, campaign *types.Campaign, feegrantFeesSum sdk.Coins, claimRecords []*types.ClaimRecord, feegrantDenom string) error {
-	if campaign.FeegrantAmount.GT(math.ZeroInt()) {
-		acc := k.NewModuleAccountSet(ctx, campaign.Id)
-		if err := k.bankKeeper.SendCoins(ctx, ownerAcc, acc.GetAddress(), feegrantFeesSum); err != nil {
+func (k Keeper) setupAndSendFeegrant(ctx sdk.Context, ownerAcc sdk.AccAddress, campaign *types.Campaign, feegrantFeesSum sdk.Coins, claimRecordEntries []*types.ClaimRecordEntry, feegrantDenom string) error {
+	if campaign.FeegrantAmount.IsPositive() {
+		acc := k.SetupNewFeegrantAccount(ctx, campaign.Id)
+
+		if err := k.bankKeeper.SendCoins(ctx, ownerAcc, acc, feegrantFeesSum); err != nil {
 			return err
 		}
-		if err := k.grantFeeAllowanceToAllClaimRecords(ctx, acc.GetAddress(), claimRecords, sdk.NewCoins(sdk.NewCoin(feegrantDenom, campaign.FeegrantAmount))); err != nil {
+		if err := k.grantFeeAllowanceToAllClaimRecords(ctx, acc, claimRecordEntries, sdk.NewCoins(sdk.NewCoin(feegrantDenom, campaign.FeegrantAmount))); err != nil {
 			return err
 		}
+		k.Logger(ctx).Debug("setup and send feegrant", "feegrantFeesSum", feegrantFeesSum, "feegrantDenom",
+			feegrantDenom, "feegrantAmount", campaign.FeegrantAmount, "claimRecordEntriesNumber", len(claimRecordEntries))
 	}
 
 	return nil
 }
 
-func (k Keeper) grantFeeAllowanceToAllClaimRecords(ctx sdk.Context, moduleAddress sdk.AccAddress, claimEntries []*types.ClaimRecord, grantAmount sdk.Coins) error {
+func (k Keeper) grantFeeAllowanceToAllClaimRecords(ctx sdk.Context, moduleAddress sdk.AccAddress, claimRecordEntries []*types.ClaimRecordEntry, grantAmount sdk.Coins) error {
 	basicAllowance, err := codectypes.NewAnyWithValue(&feegranttypes.BasicAllowance{
 		SpendLimit: grantAmount,
 	})
@@ -68,8 +55,8 @@ func (k Keeper) grantFeeAllowanceToAllClaimRecords(ctx sdk.Context, moduleAddres
 		AllowedMessages: []string{sdk.MsgTypeURL(&types.MsgInitialClaim{})},
 	}
 
-	for _, claimRecord := range claimEntries {
-		granteeAddress, _ := sdk.AccAddressFromBech32(claimRecord.Address)
+	for _, claimRecord := range claimRecordEntries {
+		granteeAddress, _ := sdk.AccAddressFromBech32(claimRecord.UserEntryAddress)
 		existingFeeAllowance, _ := k.feeGrantKeeper.GetAllowance(ctx, moduleAddress, granteeAddress)
 		if existingFeeAllowance == nil {
 			if err = k.feeGrantKeeper.GrantAllowance(ctx, moduleAddress, granteeAddress, &allowedMsgAllowance); err != nil {
@@ -81,7 +68,7 @@ func (k Keeper) grantFeeAllowanceToAllClaimRecords(ctx sdk.Context, moduleAddres
 	return nil
 }
 
-func (k Keeper) closeCampaignSendFeegrant(ctx sdk.Context, campaign *types.Campaign) error {
+func (k Keeper) sendCampaignFeegrantToOwner(ctx sdk.Context, campaign *types.Campaign) error {
 	if !campaign.FeegrantAmount.IsPositive() {
 		return nil
 	}
@@ -89,6 +76,7 @@ func (k Keeper) closeCampaignSendFeegrant(ctx sdk.Context, campaign *types.Campa
 	feegrantTotalAmount := k.bankKeeper.GetAllBalances(ctx, feegrantAccountAddress)
 	ownerAddress, _ := sdk.AccAddressFromBech32(campaign.Owner)
 
+	k.Logger(ctx).Debug("send campaign feegrant amount to owner", "campaignId", campaign.Id, "owner", campaign.Owner, "amount", feegrantTotalAmount)
 	return k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, ownerAddress, feegrantTotalAmount)
 }
 
@@ -106,6 +94,8 @@ func (k Keeper) deleteClaimRecordSendFeegrant(ctx sdk.Context, campaign *types.C
 	if err != nil {
 		return err
 	}
+	k.Logger(ctx).Debug("delete claim record send feegrant", "campaignId", campaign.Id, "userEntryAddress", userEntryAddress,
+		"amountLeft", amountLeft, "feegrantAccountAddress", feegrantAccountAddress, "campaignOwnerAccAddress", campaignOwnerAccAddress)
 	return k.bankKeeper.SendCoins(ctx, feegrantAccountAddress, campaignOwnerAccAddress, amountLeft)
 }
 
@@ -128,4 +118,19 @@ func (k Keeper) getFeegrantLeftAmount(ctx sdk.Context, campaignId uint64, userEn
 		}
 	}
 	return granterAddress, granteeAddress, nil, errors.Wrap(sdkerrors.ErrInvalidType, "cannot get feegrant left amount")
+}
+
+func (k Keeper) revokeFeeAllowance(ctx sdk.Context, granter sdk.Address, grantee sdk.AccAddress) error {
+	keeper, _ := (k.feeGrantKeeper).(feegrantkeeper.Keeper)
+	feegrantMsgServer := feegrantkeeper.NewMsgServerImpl(keeper)
+	msg := feegranttypes.MsgRevokeAllowance{
+		Granter: granter.String(),
+		Grantee: grantee.String(),
+	}
+	_, err := feegrantMsgServer.RevokeAllowance(sdk.WrapSDKContext(ctx), &msg)
+	if err != nil {
+		return err
+	}
+	k.Logger(ctx).Debug("revoked fee alowance", "granter", granter, "grantee", grantee)
+	return nil
 }

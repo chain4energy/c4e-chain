@@ -4,12 +4,13 @@ import (
 	"encoding/binary"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v1"
-	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
+
+var MinterStateHistoryKeyPrefix = []byte{0x03}
 
 func getOldMinterStateAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldMinterState v1.MinterState, err error) {
 	b := store.Get(v1.MinterStateKey)
@@ -26,17 +27,14 @@ func getOldMinterStateAndDelete(store sdk.KVStore, cdc codec.BinaryCodec) (oldMi
 }
 
 func setNewMinterState(store sdk.KVStore, cdc codec.BinaryCodec, oldMinterState v1.MinterState) error {
-	newMinterState := types.LegacyMinterState{
+	newMinterState := MinterState{
 		SequenceId:                  uint32(oldMinterState.Position),
 		AmountMinted:                oldMinterState.AmountMinted,
 		LastMintBlockTime:           oldMinterState.LastMintBlockTime,
 		RemainderFromPreviousPeriod: oldMinterState.RemainderFromPreviousPeriod,
 		RemainderToMint:             oldMinterState.RemainderToMint,
 	}
-	err := newMinterState.Validate()
-	if err != nil {
-		return err
-	}
+
 	av, err := cdc.Marshal(&newMinterState)
 	if err != nil {
 		return err
@@ -73,18 +71,14 @@ func getOldMinterStateHistoryAndDelete(store sdk.KVStore, cdc codec.BinaryCodec)
 }
 
 func setNewMinterStateHistory(store sdk.KVStore, cdc codec.BinaryCodec, oldMinterStateHistory []*v1.MinterState) error {
-	prefixStore := prefix.NewStore(store, types.MinterStateHistoryKeyPrefix)
+	prefixStore := prefix.NewStore(store, MinterStateHistoryKeyPrefix)
 	for _, oldMinterState := range oldMinterStateHistory {
-		newMinterState := types.LegacyMinterState{
+		newMinterState := MinterState{
 			SequenceId:                  uint32(oldMinterState.Position),
 			AmountMinted:                oldMinterState.AmountMinted,
 			LastMintBlockTime:           oldMinterState.LastMintBlockTime,
 			RemainderFromPreviousPeriod: oldMinterState.RemainderFromPreviousPeriod,
 			RemainderToMint:             oldMinterState.RemainderToMint,
-		}
-		err := newMinterState.Validate()
-		if err != nil {
-			return err
 		}
 		av, err := cdc.Marshal(&newMinterState)
 		if err != nil {

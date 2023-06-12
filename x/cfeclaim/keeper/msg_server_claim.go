@@ -13,16 +13,18 @@ func (k msgServer) Claim(goCtx context.Context, msg *types.MsgClaim) (*types.Msg
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
 
-	if err := keeper.Claim(
+	amount, err := keeper.Claim(
 		ctx,
 		msg.CampaignId,
 		msg.MissionId,
 		msg.Claimer,
-	); err != nil {
+	)
+	if err != nil {
+		k.Logger(ctx).Debug("claim", "err", err.Error())
 		return nil, err
 	}
 
-	return &types.MsgClaimResponse{}, nil
+	return &types.MsgClaimResponse{Amount: amount}, nil
 }
 
 func (k msgServer) InitialClaim(goCtx context.Context, msg *types.MsgInitialClaim) (*types.MsgInitialClaimResponse, error) {
@@ -30,15 +32,16 @@ func (k msgServer) InitialClaim(goCtx context.Context, msg *types.MsgInitialClai
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
 
-	if err := keeper.InitialClaim(
+	amount, err := keeper.InitialClaim(
 		ctx,
 		msg.Claimer,
 		msg.CampaignId,
-		msg.AddressToClaim,
-	); err != nil {
+		msg.DestinationAddress,
+	)
+	if err != nil {
 		k.Logger(ctx).Debug("initial claim", "err", err.Error())
 		return nil, err
 	}
 
-	return &types.MsgInitialClaimResponse{}, nil
+	return &types.MsgInitialClaimResponse{Amount: amount}, nil
 }

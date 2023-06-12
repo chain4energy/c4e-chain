@@ -2,7 +2,6 @@ package v200
 
 import (
 	"github.com/chain4energy/c4e-chain/app/upgrades"
-	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
 	"github.com/chain4energy/c4e-chain/app/upgrades/v200/claim"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -13,7 +12,7 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
 	bpm upgrades.BaseAppParamManager,
-	appKeepers cfeupgradetypes.AppKeepers,
+	appKeepers upgrades.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		vmResult, err := mm.RunMigrations(ctx, configurator, vm)
@@ -21,13 +20,13 @@ func CreateUpgradeHandler(
 			return vmResult, err
 		}
 
-		if err = modifyAndAddVestingTypes(ctx, appKeepers); err != nil {
+		if err = ModifyAndAddVestingTypes(ctx, appKeepers); err != nil {
 			return vmResult, err
 		}
-		if err = migrateAirdropModuleAccount(ctx, appKeepers); err != nil {
+		if err = MigrateAirdropModuleAccount(ctx, appKeepers); err != nil {
 			return vmResult, err
 		}
-		if err = migrateTeamdropVestingAccount(ctx, appKeepers); err != nil {
+		if err = MigrateTeamdropVestingAccount(ctx, appKeepers); err != nil {
 			return vmResult, err
 		}
 		return vmResult, claim.SetupAirdrops(ctx, appKeepers)

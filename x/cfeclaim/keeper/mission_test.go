@@ -54,14 +54,14 @@ func TestMissionGetAll(t *testing.T) {
 	)
 }
 
-func TestAddMissionToCampaign(t *testing.T) {
+func TestAddMission(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
 }
 
 func TestAddManyMissionToCampaign(t *testing.T) {
@@ -71,22 +71,22 @@ func TestAddManyMissionToCampaign(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
 }
 
-func TestAddMissionToCampaignDoesntExist(t *testing.T) {
+func TestAddMissionDoesntExist(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 1, mission, "campaign with id 1 not found: entity does not exist")
+	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[0].String(), 1, mission, "campaign with id 1 not found: not found")
 }
 
-func TestAddMissionToCampaignWrongWeightError(t *testing.T) {
+func TestAddMissionWrongWeightError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -94,16 +94,16 @@ func TestAddMissionToCampaignWrongWeightError(t *testing.T) {
 	mission := prepareTestMission()
 	mission.Weight = sdk.NewDec(-2)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("add mission to claim campaign - weight (%s) is not between 0 and 1 error: wrong param value", mission.Weight.String()))
+	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("weight (%s) is not between 0 and 1 error: wrong param value", mission.Weight.String()))
 	mission.Weight = sdk.NewDec(2)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("add mission to claim campaign - weight (%s) is not between 0 and 1 error: wrong param value", mission.Weight.String()))
+	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("weight (%s) is not between 0 and 1 error: wrong param value", mission.Weight.String()))
 
 	mission.Weight = sdk.MustNewDecFromStr("0.6")
-	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("add mission to claim - all campaign missions weight sum is >= 1 (%s > 1) error: wrong param value", mission.Weight.Mul(sdk.NewDec(2)).String()))
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("all campaign missions weight sum is >= 1 (%s > 1) error: wrong param value", mission.Weight.Mul(sdk.NewDec(2)).String()))
 }
 
-func TestAddMissionToCampaignEmptyName(t *testing.T) {
+func TestAddMissionEmptyName(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -111,10 +111,10 @@ func TestAddMissionToCampaignEmptyName(t *testing.T) {
 	mission := prepareTestMission()
 	mission.Name = ""
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, "add mission to claim campaign - empty name error: wrong param value")
+	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[0].String(), 0, mission, "empty name error: wrong param value")
 }
 
-func TestAddMissionToCampaignEmptyDescription(t *testing.T) {
+func TestAddMissionEmptyDescription(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -122,20 +122,20 @@ func TestAddMissionToCampaignEmptyDescription(t *testing.T) {
 	mission := prepareTestMission()
 	mission.Description = ""
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, "add mission to claim campaign - mission empty description error: wrong param value")
+	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[0].String(), 0, mission, "mission empty description error: wrong param value")
 }
 
-func TestAddMissionToCampaignWrongOwner(t *testing.T) {
+func TestAddMissionWrongOwner(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[1].String(), 0, mission, "you are not the campaign owner: wrong transaction signer")
+	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[1].String(), 0, mission, fmt.Sprintf("address %s is not owner of campaign with id %d: tx intended signer does not match the given signer", acountsAddresses[1], 0))
 }
 
-func TestAddMissionToCampaignAlreadyEnabled(t *testing.T) {
+func TestAddMissionAlreadyEnabled(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -143,10 +143,10 @@ func TestAddMissionToCampaignAlreadyEnabled(t *testing.T) {
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, "campaign is enabled")
+	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[0].String(), 0, mission, "campaign is enabled")
 }
 
-func TestAddMissionToCampaignAlreadyOver(t *testing.T) {
+func TestAddMissionAlreadyOver(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -157,7 +157,33 @@ func TestAddMissionToCampaignAlreadyOver(t *testing.T) {
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0)
-	testHelper.C4eClaimUtils.AddMissionToCampaignError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("campaign with id 0 campaign is over (end time - %s < %s): wrong param value", campaign.EndTime, blockTime))
+	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[0].String(), 0, mission, fmt.Sprintf("campaign with id 0 campaign is over (end time - %s < %s): wrong param value", campaign.EndTime, blockTime))
+}
+
+func TestAddMissionClaimStartDateAfterEndTime(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	mission := prepareTestMission()
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
+	claimStartDate := campaign.StartTime.Add(time.Minute)
+	mission.ClaimStartDate = &claimStartDate
+	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[0].String(), 0, mission,
+		fmt.Sprintf("mission claim start date after campaign end time (end time - %s < %s): wrong param value", campaign.EndTime, claimStartDate))
+}
+
+func TestAddMissionClaimStartDate(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	mission := prepareTestMission()
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	claimStartDate := campaign.StartTime.Add(time.Second)
+	mission.ClaimStartDate = &claimStartDate
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
 }
 
 func createAndSaveNTestMissions(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Mission {

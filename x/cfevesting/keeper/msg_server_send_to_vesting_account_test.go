@@ -367,7 +367,7 @@ func TestSendReservedToVestingAccountReservationNotExist(t *testing.T) {
 	testHelper.C4eVestingUtils.MessageCreateVestingPool(accAddr, false, true, vPool1, 1000, *usedVestingType, vested, accInitBalance, math.ZeroInt(), accInitBalance.Sub(vested), vested)
 
 	testHelper.C4eVestingUtils.SendReservedToVestingAccountError(accAddr, accAddr2, vPool1, math.NewInt(100), 1,
-		sdk.ZeroDec(), usedVestingType.LockupPeriod, usedVestingType.VestingPeriod, "reservation with id 1 not found: entity does not exist")
+		sdk.ZeroDec(), usedVestingType.LockupPeriod, usedVestingType.VestingPeriod, "reservation with id 1 not found: not found")
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 
@@ -506,7 +506,7 @@ func TestSendReservedToVestingAccountRemovedReservation(t *testing.T) {
 	testHelper.C4eVestingUtils.AddReservationToVestingPool(accAddr, vPool1, 0, reservationAmount)
 	testHelper.C4eVestingUtils.RemoveReservationToVestingPool(accAddr, vPool1, 0, reservationAmount)
 	testHelper.C4eVestingUtils.SendReservedToVestingAccountError(accAddr, accAddr2, vPool1, math.NewInt(100), 0,
-		sdk.ZeroDec(), usedVestingType.LockupPeriod, usedVestingType.VestingPeriod, "reservation with id 0 not found: entity does not exist")
+		sdk.ZeroDec(), usedVestingType.LockupPeriod, usedVestingType.VestingPeriod, "reservation with id 0 not found: not found")
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 

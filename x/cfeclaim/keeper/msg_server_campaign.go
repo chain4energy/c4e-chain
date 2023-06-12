@@ -19,13 +19,13 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 		msg.Description,
 		msg.CampaignType,
 		msg.RemovableClaimRecords,
-		msg.FeegrantAmount,
-		msg.InitialClaimFreeAmount,
-		msg.Free,
-		msg.StartTime,
-		msg.EndTime,
-		msg.LockupPeriod,
-		msg.VestingPeriod,
+		*msg.FeegrantAmount,
+		*msg.InitialClaimFreeAmount,
+		*msg.Free,
+		*msg.StartTime,
+		*msg.EndTime,
+		*msg.LockupPeriod,
+		*msg.VestingPeriod,
 		msg.VestingPoolName,
 	)
 	if err != nil {
@@ -33,26 +33,7 @@ func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCam
 		return nil, err
 	}
 
-	event := &types.NewCampaign{
-		Owner:                  campaign.Owner,
-		Name:                   campaign.Name,
-		Description:            campaign.Description,
-		CampaignType:           campaign.CampaignType.String(),
-		FeegrantAmount:         campaign.FeegrantAmount.String(),
-		InitialClaimFreeAmount: campaign.InitialClaimFreeAmount.String(),
-		Enabled:                "false",
-		StartTime:              campaign.StartTime.String(),
-		EndTime:                campaign.EndTime.String(),
-		LockupPeriod:           campaign.LockupPeriod.String(),
-		VestingPeriod:          campaign.VestingPeriod.String(),
-		VestingPoolName:        campaign.VestingPoolName,
-	}
-	err = ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
-		k.Logger(ctx).Error("create campaign emit event error", "event", event, "error", err.Error())
-	}
-
-	return &types.MsgCreateCampaignResponse{}, nil
+	return &types.MsgCreateCampaignResponse{CampaignId: campaign.Id}, nil
 }
 
 func (k msgServer) RemoveCampaign(goCtx context.Context, msg *types.MsgRemoveCampaign) (*types.MsgRemoveCampaignResponse, error) {
@@ -71,8 +52,7 @@ func (k msgServer) RemoveCampaign(goCtx context.Context, msg *types.MsgRemoveCam
 		Owner:      msg.Owner,
 		CampaignId: strconv.FormatUint(msg.CampaignId, 10),
 	}
-	err := ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
+	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
 		k.Logger(ctx).Error("remove campaign emit event error", "event", event, "error", err.Error())
 	}
 
@@ -90,7 +70,7 @@ func (k msgServer) EnableCampaign(goCtx context.Context, msg *types.MsgEnableCam
 		msg.StartTime,
 		msg.EndTime,
 	); err != nil {
-		k.Logger(ctx).Debug("start campaign", "err", err.Error())
+		k.Logger(ctx).Debug("enable campaign", "err", err.Error())
 		return nil, err
 	}
 
@@ -98,9 +78,8 @@ func (k msgServer) EnableCampaign(goCtx context.Context, msg *types.MsgEnableCam
 		Owner:      msg.Owner,
 		CampaignId: strconv.FormatUint(msg.CampaignId, 10),
 	}
-	err := ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
-		k.Logger(ctx).Error("start campaign emit event error", "event", event, "error", err.Error())
+	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
+		k.Logger(ctx).Error("enable campaign emit event error", "event", event, "error", err.Error())
 	}
 
 	return &types.MsgEnableCampaignResponse{}, nil

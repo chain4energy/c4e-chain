@@ -20,7 +20,7 @@ func TestIbcSuite(t *testing.T) {
 }
 
 func (s *IbcSetupSuite) SetupSuite() {
-	s.BaseSetupSuite.SetupSuite(false, true)
+	s.BaseSetupSuite.SetupSuite(false, false, true)
 }
 
 func (s *IbcSetupSuite) TestIbcTokenTransfer() {

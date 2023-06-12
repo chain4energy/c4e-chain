@@ -502,7 +502,7 @@ func invalidVestingTypesFreeGreaterThan1() TcData {
 			VestingTypes: vestingTypes,
 		},
 		valid:        false,
-		errorMassage: "Free of veting type " + vestingTypes[6].Name + " must be set between 0 and 1",
+		errorMassage: "free of veting type " + vestingTypes[6].Name + " must be set between 0 and 1",
 	}
 }
 
@@ -516,7 +516,7 @@ func invalidVestingTypesFreeLowerThan0() TcData {
 			VestingTypes: vestingTypes,
 		},
 		valid:        false,
-		errorMassage: "Free of veting type " + vestingTypes[6].Name + " must be set between 0 and 1",
+		errorMassage: "free of veting type " + vestingTypes[6].Name + " must be set between 0 and 1",
 	}
 }
 

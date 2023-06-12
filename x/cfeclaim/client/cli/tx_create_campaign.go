@@ -3,9 +3,12 @@ package cli
 import (
 	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/version"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
@@ -20,8 +23,27 @@ var _ = strconv.Itoa(0)
 func CmdCreateCampaign() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-campaign [name] [description] [campaign-type] [removable-claim-records] [feegrant-amount] [initial_claim_free_amount] [free] [start-time] [end-time] [lockup-period] [vesting-period] [optional-vesting-pool-name]",
-		Short: "Broadcast message CreateCampaign",
-		Args:  cobra.ExactArgs(12),
+		Short: "Create new campaign",
+		Long: strings.TrimSpace(fmt.Sprintf(`Create a new campaign.
+
+Arguments:
+  [name]                       Name of the campaign
+  [description]                Description of the campaign
+  [campaign-type]              Type of the campaign (default/vesting_pool)
+  [removable-claim-records]    Indicates if claim records can be removed after campaign is enabled
+  [feegrant-amount]            Amount of feegrant allocated for the campaign
+  [initial_claim_free_amount]  Initial claim free amount for the campaign
+  [free]                       Free ratio for the campaign
+  [start-time]                 Start time of the campaign
+  [end-time]                   End time of the campaign
+  [lockup-period]              Lockup period for the campaign
+  [vesting-period]             Vesting period for the campaign
+  [optional-vesting-pool-name] Optional name of the vesting pool
+
+Example:
+$ %s tx %s create-campaign "My Campaign" "Campaign description" "default" true "1000000" "5000000" "0.5" "2005-01-02 15:04:05 -0700 MST" "2006-01-02 15:04:05 -0700 MST" 720h 30h "" --from mykey
+`, version.AppName, types.ModuleName)),
+		Args: cobra.ExactArgs(12),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]
 			argDescription := args[1]
@@ -59,11 +81,11 @@ func CmdCreateCampaign() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argLockupPeriod, err := time.ParseDuration(args[9])
+			argLockupPeriod, err := parseDuration(args[9])
 			if err != nil {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
-			argVestingPeriod, err := time.ParseDuration(args[10])
+			argVestingPeriod, err := parseDuration(args[10])
 			if err != nil {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
@@ -84,8 +106,8 @@ func CmdCreateCampaign() *cobra.Command {
 				&argFree,
 				&argStartTime,
 				&argEndTime,
-				&argLockupPeriod,
-				&argVestingPeriod,
+				argLockupPeriod,
+				argVestingPeriod,
 				argVestingPoolName,
 			)
 			if err := msg.ValidateBasic(); err != nil {
@@ -98,4 +120,12 @@ func CmdCreateCampaign() *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
+}
+
+func parseDuration(arg string) (*time.Duration, error) {
+	parsedDuration, err := time.ParseDuration(arg)
+	if err != nil {
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+	}
+	return &parsedDuration, nil
 }

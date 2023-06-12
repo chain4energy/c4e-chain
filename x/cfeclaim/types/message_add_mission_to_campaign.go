@@ -8,12 +8,12 @@ import (
 	"time"
 )
 
-const TypeMsgAddMissionToAidropCampaign = "add_mission_to_aidrop_campaign"
+const TypeMsgAddMission = "add_mission"
 
-var _ sdk.Msg = &MsgAddMissionToCampaign{}
+var _ sdk.Msg = &MsgAddMission{}
 
-func NewMsgAddMissionToCampaign(owner string, campaignId uint64, name string, description string, missionType MissionType, weight *sdk.Dec, claimStartDate *time.Time) *MsgAddMissionToCampaign {
-	return &MsgAddMissionToCampaign{
+func NewMsgAddMission(owner string, campaignId uint64, name string, description string, missionType MissionType, weight *sdk.Dec, claimStartDate *time.Time) *MsgAddMission {
+	return &MsgAddMission{
 		Owner:          owner,
 		Name:           name,
 		Description:    description,
@@ -34,15 +34,15 @@ func NewInitialMission(campaignId uint64) *Mission {
 	}
 }
 
-func (msg *MsgAddMissionToCampaign) Route() string {
+func (msg *MsgAddMission) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgAddMissionToCampaign) Type() string {
-	return TypeMsgAddMissionToAidropCampaign
+func (msg *MsgAddMission) Type() string {
+	return TypeMsgAddMission
 }
 
-func (msg *MsgAddMissionToCampaign) GetSigners() []sdk.AccAddress {
+func (msg *MsgAddMission) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
@@ -50,59 +50,48 @@ func (msg *MsgAddMissionToCampaign) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgAddMissionToCampaign) GetSignBytes() []byte {
+func (msg *MsgAddMission) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgAddMissionToCampaign) ValidateBasic() error {
-	return ValidateAddMissionToCampaign(msg.Owner, msg.Name, msg.Description, msg.MissionType, msg.Weight)
+func (msg *MsgAddMission) ValidateBasic() error {
+	if msg.Weight == nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "weight cannot be nil")
+	}
+	return ValidateAddMission(msg.Owner, msg.Name, msg.Description, msg.MissionType, *msg.Weight)
 }
 
-func ValidateAddMissionToCampaign(owner string, name string, description string, missionType MissionType,
-	weight *sdk.Dec) error {
+func ValidateAddMission(owner string, name string, description string, missionType MissionType, weight sdk.Dec) error {
 	_, err := sdk.AccAddressFromBech32(owner)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
-
-	if err = ValidateMissionWeight(weight); err != nil {
+	if name == "" {
+		return errors.Wrap(c4eerrors.ErrParam, "empty name error")
+	}
+	if description == "" {
+		return errors.Wrap(c4eerrors.ErrParam, "mission empty description error")
+	}
+	if err = ValidateMissionWeight(weight, missionType); err != nil {
 		return err
 	}
-	if err = ValidateMissionName(name); err != nil {
-		return err
-	}
-	if err = ValidateMissionType(missionType); err != nil {
-		return err
-	}
-	return ValidateMissionDescription(description)
+	return ValidateMissionType(missionType)
 }
 
-func ValidateMissionWeight(weight *sdk.Dec) error {
-	if weight == nil {
-		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim campaign weight is nil error")
-	}
+func ValidateMissionWeight(weight sdk.Dec, missionType MissionType) error {
 	if weight.IsNil() {
 		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim campaign weight is nil error")
 	}
-	if weight.GT(sdk.NewDec(1)) || weight.LT(sdk.ZeroDec()) {
-		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim campaign - weight (%s) is not between 0 and 1 error", weight.String())
+	if weight.GT(sdk.NewDec(1)) || weight.IsNegative() {
+		return errors.Wrapf(c4eerrors.ErrParam, "weight (%s) is not between 0 and 1 error", weight.String())
+	}
+	if missionType != MissionInitialClaim {
+		if weight.Equal(sdk.ZeroDec()) {
+			return errors.Wrapf(c4eerrors.ErrParam, "weight (%s) cannot be 0 for non-initial mission", weight.String())
+		}
 	}
 
-	return nil
-}
-
-func ValidateMissionName(name string) error {
-	if name == "" {
-		return errors.Wrap(c4eerrors.ErrParam, "add mission to claim campaign - empty name error")
-	}
-	return nil
-}
-
-func ValidateMissionDescription(description string) error {
-	if description == "" {
-		return errors.Wrap(c4eerrors.ErrParam, "add mission to claim campaign - mission empty description error")
-	}
 	return nil
 }
 

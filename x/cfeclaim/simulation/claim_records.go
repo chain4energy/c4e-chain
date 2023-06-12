@@ -2,121 +2,111 @@ package simulation
 
 import (
 	"cosmossdk.io/math"
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
-	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
-	"math/rand"
-	"time"
-
+	"github.com/chain4energy/c4e-chain/testutil/simulation"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	"math/rand"
 )
 
 func SimulateMsgAddClaimRecords(
 	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
 	cfevestingKeeper cfevestingkeeper.Keeper,
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-		ownerAddress, err := createCampaign(k, cfevestingKeeper, msgServer, msgServerCtx, r, ctx, accs)
+		simAccount, err := createCampaign(ak, bk, cfevestingKeeper, app, r, ctx, accs, chainID)
 		if err != nil {
-			return simtypes.NewOperationMsgBasic(types.ModuleName, "Create campaign", "", false, nil), nil, nil
+			return simtypes.NewOperationMsgBasic(types.ModuleName, "Add claim records - create campaign failure", "", false, nil), nil, nil
 		}
 
-		campaigns := k.GetCampaigns(ctx)
-		EnableCampaignMsg := &types.MsgEnableCampaign{
-			Owner:      ownerAddress.String(),
+		campaigns := k.GetAllCampaigns(ctx)
+		msgEnableCampaign := &types.MsgEnableCampaign{
+			Owner:      simAccount.Address.String(),
 			CampaignId: uint64(len(campaigns) - 1),
 		}
 
-		_, err = msgServer.EnableCampaign(msgServerCtx, EnableCampaignMsg)
-		if err != nil {
-			k.Logger(ctx).Error("SIMULATION: Start campaign error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, EnableCampaignMsg.Type(), ""), nil, nil
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, *simAccount, msgEnableCampaign, chainID); err != nil {
+			return simtypes.NewOperationMsgBasic(types.ModuleName, "Add claim records - enable campaign failure", "", false, nil), nil, nil
 		}
 
 		addClaimRecordsMsg := &types.MsgAddClaimRecords{
-			Owner:        ownerAddress.String(),
-			CampaignId:   uint64(len(campaigns) - 1),
-			ClaimRecords: createNClaimRecords(100, accs),
+			Owner:              simAccount.Address.String(),
+			CampaignId:         uint64(len(campaigns) - 1),
+			ClaimRecordEntries: createNClaimRecordEntries(r, accs, utils.RandIntBetween(r, 10, 100)),
 		}
 
-		_, err = msgServer.AddClaimRecords(msgServerCtx, addClaimRecordsMsg)
-		if err != nil {
-			k.Logger(ctx).Error("SIMULATION: Add claim records campaign error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, addClaimRecordsMsg.Type(), ""), nil, nil
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, *simAccount, addClaimRecordsMsg, chainID); err != nil {
+			return simtypes.NewOperationMsg(addClaimRecordsMsg, false, "", nil), nil, nil
 		}
 
-		k.Logger(ctx).Debug("SIMULATION: Add claim records - added")
-		return simtypes.NewOperationMsg(addClaimRecordsMsg, true, "Add claim records simulation completed", nil), nil, nil
+		return simtypes.NewOperationMsg(addClaimRecordsMsg, true, "", nil), nil, nil
 	}
 }
 
 func SimulateMsgDeleteClaimRecord(
 	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
 	cfevestingKeeper cfevestingkeeper.Keeper,
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-		ownerAddress, err := createCampaign(k, cfevestingKeeper, msgServer, msgServerCtx, r, ctx, accs)
+		simAccount, err := createCampaign(ak, bk, cfevestingKeeper, app, r, ctx, accs, chainID)
 		if err != nil {
-			return simtypes.NewOperationMsgBasic(types.ModuleName, "Create campaign", "", false, nil), nil, nil
+			return simtypes.NewOperationMsgBasic(types.ModuleName, "Delete claim record - create campaign failure", "", false, nil), nil, nil
 		}
 
-		campaigns := k.GetCampaigns(ctx)
-		EnableCampaignMsg := &types.MsgEnableCampaign{
-			Owner:      ownerAddress.String(),
+		campaigns := k.GetAllCampaigns(ctx)
+		msgEnableCampaign := &types.MsgEnableCampaign{
+			Owner:      simAccount.Address.String(),
 			CampaignId: uint64(len(campaigns) - 1),
 		}
 
-		_, err = msgServer.EnableCampaign(msgServerCtx, EnableCampaignMsg)
-		if err != nil {
-			k.Logger(ctx).Error("SIMULATION: Start campaign error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, EnableCampaignMsg.Type(), ""), nil, nil
-		}
-		claimRecords := createNClaimRecords(100, accs)
-		addClaimRecordsMsg := &types.MsgAddClaimRecords{
-			Owner:        ownerAddress.String(),
-			CampaignId:   uint64(len(campaigns) - 1),
-			ClaimRecords: claimRecords,
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, *simAccount, msgEnableCampaign, chainID); err != nil {
+			return simtypes.NewOperationMsgBasic(types.ModuleName, "Delete claim record - enable campaign failure", "", false, nil), nil, nil
 		}
 
-		_, err = msgServer.AddClaimRecords(msgServerCtx, addClaimRecordsMsg)
-		if err != nil {
-			k.Logger(ctx).Error("SIMULATION: Add claim records error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, addClaimRecordsMsg.Type(), ""), nil, nil
+		claimRecordEntries := createNClaimRecordEntries(r, accs, utils.RandIntBetween(r, 10, 100))
+		addClaimRecordsMsg := &types.MsgAddClaimRecords{
+			Owner:              simAccount.Address.String(),
+			CampaignId:         uint64(len(campaigns) - 1),
+			ClaimRecordEntries: claimRecordEntries,
+		}
+
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, *simAccount, addClaimRecordsMsg, chainID); err != nil {
+			return simtypes.NewOperationMsgBasic(types.ModuleName, "Delete claim record - add claim record entries failure", "", false, nil), nil, nil
 		}
 
 		deleteClaimRecordMsg := &types.MsgDeleteClaimRecord{
-			Owner:       ownerAddress.String(),
+			Owner:       simAccount.Address.String(),
 			CampaignId:  uint64(len(campaigns) - 1),
-			UserAddress: claimRecords[helpers.RandomInt(r, len(claimRecords))].Address,
+			UserAddress: claimRecordEntries[utils.RandInt64(r, len(claimRecordEntries))].UserEntryAddress,
 		}
 
-		_, err = msgServer.DeleteClaimRecord(msgServerCtx, deleteClaimRecordMsg)
-		if err != nil {
-			k.Logger(ctx).Error("SIMULATION: Delete claim record error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, deleteClaimRecordMsg.Type(), ""), nil, nil
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, *simAccount, deleteClaimRecordMsg, chainID); err != nil {
+			return simtypes.NewOperationMsg(deleteClaimRecordMsg, false, "", nil), nil, nil
 		}
 
-		k.Logger(ctx).Debug("SIMULATION:  Delete claim record - deleted")
-		return simtypes.NewOperationMsg(deleteClaimRecordMsg, true, " Delete claim record simulation completed", nil), nil, nil
+		return simtypes.NewOperationMsg(deleteClaimRecordMsg, true, "", nil), nil, nil
 	}
 }
 
-func createNClaimRecords(n int, accs []simtypes.Account) []*types.ClaimRecord {
-	var claimRecords []*types.ClaimRecord
+func createNClaimRecordEntries(r *rand.Rand, accs []simtypes.Account, n int) []*types.ClaimRecordEntry {
+	var claimRecords []*types.ClaimRecordEntry
 	for i := 0; i < n; i++ {
-		src := rand.NewSource(time.Now().UnixNano())
-		r := rand.New(src)
 		claimRecordAccount, _ := simtypes.RandomAcc(r, accs)
-		claimRecords = append(claimRecords, &types.ClaimRecord{
-			Address: claimRecordAccount.Address.String(),
-			Amount:  sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(helpers.RandomInt(r, 1000)))),
+		claimRecords = append(claimRecords, &types.ClaimRecordEntry{
+			UserEntryAddress: claimRecordAccount.Address.String(),
+			Amount:           sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(utils.RandInt64(r, 1000)))),
 		})
 	}
 	return claimRecords

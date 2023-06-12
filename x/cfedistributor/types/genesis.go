@@ -23,7 +23,7 @@ func (gs GenesisState) Validate() error {
 		}
 		states = append(states, *state)
 	}
-	if err, _ := StateSumIsInteger(states); err != nil {
+	if _, err := StateSumIsInteger(states); err != nil {
 		return err
 	}
 

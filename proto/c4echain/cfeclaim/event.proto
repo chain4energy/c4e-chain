@@ -6,6 +6,7 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeclaim/types";
 
 message NewCampaign {
+    string id = 1;
     string owner = 2;
     string name = 3;
     string description = 4;
@@ -36,14 +37,15 @@ message EnableCampaign {
     string campaignId = 2;
 }
 
-message AddMissionToCampaign {
-    string owner = 1;
-    string campaignId = 2;
-    string name = 3;
-    string description = 4;
-    string missionType = 5;
-    string weight = 6;
-    string claim_start_date = 7;
+message AddMission {
+    string id = 1;
+    string owner = 2;
+    string campaignId = 3;
+    string name = 4;
+    string description = 5;
+    string missionType = 6;
+    string weight = 7;
+    string claim_start_date = 8;
 }
 
 message Claim {
@@ -74,7 +76,7 @@ message DeleteClaimRecord {
     string claim_record_amount = 4;
 }
 
-message CompleteMissionFromHook {
+message CompleteMission {
     string campaign_id = 1;
     string mission_id = 2;
     string user_address = 3;

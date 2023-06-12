@@ -26,7 +26,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdClaim())
 	cmd.AddCommand(CmdInitialClaim())
 	cmd.AddCommand(CmdCreateCampaign())
-	cmd.AddCommand(CmdAddMissionToCampaign())
+	cmd.AddCommand(CmdAddMission())
 	cmd.AddCommand(CmdAddClaimRecords())
 	cmd.AddCommand(CmdDeleteClaimRecord())
 	cmd.AddCommand(CmdCloseCampaign())

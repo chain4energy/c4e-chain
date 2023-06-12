@@ -90,7 +90,7 @@ go.sum: go.mod
 		GO111MODULE=on go mod verify
 
 test:
-	@go test -coverprofile=coverage.out -mod=readonly $(PACKAGES)
+	@go test -coverprofile=coverage.out -mod=readonly $(PACKAGES) -coverpkg ./...
 
 release:
 	@echo "--> Prepare release linux amd64"
@@ -105,15 +105,15 @@ release:
 
 # blockchain simulation tests
 
-SIM_NUM_BLOCKS = 100
-SIM_BLOCK_SIZE = 200
+SIM_NUM_BLOCKS = 200
+SIM_BLOCK_SIZE = 100
 SIM_COMMIT = true
 SIM_SEED = 1234
 SIMAPP = ./app
 
 test-simulation-benchmark:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -Seed=$(SIM_SEED) -v -Period=1 -PrintAllInvariants \
+	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -Seed=$(SIM_SEED) -v -Period=25 -PrintAllInvariants \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -Verbose=true
 
 test-simulation-benchmark-profile:
@@ -124,7 +124,7 @@ test-simulation-benchmark-profile:
 
 test-simulation-import-export:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimTest$$ -Seed=$(SIM_SEED) -v -Period=1 -PrintAllInvariants \
+	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimTest$$ -Seed=$(SIM_SEED) -v -Period=25 -PrintAllInvariants \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -Verbose=true
 
 stop-running-simulations:
@@ -154,7 +154,7 @@ E2E_UPGRADE_VERSION="v2.0.0"
 E2E_SCRIPT_NAME=chain
 C4E_E2E_SIGN_MODE = "direct"
 
-test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change test-e2e-claim
+test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change test-e2e-claim test-e2e-migration
 
 run-e2e-chain: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestRunChainWithOptions -count=1
@@ -174,8 +174,11 @@ test-e2e-params-change: e2e-setup
 test-e2e-migration: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationSuite"
 
-SPECIFIC_TEST_NAME=TestMinterAndDistributorCustom
-SPECIFIC_TESTING_SUITE_NAME=TestParamsChangeSuite
+test-e2e-migration-chaining: e2e-setup
+	@VERSION=$(VERSION) C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationChainingSuite"
+
+SPECIFIC_TEST_NAME=TestVestingPoolCampaign
+SPECIFIC_TESTING_SUITE_NAME=TestClaimSuite
 test-e2e-run-specific-test: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=true go test -mod=readonly -timeout=25m -v $ -run $(SPECIFIC_TESTING_SUITE_NAME) $(PACKAGES_E2E) -testify.m $(SPECIFIC_TEST_NAME)
 
@@ -197,9 +200,17 @@ build-e2e-script:
 docker-build-debug:
 	@docker build -t chain4energy:debug --build-arg BASE_IMG_TAG=debug -f dockerfiles/Dockerfile .
 
-docker-build-old-chain:
-	@docker build -t chain4energy-old-chain-init:v1.2.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/init.Dockerfile .
-	@docker build -t chain4energy-old-dev:v1.2.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/old.Dockerfile .
+docker-build-v1.2.0-chain:
+	@docker build -t chain4energy-old-chain-init:v1.2.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.2.0.init.Dockerfile .
+	@docker build -t chain4energy-old-dev:v1.2.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.2.0.Dockerfile .
+
+docker-build-v1.1.0-chain:
+	@docker build -t chain4energy-old-chain-init:v1.1.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.1.0.init.Dockerfile .
+	@docker build -t chain4energy-old-dev:v1.1.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.1.0.Dockerfile .
+
+docker-build-v1.0.0-chain:
+	@docker build -t chain4energy-old-chain-init:v1.0.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.0.0.init.Dockerfile .
+	@docker build -t chain4energy-old-dev:v1.0.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.0.0.Dockerfile .
 
 docker-build-all: docker-build-old-chain docker-build-debug
 

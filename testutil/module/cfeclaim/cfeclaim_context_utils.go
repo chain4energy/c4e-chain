@@ -38,12 +38,12 @@ func (h *ContextC4eClaimUtils) CreateCampaignError(owner string, campaign cfecla
 		campaign.VestingPeriod, campaign.VestingPoolName, errorMessage)
 }
 
-func (h *ContextC4eClaimUtils) AddMissionToCampaign(owner string, campaignId uint64, mission cfeclaimtypes.Mission) {
-	h.C4eClaimUtils.AddMissionToCampaign(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate)
+func (h *ContextC4eClaimUtils) AddMission(owner string, campaignId uint64, mission cfeclaimtypes.Mission) {
+	h.C4eClaimUtils.AddMission(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate)
 }
 
-func (h *ContextC4eClaimUtils) AddMissionToCampaignError(owner string, campaignId uint64, mission cfeclaimtypes.Mission, errorString string) {
-	h.C4eClaimUtils.AddMissionToCampaignError(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate, errorString)
+func (h *ContextC4eClaimUtils) AddMissionError(owner string, campaignId uint64, mission cfeclaimtypes.Mission, errorString string) {
+	h.C4eClaimUtils.AddMissionError(h.testContext.GetContext(), owner, campaignId, mission.Name, mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate, errorString)
 }
 
 func (h *ContextC4eClaimUtils) EnableCampaign(owner string, campaignId uint64, startTime *time.Time, endTime *time.Time) {
@@ -74,8 +74,16 @@ func (h *ContextC4eClaimUtils) InitGenesis(genState cfeclaimtypes.GenesisState) 
 	h.C4eClaimKeeperUtils.InitGenesis(h.testContext.GetContext(), genState)
 }
 
-func (h *ContextC4eClaimUtils) AddClaimRecords(srcAddress sdk.AccAddress, campaignId uint64, claimEntries []*cfeclaimtypes.ClaimRecord) {
-	h.C4eClaimUtils.AddClaimRecords(h.testContext.GetContext(), srcAddress, campaignId, claimEntries)
+func (h *ContextC4eClaimUtils) InitGenesisError(genState cfeclaimtypes.GenesisState, errorString string) {
+	h.C4eClaimKeeperUtils.InitGenesisError(h.testContext.GetContext(), genState, errorString)
+}
+
+func (h *ContextC4eClaimUtils) ExportGenesis(genState cfeclaimtypes.GenesisState) {
+	h.C4eClaimKeeperUtils.ExportGenesis(h.testContext.GetContext(), genState)
+}
+
+func (h *ContextC4eClaimUtils) AddClaimRecords(srcAddress sdk.AccAddress, campaignId uint64, claimRecordEntries []*cfeclaimtypes.ClaimRecordEntry) {
+	h.C4eClaimUtils.AddClaimRecords(h.testContext.GetContext(), srcAddress, campaignId, claimRecordEntries)
 }
 
 func (h *ContextC4eClaimUtils) DeleteClaimRecord(ownerAddress sdk.AccAddress, campaignId uint64, userAddress string, amoutDiff sdk.Coins) {
@@ -90,20 +98,33 @@ func (h *ContextC4eClaimUtils) AddCoinsToCampaignOwnerAcc(srcAddress sdk.AccAddr
 	h.BankUtils.AddDefaultDenomCoinsToAccount(h.testContext.GetContext(), amountOfCoins, srcAddress)
 }
 
-func (h *ContextC4eClaimUtils) AddClaimRecordsError(srcAddress sdk.AccAddress, campaignId uint64, claimEntries []*cfeclaimtypes.ClaimRecord, errorMessage string) {
-	h.C4eClaimUtils.AddClaimRecordsError(h.testContext.GetContext(), srcAddress, campaignId, claimEntries, errorMessage)
+func (h *ContextC4eClaimUtils) AddClaimRecordsError(srcAddress sdk.AccAddress, campaignId uint64, claimRecordEntries []*cfeclaimtypes.ClaimRecordEntry, errorMessage string) {
+	h.C4eClaimUtils.AddClaimRecordsError(h.testContext.GetContext(), srcAddress, campaignId, claimRecordEntries, errorMessage)
 }
 
 func (h *ContextC4eClaimUtils) ClaimInitial(claimer sdk.AccAddress, campaignId uint64, expectedAmount int64) {
 	h.C4eClaimUtils.ClaimInitial(h.testContext.GetContext(), campaignId, claimer, expectedAmount)
 }
 
+func (m *ContextC4eClaimUtils) ValidateGenesisAndInvariants() {
+	m.C4eClaimUtils.ExportGenesisAndValidate(m.testContext.GetContext())
+	m.C4eClaimUtils.ValidateInvariants(m.testContext.GetContext())
+}
+
 func (h *ContextC4eClaimUtils) ClaimInitialError(claimer sdk.AccAddress, campaignId uint64, errorMessage string) {
 	h.C4eClaimUtils.ClaimInitialError(h.testContext.GetContext(), campaignId, claimer, errorMessage)
 }
 
-func (h *ContextC4eClaimUtils) GetUsersEntries(address string) *cfeclaimtypes.UserEntry {
-	return h.C4eClaimUtils.GetUsersEntries(h.testContext.GetContext(), address)
+func (h *ContextC4eClaimUtils) GetUsersEntry(address string) *cfeclaimtypes.UserEntry {
+	return h.C4eClaimUtils.GetUsersEntry(h.testContext.GetContext(), address)
+}
+
+func (h *ContextC4eClaimUtils) GetAllUsersEntries() []cfeclaimtypes.UserEntry {
+	return h.C4eClaimUtils.GetAllUsersEntries(h.testContext.GetContext())
+}
+
+func (h *ContextC4eClaimUtils) GetCampaigns() []cfeclaimtypes.Campaign {
+	return h.C4eClaimUtils.GetCampaigns(h.testContext.GetContext())
 }
 
 func (h *ContextC4eClaimUtils) SetUsersEntries(userEntry *cfeclaimtypes.UserEntry) {
@@ -132,9 +153,9 @@ func (h *ContextC4eClaimUtils) ClaimMissionError(campaignId uint64, missionId ui
 	h.C4eClaimUtils.ClaimMissionError(h.testContext.GetContext(), campaignId, missionId, claimer, errorMessage)
 }
 
-func (h *ContextC4eClaimUtils) CreateRepeatedContinuousVestingAccount(address sdk.AccAddress, originalVesting sdk.Coins, startTime int64,
+func (h *ContextC4eClaimUtils) CreatePeriodicContinuousVestingAccount(address sdk.AccAddress, originalVesting sdk.Coins, startTime int64,
 	endTime int64, periods ...cfevestingtypes.ContinuousVestingPeriod) *cfevestingtypes.PeriodicContinuousVestingAccount {
-	return h.C4eClaimUtils.CreateRepeatedContinuousVestingAccount(h.testContext.GetContext(), address, originalVesting, startTime, endTime, periods...)
+	return h.C4eClaimUtils.CreatePeriodicContinuousVestingAccount(h.testContext.GetContext(), address, originalVesting, startTime, endTime, periods...)
 }
 
 func (h *ContextC4eClaimUtils) CompleteDelegationMission(campaignId uint64, missionId uint64,
@@ -148,6 +169,6 @@ func (h *ContextC4eClaimUtils) CompleteVoteMission(campaignId uint64, missionId 
 }
 
 func (h *ContextC4eClaimUtils) CheckNonNegativeCoinStateInvariant(ctx sdk.Context, failed bool, message string) {
-	invariant := cfeclaimmodulekeeper.CampaignAmountLeftSumCheckInvariant(*h.helpeCfeclaimkeeper)
+	invariant := cfeclaimmodulekeeper.CampaignCurrentAmountSumCheckInvariant(*h.helpeCfeclaimkeeper)
 	testcosmos.CheckInvariant(h.t, ctx, invariant, failed, message)
 }

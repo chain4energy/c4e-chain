@@ -31,7 +31,7 @@ func TestCreateAccount(t *testing.T) {
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfevestingtypes.ModuleName)
 
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
+	testHelper.C4eVestingUtils.SendToPeriodicContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
 		amount,
 		sdk.ZeroDec(),
 		startTimeUnix,
@@ -45,7 +45,7 @@ func TestCreateAccount(t *testing.T) {
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], math.ZeroInt())
 
 	testHelper.SetContextBlockTime(startTime)
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
+	testHelper.C4eVestingUtils.SendToPeriodicContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
 		amount,
 		sdk.ZeroDec(),
 		startTimeUnix,
@@ -59,7 +59,7 @@ func TestCreateAccount(t *testing.T) {
 	testHelper.BankUtils.VerifyAccountDefultDenomLocked(testHelper.Context, acountsAddresses[0], math.ZeroInt())
 
 	testHelper.SetContextBlockTime(startTime)
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
+	testHelper.C4eVestingUtils.SendToPeriodicContinuousVestingAccount(testHelper.Context, acountsAddresses[0],
 		amount,
 		sdk.ZeroDec(),
 		startTimeUnix,
@@ -87,11 +87,11 @@ func TestCreateAccountSendDisabled(t *testing.T) {
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfevestingtypes.ModuleName)
 	testHelper.BankUtils.DisableSend()
 
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
+	testHelper.C4eVestingUtils.SendToPeriodicContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
 		amount,
 		sdk.ZeroDec(),
 		startTimeUnix,
-		endTimeUnix, true, fmt.Sprintf("%s transfers are currently disabled: send transactions are disabled", testenv.DefaultTestDenom),
+		endTimeUnix, fmt.Sprintf("%s transfers are currently disabled: send transactions are disabled", testenv.DefaultTestDenom),
 	)
 }
 
@@ -110,7 +110,6 @@ func TestCreateAccountBlockedAddress(t *testing.T) {
 		testHelper.App.AppCodec(),
 		testHelper.App.GetKey(cfevestingtypes.StoreKey),
 		testHelper.App.GetKey(cfevestingtypes.MemStoreKey),
-		testHelper.App.GetSubspace(cfevestingtypes.ModuleName),
 		testHelper.App.BankKeeper,
 		testHelper.App.StakingKeeper,
 		testHelper.App.AccountKeeper,
@@ -124,11 +123,11 @@ func TestCreateAccountBlockedAddress(t *testing.T) {
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfevestingtypes.ModuleName)
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
+	testHelper.C4eVestingUtils.SendToPeriodicContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
 		amount,
 		sdk.ZeroDec(),
 		startTimeUnix,
-		endTimeUnix, true,
+		endTimeUnix,
 		fmt.Sprintf("account address: %s is not allowed to receive funds error: unauthorized", acountsAddresses[0]),
 	)
 }
@@ -150,11 +149,11 @@ func TestCreateAccountWrongAccountType(t *testing.T) {
 	startTimeUnix := startTime.Unix()
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(moduleAmount, cfevestingtypes.ModuleName)
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
+	testHelper.C4eVestingUtils.SendToPeriodicContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
 		amount,
 		sdk.ZeroDec(),
 		startTimeUnix,
-		endTimeUnix, false, "account already exists and is not of PeriodicContinuousVestingAccount nor BaseAccount type, got: *types.BaseVestingAccount: invalid account type",
+		endTimeUnix, "account already exists and is not of PeriodicContinuousVestingAccount nor BaseAccount type, got: *types.BaseVestingAccount: invalid account type",
 	)
 }
 
@@ -170,10 +169,10 @@ func TestCreateAccountSendError(t *testing.T) {
 	endTimeUnix := endTime.Unix()
 	testHelper.BankUtils.AddDefaultDenomCoinsToModule(amount, cfevestingtypes.ModuleName)
 
-	testHelper.C4eVestingUtils.SendToRepeatedContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
+	testHelper.C4eVestingUtils.SendToPeriodicContinuousVestingAccountError(testHelper.Context, acountsAddresses[0],
 		amount.AddRaw(1),
 		sdk.ZeroDec(),
 		startTimeUnix,
-		endTimeUnix, true, "10000000000uc4e is smaller than 10000000001uc4e: insufficient funds",
+		endTimeUnix, "module balance is too small (10000000000uc4e < 10000000001uc4e): insufficient funds",
 	)
 }
