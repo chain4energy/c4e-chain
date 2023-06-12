@@ -96,18 +96,18 @@ var validGenesisState = types.GenesisState{
 	},
 	UsersEntries: []types.UserEntry{
 		{
-			Address: "cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj",
+			Address: "c4e1asgp8qrlznsjs7ww5f60lf64gx04s6nsrte4dv",
 			ClaimRecords: []*types.ClaimRecord{
 				{
 					CampaignId:        0,
-					Address:           "cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj",
+					Address:           "c4e1asgp8qrlznsjs7ww5f60lf64gx04s6nsrte4dv",
 					Amount:            sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(1234))),
 					CompletedMissions: []uint64{0, 1},
 					ClaimedMissions:   []uint64{0},
 				},
 				{
 					CampaignId:        1,
-					Address:           "cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj",
+					Address:           "c4e1asgp8qrlznsjs7ww5f60lf64gx04s6nsrte4dv",
 					Amount:            sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(10000))),
 					CompletedMissions: []uint64{0},
 					ClaimedMissions:   []uint64{0},
@@ -183,7 +183,7 @@ func TestInvalidMissionCampaignDoestExistInGenesis(t *testing.T) {
 	testHelper.C4eVestingUtils.AddTestVestingPool(accAddress, "Vesting1", math.NewInt(10000), 100, 100)
 	invalidGenesis := proto.Clone(&validGenesisState).(*types.GenesisState)
 	invalidGenesis.Missions[3].CampaignId = 100
-	testHelper.C4eClaimUtils.InitGenesisError(*invalidGenesis, "mission Mission 2: campaign with id 100 not found: entity does not exist")
+	testHelper.C4eClaimUtils.InitGenesisError(*invalidGenesis, "mission Mission 2: campaign with id 100 not found: not found")
 }
 
 func TestInvalidUserEntryInGenesis(t *testing.T) {
@@ -193,7 +193,7 @@ func TestInvalidUserEntryInGenesis(t *testing.T) {
 	testHelper.C4eVestingUtils.AddTestVestingPool(accAddress, "Vesting1", math.NewInt(10000), 100, 100)
 	invalidGenesis := proto.Clone(&validGenesisState).(*types.GenesisState)
 	invalidGenesis.UsersEntries[0].Address = ""
-	testHelper.C4eClaimUtils.InitGenesisError(*invalidGenesis, "userEntry index: 0: user entry empty address: wrong param value")
+	testHelper.C4eClaimUtils.InitGenesisError(*invalidGenesis, "userEntry index: 0: empty address string is not allowed")
 }
 
 func TestInvalidUserEntryFrongClaimedMissionInGenesis(t *testing.T) {

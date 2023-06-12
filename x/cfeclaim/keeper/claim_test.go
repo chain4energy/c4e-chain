@@ -90,7 +90,7 @@ func TestClaimCampaignDoesntExist(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
 
-	testHelper.C4eClaimUtils.ClaimMissionError(1, 0, acountsAddresses[1], "campaign with id 1 not found: entity does not exist")
+	testHelper.C4eClaimUtils.ClaimMissionError(1, 0, acountsAddresses[1], "campaign with id 1 not found: not found")
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -274,7 +274,7 @@ func TestClaimMissionWithTypeClaimRecordNotFound(t *testing.T) {
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 
-	testHelper.C4eClaimUtils.ClaimMissionError(0, 1, acountsAddresses[10], fmt.Sprintf("userEntry %s doesn't exist: entity does not exist", acountsAddresses[10].String()))
+	testHelper.C4eClaimUtils.ClaimMissionError(0, 1, acountsAddresses[10], fmt.Sprintf("userEntry %s doesn't exist: not found", acountsAddresses[10].String()))
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 

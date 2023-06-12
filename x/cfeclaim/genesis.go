@@ -42,7 +42,7 @@ func setMissions(ctx sdk.Context, k keeper.Keeper, missions []types.Mission) {
 
 func setUsersEntries(ctx sdk.Context, k keeper.Keeper, usersEntries []types.UserEntry) {
 	for userEntryIndex, usersEntry := range usersEntries {
-		if err := types.ValidateUserEntry(usersEntry); err != nil {
+		if err := usersEntry.Validate(); err != nil {
 			panic(errors.Wrapf(err, "userEntry index: %d", userEntryIndex))
 		}
 		validateClaimRecords(ctx, k, usersEntry.ClaimRecords, int64(userEntryIndex))

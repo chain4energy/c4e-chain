@@ -285,7 +285,7 @@ func TestUnlockUnbondedContinuousVestingAccountCoinsSingleDenomError(t *testing.
 		{desc: "on vesting end - not enought to unlock", initialAmount: initialAmount, lockedBefore: math.ZeroInt(), blockTime: startTime.Add(duration), toUnlock: math.NewInt(1),
 			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + ": not enough to unlock. locked: , to unlock: 1uc4e: insufficient funds"},
 		{desc: "no account", initialAmount: math.ZeroInt(), lockedBefore: math.ZeroInt(), blockTime: startTime, toUnlock: math.NewInt(1),
-			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + " doesn't exist: entity does not exist", accountType: None},
+			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + " doesn't exist: not found", accountType: None},
 		{desc: "wrong account type", initialAmount: initialAmount, lockedBefore: math.ZeroInt(), blockTime: startTime.Add(duration), toUnlock: math.NewInt(1),
 			vAccStartTime: startTime, vestingDuration: duration, expectedError: "account " + accAddr.String() + " is not ContinuousVestingAccount: invalid type", accountType: Base},
 		{desc: "on half vesting - not enought to unlock with delegation", initialAmount: initialAmount, lockedBefore: initialAmount.QuoRaw(2), blockTime: startTime.Add(duration / 2), toUnlock: initialAmount.QuoRaw(4).AddRaw(2),
