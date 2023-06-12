@@ -185,12 +185,12 @@ func (vestingType *VestingType) ValidateVestingFree(free sdk.Dec) error {
 func (vestingType *VestingType) ValidateVestingPeriods(lockupPeriod time.Duration, vestingPeriod time.Duration) error {
 	if vestingType.LockupPeriod > lockupPeriod {
 		return errors.Wrapf(c4eerrors.ErrParam,
-			fmt.Sprintf("the duration of lockup period must be equal to or greater than the vesting type lockup period (%s > %s)", vestingType.LockupPeriod.String(), lockupPeriod.String()))
+			"the duration of lockup period must be equal to or greater than the vesting type lockup period (%s > %s)", vestingType.LockupPeriod.String(), lockupPeriod.String())
 	}
 
 	if vestingType.VestingPeriod > vestingPeriod {
 		return errors.Wrapf(c4eerrors.ErrParam,
-			fmt.Sprintf("the duration of vesting period must be equal to or greater than the vesting type vesting period (%s > %s)", vestingType.VestingPeriod.String(), vestingPeriod.String()))
+			"the duration of vesting period must be equal to or greater than the vesting type vesting period (%s > %s)", vestingType.VestingPeriod.String(), vestingPeriod.String())
 	}
 
 	return nil

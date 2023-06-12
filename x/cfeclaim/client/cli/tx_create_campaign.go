@@ -85,7 +85,7 @@ $ %s tx %s create-campaign "My Campaign" "Campaign description" "default" true "
 			if err != nil {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
-			argVestingPeriod, err := parseDuration(args[9])
+			argVestingPeriod, err := parseDuration(args[10])
 			if err != nil {
 				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
 			}
