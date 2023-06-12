@@ -205,7 +205,7 @@ var (
 		cfedistributormoduletypes.ValidatorsRewardsCollector:  nil,
 		cfedistributormoduletypes.GreenEnergyBoosterCollector: nil,
 		cfedistributormoduletypes.GovernanceBoosterCollector:  nil,
-		cfeevmoduletypes.ModuleName:                           {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		cfeevmoduletypes.ModuleName:                           nil,
 	}
 )
 

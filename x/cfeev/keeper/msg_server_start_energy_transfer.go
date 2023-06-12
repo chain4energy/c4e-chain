@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k msgServer) StartEnergyTransferRequest(goCtx context.Context, msg *types.MsgStartEnergyTransferRequest) (*types.MsgStartEnergyTransferRequestResponse, error) {
+func (k msgServer) StartEnergyTransfer(goCtx context.Context, msg *types.MsgStartEnergyTransfer) (*types.MsgStartEnergyTransferResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	keeper := k.Keeper
 
@@ -26,7 +26,7 @@ func (k msgServer) StartEnergyTransferRequest(goCtx context.Context, msg *types.
 	offeredTariff := int32(tariffFromMsg)
 	dynamicCollateral := msg.GetCollateral()
 
-	energyTransferId, err := keeper.StartEnergyTransferRequest(ctx,
+	energyTransferId, err := keeper.StartEnergyTransfer(ctx,
 		msg.OwnerAccountAddress,
 		msg.Creator,
 		msg.EnergyTransferOfferId,
@@ -39,5 +39,5 @@ func (k msgServer) StartEnergyTransferRequest(goCtx context.Context, msg *types.
 		return nil, err
 	}
 
-	return &types.MsgStartEnergyTransferRequestResponse{Id: energyTransferId}, nil
+	return &types.MsgStartEnergyTransferResponse{Id: energyTransferId}, nil
 }

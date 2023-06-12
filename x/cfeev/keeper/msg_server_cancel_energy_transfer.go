@@ -9,18 +9,18 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) CancelEnergyTransferRequest(goCtx context.Context, msg *types.MsgCancelEnergyTransferRequest) (*types.MsgCancelEnergyTransferRequestResponse, error) {
+func (k msgServer) CancelEnergyTransfer(goCtx context.Context, msg *types.MsgCancelEnergyTransfer) (*types.MsgCancelEnergyTransferResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "cancel energy transfer")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	k.Logger(ctx).Debug("CancelEnergyTransferRequest - reason=%s, code=%s", msg.GetErrorInfo(), msg.GetErrorCode())
+	k.Logger(ctx).Debug("CancelEnergyTransfer - reason=%s, code=%s", msg.GetErrorInfo(), msg.GetErrorCode())
 	keeper := k.Keeper
 
-	err := keeper.CancelEnergyTransferRequest(ctx, msg.GetEnergyTransferId())
+	err := keeper.CancelEnergyTransfer(ctx, msg.GetEnergyTransferId())
 	if err != nil {
 		k.Logger(ctx).Error("cancel energy transfer failed", "error", err)
 		return nil, err
 	}
 
-	return &types.MsgCancelEnergyTransferRequestResponse{}, nil
+	return &types.MsgCancelEnergyTransferResponse{}, nil
 }

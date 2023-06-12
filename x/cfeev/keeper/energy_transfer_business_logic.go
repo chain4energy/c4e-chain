@@ -1,16 +1,16 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
 	"fmt"
 
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) StartEnergyTransferRequest(
+func (k Keeper) StartEnergyTransfer(
 	ctx sdk.Context,
 	owner string,
 	driver string,
@@ -43,7 +43,7 @@ func (k Keeper) StartEnergyTransferRequest(
 	if offer.GetChargerStatus() == types.ChargerStatus_ACTIVE {
 		offer.ChargerStatus = types.ChargerStatus_BUSY
 	} else {
-		return 0, sdkerrors.Wrap(types.ErrBusyCharger, "busy charger")
+		return 0, errors.Wrap(types.ErrBusyCharger, "busy charger")
 	}
 
 	// check if the offered tariff has not been changed
@@ -103,15 +103,15 @@ func (k Keeper) sendCollateralToEscrowAccount(ctx sdk.Context, driverAccountAddr
 	return nil
 }
 
-func (k Keeper) EnergyTransferStartedRequest(ctx sdk.Context, energyTransferId uint64) error {
+func (k Keeper) EnergyTransferStarted(ctx sdk.Context, energyTransferId uint64) error {
 
 	energyTransfer, found := k.GetEnergyTransfer(ctx, energyTransferId)
 	if !found {
-		return sdkerrors.Wrap(types.ErrEnergyTransferNotFound, "energy transfer not found")
+		return errors.Wrap(types.ErrEnergyTransferNotFound, "energy transfer not found")
 	}
 
 	if energyTransfer.Status != types.TransferStatus_REQUESTED {
-		return sdkerrors.Wrap(types.ErrWrongEnergyTransferStatus, energyTransfer.Status.String())
+		return errors.Wrap(types.ErrWrongEnergyTransferStatus, energyTransfer.Status.String())
 	}
 
 	// REQUESTED ==> ONGOING
@@ -132,10 +132,10 @@ func (k Keeper) EnergyTransferStartedRequest(ctx sdk.Context, energyTransferId u
 	return nil
 }
 
-func (k Keeper) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId uint64, usedServiceUnits int32) error {
+func (k Keeper) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64, usedServiceUnits int32) error {
 	energyTransferObj, found := k.GetEnergyTransfer(ctx, energyTransferId)
 	if !found {
-		return sdkerrors.Wrap(types.ErrEnergyTransferNotFound, "energy transfer not found")
+		return errors.Wrap(types.ErrEnergyTransferNotFound, "energy transfer not found")
 	}
 
 	var err error
@@ -189,13 +189,13 @@ func (k Keeper) EnergyTransferCompletedRequest(ctx sdk.Context, energyTransferId
 	}
 
 	if err != nil {
-		return sdkerrors.Wrap(types.ErrCoinTransferFailed, "coin transfer failed")
+		return errors.Wrap(types.ErrCoinTransferFailed, "coin transfer failed")
 	}
 
 	// get energy transfer offer object by offer id
 	offer, found := k.GetEnergyTransferOffer(ctx, energyTransferObj.EnergyTransferOfferId)
 	if !found {
-		return sdkerrors.Wrap(types.ErrEnergyTransferOfferNotFound, "energy transfer offer not found")
+		return errors.Wrap(types.ErrEnergyTransferOfferNotFound, "energy transfer offer not found")
 	}
 	offer.ChargerStatus = types.ChargerStatus_ACTIVE
 
@@ -235,15 +235,15 @@ func (k Keeper) sendTokensToTargetAccount(ctx sdk.Context, targetAccountAddress 
 	return nil
 }
 
-func (k Keeper) CancelEnergyTransferRequest(ctx sdk.Context, energyTransferId uint64) error {
-	k.Logger(ctx).Debug("CancelEnergyTransferRequest - ID=%d", energyTransferId)
+func (k Keeper) CancelEnergyTransfer(ctx sdk.Context, energyTransferId uint64) error {
+	k.Logger(ctx).Debug("CancelEnergyTransfer - ID=%d", energyTransferId)
 	energyTransferObj, found := k.GetEnergyTransfer(ctx, energyTransferId)
 	if !found {
-		return sdkerrors.Wrap(types.ErrEnergyTransferNotFound, "energy transfer not found")
+		return errors.Wrap(types.ErrEnergyTransferNotFound, "energy transfer not found")
 	}
 
 	// if energyTransferObj.GetStatus() != types.TransferStatus_REQUESTED {
-	// 	return nil, sdkerrors.Wrap(types.ErrWrongEnergyTransferStatus, energyTransferObj.GetStatus().String())
+	// 	return nil, errors.Wrap(types.ErrWrongEnergyTransferStatus, energyTransferObj.GetStatus().String())
 	// }
 
 	energyTransferObj.Status = types.TransferStatus_CANCELLED
@@ -251,7 +251,7 @@ func (k Keeper) CancelEnergyTransferRequest(ctx sdk.Context, energyTransferId ui
 	// get energy transfer offer object by offer id
 	offer, found := k.GetEnergyTransferOffer(ctx, energyTransferObj.EnergyTransferOfferId)
 	if !found {
-		return sdkerrors.Wrap(types.ErrEnergyTransferOfferNotFound, "energy transfer offer not found")
+		return errors.Wrap(types.ErrEnergyTransferOfferNotFound, "energy transfer offer not found")
 	}
 	offer.ChargerStatus = types.ChargerStatus_ACTIVE
 
@@ -262,7 +262,7 @@ func (k Keeper) CancelEnergyTransferRequest(ctx sdk.Context, energyTransferId ui
 	err := k.sendTokensToTargetAccount(ctx, energyTransferObj.GetDriverAccountAddress(), coinsToTransfer)
 
 	if err != nil {
-		return sdkerrors.Wrap(types.ErrCoinTransferFailed, "coin transfer failed")
+		return errors.Wrap(types.ErrCoinTransferFailed, "coin transfer failed")
 	}
 
 	// update both entities

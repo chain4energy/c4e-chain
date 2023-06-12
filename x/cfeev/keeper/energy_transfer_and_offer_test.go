@@ -29,7 +29,7 @@ func TestEnergyTransferCancel(t *testing.T) {
 	fmt.Println("EV Driver acc address: " + transfer.GetDriverAccountAddress())
 
 	newOfferId := testHelper.C4eEvUtils.PublishAndVerifyEnergyTransferOffer(testHelper.GetContext(), offer)
-	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransferRequest(testHelper.GetContext(), transfer, newOfferId)
+	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransfer(testHelper.GetContext(), transfer, newOfferId)
 
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_BUSY)
 	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_REQUESTED)
@@ -37,7 +37,7 @@ func TestEnergyTransferCancel(t *testing.T) {
 	// Energy transfer can be canceled when it has REQUESTED status so before the actual transfer begins
 	// A similar approach to the SIP
 	// Cancel energy transfer
-	msgCancelTransfer := &types.MsgCancelEnergyTransferRequest{
+	msgCancelTransfer := &types.MsgCancelEnergyTransfer{
 		Creator:          transfer.OwnerAccountAddress,
 		EnergyTransferId: energyTransferId,
 		ChargerId:        offer.GetChargerId(),
@@ -45,7 +45,7 @@ func TestEnergyTransferCancel(t *testing.T) {
 	}
 
 	msgServer := keeper.NewMsgServerImpl(testHelper.App.CfeevKeeper)
-	_, err := msgServer.CancelEnergyTransferRequest(testHelper.WrappedContext, msgCancelTransfer)
+	_, err := msgServer.CancelEnergyTransfer(testHelper.WrappedContext, msgCancelTransfer)
 	if err != nil {
 		panic(err)
 	}
@@ -63,19 +63,19 @@ func TestEnergyTransferStartedFull(t *testing.T) {
 	bankutils.VerifyAccountBalanceByDenom(sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()), "uc4e", sdk.NewInt(5000))
 
 	newOfferId := testHelper.C4eEvUtils.PublishAndVerifyEnergyTransferOffer(testHelper.GetContext(), offer)
-	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransferRequest(testHelper.GetContext(), transfer, newOfferId)
+	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransfer(testHelper.GetContext(), transfer, newOfferId)
 
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_BUSY)
 	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_REQUESTED)
 
 	// confirm that energy transfer has been started
-	testHelper.C4eEvUtils.EnergyTransferStartedRequest(testHelper.GetContext(), energyTransferId)
+	testHelper.C4eEvUtils.EnergyTransferStarted(testHelper.GetContext(), energyTransferId)
 
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_BUSY)
 	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_ONGOING)
 
 	// when energy transfer is completed - full charging
-	testHelper.C4eEvUtils.EnergyTransferCompletedRequest(testHelper.GetContext(), energyTransferId, transfer.GetEnergyToTransfer())
+	testHelper.C4eEvUtils.EnergyTransferCompleted(testHelper.GetContext(), energyTransferId, transfer.GetEnergyToTransfer())
 
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_ACTIVE)
 	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_PAID)
@@ -94,19 +94,19 @@ func TestEnergyTransferStartedPartial(t *testing.T) {
 	bankutils.VerifyAccountBalanceByDenom(sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()), "uc4e", sdk.NewInt(5000))
 
 	newOfferId := testHelper.C4eEvUtils.PublishAndVerifyEnergyTransferOffer(testHelper.GetContext(), offer)
-	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransferRequest(testHelper.GetContext(), transfer, newOfferId)
+	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransfer(testHelper.GetContext(), transfer, newOfferId)
 
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_BUSY)
 	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_REQUESTED)
 
 	// confirm that energy transfer has been started
-	testHelper.C4eEvUtils.EnergyTransferStartedRequest(testHelper.GetContext(), energyTransferId)
+	testHelper.C4eEvUtils.EnergyTransferStarted(testHelper.GetContext(), energyTransferId)
 
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_BUSY)
 	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_ONGOING)
 
 	// when energy transfer is completed - partial charging
-	testHelper.C4eEvUtils.EnergyTransferCompletedRequest(testHelper.GetContext(), energyTransferId, 10)
+	testHelper.C4eEvUtils.EnergyTransferCompleted(testHelper.GetContext(), energyTransferId, 10)
 
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_ACTIVE)
 	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_PAID)

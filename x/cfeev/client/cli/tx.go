@@ -31,10 +31,10 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(CmdPublishEnergyTransferOffer())
-	cmd.AddCommand(CmdStartEnergyTransferRequest())
-	cmd.AddCommand(CmdEnergyTransferStartedRequest())
-	cmd.AddCommand(CmdEnergyTransferCompletedRequest())
-	cmd.AddCommand(CmdCancelEnergyTransferRequest())
+	cmd.AddCommand(CmdStartEnergyTransfer())
+	cmd.AddCommand(CmdEnergyTransferStarted())
+	cmd.AddCommand(CmdEnergyTransferCompleted())
+	cmd.AddCommand(CmdCancelEnergyTransfer())
 	cmd.AddCommand(CmdRemoveEnergyOffer())
 	cmd.AddCommand(CmdRemoveTransfer())
 	// this line is used by starport scaffolding # 1

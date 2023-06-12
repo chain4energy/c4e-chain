@@ -8,21 +8,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgEnergyTransferCompletedRequest_ValidateBasic(t *testing.T) {
+func TestMsgStartEnergyTransfer_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgEnergyTransferCompletedRequest
+		msg  MsgStartEnergyTransfer
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgEnergyTransferCompletedRequest{
+			msg: MsgStartEnergyTransfer{
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgEnergyTransferCompletedRequest{
+			msg: MsgStartEnergyTransfer{
 				Creator: sample.AccAddress(),
 			},
 		},

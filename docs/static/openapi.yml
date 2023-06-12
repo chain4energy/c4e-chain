@@ -1080,6 +1080,978 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
+  /c4echain/cfeev/energy_transfer:
+    get:
+      summary: Queries a list of EnergyTransfer items.
+      operationId: Chain4EnergyC4EchainCfeevEnergyTransferAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              EnergyTransfer:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    energyTransferOfferId:
+                      type: string
+                      format: uint64
+                    chargerId:
+                      type: string
+                    ownerAccountAddress:
+                      type: string
+                    driverAccountAddress:
+                      type: string
+                    offeredTariff:
+                      type: integer
+                      format: int32
+                    status:
+                      type: string
+                      enum:
+                        - REQUESTED
+                        - ONGOING
+                        - PAID
+                        - CANCELLED
+                      default: REQUESTED
+                    collateral:
+                      type: string
+                      format: uint64
+                    energyToTransfer:
+                      type: integer
+                      format: int32
+                    energyTransferred:
+                      type: integer
+                      format: int32
+                    paidDate:
+                      type: string
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /c4echain/cfeev/energy_transfer/{id}:
+    get:
+      summary: Queries a EnergyTransfer by id.
+      operationId: Chain4EnergyC4EchainCfeevEnergyTransfer
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              EnergyTransfer:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  energyTransferOfferId:
+                    type: string
+                    format: uint64
+                  chargerId:
+                    type: string
+                  ownerAccountAddress:
+                    type: string
+                  driverAccountAddress:
+                    type: string
+                  offeredTariff:
+                    type: integer
+                    format: int32
+                  status:
+                    type: string
+                    enum:
+                      - REQUESTED
+                      - ONGOING
+                      - PAID
+                      - CANCELLED
+                    default: REQUESTED
+                  collateral:
+                    type: string
+                    format: uint64
+                  energyToTransfer:
+                    type: integer
+                    format: int32
+                  energyTransferred:
+                    type: integer
+                    format: int32
+                  paidDate:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /c4echain/cfeev/energy_transfer_offer:
+    get:
+      summary: Queries a list of EnergyTransferOffer items.
+      operationId: Chain4EnergyC4EchainCfeevEnergyTransferOfferAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              EnergyTransferOffer:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    owner:
+                      type: string
+                    chargerId:
+                      type: string
+                    chargerStatus:
+                      type: string
+                      enum:
+                        - ACTIVE
+                        - BUSY
+                        - INACTIVE
+                      default: ACTIVE
+                    location:
+                      type: object
+                      properties:
+                        latitude:
+                          type: string
+                        longitude:
+                          type: string
+                    tariff:
+                      type: integer
+                      format: int32
+                    name:
+                      type: string
+                    plugType:
+                      type: string
+                      enum:
+                        - Type1
+                        - Type2
+                        - CHAdeMO
+                        - CCS
+                      default: Type1
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /c4echain/cfeev/energy_transfer_offer/{id}:
+    get:
+      summary: Queries a EnergyTransferOffer by id.
+      operationId: Chain4EnergyC4EchainCfeevEnergyTransferOffer
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              EnergyTransferOffer:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  owner:
+                    type: string
+                  chargerId:
+                    type: string
+                  chargerStatus:
+                    type: string
+                    enum:
+                      - ACTIVE
+                      - BUSY
+                      - INACTIVE
+                    default: ACTIVE
+                  location:
+                    type: object
+                    properties:
+                      latitude:
+                        type: string
+                      longitude:
+                        type: string
+                  tariff:
+                    type: integer
+                    format: int32
+                  name:
+                    type: string
+                  plugType:
+                    type: string
+                    enum:
+                      - Type1
+                      - Type2
+                      - CHAdeMO
+                      - CCS
+                    default: Type1
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /c4echain/cfeev/list_own_energy_transfer/{driverAccAddress}:
+    get:
+      summary: Queries a list of ListOwnEnergyTransfer items.
+      operationId: Chain4EnergyC4EchainCfeevListOwnEnergyTransfer
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              energyTransfer:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    energyTransferOfferId:
+                      type: string
+                      format: uint64
+                    chargerId:
+                      type: string
+                    ownerAccountAddress:
+                      type: string
+                    driverAccountAddress:
+                      type: string
+                    offeredTariff:
+                      type: integer
+                      format: int32
+                    status:
+                      type: string
+                      enum:
+                        - REQUESTED
+                        - ONGOING
+                        - PAID
+                        - CANCELLED
+                      default: REQUESTED
+                    collateral:
+                      type: string
+                      format: uint64
+                    energyToTransfer:
+                      type: integer
+                      format: int32
+                    energyTransferred:
+                      type: integer
+                      format: int32
+                    paidDate:
+                      type: string
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: driverAccAddress
+          in: path
+          required: true
+          type: string
+        - name: transferStatus
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /c4echain/cfeev/list_own_energy_transfer_offer/{ownerAccAddress}:
+    get:
+      summary: Queries a list of ListOwnEnergyTransferOffer items.
+      operationId: Chain4EnergyC4EchainCfeevListOwnEnergyTransferOffer
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              energyTransferOffer:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    owner:
+                      type: string
+                    chargerId:
+                      type: string
+                    chargerStatus:
+                      type: string
+                      enum:
+                        - ACTIVE
+                        - BUSY
+                        - INACTIVE
+                      default: ACTIVE
+                    location:
+                      type: object
+                      properties:
+                        latitude:
+                          type: string
+                        longitude:
+                          type: string
+                    tariff:
+                      type: integer
+                      format: int32
+                    name:
+                      type: string
+                    plugType:
+                      type: string
+                      enum:
+                        - Type1
+                        - Type2
+                        - CHAdeMO
+                        - CCS
+                      default: Type1
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: ownerAccAddress
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /c4echain/cfeev/list_owner_energy_transfer/{ownerAccAddress}:
+    get:
+      summary: Queries a list of ListOwnerEnergyTransfer items.
+      operationId: Chain4EnergyC4EchainCfeevListOwnerEnergyTransfer
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              energyTransfer:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    energyTransferOfferId:
+                      type: string
+                      format: uint64
+                    chargerId:
+                      type: string
+                    ownerAccountAddress:
+                      type: string
+                    driverAccountAddress:
+                      type: string
+                    offeredTariff:
+                      type: integer
+                      format: int32
+                    status:
+                      type: string
+                      enum:
+                        - REQUESTED
+                        - ONGOING
+                        - PAID
+                        - CANCELLED
+                      default: REQUESTED
+                    collateral:
+                      type: string
+                      format: uint64
+                    energyToTransfer:
+                      type: integer
+                      format: int32
+                    energyTransferred:
+                      type: integer
+                      format: int32
+                    paidDate:
+                      type: string
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: ownerAccAddress
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /c4echain/cfeev/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: Chain4EnergyC4EchainCfeevParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params holds all the parameters of this module.
+                type: object
+                properties:
+                  denom:
+                    type: string
+            description: >-
+              QueryParamsResponse is response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /c4e/minter/v1beta1/inflation:
     get:
       summary: Queries a list of Inflation items.
@@ -49289,6 +50261,568 @@ definitions:
 
       NOTE: The amount field is an Dec which implements the custom method
       signatures required by gogoproto.
+  chain4energy.c4echain.cfeev.ChargerStatus:
+    type: string
+    enum:
+      - ACTIVE
+      - BUSY
+      - INACTIVE
+    default: ACTIVE
+  chain4energy.c4echain.cfeev.EnergyTransfer:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+      energyTransferOfferId:
+        type: string
+        format: uint64
+      chargerId:
+        type: string
+      ownerAccountAddress:
+        type: string
+      driverAccountAddress:
+        type: string
+      offeredTariff:
+        type: integer
+        format: int32
+      status:
+        type: string
+        enum:
+          - REQUESTED
+          - ONGOING
+          - PAID
+          - CANCELLED
+        default: REQUESTED
+      collateral:
+        type: string
+        format: uint64
+      energyToTransfer:
+        type: integer
+        format: int32
+      energyTransferred:
+        type: integer
+        format: int32
+      paidDate:
+        type: string
+  chain4energy.c4echain.cfeev.EnergyTransferOffer:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+      owner:
+        type: string
+      chargerId:
+        type: string
+      chargerStatus:
+        type: string
+        enum:
+          - ACTIVE
+          - BUSY
+          - INACTIVE
+        default: ACTIVE
+      location:
+        type: object
+        properties:
+          latitude:
+            type: string
+          longitude:
+            type: string
+      tariff:
+        type: integer
+        format: int32
+      name:
+        type: string
+      plugType:
+        type: string
+        enum:
+          - Type1
+          - Type2
+          - CHAdeMO
+          - CCS
+        default: Type1
+  chain4energy.c4echain.cfeev.Location:
+    type: object
+    properties:
+      latitude:
+        type: string
+      longitude:
+        type: string
+  chain4energy.c4echain.cfeev.MsgCancelEnergyTransferResponse:
+    type: object
+  chain4energy.c4echain.cfeev.MsgEnergyTransferCompletedResponse:
+    type: object
+  chain4energy.c4echain.cfeev.MsgEnergyTransferStartedResponse:
+    type: object
+  chain4energy.c4echain.cfeev.MsgPublishEnergyTransferOfferResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+  chain4energy.c4echain.cfeev.MsgRemoveEnergyOfferResponse:
+    type: object
+  chain4energy.c4echain.cfeev.MsgRemoveTransferResponse:
+    type: object
+  chain4energy.c4echain.cfeev.MsgStartEnergyTransferResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+  chain4energy.c4echain.cfeev.Params:
+    type: object
+    properties:
+      denom:
+        type: string
+    description: Params defines the parameters for the module.
+  chain4energy.c4echain.cfeev.PlugType:
+    type: string
+    enum:
+      - Type1
+      - Type2
+      - CHAdeMO
+      - CCS
+    default: Type1
+  chain4energy.c4echain.cfeev.QueryAllEnergyTransferOfferResponse:
+    type: object
+    properties:
+      EnergyTransferOffer:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            owner:
+              type: string
+            chargerId:
+              type: string
+            chargerStatus:
+              type: string
+              enum:
+                - ACTIVE
+                - BUSY
+                - INACTIVE
+              default: ACTIVE
+            location:
+              type: object
+              properties:
+                latitude:
+                  type: string
+                longitude:
+                  type: string
+            tariff:
+              type: integer
+              format: int32
+            name:
+              type: string
+            plugType:
+              type: string
+              enum:
+                - Type1
+                - Type2
+                - CHAdeMO
+                - CCS
+              default: Type1
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  chain4energy.c4echain.cfeev.QueryAllEnergyTransferResponse:
+    type: object
+    properties:
+      EnergyTransfer:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            energyTransferOfferId:
+              type: string
+              format: uint64
+            chargerId:
+              type: string
+            ownerAccountAddress:
+              type: string
+            driverAccountAddress:
+              type: string
+            offeredTariff:
+              type: integer
+              format: int32
+            status:
+              type: string
+              enum:
+                - REQUESTED
+                - ONGOING
+                - PAID
+                - CANCELLED
+              default: REQUESTED
+            collateral:
+              type: string
+              format: uint64
+            energyToTransfer:
+              type: integer
+              format: int32
+            energyTransferred:
+              type: integer
+              format: int32
+            paidDate:
+              type: string
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  chain4energy.c4echain.cfeev.QueryGetEnergyTransferOfferResponse:
+    type: object
+    properties:
+      EnergyTransferOffer:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uint64
+          owner:
+            type: string
+          chargerId:
+            type: string
+          chargerStatus:
+            type: string
+            enum:
+              - ACTIVE
+              - BUSY
+              - INACTIVE
+            default: ACTIVE
+          location:
+            type: object
+            properties:
+              latitude:
+                type: string
+              longitude:
+                type: string
+          tariff:
+            type: integer
+            format: int32
+          name:
+            type: string
+          plugType:
+            type: string
+            enum:
+              - Type1
+              - Type2
+              - CHAdeMO
+              - CCS
+            default: Type1
+  chain4energy.c4echain.cfeev.QueryGetEnergyTransferResponse:
+    type: object
+    properties:
+      EnergyTransfer:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uint64
+          energyTransferOfferId:
+            type: string
+            format: uint64
+          chargerId:
+            type: string
+          ownerAccountAddress:
+            type: string
+          driverAccountAddress:
+            type: string
+          offeredTariff:
+            type: integer
+            format: int32
+          status:
+            type: string
+            enum:
+              - REQUESTED
+              - ONGOING
+              - PAID
+              - CANCELLED
+            default: REQUESTED
+          collateral:
+            type: string
+            format: uint64
+          energyToTransfer:
+            type: integer
+            format: int32
+          energyTransferred:
+            type: integer
+            format: int32
+          paidDate:
+            type: string
+  chain4energy.c4echain.cfeev.QueryListOwnEnergyTransferOfferResponse:
+    type: object
+    properties:
+      energyTransferOffer:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            owner:
+              type: string
+            chargerId:
+              type: string
+            chargerStatus:
+              type: string
+              enum:
+                - ACTIVE
+                - BUSY
+                - INACTIVE
+              default: ACTIVE
+            location:
+              type: object
+              properties:
+                latitude:
+                  type: string
+                longitude:
+                  type: string
+            tariff:
+              type: integer
+              format: int32
+            name:
+              type: string
+            plugType:
+              type: string
+              enum:
+                - Type1
+                - Type2
+                - CHAdeMO
+                - CCS
+              default: Type1
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  chain4energy.c4echain.cfeev.QueryListOwnEnergyTransferResponse:
+    type: object
+    properties:
+      energyTransfer:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            energyTransferOfferId:
+              type: string
+              format: uint64
+            chargerId:
+              type: string
+            ownerAccountAddress:
+              type: string
+            driverAccountAddress:
+              type: string
+            offeredTariff:
+              type: integer
+              format: int32
+            status:
+              type: string
+              enum:
+                - REQUESTED
+                - ONGOING
+                - PAID
+                - CANCELLED
+              default: REQUESTED
+            collateral:
+              type: string
+              format: uint64
+            energyToTransfer:
+              type: integer
+              format: int32
+            energyTransferred:
+              type: integer
+              format: int32
+            paidDate:
+              type: string
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  chain4energy.c4echain.cfeev.QueryListOwnerEnergyTransferResponse:
+    type: object
+    properties:
+      energyTransfer:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            energyTransferOfferId:
+              type: string
+              format: uint64
+            chargerId:
+              type: string
+            ownerAccountAddress:
+              type: string
+            driverAccountAddress:
+              type: string
+            offeredTariff:
+              type: integer
+              format: int32
+            status:
+              type: string
+              enum:
+                - REQUESTED
+                - ONGOING
+                - PAID
+                - CANCELLED
+              default: REQUESTED
+            collateral:
+              type: string
+              format: uint64
+            energyToTransfer:
+              type: integer
+              format: int32
+            energyTransferred:
+              type: integer
+              format: int32
+            paidDate:
+              type: string
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  chain4energy.c4echain.cfeev.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params holds all the parameters of this module.
+        type: object
+        properties:
+          denom:
+            type: string
+    description: QueryParamsResponse is response type for the Query/Params RPC method.
+  chain4energy.c4echain.cfeev.TransferStatus:
+    type: string
+    enum:
+      - REQUESTED
+      - ONGOING
+      - PAID
+      - CANCELLED
+    default: REQUESTED
   chain4energy.c4echain.cfeminter.Minter:
     type: object
     properties:
