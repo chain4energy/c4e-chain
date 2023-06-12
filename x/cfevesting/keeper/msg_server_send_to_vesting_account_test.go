@@ -134,7 +134,7 @@ func sendVestingAccountPoolLockEndedTest(t *testing.T, afterEnd time.Duration, r
 
 	testHelper.SetContextBlockTime(testHelper.Context.BlockTime().Add(lockupDuration + afterEnd))
 	testHelper.C4eVestingUtils.MessageSendToVestingAccount(accAddr, accAddr2, vPool1, math.NewInt(100), restartVesting, math.NewInt(95))
-	testHelper.BankUtils.VerifyAccountDefultDenomBalance(accAddr, accInitBalance.Sub(vested))
+	testHelper.BankUtils.VerifyAccountDefaultDenomBalance(accAddr, accInitBalance.Sub(vested))
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
 }
 

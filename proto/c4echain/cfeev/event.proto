@@ -4,40 +4,40 @@ package chain4energy.c4echain.cfeev;
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeev/types";
 
 message EnergyTransferCreatedEvent {
-  uint64 energyTransferId = 1; 
-  string chargerId = 2; 
-  int32 energyAmountToTransfer = 3; 
+  uint64 energy_transfer_id = 1; 
+  string charger_id = 2; 
+  int32 energy_amount_to_transfer = 3; 
   string action = 4;
 }
 
 message ChangeOfferStatus {
-  uint64 energyTransferOfferId = 1;
-  string oldStatus = 2;
-  string newStatus = 3;
+  uint64 energy_transfer_offer_id = 1;
+  string old_status = 2;
+  string new_status = 3;
 }
 
 message PublishOffer {
-  uint64 energyTransferOfferId = 1;
+  uint64 energy_transfer_offer_id = 1;
   string owner = 2; 
-  string chargerId = 3;
+  string charger_id = 3;
   int32 tariff = 4; 
   string name = 5;
-  string plugType = 6;
+  string plug_type = 6;
 }
 
 message CancelEnergyTransfer {
-  uint64 energyTransferId = 1; 
-  string chargerId = 2; 
-  string cancelReason = 3;
+  uint64 energy_transfer_id = 1; 
+  string charger_id = 2; 
+  string cancel_reason = 3;
 }
 
 message BeginEnergyTransfer {
-  uint64 energyTransferId = 1;
-  uint64 energyTransferOfferId = 2;
+  uint64 energy_transfer_id = 1;
+  uint64 energy_transfer_offer_id = 2;
 }
 
 message CompleteEnergyTransfer {
-  uint64 energyTransferId = 1;
-  uint64 energyTransferOfferId = 2;
-  int32 energyTransferred = 3;
+  uint64 energy_transfer_id = 1;
+  uint64 energy_transfer_offer_id = 2;
+  int32 energy_transferred = 3;
 }

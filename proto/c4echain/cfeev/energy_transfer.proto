@@ -5,16 +5,16 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeev/types";
 
 message EnergyTransfer {
   uint64 id = 1;
-  uint64 energyTransferOfferId = 2; 
-  string chargerId = 3; 
-  string ownerAccountAddress = 4; 
-  string driverAccountAddress = 5; 
-  int32 offeredTariff = 6; 
+  uint64 energy_transfer_offer_id = 2; 
+  string charger_id = 3; 
+  string owner_account_address = 4; 
+  string driver_account_address = 5; 
+  int32 offered_tariff = 6; 
   TransferStatus status = 7; 
   uint64 collateral = 8;
-  int32 energyToTransfer = 9;
-  int32 energyTransferred = 10;
-  string paidDate = 11;
+  int32 energy_to_transfer = 9;
+  int32 energy_transferred = 10;
+  string paid_date = 11;
   
 }
 

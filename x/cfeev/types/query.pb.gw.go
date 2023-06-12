@@ -232,7 +232,7 @@ func local_request_Query_EnergyTransferAll_0(ctx context.Context, marshaler runt
 }
 
 var (
-	filter_Query_ListOwnEnergyTransferOffer_0 = &utilities.DoubleArray{Encoding: map[string]int{"ownerAccAddress": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+	filter_Query_ListOwnEnergyTransferOffer_0 = &utilities.DoubleArray{Encoding: map[string]int{"owner_acc_address": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
 
 func request_Query_ListOwnEnergyTransferOffer_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -246,15 +246,15 @@ func request_Query_ListOwnEnergyTransferOffer_0(ctx context.Context, marshaler r
 		_   = err
 	)
 
-	val, ok = pathParams["ownerAccAddress"]
+	val, ok = pathParams["owner_acc_address"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "ownerAccAddress")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner_acc_address")
 	}
 
 	protoReq.OwnerAccAddress, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "ownerAccAddress", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner_acc_address", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -280,15 +280,15 @@ func local_request_Query_ListOwnEnergyTransferOffer_0(ctx context.Context, marsh
 		_   = err
 	)
 
-	val, ok = pathParams["ownerAccAddress"]
+	val, ok = pathParams["owner_acc_address"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "ownerAccAddress")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner_acc_address")
 	}
 
 	protoReq.OwnerAccAddress, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "ownerAccAddress", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner_acc_address", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -304,7 +304,7 @@ func local_request_Query_ListOwnEnergyTransferOffer_0(ctx context.Context, marsh
 }
 
 var (
-	filter_Query_ListOwnEnergyTransfer_0 = &utilities.DoubleArray{Encoding: map[string]int{"driverAccAddress": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+	filter_Query_ListOwnEnergyTransfer_0 = &utilities.DoubleArray{Encoding: map[string]int{"driver_acc_address": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
 
 func request_Query_ListOwnEnergyTransfer_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -318,15 +318,15 @@ func request_Query_ListOwnEnergyTransfer_0(ctx context.Context, marshaler runtim
 		_   = err
 	)
 
-	val, ok = pathParams["driverAccAddress"]
+	val, ok = pathParams["driver_acc_address"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "driverAccAddress")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "driver_acc_address")
 	}
 
 	protoReq.DriverAccAddress, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "driverAccAddress", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "driver_acc_address", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -352,15 +352,15 @@ func local_request_Query_ListOwnEnergyTransfer_0(ctx context.Context, marshaler 
 		_   = err
 	)
 
-	val, ok = pathParams["driverAccAddress"]
+	val, ok = pathParams["driver_acc_address"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "driverAccAddress")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "driver_acc_address")
 	}
 
 	protoReq.DriverAccAddress, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "driverAccAddress", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "driver_acc_address", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -376,7 +376,7 @@ func local_request_Query_ListOwnEnergyTransfer_0(ctx context.Context, marshaler 
 }
 
 var (
-	filter_Query_ListOwnerEnergyTransfer_0 = &utilities.DoubleArray{Encoding: map[string]int{"ownerAccAddress": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+	filter_Query_ListOwnerEnergyTransfer_0 = &utilities.DoubleArray{Encoding: map[string]int{"owner_acc_address": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
 
 func request_Query_ListOwnerEnergyTransfer_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -390,15 +390,15 @@ func request_Query_ListOwnerEnergyTransfer_0(ctx context.Context, marshaler runt
 		_   = err
 	)
 
-	val, ok = pathParams["ownerAccAddress"]
+	val, ok = pathParams["owner_acc_address"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "ownerAccAddress")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner_acc_address")
 	}
 
 	protoReq.OwnerAccAddress, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "ownerAccAddress", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner_acc_address", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -424,15 +424,15 @@ func local_request_Query_ListOwnerEnergyTransfer_0(ctx context.Context, marshale
 		_   = err
 	)
 
-	val, ok = pathParams["ownerAccAddress"]
+	val, ok = pathParams["owner_acc_address"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "ownerAccAddress")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner_acc_address")
 	}
 
 	protoReq.OwnerAccAddress, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "ownerAccAddress", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner_acc_address", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
@@ -842,21 +842,21 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"c4echain", "cfeev", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"c4e", "ev", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_EnergyTransferOffer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"c4echain", "cfeev", "energy_transfer_offer", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_EnergyTransferOffer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "ev", "v1beta1", "energy_transfer_offer", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_EnergyTransferOfferAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"c4echain", "cfeev", "energy_transfer_offer"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_EnergyTransferOfferAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"c4e", "ev", "v1beta1", "energy_transfer_offer"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_EnergyTransfer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"c4echain", "cfeev", "energy_transfer", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_EnergyTransfer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "ev", "v1beta1", "energy_transfer", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_EnergyTransferAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"c4echain", "cfeev", "energy_transfer"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_EnergyTransferAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"c4e", "ev", "v1beta1", "energy_transfer"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListOwnEnergyTransferOffer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"c4echain", "cfeev", "list_own_energy_transfer_offer", "ownerAccAddress"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ListOwnEnergyTransferOffer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "ev", "v1beta1", "list_own_energy_transfer_offer", "owner_acc_address"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListOwnEnergyTransfer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"c4echain", "cfeev", "list_own_energy_transfer", "driverAccAddress"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ListOwnEnergyTransfer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "ev", "v1beta1", "list_own_energy_transfer", "driver_acc_address"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListOwnerEnergyTransfer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"c4echain", "cfeev", "list_owner_energy_transfer", "ownerAccAddress"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ListOwnerEnergyTransfer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "ev", "v1beta1", "list_owner_energy_transfer", "owner_acc_address"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

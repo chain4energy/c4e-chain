@@ -28,19 +28,19 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgPublishEnergyTransferOffer int = 100
 
-	opWeightMsgStartEnergyTransfer = "op_weight_msg_start_energy_transfer_request"
+	opWeightMsgStartEnergyTransfer = "op_weight_msg_start_energy_transfer"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgStartEnergyTransfer int = 100
 
-	opWeightMsgEnergyTransferStarted = "op_weight_msg_energy_transfer_started_request"
+	opWeightMsgEnergyTransferStarted = "op_weight_msg_energy_transfer_started"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgEnergyTransferStarted int = 100
 
-	opWeightMsgEnergyTransferCompleted = "op_weight_msg_energy_transfer_completed_request"
+	opWeightMsgEnergyTransferCompleted = "op_weight_msg_energy_transfer_completed"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgEnergyTransferCompleted int = 100
 
-	opWeightMsgCancelEnergyTransfer = "op_weight_msg_cancel_energy_transfer_request"
+	opWeightMsgCancelEnergyTransfer = "op_weight_msg_cancel_energy_transfer"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgCancelEnergyTransfer int = 100
 
