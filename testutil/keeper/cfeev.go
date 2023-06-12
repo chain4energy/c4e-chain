@@ -33,10 +33,6 @@ import (
 )
 
 func CfeevKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, AdditionalDistributorKeeperData) {
-	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount("c4e", "c4e"+"pub")
-	config.Seal()
-
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 

@@ -210,6 +210,10 @@ func (bu *ContextBankUtils) AddCoinsToModule(coinsToMint sdk.Coin, moduleName st
 
 }
 
+func (bu *ContextBankUtils) VerifyAccountDefaultDenomBalance(addr sdk.AccAddress, expectedAmount math.Int) {
+	bu.BankUtils.VerifyAccountDefaultDenomBalance(bu.testContext.GetContext(), addr, expectedAmount)
+}
+
 func (bu *ContextBankUtils) AddDefaultDenomCoinsToModule(amount math.Int, moduleName string) (denom string) {
 	return bu.BankUtils.AddDefaultDenomCoinsToModule(bu.testContext.GetContext(), amount, moduleName)
 }

@@ -2,7 +2,6 @@ package keeper_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/testutil/app"
@@ -26,13 +25,11 @@ func TestEnergyTransferCancel(t *testing.T) {
 	bankutils.AddDefaultDenomCoinsToAccount(sdk.NewInt(5000), sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()))
 	bankutils.VerifyAccountBalanceByDenom(sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()), "uc4e", sdk.NewInt(5000))
 
-	fmt.Println("EV Driver acc address: " + transfer.GetDriverAccountAddress())
+	newOfferId := testHelper.C4eEvUtils.PublishAndVerifyEnergyTransferOffer(offer)
+	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransfer(transfer, newOfferId)
 
-	newOfferId := testHelper.C4eEvUtils.PublishAndVerifyEnergyTransferOffer(testHelper.GetContext(), offer)
-	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransfer(testHelper.GetContext(), transfer, newOfferId)
-
-	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_BUSY)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_REQUESTED)
+	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_BUSY)
+	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_REQUESTED)
 
 	// Energy transfer can be canceled when it has REQUESTED status so before the actual transfer begins
 	// A similar approach to the SIP
@@ -49,8 +46,8 @@ func TestEnergyTransferCancel(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_ACTIVE)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_CANCELLED)
+	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_ACTIVE)
+	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_CANCELLED)
 }
 
 func TestEnergyTransferStartedFull(t *testing.T) {
@@ -62,26 +59,26 @@ func TestEnergyTransferStartedFull(t *testing.T) {
 	bankutils.AddDefaultDenomCoinsToAccount(sdk.NewInt(5000), sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()))
 	bankutils.VerifyAccountBalanceByDenom(sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()), "uc4e", sdk.NewInt(5000))
 
-	newOfferId := testHelper.C4eEvUtils.PublishAndVerifyEnergyTransferOffer(testHelper.GetContext(), offer)
-	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransfer(testHelper.GetContext(), transfer, newOfferId)
+	newOfferId := testHelper.C4eEvUtils.PublishAndVerifyEnergyTransferOffer(offer)
+	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransfer(transfer, newOfferId)
 
-	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_BUSY)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_REQUESTED)
+	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_BUSY)
+	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_REQUESTED)
 
 	// confirm that energy transfer has been started
-	testHelper.C4eEvUtils.EnergyTransferStarted(testHelper.GetContext(), energyTransferId)
+	testHelper.C4eEvUtils.EnergyTransferStarted(energyTransferId)
 
-	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_BUSY)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_ONGOING)
+	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_BUSY)
+	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_ONGOING)
 
 	// when energy transfer is completed - full charging
-	testHelper.C4eEvUtils.EnergyTransferCompleted(testHelper.GetContext(), energyTransferId, transfer.GetEnergyToTransfer())
+	testHelper.C4eEvUtils.EnergyTransferCompleted(energyTransferId, transfer.GetEnergyToTransfer())
 
-	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_ACTIVE)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_PAID)
+	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_ACTIVE)
+	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_PAID)
 
-	bankutils.VerifyAccountDefaultDenomBalance(testHelper.GetContext(), sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()), sdk.NewInt(3768))
-	bankutils.VerifyAccountDefaultDenomBalance(testHelper.GetContext(), sdk.MustAccAddressFromBech32(transfer.GetOwnerAccountAddress()), sdk.NewInt(1232))
+	bankutils.VerifyAccountDefaultDenomBalance(sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()), sdk.NewInt(3768))
+	bankutils.VerifyAccountDefaultDenomBalance(sdk.MustAccAddressFromBech32(transfer.GetOwnerAccountAddress()), sdk.NewInt(1232))
 }
 
 func TestEnergyTransferStartedPartial(t *testing.T) {
@@ -93,24 +90,24 @@ func TestEnergyTransferStartedPartial(t *testing.T) {
 	bankutils.AddDefaultDenomCoinsToAccount(sdk.NewInt(5000), sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()))
 	bankutils.VerifyAccountBalanceByDenom(sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()), "uc4e", sdk.NewInt(5000))
 
-	newOfferId := testHelper.C4eEvUtils.PublishAndVerifyEnergyTransferOffer(testHelper.GetContext(), offer)
-	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransfer(testHelper.GetContext(), transfer, newOfferId)
+	newOfferId := testHelper.C4eEvUtils.PublishAndVerifyEnergyTransferOffer(offer)
+	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransfer(transfer, newOfferId)
 
-	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_BUSY)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_REQUESTED)
+	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_BUSY)
+	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_REQUESTED)
 
 	// confirm that energy transfer has been started
-	testHelper.C4eEvUtils.EnergyTransferStarted(testHelper.GetContext(), energyTransferId)
+	testHelper.C4eEvUtils.EnergyTransferStarted(energyTransferId)
 
-	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_BUSY)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_ONGOING)
+	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_BUSY)
+	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_ONGOING)
 
 	// when energy transfer is completed - partial charging
-	testHelper.C4eEvUtils.EnergyTransferCompleted(testHelper.GetContext(), energyTransferId, 10)
+	testHelper.C4eEvUtils.EnergyTransferCompleted(energyTransferId, 10)
 
-	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(testHelper.GetContext(), newOfferId, types.ChargerStatus_ACTIVE)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(testHelper.GetContext(), energyTransferId, types.TransferStatus_PAID)
+	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_ACTIVE)
+	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_PAID)
 
-	bankutils.VerifyAccountDefaultDenomBalance(testHelper.GetContext(), sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()), sdk.NewInt(4440))
-	bankutils.VerifyAccountDefaultDenomBalance(testHelper.GetContext(), sdk.MustAccAddressFromBech32(transfer.GetOwnerAccountAddress()), sdk.NewInt(560))
+	bankutils.VerifyAccountDefaultDenomBalance(sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()), sdk.NewInt(4440))
+	bankutils.VerifyAccountDefaultDenomBalance(sdk.MustAccAddressFromBech32(transfer.GetOwnerAccountAddress()), sdk.NewInt(560))
 }
