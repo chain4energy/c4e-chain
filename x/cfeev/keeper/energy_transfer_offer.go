@@ -1,13 +1,12 @@
 package keeper
 
 import (
-	"encoding/binary"
-
 	"cosmossdk.io/errors"
+	"encoding/binary"
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
-
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k Keeper) PostEnergyTransferOffer(
@@ -104,6 +103,15 @@ func (k Keeper) GetEnergyTransferOffer(ctx sdk.Context, id uint64) (val types.En
 	}
 	k.cdc.MustUnmarshal(b, &val)
 	return val, true
+}
+
+// MustGetEnergyTransferOffer returns a energyTransferOffer from its id
+func (k Keeper) MustGetEnergyTransferOffer(ctx sdk.Context, id uint64) (*types.EnergyTransferOffer, error) {
+	offer, found := k.GetEnergyTransferOffer(ctx, id)
+	if !found {
+		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "energy transfer offer with id %d not found", id)
+	}
+	return &offer, nil
 }
 
 // RemoveEnergyTransferOffer removes a energyTransferOffer from the store

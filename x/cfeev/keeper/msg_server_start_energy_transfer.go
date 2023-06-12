@@ -33,7 +33,6 @@ func (k msgServer) StartEnergyTransfer(goCtx context.Context, msg *types.MsgStar
 		msg.ChargerId, offeredTariff,
 		msg.GetEnergyToTransfer(),
 		*dynamicCollateral)
-
 	if err != nil {
 		k.Logger(ctx).Error("start energy transfer failed", "error", err)
 		return nil, err
