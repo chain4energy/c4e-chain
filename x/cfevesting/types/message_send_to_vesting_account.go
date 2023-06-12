@@ -53,7 +53,7 @@ func ValidateSendToVestingAccount(owner string, toAddr string, vestingPoolName s
 	if amount.IsNil() {
 		return nil, nil, errors.Wrap(ErrAmount, "send to new vesting account - amount cannot be nil")
 	}
-	if amount.IsNegative() {
+	if !amount.IsPositive() {
 		return nil, nil, errors.Wrap(ErrAmount, "send to new vesting account - amount is <= 0")
 	}
 	if owner == toAddr {

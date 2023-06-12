@@ -65,6 +65,30 @@ func TestMsgCreateVestingAccount_ValidateBasic(t *testing.T) {
 			err:    types.ErrParam,
 			errMsg: "create vesting account - coin amount cannot be nil: wrong param value",
 		},
+		{
+			name: "negative amount",
+			msg: types.MsgCreateVestingAccount{
+				FromAddress: sample.AccAddress(),
+				ToAddress:   sample.AccAddress(),
+				Amount:      sdk.Coins{sdk.Coin{Denom: testenv.DefaultTestDenom, Amount: sdk.NewInt(-10000)}},
+				StartTime:   0,
+				EndTime:     0,
+			},
+			err:    types.ErrParam,
+			errMsg: "create vesting account - invalid amount (coin -10000uc4e amount is not positive): wrong param value",
+		},
+		{
+			name: "nil coin",
+			msg: types.MsgCreateVestingAccount{
+				FromAddress: sample.AccAddress(),
+				ToAddress:   sample.AccAddress(),
+				Amount:      sdk.Coins{sdk.Coin{Denom: testenv.DefaultTestDenom, Amount: sdk.NewInt(10000)}, sdk.Coin{}},
+				StartTime:   0,
+				EndTime:     0,
+			},
+			err:    types.ErrParam,
+			errMsg: "create vesting account - coin amount cannot be nil: wrong param value",
+		},
 	}
 
 	for _, tt := range tests {

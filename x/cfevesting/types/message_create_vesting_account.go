@@ -42,20 +42,20 @@ func (msg *MsgCreateVestingAccount) GetSignBytes() []byte {
 }
 
 func (msg *MsgCreateVestingAccount) ValidateBasic() error {
+	if msg.Amount == nil {
+		return errors.Wrap(ErrParam, "create vesting account - coin amount cannot be nil")
+	}
 	_, _, err := ValidateCreateVestingAccount(msg.FromAddress, msg.ToAddress, msg.Amount, msg.StartTime, msg.EndTime)
 	return err
 }
 
 func ValidateCreateVestingAccount(fromAddress string, toAddress string, amount sdk.Coins, startTime int64,
 	endTime int64) (fromAccAddress sdk.AccAddress, toAccAddress sdk.AccAddress, err error) {
-	if amount == nil {
-		return nil, nil, errors.Wrap(ErrParam, "create vesting account - coin amount cannot be nil")
-	}
 	if amount.IsAnyNil() {
 		return nil, nil, errors.Wrap(ErrParam, "create vesting account - coin amount cannot be nil")
 	}
-	if amount.IsAnyNegative() {
-		return nil, nil, errors.Wrap(ErrParam, "create vesting account - negative coin amount")
+	if err := amount.Validate(); err != nil {
+		return nil, nil, errors.Wrapf(ErrParam, "create vesting account - invalid amount (%s)", err)
 	}
 	if startTime > endTime {
 		return nil, nil, errors.Wrapf(ErrParam, "create vesting account - start time is after end time error (%s > %s)", time.Unix(startTime, 0).String(), time.Unix(endTime, 0).String())
