@@ -13,9 +13,8 @@ func (k msgServer) PublishEnergyTransferOffer(goCtx context.Context, msg *types.
 	defer telemetry.IncrCounter(1, types.ModuleName, "publish energy transfer offer")
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	keeper := k.Keeper
 
-	id, err := keeper.PostEnergyTransferOffer(ctx,
+	id, err := k.Keeper.PostEnergyTransferOffer(ctx,
 		msg.Creator,
 		msg.ChargerId,
 		types.ChargerStatus_ACTIVE,
@@ -25,7 +24,7 @@ func (k msgServer) PublishEnergyTransferOffer(goCtx context.Context, msg *types.
 		msg.GetPlugType(),
 	)
 	if err != nil {
-		k.Logger(ctx).Error("publish energy transfer offer failed", "error", err)
+		k.Logger(ctx).Error("publish energy transfer offer error", "error", err)
 		return nil, err
 	}
 
@@ -42,6 +41,5 @@ func (k msgServer) PublishEnergyTransferOffer(goCtx context.Context, msg *types.
 		k.Logger(ctx).Error("new publish energy transfer offer emit event error", "event", event, "error", err.Error())
 	}
 
-	// place offer ID into response
 	return &types.MsgPublishEnergyTransferOfferResponse{Id: id}, nil
 }

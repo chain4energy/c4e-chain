@@ -230,10 +230,6 @@ func (bu *ContextBankUtils) VerifyAccountBalanceByDenom(addr sdk.AccAddress, den
 	bu.BankUtils.VerifyAccountBalanceByDenom(bu.testContext.GetContext(), addr, denom, expectedAmount)
 }
 
-func (bu *ContextBankUtils) VerifyAccountDefaultDenomBalance(addr sdk.AccAddress, expectedAmount math.Int) {
-	bu.BankUtils.VerifyAccountDefaultDenomBalance(bu.testContext.GetContext(), addr, expectedAmount)
-}
-
 func (bu *ContextBankUtils) VerifyTotalSupplyByDenom(denom string, expectedAmount math.Int) {
 	bu.BankUtils.VerifyTotalSupplyByDenom(bu.testContext.GetContext(), denom, expectedAmount)
 }

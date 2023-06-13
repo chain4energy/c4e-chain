@@ -17,7 +17,7 @@ func (k Keeper) StartEnergyTransfer(
 	energyToTransfer int32,
 	collateral sdk.Coin,
 ) (uint64, error) {
-	k.Logger(ctx).Debug("start energy transfer - driver: %s, charger ID: %s", driver, chargerId)
+	k.Logger(ctx).Debug("start energy transfer", "driver", driver, "chargerId", chargerId)
 
 	var energyTransferObj = types.EnergyTransfer{
 		OwnerAccountAddress:   owner,
@@ -46,58 +46,29 @@ func (k Keeper) StartEnergyTransfer(
 		return 0, errors.Wrap(c4eerrors.ErrParam, "wrong tariff")
 	}
 
-	k.Logger(ctx).Debug("start energy transfer - send collateral, driver: %s", energyTransferObj.DriverAccountAddress)
+	k.Logger(ctx).Debug("start energy transfer send collateral", "driver", energyTransferObj.DriverAccountAddress)
 
-	// send tokens to the escrow account
-	coinsToTransfer := collateral.Amount.String() + collateral.Denom
-	if err = k.sendCollateralToEscrowAccount(ctx, energyTransferObj.DriverAccountAddress, coinsToTransfer); err != nil {
+	driverAccAddress, err := sdk.AccAddressFromBech32(energyTransferObj.DriverAccountAddress)
+	if err != nil {
+		panic(err)
+	}
+	if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, driverAccAddress, types.ModuleName, sdk.NewCoins(collateral)); err != nil {
 		return 0, err
 	}
 
 	energyTransferId := k.AppendEnergyTransfer(ctx, energyTransferObj)
 
-	// update the offer in the store
 	k.SetEnergyTransferOffer(ctx, *offer)
-
-	// send notification event to connector, the event will emitted only if there is no previous errors
-	event := &types.EnergyTransferCreatedEvent{
-		EnergyTransferId:       energyTransferId,
-		ChargerId:              chargerId,
-		EnergyAmountToTransfer: energyTransferObj.GetEnergyToTransfer(),
-	}
-	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
-		k.Logger(ctx).Error("new EnergyTransferCreated emit event error", "event", event, "error", err.Error())
-	}
-
-	k.EmitChangeOfferStatusEvent(ctx, energyTransferObj.GetEnergyTransferOfferId(),
-		types.ChargerStatus_ACTIVE.String(), types.ChargerStatus_BUSY.String())
+	k.EmitEnergyTransferCreatedEvent(ctx, energyTransferId, chargerId, energyTransferObj.GetEnergyToTransfer())
+	k.EmitChangeOfferStatusEvent(ctx, energyTransferObj.GetEnergyTransferOfferId(), types.ChargerStatus_ACTIVE.String(), types.ChargerStatus_BUSY.String())
 
 	return energyTransferId, nil
 }
 
-// sends the collateral from the driver's account to a module account
-func (k Keeper) sendCollateralToEscrowAccount(ctx sdk.Context, driverAccountAddress string, collateral string) error {
-	driver, err := sdk.AccAddressFromBech32(driverAccountAddress)
-	if err != nil {
-		panic(err)
-	}
-	collateralCoins, err := sdk.ParseCoinsNormalized(collateral)
-	if err != nil {
-		panic(err)
-	}
-	sdkError := k.bankKeeper.SendCoinsFromAccountToModule(ctx, driver, types.ModuleName, collateralCoins)
-	if sdkError != nil {
-		return sdkError
-	}
-
-	return nil
-}
-
 func (k Keeper) EnergyTransferStarted(ctx sdk.Context, energyTransferId uint64) error {
-
-	energyTransfer, found := k.GetEnergyTransfer(ctx, energyTransferId)
-	if !found {
-		return errors.Wrap(types.ErrEnergyTransferNotFound, "energy transfer not found")
+	energyTransfer, err := k.MustGetEnergyTransfer(ctx, energyTransferId)
+	if err != nil {
+		return err
 	}
 
 	if energyTransfer.Status != types.TransferStatus_REQUESTED {
@@ -107,17 +78,8 @@ func (k Keeper) EnergyTransferStarted(ctx sdk.Context, energyTransferId uint64) 
 	// REQUESTED ==> ONGOING
 	energyTransfer.Status = types.TransferStatus_ONGOING
 
-	// update energyTransfer instance in the KVStore
-	k.SetEnergyTransfer(ctx, energyTransfer)
-
-	event := &types.BeginEnergyTransfer{
-		EnergyTransferId:      energyTransferId,
-		EnergyTransferOfferId: energyTransfer.GetEnergyTransferOfferId(),
-	}
-	err := ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
-		k.Logger(ctx).Error("new begin energy transfer emit event error", "event", event, "error", err.Error())
-	}
+	k.SetEnergyTransfer(ctx, *energyTransfer)
+	k.EmitBeginEnergyTransferEvent(ctx, energyTransferId, energyTransfer.GetEnergyTransferOfferId())
 
 	return nil
 }
@@ -144,7 +106,9 @@ func (k Keeper) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64
 		// send entire callateral to CP owner's account
 		amount := sdk.NewInt(int64(energyTransferObj.GetCollateral()))
 		coinsToTransfer := sdk.NewCoins(sdk.NewCoin(denom, amount))
-		err = k.sendTokensToTargetAccount(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer)
+		if err = k.parseAddressAndSendTokensFromModule(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer); err != nil {
+			return err
+		}
 		energyTransferObj.Status = types.TransferStatus_PAID
 
 	} else if energyTransferObj.EnergyToTransfer > usedServiceUnits {
@@ -152,19 +116,21 @@ func (k Keeper) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64
 		usedTokens := energyTransferObj.OfferedTariff * usedServiceUnits
 		amount := sdk.NewInt(int64(usedTokens))
 		coinsToTransfer := sdk.NewCoins(sdk.NewCoin(denom, amount))
-		err = k.sendTokensToTargetAccount(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer)
+		if err = k.parseAddressAndSendTokensFromModule(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer); err != nil {
+			return err
+		}
 
 		// calculate unused tokens
 		unusedTokens := energyTransferObj.Collateral - uint64(usedTokens)
 		amount = sdk.NewInt(int64(unusedTokens))
 		coinsToTransfer = sdk.NewCoins(sdk.NewCoin(denom, amount))
-		err = k.sendTokensToTargetAccount(ctx, energyTransferObj.DriverAccountAddress, coinsToTransfer)
+		if err = k.parseAddressAndSendTokensFromModule(ctx, energyTransferObj.DriverAccountAddress, coinsToTransfer); err != nil {
+			return err
+		}
 
 		// set status
 		energyTransferObj.Status = types.TransferStatus_PAID
-		if err != nil {
-			// TODO:
-		}
+
 		// TODO: handle exceeded limit value
 
 	} else if usedServiceUnits > energyTransferObj.EnergyToTransfer {
@@ -172,14 +138,12 @@ func (k Keeper) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64
 			// send entire callateral to CP owner's account
 			amount := sdk.NewInt(int64(energyTransferObj.GetCollateral()))
 			coinsToTransfer := sdk.NewCoins(sdk.NewCoin(denom, amount))
-			err = k.sendTokensToTargetAccount(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer)
+			if err = k.parseAddressAndSendTokensFromModule(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer); err != nil {
+				return err
+			}
 			energyTransferObj.Status = types.TransferStatus_PAID
 		}
 		// TODO:
-	}
-
-	if err != nil {
-		return errors.Wrap(types.ErrCoinTransferFailed, "coin transfer failed")
 	}
 
 	// get energy transfer offer object by offer id
@@ -199,25 +163,19 @@ func (k Keeper) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64
 	return nil
 }
 
-func (k Keeper) sendTokensToTargetAccount(ctx sdk.Context, targetAccountAddress string, collateralCoins sdk.Coins) error {
+func (k Keeper) parseAddressAndSendTokensFromModule(ctx sdk.Context, targetAccountAddress string, collateralCoins sdk.Coins) error {
 	target, err := sdk.AccAddressFromBech32(targetAccountAddress)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	sdkError := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, target, collateralCoins)
-
-	if sdkError != nil {
-		return sdkError
-	}
-
-	return nil
+	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, target, collateralCoins)
 }
 
 func (k Keeper) CancelEnergyTransfer(ctx sdk.Context, energyTransferId uint64) error {
 	k.Logger(ctx).Debug("CancelEnergyTransfer - ID=%d", energyTransferId)
-	energyTransferObj, found := k.GetEnergyTransfer(ctx, energyTransferId)
-	if !found {
-		return errors.Wrap(types.ErrEnergyTransferNotFound, "energy transfer not found")
+	energyTransferObj, err := k.MustGetEnergyTransfer(ctx, energyTransferId)
+	if err != nil {
+		return err
 	}
 
 	// if energyTransferObj.GetStatus() != types.TransferStatus_REQUESTED {
@@ -226,10 +184,9 @@ func (k Keeper) CancelEnergyTransfer(ctx sdk.Context, energyTransferId uint64) e
 
 	energyTransferObj.Status = types.TransferStatus_CANCELLED
 
-	// get energy transfer offer object by offer id
-	offer, found := k.GetEnergyTransferOffer(ctx, energyTransferObj.EnergyTransferOfferId)
-	if !found {
-		return errors.Wrap(types.ErrEnergyTransferOfferNotFound, "energy transfer offer not found")
+	offer, err := k.MustGetEnergyTransferOffer(ctx, energyTransferObj.EnergyTransferOfferId)
+	if err != nil {
+		return err
 	}
 	offer.ChargerStatus = types.ChargerStatus_ACTIVE
 
@@ -237,15 +194,13 @@ func (k Keeper) CancelEnergyTransfer(ctx sdk.Context, energyTransferId uint64) e
 	denom := k.Denom(ctx)
 	amount := sdk.NewInt(int64(energyTransferObj.GetCollateral()))
 	coinsToTransfer := sdk.NewCoins(sdk.NewCoin(denom, amount))
-	err := k.sendTokensToTargetAccount(ctx, energyTransferObj.GetDriverAccountAddress(), coinsToTransfer)
-
-	if err != nil {
-		return errors.Wrap(types.ErrCoinTransferFailed, "coin transfer failed")
+	if err = k.parseAddressAndSendTokensFromModule(ctx, energyTransferObj.GetDriverAccountAddress(), coinsToTransfer); err != nil {
+		return err
 	}
 
 	// update both entities
-	k.SetEnergyTransferOffer(ctx, offer)
-	k.SetEnergyTransfer(ctx, energyTransferObj)
+	k.SetEnergyTransferOffer(ctx, *offer)
+	k.SetEnergyTransfer(ctx, *energyTransferObj)
 
 	k.EmitChangeOfferStatusEvent(ctx, energyTransferObj.GetEnergyTransferOfferId(), types.ChargerStatus_BUSY.String(), types.ChargerStatus_ACTIVE.String())
 	k.EmitCancelEnergyTransferEvent(ctx, energyTransferId, energyTransferObj.ChargerId, "")
@@ -260,7 +215,7 @@ func (k Keeper) EmitChangeOfferStatusEvent(ctx sdk.Context, energyTransferOfferI
 		NewStatus:             newStatus,
 	}
 	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
-		k.Logger(ctx).Error("new EmitChangeOfferStatusEvent error", "event", event, "error", err.Error())
+		k.Logger(ctx).Error("ChangeOfferStatus error", "event", event, "error", err.Error())
 	}
 }
 
@@ -271,7 +226,7 @@ func (k Keeper) EmitCancelEnergyTransferEvent(ctx sdk.Context, energyTransferId 
 		CancelReason:     cancelReason,
 	}
 	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
-		k.Logger(ctx).Error("new EmitCancelEnergyTransferEvent error", "event", event, "error", err.Error())
+		k.Logger(ctx).Error("CancelEnergyTransfer error", "event", event, "error", err.Error())
 	}
 }
 
@@ -282,6 +237,27 @@ func (k Keeper) EmitCompleteEnergyTransferEvent(ctx sdk.Context, energyTransferI
 		EnergyTransferred:     usedServiceUnits,
 	}
 	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
-		k.Logger(ctx).Error("new EmitCompleteEnergyTransferEvent error", "event", event, "error", err.Error())
+		k.Logger(ctx).Error("CompleteEnergyTransfer error", "event", event, "error", err.Error())
+	}
+}
+
+func (k Keeper) EmitEnergyTransferCreatedEvent(ctx sdk.Context, energyTransferId uint64, chargerId string, energyAmountToTransfer int32) {
+	event := &types.EnergyTransferCreatedEvent{
+		EnergyTransferId:       energyTransferId,
+		ChargerId:              chargerId,
+		EnergyAmountToTransfer: energyAmountToTransfer,
+	}
+	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
+		k.Logger(ctx).Error("EnergyTransferCreatedEvent error", "event", event, "error", err.Error())
+	}
+}
+
+func (k Keeper) EmitBeginEnergyTransferEvent(ctx sdk.Context, energyTransferId uint64, energyTransferOfferId uint64) {
+	event := &types.BeginEnergyTransfer{
+		EnergyTransferId:      energyTransferId,
+		EnergyTransferOfferId: energyTransferOfferId,
+	}
+	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
+		k.Logger(ctx).Error("BeginEnergyTransfer event error", "event", event, "error", err.Error())
 	}
 }

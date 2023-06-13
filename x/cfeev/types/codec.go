@@ -23,23 +23,11 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgPublishEnergyTransferOffer{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgStartEnergyTransfer{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgEnergyTransferStarted{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgEnergyTransferCompleted{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCancelEnergyTransfer{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgRemoveEnergyOffer{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgRemoveTransfer{},
 	)
 	// this line is used by starport scaffolding # 3

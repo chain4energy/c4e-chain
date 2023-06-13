@@ -13,9 +13,7 @@ func (k msgServer) EnergyTransferStarted(goCtx context.Context, msg *types.MsgEn
 	defer telemetry.IncrCounter(1, types.ModuleName, "energy transfer started")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	keeper := k.Keeper
-	err := keeper.EnergyTransferStarted(ctx, msg.GetEnergyTransferId())
-	if err != nil {
+	if err := k.Keeper.EnergyTransferStarted(ctx, msg.GetEnergyTransferId()); err != nil {
 		k.Logger(ctx).Error("energy transfer started failed", "error", err)
 		return nil, err
 	}

@@ -13,12 +13,8 @@ func (k msgServer) CancelEnergyTransfer(goCtx context.Context, msg *types.MsgCan
 	defer telemetry.IncrCounter(1, types.ModuleName, "cancel energy transfer")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	k.Logger(ctx).Debug("CancelEnergyTransfer - reason=%s, code=%s", msg.GetErrorInfo(), msg.GetErrorCode())
-	keeper := k.Keeper
-
-	err := keeper.CancelEnergyTransfer(ctx, msg.GetEnergyTransferId())
-	if err != nil {
-		k.Logger(ctx).Error("cancel energy transfer failed", "error", err)
+	if err := k.Keeper.CancelEnergyTransfer(ctx, msg.GetEnergyTransferId()); err != nil {
+		k.Logger(ctx).Error("cancel energy transfer error", "error", err)
 		return nil, err
 	}
 
