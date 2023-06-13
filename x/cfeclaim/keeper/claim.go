@@ -48,7 +48,7 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 
 	k.SetUserEntry(ctx, *userEntry)
 
-	event := &types.InitialClaim{
+	event := &types.EventInitialClaim{
 		Claimer:        claimer,
 		CampaignId:     strconv.FormatUint(campaignId, 10),
 		AddressToClaim: destinationAddress,
@@ -90,7 +90,7 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 
 	k.SetUserEntry(ctx, *userEntry)
 
-	event := &types.Claim{
+	event := &types.EventClaim{
 		Claimer:    claimer,
 		CampaignId: strconv.FormatUint(campaignId, 10),
 		MissionId:  strconv.FormatUint(missionId, 10),
@@ -115,7 +115,7 @@ func (k Keeper) CompleteMissionFromHook(ctx sdk.Context, campaignId uint64, miss
 
 	k.SetUserEntry(ctx, *userEntry)
 
-	event := &types.CompleteMission{
+	event := &types.EventCompleteMission{
 		CampaignId:  strconv.FormatUint(campaignId, 10),
 		MissionId:   strconv.FormatUint(missionId, 10),
 		UserAddress: address,

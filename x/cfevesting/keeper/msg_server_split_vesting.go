@@ -69,7 +69,7 @@ func (k msgServer) splitVestingCoins(ctx sdk.Context, from sdk.AccAddress, toAdd
 		startTime = vestingAcc.StartTime
 	}
 
-	event := &types.VestingSplit{
+	event := &types.EventVestingSplit{
 		Source:      from.String(),
 		Destination: toAddress.String(),
 	}

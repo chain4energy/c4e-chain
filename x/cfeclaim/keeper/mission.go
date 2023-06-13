@@ -40,7 +40,7 @@ func (k Keeper) AddMission(ctx sdk.Context, owner string, campaignId uint64, nam
 		eventClaimStartDate = claimStartDate.String()
 	}
 
-	event := &types.AddMission{
+	event := &types.EventAddMission{
 		Id:             strconv.FormatUint(mission.Id, 10),
 		Owner:          owner,
 		CampaignId:     strconv.FormatUint(campaignId, 10),

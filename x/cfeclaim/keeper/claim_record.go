@@ -49,7 +49,7 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 		k.SetUserEntry(ctx, *userEntry)
 	}
 
-	event := &types.AddClaimRecords{
+	event := &types.EventAddClaimRecords{
 		Owner:                   owner,
 		CampaignId:              strconv.FormatUint(campaignId, 10),
 		ClaimRecordsTotalAmount: amountSum.String(),
@@ -116,7 +116,7 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 	k.SetCampaign(ctx, *campaign)
 	k.Logger(ctx).Debug("delete claim record decrement campaign amounts", "campaignId", campaignId, "amount", amount)
 
-	event := &types.DeleteClaimRecord{
+	event := &types.EventDeleteClaimRecord{
 		Owner:             owner,
 		CampaignId:        strconv.FormatUint(campaignId, 10),
 		UserAddress:       userAddress,

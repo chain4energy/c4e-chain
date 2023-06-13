@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeclaim/types";
 
-message NewCampaign {
+message EventNewCampaign {
     string id = 1;
     string owner = 2;
     string name = 3;
@@ -21,23 +21,23 @@ message NewCampaign {
     string vesting_poolName = 13;
 }
 
-message CloseCampaign {
+message EventCloseCampaign {
     string owner = 1;
     string campaign_id = 2;
     string campaign_close_action = 3;
 }
 
-message RemoveCampaign {
+message EventRemoveCampaign {
     string owner = 1;
     string campaignId = 2;
 }
 
-message EnableCampaign {
+message EventEnableCampaign {
     string owner = 1;
     string campaignId = 2;
 }
 
-message AddMission {
+message EventAddMission {
     string id = 1;
     string owner = 2;
     string campaignId = 3;
@@ -48,35 +48,35 @@ message AddMission {
     string claim_start_date = 8;
 }
 
-message Claim {
+message EventClaim {
     string claimer = 1;
     string campaign_id = 2;
     string mission_id = 3;
     string amount = 4;
 }
 
-message InitialClaim {
+message EventInitialClaim {
     string claimer = 1;
     string campaign_id = 2;
     string addressToClaim = 3;
     string amount = 4;
 }
 
-message AddClaimRecords {
+message EventAddClaimRecords {
     string owner = 1;
     string campaign_id = 2;
     string claim_records_total_amount = 3;
     string claim_records_number = 4;
 }
 
-message DeleteClaimRecord {
+message EventDeleteClaimRecord {
     string owner = 1;
     string campaignId = 2;
     string userAddress = 3;
     string claim_record_amount = 4;
 }
 
-message CompleteMission {
+message EventCompleteMission {
     string campaign_id = 1;
     string mission_id = 2;
     string user_address = 3;

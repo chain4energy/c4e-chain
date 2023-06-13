@@ -48,7 +48,7 @@ func (k msgServer) RemoveCampaign(goCtx context.Context, msg *types.MsgRemoveCam
 		return nil, err
 	}
 
-	event := &types.RemoveCampaign{
+	event := &types.EventRemoveCampaign{
 		Owner:      msg.Owner,
 		CampaignId: strconv.FormatUint(msg.CampaignId, 10),
 	}
@@ -74,7 +74,7 @@ func (k msgServer) EnableCampaign(goCtx context.Context, msg *types.MsgEnableCam
 		return nil, err
 	}
 
-	event := &types.EnableCampaign{
+	event := &types.EventEnableCampaign{
 		Owner:      msg.Owner,
 		CampaignId: strconv.FormatUint(msg.CampaignId, 10),
 	}
@@ -98,7 +98,7 @@ func (k msgServer) CloseCampaign(goCtx context.Context, msg *types.MsgCloseCampa
 		return nil, err
 	}
 
-	event := &types.CloseCampaign{
+	event := &types.EventCloseCampaign{
 		Owner:      msg.Owner,
 		CampaignId: strconv.FormatUint(msg.CampaignId, 10),
 	}

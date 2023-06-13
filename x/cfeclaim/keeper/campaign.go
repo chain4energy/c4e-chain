@@ -45,7 +45,7 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 	// Adding the inititalClaim mission to a campaign is done automatically as this mission is required for every campaign
 	k.AppendNewMission(ctx, campaign.Id, *types.NewInitialMission(campaign.Id))
 	k.Logger(ctx).Debug("create campaign ret", "campaignId", campaign.Id)
-	event := &types.NewCampaign{
+	event := &types.EventNewCampaign{
 		Id:                     strconv.FormatUint(campaign.Id, 10),
 		Owner:                  campaign.Owner,
 		Name:                   campaign.Name,
