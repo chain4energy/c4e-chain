@@ -3,6 +3,12 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"reflect"
+	"regexp"
+	"runtime"
+	"testing"
+
 	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
@@ -22,17 +28,11 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
 	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
-	"os"
-	"reflect"
-	"regexp"
-	"runtime"
-	"testing"
 )
 
 func init() {
@@ -121,16 +121,9 @@ func BenchmarkSimTest(b *testing.B) {
 		{app.keys[ibctransfertypes.StoreKey], newApp.keys[ibctransfertypes.StoreKey], [][]byte{}},
 
 		// OUR MODULES
-		{app.keys[cfevestingtypes.StoreKey], newApp.keys[cfevestingtypes.StoreKey], [][]byte{
-			cfevestingtypes.AccountVestingPoolsKeyPrefix, cfevestingtypes.VestingTypesKeyPrefix, cfevestingtypes.ParamsKey,
-			cfevestingtypes.KeyPrefix(cfevestingtypes.VestingAccountTraceCountKey), cfevestingtypes.KeyPrefix(cfevestingtypes.VestingAccountTraceKey),
-		}},
-		{app.keys[cfedistributortypes.StoreKey], newApp.keys[cfedistributortypes.StoreKey], [][]byte{
-			cfedistributortypes.StateKeyPrefix,
-		}},
-		{app.keys[cfemintertypes.StoreKey], newApp.keys[cfemintertypes.StoreKey], [][]byte{
-			cfemintertypes.MinterStateHistoryKeyPrefix, cfemintertypes.IsGenesisKey, cfemintertypes.MinterStateKey,
-		}},
+		{app.keys[cfevestingtypes.StoreKey], newApp.keys[cfevestingtypes.StoreKey], [][]byte{}},
+		{app.keys[cfedistributortypes.StoreKey], newApp.keys[cfedistributortypes.StoreKey], [][]byte{}},
+		{app.keys[cfemintertypes.StoreKey], newApp.keys[cfemintertypes.StoreKey], [][]byte{}},
 		{app.keys[cfesignaturetypes.StoreKey], newApp.keys[cfesignaturetypes.StoreKey], [][]byte{}},
 		{app.keys[cfeclaimtypes.StoreKey], newApp.keys[cfeclaimtypes.StoreKey], [][]byte{
 			cfeclaimtypes.CampaignKeyPrefix,
