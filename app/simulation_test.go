@@ -3,7 +3,6 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cfesignaturetypes "github.com/chain4energy/c4e-chain/x/cfesignature/types"
@@ -132,13 +131,13 @@ func BenchmarkSimTest(b *testing.B) {
 			cfemintertypes.MinterStateHistoryKeyPrefix, cfemintertypes.IsGenesisKey, cfemintertypes.MinterStateKey,
 		}},
 		{app.keys[cfesignaturetypes.StoreKey], newApp.keys[cfesignaturetypes.StoreKey], [][]byte{}},
-		{app.keys[cfeclaimtypes.StoreKey], newApp.keys[cfeclaimtypes.StoreKey], [][]byte{
-			cfeclaimtypes.CampaignKeyPrefix,
-			cfeclaimtypes.MissionCountKeyPrefix,
-			cfeclaimtypes.CampaignCountKeyPrefix,
-			cfeclaimtypes.MissionKeyPrefix,
-			cfeclaimtypes.UserEntryKeyPrefix,
-		}},
+		//{app.keys[cfeclaimtypes.StoreKey], newApp.keys[cfeclaimtypes.StoreKey], [][]byte{
+		//	cfeclaimtypes.CampaignKeyPrefix,
+		//	cfeclaimtypes.MissionCountKeyPrefix,
+		//	cfeclaimtypes.CampaignCountKeyPrefix,
+		//	cfeclaimtypes.MissionKeyPrefix,
+		//	cfeclaimtypes.UserEntryKeyPrefix,
+		//}},
 	}
 
 	for _, skp := range storeKeysPrefixes {

@@ -60,16 +60,13 @@ func CmdCampaign() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
-
-			params := &types.QueryCampaignsRequest{}
-
-			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			argCampaignId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			params.Pagination = pageReq
+			params := &types.QueryCampaignRequest{CampaignId: argCampaignId}
 
-			res, err := queryClient.Campaigns(cmd.Context(), params)
+			res, err := queryClient.Campaign(cmd.Context(), params)
 			if err != nil {
 				return err
 			}

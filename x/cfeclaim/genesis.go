@@ -10,12 +10,12 @@ import (
 // InitGenesis initializes the capability module's state from a provided genesis
 // state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
-	setCampaigns(ctx, k, genState.Campaigns)
-	setMissions(ctx, k, genState.Missions)
+	setCampaigns(ctx, k, genState.Campaigns, genState.CampaignCount)
+	setMissions(ctx, k, genState.Missions, genState.MissionCount)
 	setUsersEntries(ctx, k, genState.UsersEntries)
 }
 
-func setCampaigns(ctx sdk.Context, k keeper.Keeper, campaigns []types.Campaign) {
+func setCampaigns(ctx sdk.Context, k keeper.Keeper, campaigns []types.Campaign, campaignCount uint64) {
 	for _, campaign := range campaigns {
 		if err := k.ValidateCampaignParams(ctx, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount,
 			campaign.Free, campaign.StartTime, campaign.EndTime, campaign.CampaignType, campaign.Owner,
@@ -24,9 +24,10 @@ func setCampaigns(ctx sdk.Context, k keeper.Keeper, campaigns []types.Campaign) 
 		}
 		k.SetCampaign(ctx, campaign)
 	}
+	k.SetCampaignCount(ctx, campaignCount)
 }
 
-func setMissions(ctx sdk.Context, k keeper.Keeper, missions []types.Mission) {
+func setMissions(ctx sdk.Context, k keeper.Keeper, missions []types.Mission, missionCount map[uint64]uint64) {
 	for _, mission := range missions {
 		campaign, err := k.MustGetCampaign(ctx, mission.CampaignId)
 		if err != nil {
@@ -37,6 +38,9 @@ func setMissions(ctx sdk.Context, k keeper.Keeper, missions []types.Mission) {
 			panic(err)
 		}
 		k.SetMission(ctx, mission)
+	}
+	for campaignId, count := range missionCount {
+		k.SetMissionCount(ctx, campaignId, count)
 	}
 }
 
@@ -77,6 +81,11 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.UsersEntries = k.GetAllUsersEntries(ctx)
 	genesis.Missions = k.GetAllMission(ctx)
 	genesis.Campaigns = k.GetAllCampaigns(ctx)
+	genesis.CampaignCount = k.GetCampaignCount(ctx)
+	genesis.MissionCount = make(map[uint64]uint64)
+	for _, campaign := range genesis.Campaigns {
+		genesis.MissionCount[campaign.Id] = k.GetMissionCount(ctx, campaign.Id)
+	}
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis
