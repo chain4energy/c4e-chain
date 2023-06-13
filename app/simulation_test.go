@@ -122,9 +122,7 @@ func BenchmarkSimTest(b *testing.B) {
 
 		// OUR MODULES
 		{app.keys[cfevestingtypes.StoreKey], newApp.keys[cfevestingtypes.StoreKey], [][]byte{}},
-		{app.keys[cfedistributortypes.StoreKey], newApp.keys[cfedistributortypes.StoreKey], [][]byte{
-			cfedistributortypes.StateKeyPrefix,
-		}},
+		{app.keys[cfedistributortypes.StoreKey], newApp.keys[cfedistributortypes.StoreKey], [][]byte{}},
 		{app.keys[cfemintertypes.StoreKey], newApp.keys[cfemintertypes.StoreKey], [][]byte{}},
 		{app.keys[cfesignaturetypes.StoreKey], newApp.keys[cfesignaturetypes.StoreKey], [][]byte{}},
 		{app.keys[cfeclaimtypes.StoreKey], newApp.keys[cfeclaimtypes.StoreKey], [][]byte{}},
