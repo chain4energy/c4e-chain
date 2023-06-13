@@ -20,5 +20,10 @@ message GenesisState {
   repeated Mission missions = 4 [
     (gogoproto.nullable) = false
   ];
-  map<uint64, uint64> mission_count = 5;
+  repeated MissionCount mission_counts = 5;
+}
+
+message MissionCount {
+  uint64 campaign_id = 1;
+  uint64 count = 2;
 }

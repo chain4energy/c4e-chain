@@ -121,24 +121,13 @@ func BenchmarkSimTest(b *testing.B) {
 		{app.keys[ibctransfertypes.StoreKey], newApp.keys[ibctransfertypes.StoreKey], [][]byte{}},
 
 		// OUR MODULES
-		{app.keys[cfevestingtypes.StoreKey], newApp.keys[cfevestingtypes.StoreKey], [][]byte{
-			cfevestingtypes.AccountVestingPoolsKeyPrefix, cfevestingtypes.VestingTypesKeyPrefix, cfevestingtypes.ParamsKey,
-			cfevestingtypes.KeyPrefix(cfevestingtypes.VestingAccountTraceCountKey), cfevestingtypes.KeyPrefix(cfevestingtypes.VestingAccountTraceKey),
-		}},
+		{app.keys[cfevestingtypes.StoreKey], newApp.keys[cfevestingtypes.StoreKey], [][]byte{}},
 		{app.keys[cfedistributortypes.StoreKey], newApp.keys[cfedistributortypes.StoreKey], [][]byte{
 			cfedistributortypes.StateKeyPrefix,
 		}},
-		{app.keys[cfemintertypes.StoreKey], newApp.keys[cfemintertypes.StoreKey], [][]byte{
-			cfemintertypes.MinterStateHistoryKeyPrefix, cfemintertypes.IsGenesisKey, cfemintertypes.MinterStateKey,
-		}},
+		{app.keys[cfemintertypes.StoreKey], newApp.keys[cfemintertypes.StoreKey], [][]byte{}},
 		{app.keys[cfesignaturetypes.StoreKey], newApp.keys[cfesignaturetypes.StoreKey], [][]byte{}},
-		{app.keys[cfeclaimtypes.StoreKey], newApp.keys[cfeclaimtypes.StoreKey], [][]byte{
-			cfeclaimtypes.CampaignKeyPrefix,
-			cfeclaimtypes.MissionCountKeyPrefix,
-			cfeclaimtypes.CampaignCountKeyPrefix,
-			cfeclaimtypes.MissionKeyPrefix,
-			cfeclaimtypes.UserEntryKeyPrefix,
-		}},
+		{app.keys[cfeclaimtypes.StoreKey], newApp.keys[cfeclaimtypes.StoreKey], [][]byte{}},
 	}
 
 	for _, skp := range storeKeysPrefixes {

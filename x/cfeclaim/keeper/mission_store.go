@@ -142,7 +142,6 @@ func (k Keeper) GetMissionCount(ctx sdk.Context, campaignId uint64) uint64 {
 	if bz == nil {
 		return 0
 	}
-
 	// Parse bytes
 	return binary.BigEndian.Uint64(bz)
 }
@@ -152,4 +151,20 @@ func (k Keeper) SetMissionCount(ctx sdk.Context, campaignId uint64, count uint64
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
 	store.Set(types.GetUint64Key(campaignId), bz)
+}
+
+// GetAllMissionCount returns all mission count
+func (k Keeper) GetAllMissionCount(ctx sdk.Context) (missionCounts []*types.MissionCount) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionCountKeyPrefix)
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		campaignId := binary.BigEndian.Uint64(iterator.Key())
+		count := binary.BigEndian.Uint64(iterator.Value())
+		missionCounts = append(missionCounts, &types.MissionCount{
+			CampaignId: campaignId,
+			Count:      count,
+		})
+	}
+	return
 }

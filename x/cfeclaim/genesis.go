@@ -11,7 +11,7 @@ import (
 // state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
 	setCampaigns(ctx, k, genState.Campaigns, genState.CampaignCount)
-	setMissions(ctx, k, genState.Missions, genState.MissionCount)
+	setMissions(ctx, k, genState.Missions, genState.MissionCounts)
 	setUsersEntries(ctx, k, genState.UsersEntries)
 }
 
@@ -27,7 +27,7 @@ func setCampaigns(ctx sdk.Context, k keeper.Keeper, campaigns []types.Campaign, 
 	k.SetCampaignCount(ctx, campaignCount)
 }
 
-func setMissions(ctx sdk.Context, k keeper.Keeper, missions []types.Mission, missionCount map[uint64]uint64) {
+func setMissions(ctx sdk.Context, k keeper.Keeper, missions []types.Mission, missionCounts []*types.MissionCount) {
 	for _, mission := range missions {
 		campaign, err := k.MustGetCampaign(ctx, mission.CampaignId)
 		if err != nil {
@@ -39,8 +39,8 @@ func setMissions(ctx sdk.Context, k keeper.Keeper, missions []types.Mission, mis
 		}
 		k.SetMission(ctx, mission)
 	}
-	for campaignId, count := range missionCount {
-		k.SetMissionCount(ctx, campaignId, count)
+	for _, misisonCount := range missionCounts {
+		k.SetMissionCount(ctx, misisonCount.CampaignId, misisonCount.Count)
 	}
 }
 
@@ -82,11 +82,8 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.Missions = k.GetAllMission(ctx)
 	genesis.Campaigns = k.GetAllCampaigns(ctx)
 	genesis.CampaignCount = k.GetCampaignCount(ctx)
-	genesis.MissionCount = make(map[uint64]uint64)
-	for _, campaign := range genesis.Campaigns {
-		genesis.MissionCount[campaign.Id] = k.GetMissionCount(ctx, campaign.Id)
-	}
-	// this line is used by starport scaffolding # genesis/module/export
+	genesis.MissionCounts = k.GetAllMissionCount(ctx)
 
+	// this line is used by starport scaffolding # genesis/module/export
 	return genesis
 }
