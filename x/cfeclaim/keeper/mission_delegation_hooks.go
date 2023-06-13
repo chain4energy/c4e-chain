@@ -35,6 +35,8 @@ func (h MissionDelegationHooks) BeforeDelegationCreated(ctx sdk.Context, delAddr
 	return nil
 }
 
+// Below are the other hooks used by StakingHooks interface, they are not used by this module
+
 // AfterValidatorCreated implements StakingHooks
 func (h MissionDelegationHooks) AfterValidatorCreated(ctx sdk.Context, valAddr sdk.ValAddress) error {
 	return nil

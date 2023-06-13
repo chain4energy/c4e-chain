@@ -30,6 +30,8 @@ func (h MissionVoteHooks) AfterProposalVote(ctx sdk.Context, _ uint64, voterAddr
 	}
 }
 
+// Below are the other hooks used by GovHooks interface, they are not used by this module
+
 // AfterProposalSubmission implements GovHooks
 func (h MissionVoteHooks) AfterProposalSubmission(_ sdk.Context, _ uint64) {
 }

@@ -7,7 +7,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"strconv"
 )
 
 func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64, claimRecordEntries []*types.ClaimRecordEntry) error {
@@ -51,9 +50,9 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 
 	event := &types.EventAddClaimRecords{
 		Owner:                   owner,
-		CampaignId:              strconv.FormatUint(campaignId, 10),
+		CampaignId:              campaignId,
 		ClaimRecordsTotalAmount: amountSum.String(),
-		ClaimRecordsNumber:      strconv.FormatInt(int64(len(claimRecordEntries)), 10),
+		ClaimRecordsNumber:      int64(len(claimRecordEntries)),
 	}
 
 	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
@@ -118,7 +117,7 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 
 	event := &types.EventDeleteClaimRecord{
 		Owner:             owner,
-		CampaignId:        strconv.FormatUint(campaignId, 10),
+		CampaignId:        campaignId,
 		UserAddress:       userAddress,
 		ClaimRecordAmount: amount.String(),
 	}

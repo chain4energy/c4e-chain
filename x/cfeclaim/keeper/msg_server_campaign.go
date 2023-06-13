@@ -5,7 +5,6 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"strconv"
 )
 
 func (k msgServer) CreateCampaign(goCtx context.Context, msg *types.MsgCreateCampaign) (*types.MsgCreateCampaignResponse, error) {
@@ -48,14 +47,6 @@ func (k msgServer) RemoveCampaign(goCtx context.Context, msg *types.MsgRemoveCam
 		return nil, err
 	}
 
-	event := &types.EventRemoveCampaign{
-		Owner:      msg.Owner,
-		CampaignId: strconv.FormatUint(msg.CampaignId, 10),
-	}
-	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
-		k.Logger(ctx).Error("remove campaign emit event error", "event", event, "error", err.Error())
-	}
-
 	return &types.MsgRemoveCampaignResponse{}, nil
 }
 
@@ -74,14 +65,6 @@ func (k msgServer) EnableCampaign(goCtx context.Context, msg *types.MsgEnableCam
 		return nil, err
 	}
 
-	event := &types.EventEnableCampaign{
-		Owner:      msg.Owner,
-		CampaignId: strconv.FormatUint(msg.CampaignId, 10),
-	}
-	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
-		k.Logger(ctx).Error("enable campaign emit event error", "event", event, "error", err.Error())
-	}
-
 	return &types.MsgEnableCampaignResponse{}, nil
 }
 
@@ -96,15 +79,6 @@ func (k msgServer) CloseCampaign(goCtx context.Context, msg *types.MsgCloseCampa
 	); err != nil {
 		k.Logger(ctx).Debug("close campaign", "err", err.Error())
 		return nil, err
-	}
-
-	event := &types.EventCloseCampaign{
-		Owner:      msg.Owner,
-		CampaignId: strconv.FormatUint(msg.CampaignId, 10),
-	}
-	err := ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
-		k.Logger(ctx).Error("close campaign emit event error", "event", event, "error", err.Error())
 	}
 
 	return &types.MsgCloseCampaignResponse{}, nil

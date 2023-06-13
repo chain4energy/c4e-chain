@@ -5,17 +5,23 @@ package types
 
 import (
 	fmt "fmt"
+	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
+	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	_ "google.golang.org/protobuf/types/known/durationpb"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
+	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+var _ = time.Kitchen
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -24,19 +30,21 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type EventNewCampaign struct {
-	Id                     string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Owner                  string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
-	Name                   string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Description            string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	CampaignType           string `protobuf:"bytes,5,opt,name=campaign_type,json=campaignType,proto3" json:"campaign_type,omitempty"`
-	FeegrantAmount         string `protobuf:"bytes,6,opt,name=feegrant_amount,json=feegrantAmount,proto3" json:"feegrant_amount,omitempty"`
-	InitialClaimFreeAmount string `protobuf:"bytes,7,opt,name=initial_claim_free_amount,json=initialClaimFreeAmount,proto3" json:"initial_claim_free_amount,omitempty"`
-	Enabled                string `protobuf:"bytes,8,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	StartTime              string `protobuf:"bytes,9,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
-	EndTime                string `protobuf:"bytes,10,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
-	LockupPeriod           string `protobuf:"bytes,11,opt,name=lockup_period,json=lockupPeriod,proto3" json:"lockup_period,omitempty"`
-	VestingPeriod          string `protobuf:"bytes,12,opt,name=vesting_period,json=vestingPeriod,proto3" json:"vesting_period,omitempty"`
-	VestingPoolName        string `protobuf:"bytes,13,opt,name=vesting_poolName,json=vestingPoolName,proto3" json:"vesting_poolName,omitempty"`
+	Id                     uint64                                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Owner                  string                                 `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
+	Name                   string                                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Description            string                                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	CampaignType           CampaignType                           `protobuf:"varint,5,opt,name=campaign_type,json=campaignType,proto3,enum=chain4energy.c4echain.cfeclaim.CampaignType" json:"campaign_type,omitempty"`
+	RemovableClaimRecords  bool                                   `protobuf:"varint,6,opt,name=removable_claim_records,json=removableClaimRecords,proto3" json:"removable_claim_records,omitempty"`
+	FeegrantAmount         github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,7,opt,name=feegrant_amount,json=feegrantAmount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"feegrant_amount"`
+	InitialClaimFreeAmount github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,8,opt,name=initial_claim_free_amount,json=initialClaimFreeAmount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"initial_claim_free_amount"`
+	Free                   github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,9,opt,name=free,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"free"`
+	Enabled                bool                                   `protobuf:"varint,10,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	StartTime              time.Time                              `protobuf:"bytes,11,opt,name=start_time,json=startTime,proto3,stdtime" json:"start_time"`
+	EndTime                time.Time                              `protobuf:"bytes,12,opt,name=end_time,json=endTime,proto3,stdtime" json:"end_time"`
+	LockupPeriod           time.Duration                          `protobuf:"bytes,13,opt,name=lockup_period,json=lockupPeriod,proto3,stdduration" json:"lockup_period"`
+	VestingPeriod          time.Duration                          `protobuf:"bytes,14,opt,name=vesting_period,json=vestingPeriod,proto3,stdduration" json:"vesting_period"`
+	VestingPoolName        string                                 `protobuf:"bytes,15,opt,name=vesting_poolName,json=vestingPoolName,proto3" json:"vesting_poolName,omitempty"`
 }
 
 func (m *EventNewCampaign) Reset()         { *m = EventNewCampaign{} }
@@ -72,11 +80,11 @@ func (m *EventNewCampaign) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventNewCampaign proto.InternalMessageInfo
 
-func (m *EventNewCampaign) GetId() string {
+func (m *EventNewCampaign) GetId() uint64 {
 	if m != nil {
 		return m.Id
 	}
-	return ""
+	return 0
 }
 
 func (m *EventNewCampaign) GetOwner() string {
@@ -100,60 +108,53 @@ func (m *EventNewCampaign) GetDescription() string {
 	return ""
 }
 
-func (m *EventNewCampaign) GetCampaignType() string {
+func (m *EventNewCampaign) GetCampaignType() CampaignType {
 	if m != nil {
 		return m.CampaignType
 	}
-	return ""
+	return CampaignType_CAMPAIGN_TYPE_UNSPECIFIED
 }
 
-func (m *EventNewCampaign) GetFeegrantAmount() string {
+func (m *EventNewCampaign) GetRemovableClaimRecords() bool {
 	if m != nil {
-		return m.FeegrantAmount
+		return m.RemovableClaimRecords
 	}
-	return ""
+	return false
 }
 
-func (m *EventNewCampaign) GetInitialClaimFreeAmount() string {
-	if m != nil {
-		return m.InitialClaimFreeAmount
-	}
-	return ""
-}
-
-func (m *EventNewCampaign) GetEnabled() string {
+func (m *EventNewCampaign) GetEnabled() bool {
 	if m != nil {
 		return m.Enabled
 	}
-	return ""
+	return false
 }
 
-func (m *EventNewCampaign) GetStartTime() string {
+func (m *EventNewCampaign) GetStartTime() time.Time {
 	if m != nil {
 		return m.StartTime
 	}
-	return ""
+	return time.Time{}
 }
 
-func (m *EventNewCampaign) GetEndTime() string {
+func (m *EventNewCampaign) GetEndTime() time.Time {
 	if m != nil {
 		return m.EndTime
 	}
-	return ""
+	return time.Time{}
 }
 
-func (m *EventNewCampaign) GetLockupPeriod() string {
+func (m *EventNewCampaign) GetLockupPeriod() time.Duration {
 	if m != nil {
 		return m.LockupPeriod
 	}
-	return ""
+	return 0
 }
 
-func (m *EventNewCampaign) GetVestingPeriod() string {
+func (m *EventNewCampaign) GetVestingPeriod() time.Duration {
 	if m != nil {
 		return m.VestingPeriod
 	}
-	return ""
+	return 0
 }
 
 func (m *EventNewCampaign) GetVestingPoolName() string {
@@ -165,7 +166,7 @@ func (m *EventNewCampaign) GetVestingPoolName() string {
 
 type EventCloseCampaign struct {
 	Owner               string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	CampaignId          string `protobuf:"bytes,2,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	CampaignId          uint64 `protobuf:"varint,2,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
 	CampaignCloseAction string `protobuf:"bytes,3,opt,name=campaign_close_action,json=campaignCloseAction,proto3" json:"campaign_close_action,omitempty"`
 }
 
@@ -209,11 +210,11 @@ func (m *EventCloseCampaign) GetOwner() string {
 	return ""
 }
 
-func (m *EventCloseCampaign) GetCampaignId() string {
+func (m *EventCloseCampaign) GetCampaignId() uint64 {
 	if m != nil {
 		return m.CampaignId
 	}
-	return ""
+	return 0
 }
 
 func (m *EventCloseCampaign) GetCampaignCloseAction() string {
@@ -225,7 +226,7 @@ func (m *EventCloseCampaign) GetCampaignCloseAction() string {
 
 type EventRemoveCampaign struct {
 	Owner      string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	CampaignId string `protobuf:"bytes,2,opt,name=campaignId,proto3" json:"campaignId,omitempty"`
+	CampaignId uint64 `protobuf:"varint,2,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
 }
 
 func (m *EventRemoveCampaign) Reset()         { *m = EventRemoveCampaign{} }
@@ -268,16 +269,16 @@ func (m *EventRemoveCampaign) GetOwner() string {
 	return ""
 }
 
-func (m *EventRemoveCampaign) GetCampaignId() string {
+func (m *EventRemoveCampaign) GetCampaignId() uint64 {
 	if m != nil {
 		return m.CampaignId
 	}
-	return ""
+	return 0
 }
 
 type EventEnableCampaign struct {
 	Owner      string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	CampaignId string `protobuf:"bytes,2,opt,name=campaignId,proto3" json:"campaignId,omitempty"`
+	CampaignId uint64 `protobuf:"varint,2,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
 }
 
 func (m *EventEnableCampaign) Reset()         { *m = EventEnableCampaign{} }
@@ -320,22 +321,22 @@ func (m *EventEnableCampaign) GetOwner() string {
 	return ""
 }
 
-func (m *EventEnableCampaign) GetCampaignId() string {
+func (m *EventEnableCampaign) GetCampaignId() uint64 {
 	if m != nil {
 		return m.CampaignId
 	}
-	return ""
+	return 0
 }
 
 type EventAddMission struct {
-	Id             string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Owner          string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
-	CampaignId     string `protobuf:"bytes,3,opt,name=campaignId,proto3" json:"campaignId,omitempty"`
-	Name           string `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
-	Description    string `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
-	MissionType    string `protobuf:"bytes,6,opt,name=missionType,proto3" json:"missionType,omitempty"`
-	Weight         string `protobuf:"bytes,7,opt,name=weight,proto3" json:"weight,omitempty"`
-	ClaimStartDate string `protobuf:"bytes,8,opt,name=claim_start_date,json=claimStartDate,proto3" json:"claim_start_date,omitempty"`
+	Id             uint64                                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Owner          string                                 `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
+	CampaignId     uint64                                 `protobuf:"varint,3,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	Name           string                                 `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
+	Description    string                                 `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
+	MissionType    MissionType                            `protobuf:"varint,6,opt,name=mission_type,json=missionType,proto3,enum=chain4energy.c4echain.cfeclaim.MissionType" json:"mission_type,omitempty"`
+	Weight         github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,7,opt,name=weight,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"weight"`
+	ClaimStartDate *time.Time                             `protobuf:"bytes,8,opt,name=claim_start_date,json=claimStartDate,proto3,stdtime" json:"claim_start_date,omitempty"`
 }
 
 func (m *EventAddMission) Reset()         { *m = EventAddMission{} }
@@ -371,11 +372,11 @@ func (m *EventAddMission) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventAddMission proto.InternalMessageInfo
 
-func (m *EventAddMission) GetId() string {
+func (m *EventAddMission) GetId() uint64 {
 	if m != nil {
 		return m.Id
 	}
-	return ""
+	return 0
 }
 
 func (m *EventAddMission) GetOwner() string {
@@ -385,11 +386,11 @@ func (m *EventAddMission) GetOwner() string {
 	return ""
 }
 
-func (m *EventAddMission) GetCampaignId() string {
+func (m *EventAddMission) GetCampaignId() uint64 {
 	if m != nil {
 		return m.CampaignId
 	}
-	return ""
+	return 0
 }
 
 func (m *EventAddMission) GetName() string {
@@ -406,31 +407,24 @@ func (m *EventAddMission) GetDescription() string {
 	return ""
 }
 
-func (m *EventAddMission) GetMissionType() string {
+func (m *EventAddMission) GetMissionType() MissionType {
 	if m != nil {
 		return m.MissionType
 	}
-	return ""
+	return MissionType_MISSION_TYPE_UNSPECIFIED
 }
 
-func (m *EventAddMission) GetWeight() string {
-	if m != nil {
-		return m.Weight
-	}
-	return ""
-}
-
-func (m *EventAddMission) GetClaimStartDate() string {
+func (m *EventAddMission) GetClaimStartDate() *time.Time {
 	if m != nil {
 		return m.ClaimStartDate
 	}
-	return ""
+	return nil
 }
 
 type EventClaim struct {
 	Claimer    string `protobuf:"bytes,1,opt,name=claimer,proto3" json:"claimer,omitempty"`
-	CampaignId string `protobuf:"bytes,2,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
-	MissionId  string `protobuf:"bytes,3,opt,name=mission_id,json=missionId,proto3" json:"mission_id,omitempty"`
+	CampaignId uint64 `protobuf:"varint,2,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	MissionId  uint64 `protobuf:"varint,3,opt,name=mission_id,json=missionId,proto3" json:"mission_id,omitempty"`
 	Amount     string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
@@ -474,18 +468,18 @@ func (m *EventClaim) GetClaimer() string {
 	return ""
 }
 
-func (m *EventClaim) GetCampaignId() string {
+func (m *EventClaim) GetCampaignId() uint64 {
 	if m != nil {
 		return m.CampaignId
 	}
-	return ""
+	return 0
 }
 
-func (m *EventClaim) GetMissionId() string {
+func (m *EventClaim) GetMissionId() uint64 {
 	if m != nil {
 		return m.MissionId
 	}
-	return ""
+	return 0
 }
 
 func (m *EventClaim) GetAmount() string {
@@ -497,8 +491,8 @@ func (m *EventClaim) GetAmount() string {
 
 type EventInitialClaim struct {
 	Claimer        string `protobuf:"bytes,1,opt,name=claimer,proto3" json:"claimer,omitempty"`
-	CampaignId     string `protobuf:"bytes,2,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
-	AddressToClaim string `protobuf:"bytes,3,opt,name=addressToClaim,proto3" json:"addressToClaim,omitempty"`
+	CampaignId     uint64 `protobuf:"varint,2,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	AddressToClaim string `protobuf:"bytes,3,opt,name=address_to_claim,json=addressToClaim,proto3" json:"address_to_claim,omitempty"`
 	Amount         string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
@@ -542,11 +536,11 @@ func (m *EventInitialClaim) GetClaimer() string {
 	return ""
 }
 
-func (m *EventInitialClaim) GetCampaignId() string {
+func (m *EventInitialClaim) GetCampaignId() uint64 {
 	if m != nil {
 		return m.CampaignId
 	}
-	return ""
+	return 0
 }
 
 func (m *EventInitialClaim) GetAddressToClaim() string {
@@ -565,9 +559,9 @@ func (m *EventInitialClaim) GetAmount() string {
 
 type EventAddClaimRecords struct {
 	Owner                   string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	CampaignId              string `protobuf:"bytes,2,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	CampaignId              uint64 `protobuf:"varint,2,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
 	ClaimRecordsTotalAmount string `protobuf:"bytes,3,opt,name=claim_records_total_amount,json=claimRecordsTotalAmount,proto3" json:"claim_records_total_amount,omitempty"`
-	ClaimRecordsNumber      string `protobuf:"bytes,4,opt,name=claim_records_number,json=claimRecordsNumber,proto3" json:"claim_records_number,omitempty"`
+	ClaimRecordsNumber      int64  `protobuf:"varint,4,opt,name=claim_records_number,json=claimRecordsNumber,proto3" json:"claim_records_number,omitempty"`
 }
 
 func (m *EventAddClaimRecords) Reset()         { *m = EventAddClaimRecords{} }
@@ -610,11 +604,11 @@ func (m *EventAddClaimRecords) GetOwner() string {
 	return ""
 }
 
-func (m *EventAddClaimRecords) GetCampaignId() string {
+func (m *EventAddClaimRecords) GetCampaignId() uint64 {
 	if m != nil {
 		return m.CampaignId
 	}
-	return ""
+	return 0
 }
 
 func (m *EventAddClaimRecords) GetClaimRecordsTotalAmount() string {
@@ -624,16 +618,16 @@ func (m *EventAddClaimRecords) GetClaimRecordsTotalAmount() string {
 	return ""
 }
 
-func (m *EventAddClaimRecords) GetClaimRecordsNumber() string {
+func (m *EventAddClaimRecords) GetClaimRecordsNumber() int64 {
 	if m != nil {
 		return m.ClaimRecordsNumber
 	}
-	return ""
+	return 0
 }
 
 type EventDeleteClaimRecord struct {
 	Owner             string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	CampaignId        string `protobuf:"bytes,2,opt,name=campaignId,proto3" json:"campaignId,omitempty"`
+	CampaignId        uint64 `protobuf:"varint,2,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
 	UserAddress       string `protobuf:"bytes,3,opt,name=userAddress,proto3" json:"userAddress,omitempty"`
 	ClaimRecordAmount string `protobuf:"bytes,4,opt,name=claim_record_amount,json=claimRecordAmount,proto3" json:"claim_record_amount,omitempty"`
 }
@@ -678,11 +672,11 @@ func (m *EventDeleteClaimRecord) GetOwner() string {
 	return ""
 }
 
-func (m *EventDeleteClaimRecord) GetCampaignId() string {
+func (m *EventDeleteClaimRecord) GetCampaignId() uint64 {
 	if m != nil {
 		return m.CampaignId
 	}
-	return ""
+	return 0
 }
 
 func (m *EventDeleteClaimRecord) GetUserAddress() string {
@@ -700,8 +694,8 @@ func (m *EventDeleteClaimRecord) GetClaimRecordAmount() string {
 }
 
 type EventCompleteMission struct {
-	CampaignId  string `protobuf:"bytes,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
-	MissionId   string `protobuf:"bytes,2,opt,name=mission_id,json=missionId,proto3" json:"mission_id,omitempty"`
+	CampaignId  uint64 `protobuf:"varint,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	MissionId   uint64 `protobuf:"varint,2,opt,name=mission_id,json=missionId,proto3" json:"mission_id,omitempty"`
 	UserAddress string `protobuf:"bytes,3,opt,name=user_address,json=userAddress,proto3" json:"user_address,omitempty"`
 }
 
@@ -738,18 +732,18 @@ func (m *EventCompleteMission) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventCompleteMission proto.InternalMessageInfo
 
-func (m *EventCompleteMission) GetCampaignId() string {
+func (m *EventCompleteMission) GetCampaignId() uint64 {
 	if m != nil {
 		return m.CampaignId
 	}
-	return ""
+	return 0
 }
 
-func (m *EventCompleteMission) GetMissionId() string {
+func (m *EventCompleteMission) GetMissionId() uint64 {
 	if m != nil {
 		return m.MissionId
 	}
-	return ""
+	return 0
 }
 
 func (m *EventCompleteMission) GetUserAddress() string {
@@ -775,55 +769,67 @@ func init() {
 func init() { proto.RegisterFile("c4echain/cfeclaim/event.proto", fileDescriptor_a4c2c1d49a2a732a) }
 
 var fileDescriptor_a4c2c1d49a2a732a = []byte{
-	// 767 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x55, 0xcd, 0x6e, 0x23, 0x45,
-	0x10, 0xce, 0x38, 0x3f, 0xbb, 0x2e, 0xc7, 0x4e, 0xb6, 0x63, 0xc2, 0xec, 0x4a, 0x19, 0x82, 0x57,
-	0xc0, 0x72, 0xc0, 0x46, 0x4b, 0x2e, 0x88, 0x93, 0xf1, 0x2e, 0x52, 0x04, 0x44, 0x28, 0xf8, 0xc4,
-	0x65, 0xd4, 0x9e, 0xae, 0x4c, 0x5a, 0xcc, 0x4c, 0x8f, 0x66, 0xda, 0x09, 0xbe, 0xc0, 0x1b, 0x20,
-	0x1e, 0x81, 0x07, 0xe1, 0xc4, 0x89, 0xe3, 0x1e, 0x39, 0xa2, 0xe4, 0x09, 0x78, 0x03, 0xd4, 0xd5,
-	0xdd, 0x66, 0x92, 0x28, 0xca, 0x2a, 0xb9, 0x4d, 0x7f, 0xf5, 0x55, 0xf5, 0xd7, 0x55, 0x5f, 0x4f,
-	0xc3, 0x5e, 0x72, 0x80, 0xc9, 0x29, 0x97, 0xc5, 0x28, 0x39, 0xc1, 0x24, 0xe3, 0x32, 0x1f, 0xe1,
-	0x19, 0x16, 0x7a, 0x58, 0x56, 0x4a, 0x2b, 0x16, 0x51, 0xec, 0x00, 0x0b, 0xac, 0xd2, 0xc5, 0xd0,
-	0x73, 0x87, 0x9e, 0xfb, 0xac, 0x9f, 0xaa, 0x54, 0x11, 0x75, 0x64, 0xbe, 0x6c, 0xd6, 0xe0, 0xcf,
-	0x55, 0xd8, 0x7e, 0x6d, 0xaa, 0x1c, 0xe1, 0xf9, 0x84, 0xe7, 0x25, 0x97, 0x69, 0xc1, 0x7a, 0xd0,
-	0x92, 0x22, 0x0c, 0xf6, 0x83, 0x17, 0xed, 0xe3, 0x96, 0x14, 0xac, 0x0f, 0xeb, 0xea, 0xbc, 0xc0,
-	0x2a, 0x6c, 0x11, 0x64, 0x17, 0x8c, 0xc1, 0x5a, 0xc1, 0x73, 0x0c, 0x57, 0x09, 0xa4, 0x6f, 0xb6,
-	0x0f, 0x1d, 0x81, 0x75, 0x52, 0xc9, 0x52, 0x4b, 0x55, 0x84, 0x6b, 0x14, 0x6a, 0x42, 0xec, 0x39,
-	0x74, 0x13, 0xb7, 0x4f, 0xac, 0x17, 0x25, 0x86, 0xeb, 0xc4, 0xd9, 0xf4, 0xe0, 0x74, 0x51, 0x22,
-	0xfb, 0x08, 0xb6, 0x4e, 0x10, 0xd3, 0x8a, 0x17, 0x3a, 0xe6, 0xb9, 0x9a, 0x17, 0x3a, 0xdc, 0x20,
-	0x5a, 0xcf, 0xc3, 0x63, 0x42, 0xd9, 0xe7, 0xf0, 0x54, 0x16, 0x52, 0x4b, 0x9e, 0xc5, 0x74, 0xca,
-	0xf8, 0xa4, 0x42, 0xf4, 0x29, 0x8f, 0x28, 0x65, 0xd7, 0x11, 0x26, 0x26, 0xfe, 0x55, 0x85, 0xe8,
-	0x52, 0x43, 0x78, 0x84, 0x05, 0x9f, 0x65, 0x28, 0xc2, 0xc7, 0x44, 0xf4, 0x4b, 0xb6, 0x07, 0x50,
-	0x6b, 0x5e, 0xe9, 0x58, 0xcb, 0x1c, 0xc3, 0x36, 0x05, 0xdb, 0x84, 0x4c, 0x65, 0x8e, 0xec, 0x29,
-	0x3c, 0xc6, 0x42, 0xd8, 0x20, 0xf8, 0x4c, 0x41, 0xa1, 0xe7, 0xd0, 0xcd, 0x54, 0xf2, 0xe3, 0xbc,
-	0x8c, 0x4b, 0xac, 0xa4, 0x12, 0x61, 0xc7, 0x1e, 0xce, 0x82, 0xdf, 0x11, 0xc6, 0x3e, 0x80, 0xde,
-	0x19, 0xd6, 0x5a, 0x16, 0xa9, 0x67, 0x6d, 0x12, 0xab, 0xeb, 0x50, 0x47, 0xfb, 0x18, 0xb6, 0x97,
-	0x34, 0xa5, 0xb2, 0x23, 0xd3, 0xea, 0x2e, 0x11, 0xb7, 0x3c, 0xd1, 0xc1, 0x83, 0x5f, 0x80, 0xd1,
-	0x0c, 0x27, 0x99, 0xaa, 0x71, 0x39, 0xc5, 0xe5, 0xd4, 0x82, 0xe6, 0xd4, 0xde, 0x83, 0xce, 0xb2,
-	0xff, 0x52, 0xb8, 0x89, 0x82, 0x87, 0x0e, 0x05, 0x7b, 0x09, 0xef, 0x2c, 0x09, 0x89, 0x29, 0x18,
-	0xf3, 0x84, 0x86, 0x69, 0xe7, 0xbc, 0xe3, 0x83, 0xb4, 0xd9, 0x98, 0x42, 0x83, 0xaf, 0x61, 0x87,
-	0x04, 0x1c, 0x63, 0xae, 0xce, 0xee, 0x52, 0x10, 0x41, 0x63, 0xbb, 0x9b, 0x02, 0x96, 0xc5, 0x5e,
-	0xd3, 0x38, 0x1e, 0x58, 0xec, 0xdf, 0x00, 0xb6, 0xa8, 0xda, 0x58, 0x88, 0x6f, 0x65, 0x5d, 0x1b,
-	0x0b, 0xbe, 0x9d, 0xbd, 0xaf, 0x56, 0x5e, 0xbd, 0xd1, 0x27, 0x6f, 0xff, 0xb5, 0xdb, 0xed, 0xbf,
-	0x7e, 0xd3, 0xfe, 0xfb, 0xd0, 0xc9, 0xad, 0x0c, 0x63, 0x74, 0xe7, 0xea, 0x26, 0xc4, 0x76, 0x61,
-	0xe3, 0x1c, 0x65, 0x7a, 0xea, 0xfd, 0xeb, 0x56, 0xec, 0x05, 0x6c, 0x5b, 0x8b, 0x5b, 0x6f, 0x0a,
-	0xae, 0xd1, 0x19, 0xb7, 0x47, 0xf8, 0xf7, 0x06, 0x7e, 0xc5, 0x35, 0x0e, 0x7e, 0x06, 0x70, 0x76,
-	0xe0, 0x32, 0x37, 0x3e, 0xa7, 0xf8, 0xb2, 0x73, 0x7e, 0x79, 0xb7, 0x15, 0xf6, 0x00, 0x9c, 0x32,
-	0x13, 0xb7, 0x2d, 0x68, 0x3b, 0xe4, 0x50, 0x18, 0xa5, 0xee, 0xa6, 0xd9, 0x1e, 0xb8, 0xd5, 0xe0,
-	0xd7, 0x00, 0x9e, 0x90, 0x80, 0xc3, 0xc6, 0xcd, 0x7b, 0x88, 0x8e, 0x0f, 0xa1, 0xc7, 0x85, 0xa8,
-	0xb0, 0xae, 0xa7, 0x8a, 0x8a, 0x39, 0x2d, 0xd7, 0xd0, 0x5b, 0x05, 0xfd, 0x11, 0x40, 0xdf, 0x9b,
-	0x80, 0x98, 0xc7, 0x98, 0xa8, 0x4a, 0xd4, 0xf7, 0xbd, 0x22, 0x5f, 0xc0, 0x33, 0x3b, 0x8a, 0xca,
-	0xd6, 0x89, 0xb5, 0xd2, 0x3c, 0xf3, 0xbf, 0x1d, 0xab, 0xed, 0xdd, 0xa4, 0xb1, 0xd1, 0xd4, 0xc4,
-	0xdd, 0x7f, 0xe7, 0x53, 0xe8, 0x5f, 0x4d, 0x2e, 0xe6, 0xf9, 0x0c, 0x2b, 0x27, 0x99, 0x35, 0xd3,
-	0x8e, 0x28, 0x32, 0xf8, 0x3d, 0x80, 0x5d, 0x92, 0xff, 0x0a, 0x33, 0xd4, 0xd8, 0x38, 0xc1, 0xfd,
-	0x2e, 0x85, 0x31, 0xe1, 0xbc, 0xc6, 0x6a, 0x6c, 0xbb, 0xe7, 0x04, 0x37, 0x21, 0x36, 0x84, 0x9d,
-	0xa6, 0xc8, 0xf8, 0x4a, 0x5b, 0x9f, 0x34, 0x34, 0xda, 0x43, 0x0d, 0x16, 0xae, 0xc1, 0x13, 0x95,
-	0x97, 0x46, 0xa3, 0xbf, 0x6a, 0xd7, 0x5a, 0x19, 0xdc, 0x61, 0xb1, 0xd6, 0x75, 0x8b, 0xbd, 0x0f,
-	0x9b, 0x46, 0x56, 0xcc, 0x6f, 0x95, 0xfa, 0xe5, 0x37, 0x7f, 0x5d, 0x44, 0xc1, 0x9b, 0x8b, 0x28,
-	0xf8, 0xe7, 0x22, 0x0a, 0x7e, 0xbb, 0x8c, 0x56, 0xde, 0x5c, 0x46, 0x2b, 0x7f, 0x5f, 0x46, 0x2b,
-	0x3f, 0xbc, 0x4c, 0xa5, 0x3e, 0x9d, 0xcf, 0x86, 0x89, 0xca, 0x47, 0xcd, 0xc7, 0x71, 0x94, 0x1c,
-	0xe0, 0x27, 0xf6, 0x25, 0xfd, 0xe9, 0xff, 0xb7, 0xd4, 0x3c, 0x46, 0xf5, 0x6c, 0x83, 0x9e, 0xc5,
-	0xcf, 0xfe, 0x0b, 0x00, 0x00, 0xff, 0xff, 0xbd, 0x9b, 0x34, 0xd6, 0x6d, 0x07, 0x00, 0x00,
+	// 957 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0x4f, 0x4f, 0x1b, 0x47,
+	0x14, 0x67, 0x8d, 0x31, 0xf0, 0x6c, 0x0c, 0x19, 0x08, 0xd9, 0x20, 0xc5, 0x76, 0x7d, 0xa8, 0x5c,
+	0xb5, 0x59, 0x57, 0x14, 0xf5, 0xd2, 0x43, 0x05, 0x26, 0x51, 0xa9, 0x52, 0xab, 0xdd, 0x22, 0x55,
+	0xea, 0x65, 0x35, 0xde, 0x7d, 0x2c, 0xa3, 0x78, 0x77, 0xac, 0xdd, 0x31, 0x94, 0x4b, 0xfb, 0x15,
+	0x38, 0xf6, 0xda, 0xef, 0xd1, 0x0f, 0x90, 0x63, 0x8e, 0x55, 0x0f, 0x69, 0x05, 0xdf, 0xa1, 0xe7,
+	0x6a, 0xfe, 0x6d, 0x16, 0x2c, 0x42, 0x02, 0x27, 0xef, 0xcc, 0x9b, 0xf7, 0x7b, 0xbf, 0x79, 0xfb,
+	0x7e, 0xbf, 0x35, 0x3c, 0x09, 0x77, 0x30, 0x3c, 0xa6, 0x2c, 0xed, 0x87, 0x47, 0x18, 0x8e, 0x29,
+	0x4b, 0xfa, 0x78, 0x82, 0xa9, 0xf0, 0x26, 0x19, 0x17, 0x9c, 0xb4, 0x54, 0x6c, 0x07, 0x53, 0xcc,
+	0xe2, 0x33, 0xcf, 0x9e, 0xf5, 0xec, 0xd9, 0xad, 0xce, 0x6c, 0x7a, 0x48, 0x93, 0x09, 0x65, 0x71,
+	0xaa, 0x11, 0xb6, 0x36, 0x62, 0x1e, 0x73, 0xf5, 0xd8, 0x97, 0x4f, 0x66, 0xb7, 0x15, 0x73, 0x1e,
+	0x8f, 0xb1, 0xaf, 0x56, 0xa3, 0xe9, 0x51, 0x3f, 0x9a, 0x66, 0x54, 0x30, 0x6e, 0xb3, 0xda, 0xd7,
+	0xe3, 0x82, 0x25, 0x98, 0x0b, 0x9a, 0x4c, 0xec, 0x81, 0xd9, 0xc2, 0x09, 0xcb, 0xf3, 0x02, 0xa1,
+	0x7b, 0x51, 0x83, 0xb5, 0x67, 0xf2, 0x26, 0x43, 0x3c, 0x1d, 0x18, 0x4a, 0xa4, 0x09, 0x15, 0x16,
+	0xb9, 0x4e, 0xc7, 0xe9, 0x55, 0xfd, 0x0a, 0x8b, 0xc8, 0x06, 0x2c, 0xf0, 0xd3, 0x14, 0x33, 0xb7,
+	0xd2, 0x71, 0x7a, 0xcb, 0xbe, 0x5e, 0x10, 0x02, 0xd5, 0x94, 0x26, 0xe8, 0xce, 0xab, 0x4d, 0xf5,
+	0x4c, 0x3a, 0x50, 0x8f, 0x30, 0x0f, 0x33, 0x36, 0x91, 0x2c, 0xdd, 0xaa, 0x0a, 0x95, 0xb7, 0xc8,
+	0x0f, 0xb0, 0x62, 0xaf, 0x1e, 0x88, 0xb3, 0x09, 0xba, 0x0b, 0x1d, 0xa7, 0xd7, 0xdc, 0xfe, 0xcc,
+	0x7b, 0x77, 0x0b, 0x3d, 0x4b, 0xee, 0xf0, 0x6c, 0x82, 0x7e, 0x23, 0x2c, 0xad, 0xc8, 0x97, 0xf0,
+	0x28, 0xc3, 0x84, 0x9f, 0xd0, 0xd1, 0x18, 0x03, 0x75, 0x3a, 0xc8, 0x30, 0xe4, 0x59, 0x94, 0xbb,
+	0xb5, 0x8e, 0xd3, 0x5b, 0xf2, 0x1f, 0x16, 0xe1, 0x81, 0x8c, 0xfa, 0x3a, 0x48, 0x7e, 0x82, 0xd5,
+	0x23, 0xc4, 0x38, 0xa3, 0xa9, 0x08, 0x68, 0xc2, 0xa7, 0xa9, 0x70, 0x17, 0x25, 0xe1, 0x3d, 0xef,
+	0xd5, 0x9b, 0xf6, 0xdc, 0xdf, 0x6f, 0xda, 0x1f, 0xc7, 0x4c, 0x1c, 0x4f, 0x47, 0x5e, 0xc8, 0x93,
+	0x7e, 0xc8, 0xf3, 0x84, 0xe7, 0xe6, 0xe7, 0x69, 0x1e, 0xbd, 0xec, 0x4b, 0xf6, 0xb9, 0x77, 0x90,
+	0x0a, 0xbf, 0x69, 0x61, 0x76, 0x15, 0x0a, 0x61, 0xf0, 0x98, 0xa5, 0x4c, 0x30, 0x3a, 0x36, 0x74,
+	0x8e, 0x32, 0x44, 0x5b, 0x62, 0xe9, 0x4e, 0x25, 0x36, 0x0d, 0xa0, 0xba, 0xc0, 0xf3, 0x0c, 0xd1,
+	0x94, 0xda, 0x83, 0xaa, 0x04, 0x77, 0x97, 0x3f, 0x18, 0x75, 0x1f, 0x43, 0x5f, 0xe5, 0x12, 0x17,
+	0x16, 0x31, 0x95, 0xdd, 0x89, 0x5c, 0x50, 0xfd, 0xb2, 0x4b, 0x32, 0x00, 0xc8, 0x05, 0xcd, 0x44,
+	0x20, 0xe7, 0xca, 0xad, 0x77, 0x9c, 0x5e, 0x7d, 0x7b, 0xcb, 0xd3, 0x43, 0xe7, 0xd9, 0xa1, 0xf3,
+	0x0e, 0xed, 0xd0, 0xed, 0x2d, 0xc9, 0xfa, 0xe7, 0xff, 0xb4, 0x1d, 0x7f, 0x59, 0xe5, 0xc9, 0x08,
+	0xf9, 0x1a, 0x96, 0x30, 0x8d, 0x34, 0x44, 0xe3, 0x03, 0x20, 0x16, 0x31, 0x8d, 0x14, 0xc0, 0x37,
+	0xb0, 0x32, 0xe6, 0xe1, 0xcb, 0xe9, 0x24, 0x98, 0x60, 0xc6, 0x78, 0xe4, 0xae, 0x28, 0x94, 0xc7,
+	0x33, 0x28, 0xfb, 0x46, 0x1d, 0x1a, 0xe4, 0x77, 0x09, 0xd2, 0xd0, 0x99, 0xdf, 0xab, 0x44, 0xf2,
+	0x2d, 0x34, 0x4f, 0x30, 0x17, 0x2c, 0x8d, 0x2d, 0x54, 0xf3, 0xfd, 0xa1, 0x56, 0x4c, 0xaa, 0xc1,
+	0xfa, 0x04, 0xd6, 0x0a, 0x2c, 0xce, 0xc7, 0x43, 0x29, 0x85, 0x55, 0x35, 0xef, 0xab, 0xf6, 0xa0,
+	0xd9, 0xee, 0xfe, 0x06, 0x44, 0x69, 0x6c, 0x30, 0xe6, 0x39, 0x16, 0x2a, 0x2b, 0x54, 0xe5, 0x94,
+	0x55, 0xd5, 0x86, 0x7a, 0xa1, 0x0f, 0x16, 0x29, 0xc5, 0x55, 0x7d, 0xb0, 0x5b, 0x07, 0x11, 0xd9,
+	0x86, 0x87, 0xc5, 0x81, 0x50, 0x02, 0x06, 0x34, 0x54, 0x62, 0xd3, 0x3a, 0x5c, 0xb7, 0x41, 0x55,
+	0x6c, 0x57, 0x85, 0xba, 0x2f, 0x60, 0x5d, 0x11, 0xf0, 0xa5, 0x0e, 0xee, 0xcb, 0xa0, 0x40, 0x7b,
+	0xa6, 0xa6, 0xe4, 0xbe, 0x68, 0xff, 0x55, 0x60, 0x55, 0xc1, 0xed, 0x46, 0xd1, 0x77, 0xda, 0x9b,
+	0xde, 0xd3, 0x80, 0xae, 0x41, 0xcf, 0xcf, 0xb4, 0xca, 0x3a, 0x54, 0xf5, 0x66, 0x87, 0x5a, 0x98,
+	0x75, 0xa8, 0x21, 0x34, 0x8c, 0x47, 0x6a, 0x83, 0xaa, 0x29, 0x83, 0xfa, 0xf4, 0x36, 0x83, 0x32,
+	0xdc, 0x95, 0x3f, 0xd5, 0x93, 0xb7, 0x0b, 0xf2, 0x1c, 0x6a, 0xa7, 0xc8, 0xe2, 0xe3, 0xbb, 0xb8,
+	0x8b, 0x14, 0xa9, 0xc9, 0x26, 0x43, 0x58, 0xd3, 0x6e, 0xa2, 0x25, 0x19, 0x51, 0x81, 0xca, 0x4c,
+	0x6e, 0xd7, 0x93, 0xa3, 0xf4, 0xd4, 0x54, 0xd9, 0x3f, 0xca, 0xe4, 0x7d, 0x2a, 0xb0, 0xfb, 0x2b,
+	0x80, 0x99, 0x4a, 0xca, 0x12, 0x69, 0x02, 0x2a, 0x5e, 0xbc, 0x3f, 0xbb, 0xbc, 0x7d, 0x22, 0x9f,
+	0x00, 0xd8, 0x86, 0x15, 0xaf, 0x61, 0xd9, 0xec, 0x1c, 0x44, 0x64, 0x13, 0x6a, 0xc6, 0xfa, 0xf4,
+	0x7b, 0x30, 0xab, 0xee, 0xb9, 0x03, 0x0f, 0x14, 0x81, 0x83, 0x92, 0xb5, 0xdd, 0x87, 0x47, 0x0f,
+	0xd6, 0x68, 0x14, 0x65, 0x98, 0xe7, 0x81, 0xe0, 0xda, 0x79, 0x8d, 0x28, 0x9a, 0x66, 0xff, 0x90,
+	0xeb, 0x22, 0x37, 0x51, 0xfa, 0xd3, 0x81, 0x0d, 0x3b, 0x8b, 0x57, 0x3e, 0x15, 0x77, 0xd4, 0xea,
+	0x57, 0xb0, 0x75, 0xe5, 0x7b, 0x14, 0x08, 0x2e, 0xe8, 0xd8, 0x7e, 0x09, 0x34, 0xb7, 0x47, 0x61,
+	0xa9, 0xd0, 0xa1, 0x8c, 0x1b, 0x6b, 0xff, 0x1c, 0x36, 0xae, 0x26, 0xa7, 0xd3, 0x64, 0x84, 0x99,
+	0xa2, 0x3c, 0xef, 0x93, 0x72, 0xda, 0x50, 0x45, 0xba, 0x7f, 0x38, 0xb0, 0xa9, 0xe8, 0xef, 0xe3,
+	0x18, 0x45, 0xf9, 0x63, 0x77, 0xd7, 0x0b, 0x74, 0xa0, 0x3e, 0xcd, 0x31, 0xdb, 0xd5, 0xed, 0x33,
+	0x8c, 0xcb, 0x5b, 0xc4, 0x83, 0xf5, 0x32, 0xcb, 0xe0, 0x4a, 0x5f, 0x1f, 0x94, 0x48, 0xea, 0x5b,
+	0x75, 0xcf, 0x4c, 0x87, 0x07, 0x3c, 0x99, 0x48, 0x92, 0x56, 0xf2, 0xd7, 0xa8, 0x38, 0xb7, 0x4c,
+	0x59, 0xe5, 0xfa, 0x94, 0x7d, 0x04, 0x0d, 0x49, 0x2b, 0xa0, 0x37, 0x52, 0xdd, 0x7b, 0xf1, 0xea,
+	0xa2, 0xe5, 0xbc, 0xbe, 0x68, 0x39, 0xff, 0x5e, 0xb4, 0x9c, 0xf3, 0xcb, 0xd6, 0xdc, 0xeb, 0xcb,
+	0xd6, 0xdc, 0x5f, 0x97, 0xad, 0xb9, 0x9f, 0xb7, 0xcb, 0x52, 0x2c, 0xc9, 0xbc, 0x1f, 0xee, 0xe0,
+	0x53, 0xfd, 0xff, 0xe9, 0x97, 0xb7, 0xff, 0xa0, 0x94, 0x34, 0x47, 0x35, 0x25, 0xb6, 0x2f, 0xfe,
+	0x0f, 0x00, 0x00, 0xff, 0xff, 0x40, 0xb5, 0xca, 0x44, 0x1b, 0x0a, 0x00, 0x00,
 }
 
 func (m *EventNewCampaign) Marshal() (dAtA []byte, err error) {
@@ -851,63 +857,94 @@ func (m *EventNewCampaign) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.VestingPoolName)
 		i = encodeVarintEvent(dAtA, i, uint64(len(m.VestingPoolName)))
 		i--
-		dAtA[i] = 0x6a
+		dAtA[i] = 0x7a
 	}
-	if len(m.VestingPeriod) > 0 {
-		i -= len(m.VestingPeriod)
-		copy(dAtA[i:], m.VestingPeriod)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.VestingPeriod)))
-		i--
-		dAtA[i] = 0x62
+	n1, err1 := github_com_gogo_protobuf_types.StdDurationMarshalTo(m.VestingPeriod, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(m.VestingPeriod):])
+	if err1 != nil {
+		return 0, err1
 	}
-	if len(m.LockupPeriod) > 0 {
-		i -= len(m.LockupPeriod)
-		copy(dAtA[i:], m.LockupPeriod)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.LockupPeriod)))
-		i--
-		dAtA[i] = 0x5a
+	i -= n1
+	i = encodeVarintEvent(dAtA, i, uint64(n1))
+	i--
+	dAtA[i] = 0x72
+	n2, err2 := github_com_gogo_protobuf_types.StdDurationMarshalTo(m.LockupPeriod, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(m.LockupPeriod):])
+	if err2 != nil {
+		return 0, err2
 	}
-	if len(m.EndTime) > 0 {
-		i -= len(m.EndTime)
-		copy(dAtA[i:], m.EndTime)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.EndTime)))
-		i--
-		dAtA[i] = 0x52
+	i -= n2
+	i = encodeVarintEvent(dAtA, i, uint64(n2))
+	i--
+	dAtA[i] = 0x6a
+	n3, err3 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime):])
+	if err3 != nil {
+		return 0, err3
 	}
-	if len(m.StartTime) > 0 {
-		i -= len(m.StartTime)
-		copy(dAtA[i:], m.StartTime)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.StartTime)))
-		i--
-		dAtA[i] = 0x4a
+	i -= n3
+	i = encodeVarintEvent(dAtA, i, uint64(n3))
+	i--
+	dAtA[i] = 0x62
+	n4, err4 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime):])
+	if err4 != nil {
+		return 0, err4
 	}
-	if len(m.Enabled) > 0 {
-		i -= len(m.Enabled)
-		copy(dAtA[i:], m.Enabled)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.Enabled)))
+	i -= n4
+	i = encodeVarintEvent(dAtA, i, uint64(n4))
+	i--
+	dAtA[i] = 0x5a
+	if m.Enabled {
 		i--
-		dAtA[i] = 0x42
+		if m.Enabled {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x50
 	}
-	if len(m.InitialClaimFreeAmount) > 0 {
-		i -= len(m.InitialClaimFreeAmount)
-		copy(dAtA[i:], m.InitialClaimFreeAmount)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.InitialClaimFreeAmount)))
-		i--
-		dAtA[i] = 0x3a
+	{
+		size := m.Free.Size()
+		i -= size
+		if _, err := m.Free.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintEvent(dAtA, i, uint64(size))
 	}
-	if len(m.FeegrantAmount) > 0 {
-		i -= len(m.FeegrantAmount)
-		copy(dAtA[i:], m.FeegrantAmount)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.FeegrantAmount)))
-		i--
-		dAtA[i] = 0x32
+	i--
+	dAtA[i] = 0x4a
+	{
+		size := m.InitialClaimFreeAmount.Size()
+		i -= size
+		if _, err := m.InitialClaimFreeAmount.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintEvent(dAtA, i, uint64(size))
 	}
-	if len(m.CampaignType) > 0 {
-		i -= len(m.CampaignType)
-		copy(dAtA[i:], m.CampaignType)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.CampaignType)))
+	i--
+	dAtA[i] = 0x42
+	{
+		size := m.FeegrantAmount.Size()
+		i -= size
+		if _, err := m.FeegrantAmount.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintEvent(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x3a
+	if m.RemovableClaimRecords {
 		i--
-		dAtA[i] = 0x2a
+		if m.RemovableClaimRecords {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x30
+	}
+	if m.CampaignType != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.CampaignType))
+		i--
+		dAtA[i] = 0x28
 	}
 	if len(m.Description) > 0 {
 		i -= len(m.Description)
@@ -930,12 +967,10 @@ func (m *EventNewCampaign) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Id) > 0 {
-		i -= len(m.Id)
-		copy(dAtA[i:], m.Id)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.Id)))
+	if m.Id != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.Id))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -967,12 +1002,10 @@ func (m *EventCloseCampaign) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.CampaignId) > 0 {
-		i -= len(m.CampaignId)
-		copy(dAtA[i:], m.CampaignId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.CampaignId)))
+	if m.CampaignId != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.CampaignId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
 	if len(m.Owner) > 0 {
 		i -= len(m.Owner)
@@ -1004,12 +1037,10 @@ func (m *EventRemoveCampaign) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.CampaignId) > 0 {
-		i -= len(m.CampaignId)
-		copy(dAtA[i:], m.CampaignId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.CampaignId)))
+	if m.CampaignId != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.CampaignId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
 	if len(m.Owner) > 0 {
 		i -= len(m.Owner)
@@ -1041,12 +1072,10 @@ func (m *EventEnableCampaign) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.CampaignId) > 0 {
-		i -= len(m.CampaignId)
-		copy(dAtA[i:], m.CampaignId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.CampaignId)))
+	if m.CampaignId != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.CampaignId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
 	if len(m.Owner) > 0 {
 		i -= len(m.Owner)
@@ -1078,26 +1107,30 @@ func (m *EventAddMission) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.ClaimStartDate) > 0 {
-		i -= len(m.ClaimStartDate)
-		copy(dAtA[i:], m.ClaimStartDate)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.ClaimStartDate)))
+	if m.ClaimStartDate != nil {
+		n5, err5 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.ClaimStartDate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.ClaimStartDate):])
+		if err5 != nil {
+			return 0, err5
+		}
+		i -= n5
+		i = encodeVarintEvent(dAtA, i, uint64(n5))
 		i--
 		dAtA[i] = 0x42
 	}
-	if len(m.Weight) > 0 {
-		i -= len(m.Weight)
-		copy(dAtA[i:], m.Weight)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.Weight)))
-		i--
-		dAtA[i] = 0x3a
+	{
+		size := m.Weight.Size()
+		i -= size
+		if _, err := m.Weight.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintEvent(dAtA, i, uint64(size))
 	}
-	if len(m.MissionType) > 0 {
-		i -= len(m.MissionType)
-		copy(dAtA[i:], m.MissionType)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.MissionType)))
+	i--
+	dAtA[i] = 0x3a
+	if m.MissionType != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.MissionType))
 		i--
-		dAtA[i] = 0x32
+		dAtA[i] = 0x30
 	}
 	if len(m.Description) > 0 {
 		i -= len(m.Description)
@@ -1113,12 +1146,10 @@ func (m *EventAddMission) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x22
 	}
-	if len(m.CampaignId) > 0 {
-		i -= len(m.CampaignId)
-		copy(dAtA[i:], m.CampaignId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.CampaignId)))
+	if m.CampaignId != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.CampaignId))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x18
 	}
 	if len(m.Owner) > 0 {
 		i -= len(m.Owner)
@@ -1127,12 +1158,10 @@ func (m *EventAddMission) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Id) > 0 {
-		i -= len(m.Id)
-		copy(dAtA[i:], m.Id)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.Id)))
+	if m.Id != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.Id))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -1164,19 +1193,15 @@ func (m *EventClaim) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x22
 	}
-	if len(m.MissionId) > 0 {
-		i -= len(m.MissionId)
-		copy(dAtA[i:], m.MissionId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.MissionId)))
+	if m.MissionId != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.MissionId))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x18
 	}
-	if len(m.CampaignId) > 0 {
-		i -= len(m.CampaignId)
-		copy(dAtA[i:], m.CampaignId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.CampaignId)))
+	if m.CampaignId != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.CampaignId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
 	if len(m.Claimer) > 0 {
 		i -= len(m.Claimer)
@@ -1222,12 +1247,10 @@ func (m *EventInitialClaim) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.CampaignId) > 0 {
-		i -= len(m.CampaignId)
-		copy(dAtA[i:], m.CampaignId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.CampaignId)))
+	if m.CampaignId != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.CampaignId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
 	if len(m.Claimer) > 0 {
 		i -= len(m.Claimer)
@@ -1259,12 +1282,10 @@ func (m *EventAddClaimRecords) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.ClaimRecordsNumber) > 0 {
-		i -= len(m.ClaimRecordsNumber)
-		copy(dAtA[i:], m.ClaimRecordsNumber)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.ClaimRecordsNumber)))
+	if m.ClaimRecordsNumber != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.ClaimRecordsNumber))
 		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x20
 	}
 	if len(m.ClaimRecordsTotalAmount) > 0 {
 		i -= len(m.ClaimRecordsTotalAmount)
@@ -1273,12 +1294,10 @@ func (m *EventAddClaimRecords) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.CampaignId) > 0 {
-		i -= len(m.CampaignId)
-		copy(dAtA[i:], m.CampaignId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.CampaignId)))
+	if m.CampaignId != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.CampaignId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
 	if len(m.Owner) > 0 {
 		i -= len(m.Owner)
@@ -1324,12 +1343,10 @@ func (m *EventDeleteClaimRecord) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.CampaignId) > 0 {
-		i -= len(m.CampaignId)
-		copy(dAtA[i:], m.CampaignId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.CampaignId)))
+	if m.CampaignId != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.CampaignId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
 	if len(m.Owner) > 0 {
 		i -= len(m.Owner)
@@ -1368,19 +1385,15 @@ func (m *EventCompleteMission) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.MissionId) > 0 {
-		i -= len(m.MissionId)
-		copy(dAtA[i:], m.MissionId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.MissionId)))
+	if m.MissionId != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.MissionId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
-	if len(m.CampaignId) > 0 {
-		i -= len(m.CampaignId)
-		copy(dAtA[i:], m.CampaignId)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.CampaignId)))
+	if m.CampaignId != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.CampaignId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -1402,9 +1415,8 @@ func (m *EventNewCampaign) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Id)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.Id != 0 {
+		n += 1 + sovEvent(uint64(m.Id))
 	}
 	l = len(m.Owner)
 	if l > 0 {
@@ -1418,38 +1430,29 @@ func (m *EventNewCampaign) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.CampaignType)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.CampaignType != 0 {
+		n += 1 + sovEvent(uint64(m.CampaignType))
 	}
-	l = len(m.FeegrantAmount)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.RemovableClaimRecords {
+		n += 2
 	}
-	l = len(m.InitialClaimFreeAmount)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	l = m.FeegrantAmount.Size()
+	n += 1 + l + sovEvent(uint64(l))
+	l = m.InitialClaimFreeAmount.Size()
+	n += 1 + l + sovEvent(uint64(l))
+	l = m.Free.Size()
+	n += 1 + l + sovEvent(uint64(l))
+	if m.Enabled {
+		n += 2
 	}
-	l = len(m.Enabled)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
-	}
-	l = len(m.StartTime)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
-	}
-	l = len(m.EndTime)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
-	}
-	l = len(m.LockupPeriod)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
-	}
-	l = len(m.VestingPeriod)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
-	}
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime)
+	n += 1 + l + sovEvent(uint64(l))
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime)
+	n += 1 + l + sovEvent(uint64(l))
+	l = github_com_gogo_protobuf_types.SizeOfStdDuration(m.LockupPeriod)
+	n += 1 + l + sovEvent(uint64(l))
+	l = github_com_gogo_protobuf_types.SizeOfStdDuration(m.VestingPeriod)
+	n += 1 + l + sovEvent(uint64(l))
 	l = len(m.VestingPoolName)
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
@@ -1467,9 +1470,8 @@ func (m *EventCloseCampaign) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.CampaignId)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.CampaignId != 0 {
+		n += 1 + sovEvent(uint64(m.CampaignId))
 	}
 	l = len(m.CampaignCloseAction)
 	if l > 0 {
@@ -1488,9 +1490,8 @@ func (m *EventRemoveCampaign) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.CampaignId)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.CampaignId != 0 {
+		n += 1 + sovEvent(uint64(m.CampaignId))
 	}
 	return n
 }
@@ -1505,9 +1506,8 @@ func (m *EventEnableCampaign) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.CampaignId)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.CampaignId != 0 {
+		n += 1 + sovEvent(uint64(m.CampaignId))
 	}
 	return n
 }
@@ -1518,17 +1518,15 @@ func (m *EventAddMission) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Id)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.Id != 0 {
+		n += 1 + sovEvent(uint64(m.Id))
 	}
 	l = len(m.Owner)
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.CampaignId)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.CampaignId != 0 {
+		n += 1 + sovEvent(uint64(m.CampaignId))
 	}
 	l = len(m.Name)
 	if l > 0 {
@@ -1538,16 +1536,13 @@ func (m *EventAddMission) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.MissionType)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.MissionType != 0 {
+		n += 1 + sovEvent(uint64(m.MissionType))
 	}
-	l = len(m.Weight)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
-	}
-	l = len(m.ClaimStartDate)
-	if l > 0 {
+	l = m.Weight.Size()
+	n += 1 + l + sovEvent(uint64(l))
+	if m.ClaimStartDate != nil {
+		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.ClaimStartDate)
 		n += 1 + l + sovEvent(uint64(l))
 	}
 	return n
@@ -1563,13 +1558,11 @@ func (m *EventClaim) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.CampaignId)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.CampaignId != 0 {
+		n += 1 + sovEvent(uint64(m.CampaignId))
 	}
-	l = len(m.MissionId)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.MissionId != 0 {
+		n += 1 + sovEvent(uint64(m.MissionId))
 	}
 	l = len(m.Amount)
 	if l > 0 {
@@ -1588,9 +1581,8 @@ func (m *EventInitialClaim) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.CampaignId)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.CampaignId != 0 {
+		n += 1 + sovEvent(uint64(m.CampaignId))
 	}
 	l = len(m.AddressToClaim)
 	if l > 0 {
@@ -1613,17 +1605,15 @@ func (m *EventAddClaimRecords) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.CampaignId)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.CampaignId != 0 {
+		n += 1 + sovEvent(uint64(m.CampaignId))
 	}
 	l = len(m.ClaimRecordsTotalAmount)
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.ClaimRecordsNumber)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.ClaimRecordsNumber != 0 {
+		n += 1 + sovEvent(uint64(m.ClaimRecordsNumber))
 	}
 	return n
 }
@@ -1638,9 +1628,8 @@ func (m *EventDeleteClaimRecord) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.CampaignId)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.CampaignId != 0 {
+		n += 1 + sovEvent(uint64(m.CampaignId))
 	}
 	l = len(m.UserAddress)
 	if l > 0 {
@@ -1659,13 +1648,11 @@ func (m *EventCompleteMission) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.CampaignId)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.CampaignId != 0 {
+		n += 1 + sovEvent(uint64(m.CampaignId))
 	}
-	l = len(m.MissionId)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.MissionId != 0 {
+		n += 1 + sovEvent(uint64(m.MissionId))
 	}
 	l = len(m.UserAddress)
 	if l > 0 {
@@ -1710,10 +1697,10 @@ func (m *EventNewCampaign) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
-			var stringLen uint64
+			m.Id = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -1723,24 +1710,11 @@ func (m *EventNewCampaign) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.Id |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Id = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
@@ -1838,10 +1812,10 @@ func (m *EventNewCampaign) Unmarshal(dAtA []byte) error {
 			m.Description = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 5:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CampaignType", wireType)
 			}
-			var stringLen uint64
+			m.CampaignType = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -1851,25 +1825,32 @@ func (m *EventNewCampaign) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.CampaignType |= CampaignType(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CampaignType = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RemovableClaimRecords", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.RemovableClaimRecords = bool(v != 0)
+		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field FeegrantAmount", wireType)
 			}
@@ -1899,9 +1880,11 @@ func (m *EventNewCampaign) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.FeegrantAmount = string(dAtA[iNdEx:postIndex])
+			if err := m.FeegrantAmount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
-		case 7:
+		case 8:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field InitialClaimFreeAmount", wireType)
 			}
@@ -1931,43 +1914,13 @@ func (m *EventNewCampaign) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.InitialClaimFreeAmount = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 8:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Enabled", wireType)
+			if err := m.InitialClaimFreeAmount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
 			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvent
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Enabled = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 9:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field StartTime", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Free", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1995,13 +1948,15 @@ func (m *EventNewCampaign) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.StartTime = string(dAtA[iNdEx:postIndex])
+			if err := m.Free.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 10:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field EndTime", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Enabled", wireType)
 			}
-			var stringLen uint64
+			var v int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -2011,29 +1966,17 @@ func (m *EventNewCampaign) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				v |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.EndTime = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
+			m.Enabled = bool(v != 0)
 		case 11:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field LockupPeriod", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field StartTime", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -2043,29 +1986,30 @@ func (m *EventNewCampaign) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthEvent
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthEvent
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.LockupPeriod = string(dAtA[iNdEx:postIndex])
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StartTime, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 12:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VestingPeriod", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field EndTime", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -2075,25 +2019,92 @@ func (m *EventNewCampaign) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthEvent
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthEvent
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.VestingPeriod = string(dAtA[iNdEx:postIndex])
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.EndTime, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 13:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LockupPeriod", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthEvent
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvent
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdDurationUnmarshal(&m.LockupPeriod, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 14:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VestingPeriod", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthEvent
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvent
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdDurationUnmarshal(&m.VestingPeriod, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 15:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field VestingPoolName", wireType)
 			}
@@ -2208,10 +2219,10 @@ func (m *EventCloseCampaign) Unmarshal(dAtA []byte) error {
 			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CampaignId", wireType)
 			}
-			var stringLen uint64
+			m.CampaignId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -2221,24 +2232,11 @@ func (m *EventCloseCampaign) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.CampaignId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CampaignId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CampaignCloseAction", wireType)
@@ -2354,10 +2352,10 @@ func (m *EventRemoveCampaign) Unmarshal(dAtA []byte) error {
 			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CampaignId", wireType)
 			}
-			var stringLen uint64
+			m.CampaignId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -2367,24 +2365,11 @@ func (m *EventRemoveCampaign) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.CampaignId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CampaignId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvent(dAtA[iNdEx:])
@@ -2468,10 +2453,10 @@ func (m *EventEnableCampaign) Unmarshal(dAtA []byte) error {
 			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CampaignId", wireType)
 			}
-			var stringLen uint64
+			m.CampaignId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -2481,24 +2466,11 @@ func (m *EventEnableCampaign) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.CampaignId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CampaignId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvent(dAtA[iNdEx:])
@@ -2550,10 +2522,10 @@ func (m *EventAddMission) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
-			var stringLen uint64
+			m.Id = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -2563,24 +2535,11 @@ func (m *EventAddMission) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.Id |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Id = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
@@ -2614,10 +2573,10 @@ func (m *EventAddMission) Unmarshal(dAtA []byte) error {
 			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CampaignId", wireType)
 			}
-			var stringLen uint64
+			m.CampaignId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -2627,24 +2586,11 @@ func (m *EventAddMission) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.CampaignId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CampaignId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
@@ -2710,10 +2656,10 @@ func (m *EventAddMission) Unmarshal(dAtA []byte) error {
 			m.Description = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 6:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MissionType", wireType)
 			}
-			var stringLen uint64
+			m.MissionType = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -2723,24 +2669,11 @@ func (m *EventAddMission) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.MissionType |= MissionType(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.MissionType = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Weight", wireType)
@@ -2771,13 +2704,15 @@ func (m *EventAddMission) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Weight = string(dAtA[iNdEx:postIndex])
+			if err := m.Weight.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 8:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ClaimStartDate", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -2787,23 +2722,27 @@ func (m *EventAddMission) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthEvent
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthEvent
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ClaimStartDate = string(dAtA[iNdEx:postIndex])
+			if m.ClaimStartDate == nil {
+				m.ClaimStartDate = new(time.Time)
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.ClaimStartDate, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2888,10 +2827,10 @@ func (m *EventClaim) Unmarshal(dAtA []byte) error {
 			m.Claimer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CampaignId", wireType)
 			}
-			var stringLen uint64
+			m.CampaignId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -2901,29 +2840,16 @@ func (m *EventClaim) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.CampaignId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CampaignId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 3:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MissionId", wireType)
 			}
-			var stringLen uint64
+			m.MissionId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -2933,24 +2859,11 @@ func (m *EventClaim) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.MissionId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.MissionId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
@@ -3066,10 +2979,10 @@ func (m *EventInitialClaim) Unmarshal(dAtA []byte) error {
 			m.Claimer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CampaignId", wireType)
 			}
-			var stringLen uint64
+			m.CampaignId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -3079,24 +2992,11 @@ func (m *EventInitialClaim) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.CampaignId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CampaignId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AddressToClaim", wireType)
@@ -3244,10 +3144,10 @@ func (m *EventAddClaimRecords) Unmarshal(dAtA []byte) error {
 			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CampaignId", wireType)
 			}
-			var stringLen uint64
+			m.CampaignId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -3257,24 +3157,11 @@ func (m *EventAddClaimRecords) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.CampaignId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CampaignId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ClaimRecordsTotalAmount", wireType)
@@ -3308,10 +3195,10 @@ func (m *EventAddClaimRecords) Unmarshal(dAtA []byte) error {
 			m.ClaimRecordsTotalAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 4:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ClaimRecordsNumber", wireType)
 			}
-			var stringLen uint64
+			m.ClaimRecordsNumber = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -3321,24 +3208,11 @@ func (m *EventAddClaimRecords) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.ClaimRecordsNumber |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ClaimRecordsNumber = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvent(dAtA[iNdEx:])
@@ -3422,10 +3296,10 @@ func (m *EventDeleteClaimRecord) Unmarshal(dAtA []byte) error {
 			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CampaignId", wireType)
 			}
-			var stringLen uint64
+			m.CampaignId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -3435,24 +3309,11 @@ func (m *EventDeleteClaimRecord) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.CampaignId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CampaignId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UserAddress", wireType)
@@ -3568,10 +3429,10 @@ func (m *EventCompleteMission) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CampaignId", wireType)
 			}
-			var stringLen uint64
+			m.CampaignId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -3581,29 +3442,16 @@ func (m *EventCompleteMission) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.CampaignId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CampaignId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MissionId", wireType)
 			}
-			var stringLen uint64
+			m.MissionId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -3613,24 +3461,11 @@ func (m *EventCompleteMission) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.MissionId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.MissionId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UserAddress", wireType)
