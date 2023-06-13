@@ -180,7 +180,7 @@ func (k Keeper) SetupNewFeegrantAccount(ctx sdk.Context, campaignId uint64) sdk.
 	}
 	baseAccount := authtypes.NewBaseAccountWithAddress(accAddress)
 	moduleAccount := authtypes.NewModuleAccount(baseAccount, moduleName)
-	k.accountKeeper.SetModuleAccount(ctx, moduleAccount)
+	k.accountKeeper.SetAccount(ctx, k.accountKeeper.NewAccount(ctx, moduleAccount))
 	return accAddress
 }
 

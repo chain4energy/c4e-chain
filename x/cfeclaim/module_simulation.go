@@ -52,18 +52,18 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	//var weightMsgClaim = 100
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgClaim,
-	//	cfeclaimsimulation.SimulateMsgClaim(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
-	//))
-	//
+	var weightMsgClaim = 100
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgClaim,
+		cfeclaimsimulation.SimulateMsgClaim(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
+	))
+
 	var weightMsgCreateCampaign = 10
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgCreateCampaign,
 		cfeclaimsimulation.SimulateMsgCreateCampaign(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
 	))
-
+	//
 	var weightMsgAddMission = 20
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgAddMission,
@@ -76,11 +76,11 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		cfeclaimsimulation.SimulateMsgAddClaimRecords(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
 	))
 
-	//var weightMsgDeleteClaimRecord = 20
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgDeleteClaimRecord,
-	//	cfeclaimsimulation.SimulateMsgDeleteClaimRecord(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
-	//))
+	var weightMsgDeleteClaimRecord = 20
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteClaimRecord,
+		cfeclaimsimulation.SimulateMsgDeleteClaimRecord(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
+	))
 
 	var weightMsgCloseCampaign = 20
 	operations = append(operations, simulation.NewWeightedOperation(

@@ -15,6 +15,8 @@ type AccountKeeper interface {
 	GetModuleAccount(ctx sdk.Context, moduleName string) authtypes.ModuleAccountI
 	SetModuleAccount(ctx sdk.Context, macc authtypes.ModuleAccountI)
 	NewAccountWithAddress(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
+	SetAccount(ctx sdk.Context, acc authtypes.AccountI)
+	NewAccount(sdk.Context, authtypes.AccountI) authtypes.AccountI
 }
 
 // BankKeeper defines the expected interface needed to retrieve account balances.

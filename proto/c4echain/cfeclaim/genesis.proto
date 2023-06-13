@@ -17,8 +17,8 @@ message GenesisState {
   repeated UserEntry users_entries = 3 [
     (gogoproto.nullable) = false
   ];
-  repeated Mission missions = 5 [
+  repeated Mission missions = 4 [
     (gogoproto.nullable) = false
   ];
-  map<uint64, uint64> mission_count = 6;
+  map<uint64, uint64> mission_count = 5;
 }

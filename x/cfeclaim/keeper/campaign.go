@@ -15,7 +15,7 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 	endTime time.Time, lockupPeriod time.Duration, vestingPeriod time.Duration, vestingPoolName string) (*types.Campaign, error) {
 	k.Logger(ctx).Debug("create campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
-
+	feegrantAmount = math.NewInt(1)
 	if err := k.ValidateCampaignParams(ctx, name, description, feegrantAmount, initialClaimFreeAmount, free, startTime, endTime, campaignType, owner, vestingPoolName, lockupPeriod, vestingPeriod); err != nil {
 		return nil, err
 	}
