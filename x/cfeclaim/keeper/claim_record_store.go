@@ -12,7 +12,7 @@ import (
 func (k Keeper) SetUserEntry(ctx sdk.Context, userEntry types.UserEntry) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.UserEntryKeyPrefix)
 	b := k.cdc.MustMarshal(&userEntry)
-	store.Set(types.UserEntryKey(
+	store.Set([]byte(
 		userEntry.Address,
 	), b)
 }
@@ -24,7 +24,7 @@ func (k Keeper) GetUserEntry(
 ) (val types.UserEntry, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.UserEntryKeyPrefix)
 
-	b := store.Get(types.UserEntryKey(
+	b := store.Get([]byte(
 		address,
 	))
 	if b == nil {

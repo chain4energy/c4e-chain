@@ -73,7 +73,9 @@ func createCampaign(ak types.AccountKeeper, bk types.BankKeeper, cfevestingKeepe
 		randomVestingPoolName := simtypes.RandStringOfLength(r, 10)
 		randVesingTypeId := utils.RandInt64(r, 3)
 		randomVestingType := "New vesting" + strconv.Itoa(int(randVesingTypeId))
-		_ = cfevestingKeeper.CreateVestingPool(ctx, simAccount.Address.String(), randomVestingPoolName, vestingPoolAmount, time.Hour, randomVestingType)
+		if err = cfevestingKeeper.CreateVestingPool(ctx, simAccount.Address.String(), randomVestingPoolName, vestingPoolAmount, time.Hour, randomVestingType); err != nil {
+			return &simAccount, err
+		}
 		msgCreateCampaign.VestingPoolName = randomVestingPoolName
 	}
 

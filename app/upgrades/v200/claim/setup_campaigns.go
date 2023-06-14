@@ -91,7 +91,7 @@ func validateSetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepe
 		}
 	}
 	if !found {
-		return errors.Wrapf(sdkerrors.ErrNotFound, "fairdrop vesting pool not found fo for NewAirdropVestingPoolOwner %s", AirdropVestingPoolOwner)
+		return errors.Wrapf(sdkerrors.ErrNotFound, "fairdrop vesting pool not found for NewAirdropVestingPoolOwner %s", AirdropVestingPoolOwner)
 	}
 
 	teamdropVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, TeamdropVestingPoolOwner)

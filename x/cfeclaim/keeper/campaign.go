@@ -6,7 +6,6 @@ import (
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"strconv"
 	"time"
 )
 
@@ -45,19 +44,19 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 	// Adding the inititalClaim mission to a campaign is done automatically as this mission is required for every campaign
 	k.AppendNewMission(ctx, campaign.Id, *types.NewInitialMission(campaign.Id))
 	k.Logger(ctx).Debug("create campaign ret", "campaignId", campaign.Id)
-	event := &types.NewCampaign{
-		Id:                     strconv.FormatUint(campaign.Id, 10),
+	event := &types.EventNewCampaign{
+		Id:                     campaign.Id,
 		Owner:                  campaign.Owner,
 		Name:                   campaign.Name,
 		Description:            campaign.Description,
-		CampaignType:           campaign.CampaignType.String(),
-		FeegrantAmount:         campaign.FeegrantAmount.String(),
-		InitialClaimFreeAmount: campaign.InitialClaimFreeAmount.String(),
-		Enabled:                "false",
-		StartTime:              campaign.StartTime.String(),
-		EndTime:                campaign.EndTime.String(),
-		LockupPeriod:           campaign.LockupPeriod.String(),
-		VestingPeriod:          campaign.VestingPeriod.String(),
+		CampaignType:           campaign.CampaignType,
+		FeegrantAmount:         campaign.FeegrantAmount,
+		InitialClaimFreeAmount: campaign.InitialClaimFreeAmount,
+		Enabled:                false,
+		StartTime:              campaign.StartTime,
+		EndTime:                campaign.EndTime,
+		LockupPeriod:           campaign.LockupPeriod,
+		VestingPeriod:          campaign.VestingPeriod,
 		VestingPoolName:        campaign.VestingPoolName,
 	}
 	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
@@ -84,6 +83,14 @@ func (k Keeper) CloseCampaign(ctx sdk.Context, owner string, campaignId uint64) 
 	campaign.Enabled = false
 	k.SetCampaign(ctx, *campaign)
 	k.Logger(ctx).Debug("closed campaign", "campaignId", campaignId, "decrementedCampaignCurrentAmount", campaign.CampaignCurrentAmount)
+
+	event := &types.EventCloseCampaign{
+		Owner:      owner,
+		CampaignId: campaignId,
+	}
+	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
+		k.Logger(ctx).Error("close campaign emit event error", "event", event, "error", err.Error())
+	}
 	return nil
 }
 
@@ -104,6 +111,15 @@ func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64)
 
 	k.removeCampaign(ctx, campaignId)
 	k.RemoveAllMissionForCampaign(ctx, campaignId)
+	k.RemoveMissionCount(ctx, campaignId)
+
+	event := &types.EventRemoveCampaign{
+		Owner:      owner,
+		CampaignId: campaignId,
+	}
+	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
+		k.Logger(ctx).Error("remove campaign emit event error", "event", event, "error", err.Error())
+	}
 	return nil
 }
 
@@ -130,6 +146,14 @@ func (k Keeper) EnableCampaign(ctx sdk.Context, owner string, campaignId uint64,
 	campaign.Enabled = true
 	k.SetCampaign(ctx, *campaign)
 	k.Logger(ctx).Debug("enabled campaign", "campaignId", campaignId, "startTime", campaign.StartTime, "endTime", campaign.EndTime)
+
+	event := &types.EventEnableCampaign{
+		Owner:      owner,
+		CampaignId: campaignId,
+	}
+	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
+		k.Logger(ctx).Error("enable campaign emit event error", "event", event, "error", err.Error())
+	}
 	return nil
 }
 

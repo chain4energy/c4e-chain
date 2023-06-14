@@ -118,7 +118,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, owner string) (withdrawn s
 
 	current := ctx.BlockTime()
 	toWithdraw := math.ZeroInt()
-	events := make([]types.WithdrawAvailable, 0)
+	events := make([]types.EventWithdrawAvailable, 0)
 	denom := k.GetParams(ctx).Denom
 	for _, vestingPool := range accVestingPools.VestingPools {
 		withdrawable := CalculateWithdrawable(current, *vestingPool)
@@ -127,7 +127,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, owner string) (withdrawn s
 		k.Logger(ctx).Debug("withdraw all available data", "owner", owner, "vestingPool", vestingPool, "withdrawable", withdrawable,
 			"toWithdraw", toWithdraw)
 		if toWithdraw.IsPositive() {
-			events = append(events, types.WithdrawAvailable{
+			events = append(events, types.EventWithdrawAvailable{
 				Owner:           owner,
 				VestingPoolName: vestingPool.Name,
 				Amount:          toWithdraw.String() + denom,
@@ -257,7 +257,7 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr st
 }
 
 func (k Keeper) EmitNewVestingPeriodFromVestingPool(ctx sdk.Context, owner string, toAddress string, vestingPoolName string, amount math.Int, periodId uint64, restartVesting bool) {
-	if err := ctx.EventManager().EmitTypedEvent(&types.NewVestingPeriodFromVestingPool{
+	if err := ctx.EventManager().EmitTypedEvent(&types.EventNewVestingPeriodFromVestingPool{
 		Owner:           owner,
 		Address:         toAddress,
 		VestingPoolName: vestingPoolName,
@@ -357,7 +357,7 @@ func (k Keeper) newContinuousVestingAccount(ctx sdk.Context, to sdk.AccAddress, 
 	k.account.SetAccount(ctx, acc)
 	k.Logger(ctx).Debug("new continuous vesting account", "baseAccount", baseVestingAccount.BaseAccount, "baseVestingAccount",
 		baseVestingAccount, "startTime", startTime)
-	err := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
+	err := ctx.EventManager().EmitTypedEvent(&types.EventNewVestingAccount{
 		Address: acc.Address,
 	})
 	if err != nil {

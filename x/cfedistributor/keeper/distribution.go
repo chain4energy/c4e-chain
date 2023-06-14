@@ -25,9 +25,7 @@ func findBurnState(states *[]types.State) int {
 
 func findAccountState(states *[]types.State, account *types.Account) int {
 	for pos, state := range *states {
-		if state.Account.Id == account.Id && state.Account.Id != "" {
-			return pos
-		} else if state.Account.Id == account.Id && state.Account.Id == "" {
+		if state.Account != nil && state.Account.Id == account.Id {
 			return pos
 		}
 	}
@@ -183,7 +181,7 @@ func sendCoinsSetGuage(accountName string, coins sdk.Coins) {
 
 func (k Keeper) SendCoinsFromStates(ctx sdk.Context, states []types.State) {
 	for _, state := range states {
-		if types.InternalAccount != state.Account.Type && checkIfAnyCoinIsGTE1(state.Remains) {
+		if (state.Account == nil || types.InternalAccount != state.Account.Type) && checkIfAnyCoinIsGTE1(state.Remains) {
 			if state.Burn {
 				k.burnCoins(ctx, &state)
 			} else if types.ModuleAccount == state.Account.Type {
@@ -224,7 +222,7 @@ func (k Keeper) addSharesToState(ctx sdk.Context, localRemains *[]types.State, b
 	if pos < 0 {
 		var state types.State
 		if burn || account == nil {
-			state = types.State{Account: &types.Account{}, Remains: sdk.NewDecCoins(), Burn: true}
+			state = types.State{Account: nil, Remains: sdk.NewDecCoins(), Burn: true}
 		} else {
 			state = types.State{Account: account, Remains: sdk.NewDecCoins(), Burn: false}
 		}
@@ -240,7 +238,7 @@ func (k Keeper) addSharesToState(ctx sdk.Context, localRemains *[]types.State, b
 	return localRemains
 }
 
-func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State, coinsToDistributeDec sdk.DecCoins, subDistributor types.SubDistributor) (localRemains *[]types.State, distributions []*types.Distribution, burn *types.DistributionBurn) {
+func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State, coinsToDistributeDec sdk.DecCoins, subDistributor types.SubDistributor) (localRemains *[]types.State, distributionEvents []*types.EventDistribution, burnEvent *types.EventDistributionBurn) {
 	k.Logger(ctx).Debug("start distribution process", "subDistributor", subDistributor.String(),
 		"coinsToDistributeDec", coinsToDistributeDec.String())
 	localRemains = states
@@ -257,7 +255,7 @@ func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State,
 			}
 
 			localRemains = k.addSharesToAccountState(ctx, localRemains, &share.Destination, calculatedShare, findFunc)
-			distributions = append(distributions, &types.Distribution{
+			distributionEvents = append(distributionEvents, &types.EventDistribution{
 				Subdistributor: subDistributor.Name,
 				ShareName:      share.Name,
 				Sources:        subDistributor.Sources,
@@ -275,7 +273,7 @@ func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State,
 				return findBurnState(localRemains)
 			}
 			localRemains = k.addSharesToBurnState(ctx, localRemains, calculatedShare, findFunc)
-			burn = &types.DistributionBurn{
+			burnEvent = &types.EventDistributionBurn{
 				Subdistributor: subDistributor.Name,
 				Sources:        subDistributor.Sources,
 				Amount:         calculatedShare,
@@ -290,7 +288,7 @@ func (k Keeper) StartDistributionProcess(ctx sdk.Context, states *[]types.State,
 			return findAccountState(localRemains, &accountDefault)
 		}
 		localRemains = k.addSharesToAccountState(ctx, localRemains, &accountDefault, defaultShare, findFunc)
-		distributions = append(distributions, &types.Distribution{
+		distributionEvents = append(distributionEvents, &types.EventDistribution{
 			Subdistributor: subDistributor.Name,
 			ShareName:      subDistributor.GetPrimaryShareName(),
 			Sources:        subDistributor.Sources,

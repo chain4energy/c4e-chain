@@ -40,7 +40,7 @@ func (k Keeper) GetMission(
 	return val, true
 }
 
-// GetMission returns a mission from its index
+// MustGetMission returns a mission from its index
 func (k Keeper) MustGetMission(
 	ctx sdk.Context,
 	campaignId uint64,
@@ -73,7 +73,7 @@ func (k Keeper) GetAllMission(ctx sdk.Context) (list []types.Mission) {
 	return
 }
 
-// GetAllMissionForCampaign returns all mission
+// AllMissionForCampaign returns all mission for campaign
 func (k Keeper) AllMissionForCampaign(ctx sdk.Context, campaignId uint64) (list []types.Mission, weightSum sdk.Dec) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
@@ -92,7 +92,7 @@ func (k Keeper) AllMissionForCampaign(ctx sdk.Context, campaignId uint64) (list 
 	return
 }
 
-// GetAllMissionForCampaign returns all mission
+// RemoveAllMissionForCampaign removes all mission for campaign
 func (k Keeper) RemoveAllMissionForCampaign(ctx sdk.Context, campaignId uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
@@ -143,7 +143,6 @@ func (k Keeper) GetMissionCount(ctx sdk.Context, campaignId uint64) uint64 {
 		return 0
 	}
 
-	// Parse bytes
 	return binary.BigEndian.Uint64(bz)
 }
 
@@ -152,4 +151,25 @@ func (k Keeper) SetMissionCount(ctx sdk.Context, campaignId uint64, count uint64
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
 	store.Set(types.GetUint64Key(campaignId), bz)
+}
+
+func (k Keeper) RemoveMissionCount(ctx sdk.Context, campaignId uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionCountKeyPrefix)
+	store.Delete(types.GetUint64Key(campaignId))
+}
+
+// GetAllMissionCount returns all mission count
+func (k Keeper) GetAllMissionCount(ctx sdk.Context) (missionCounts []*types.MissionCount) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionCountKeyPrefix)
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+	for ; iterator.Valid(); iterator.Next() {
+		campaignId := binary.BigEndian.Uint64(iterator.Key())
+		count := binary.BigEndian.Uint64(iterator.Value())
+		missionCounts = append(missionCounts, &types.MissionCount{
+			CampaignId: campaignId,
+			Count:      count,
+		})
+	}
+	return
 }

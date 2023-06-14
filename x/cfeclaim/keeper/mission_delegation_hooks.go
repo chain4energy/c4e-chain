@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -28,12 +27,14 @@ func (h MissionDelegationHooks) BeforeDelegationCreated(ctx sdk.Context, delAddr
 	for _, mission := range missions {
 		if mission.MissionType == types.MissionDelegate {
 			if err := h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, delAddr.String()); err != nil {
-				ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName)).Debug("mission delegation hook error", "error", err)
+				h.k.Logger(ctx).Debug("mission delegation hook unsuccessful", "info", err)
 			}
 		}
 	}
 	return nil
 }
+
+// Below are the other hooks used by StakingHooks interface, they are not used by this module
 
 // AfterValidatorCreated implements StakingHooks
 func (h MissionDelegationHooks) AfterValidatorCreated(ctx sdk.Context, valAddr sdk.ValAddress) error {

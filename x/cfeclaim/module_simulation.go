@@ -63,7 +63,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		weightMsgCreateCampaign,
 		cfeclaimsimulation.SimulateMsgCreateCampaign(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
 	))
-
+	//
 	var weightMsgAddMission = 20
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgAddMission,
