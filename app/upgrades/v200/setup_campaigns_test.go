@@ -90,7 +90,7 @@ func TestSetupCampaigns(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	addVestingTypes(testHelper)
 	addVestingPools(testHelper)
-	addTeamdropVestingAccount(testHelper)
+	addTeamdropVestingAccount(t, testHelper)
 	_ = addAirdropModuleAccount(testHelper)
 
 	_ = addAirdropModuleAccount(testHelper)
@@ -117,7 +117,7 @@ func TestSetupCampaignsNoTeamdropVestingAccount(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	addVestingTypes(testHelper)
 	addVestingPools(testHelper)
-	addTeamdropVestingAccount(testHelper)
+	addTeamdropVestingAccount(t, testHelper)
 	addAirdropModuleAccount(testHelper)
 	campaigns := testHelper.C4eClaimUtils.GetCampaigns()
 	require.Nil(t, campaigns)
@@ -136,7 +136,7 @@ func TestSetupCampaignsNoAirdropModuleAccount(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	addVestingTypes(testHelper)
 	addVestingPools(testHelper)
-	addTeamdropVestingAccount(testHelper)
+	addTeamdropVestingAccount(t, testHelper)
 	addAirdropModuleAccount(testHelper)
 
 	campaigns := testHelper.App.CfeclaimKeeper.GetAllCampaigns(testHelper.Context)

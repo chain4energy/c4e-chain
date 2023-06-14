@@ -29,9 +29,6 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 	"os"
-	"reflect"
-	"regexp"
-	"runtime"
 	"testing"
 )
 
@@ -45,30 +42,18 @@ type StoreKeysPrefixes struct {
 	Prefixes [][]byte
 }
 
-var RegexExcludedOperations = regexp.MustCompile(`authz`)
-
 // BenchmarkSimulation run the chain simulation
 // Running as go benchmark test:
 func BenchmarkSimulation(b *testing.B) {
-	_, _, db, dir := setupSimulation(b, "goleveldb-app-sim", "Simulation")
+	_, _, cleanup := setupSimulation(b, "goleveldb-app-sim", "Simulation")
 
 	defer func() {
-		err := db.Close()
-		require.NoError(b, err)
-		err = os.RemoveAll(dir)
-		require.NoError(b, err)
+		cleanup()
 	}()
 }
 
 func BenchmarkSimTest(b *testing.B) {
-	app, _, db, dir := setupSimulation(b, "goleveldb-app-sim", "Simulation")
-
-	defer func() {
-		err := db.Close()
-		require.NoError(b, err)
-		err = os.RemoveAll(dir)
-		require.NoError(b, err)
-	}()
+	app, _, cleanup1 := setupSimulation(b, "goleveldb-app-sim", "Simulation")
 
 	fmt.Printf("exporting genesis...\n")
 	exported, err := app.ExportAppStateAndValidators(false, []string{})
@@ -81,13 +66,11 @@ func BenchmarkSimTest(b *testing.B) {
 	err = json.Unmarshal(exported.AppState, &genesisState)
 	require.NoError(b, err)
 
-	newApp, _, _, newDb, newDir := BaseSimulationSetup(b, "goleveldb-app-sim-2", "Simulation-2")
+	newApp, _, _, _, _, cleanup2 := BaseSimulationSetup(b, "goleveldb-app-sim-2", "Simulation-2")
 
 	defer func() {
-		err := newDb.Close()
-		require.NoError(b, err)
-		err = os.RemoveAll(newDir)
-		require.NoError(b, err)
+		cleanup1()
+		cleanup2()
 	}()
 
 	ctxA := app.NewContext(true, tmproto.Header{Height: app.LastBlockHeight()})
@@ -114,7 +97,7 @@ func BenchmarkSimTest(b *testing.B) {
 		{app.keys[govtypes.StoreKey], newApp.keys[govtypes.StoreKey], [][]byte{}},
 		{app.keys[evidencetypes.StoreKey], newApp.keys[evidencetypes.StoreKey], [][]byte{}},
 		{app.keys[capabilitytypes.StoreKey], newApp.keys[capabilitytypes.StoreKey], [][]byte{}},
-		{app.keys[authzkeeper.StoreKey], newApp.keys[authzkeeper.StoreKey], [][]byte{}},
+		{app.GetKey(authzkeeper.StoreKey), newApp.GetKey(authzkeeper.StoreKey), [][]byte{authzkeeper.GrantKey, authzkeeper.GrantQueuePrefix}},
 
 		// IBC
 		{app.keys[ibchost.StoreKey], newApp.keys[ibchost.StoreKey], [][]byte{}},
@@ -146,18 +129,10 @@ func BenchmarkSimTest(b *testing.B) {
 	}
 }
 
-func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *App, simParams simulation.Params, db dbm.DB, dir string) {
-	app, _, config, db, dir := BaseSimulationSetup(tb, dirPrevix, dbName)
+func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *App, simParams simulation.Params, cleanup func()) {
+	app, _, config, db, _, cleanup := BaseSimulationSetup(tb, dirPrevix, dbName)
 
 	weightedOperations := simapp.SimulationOperations(app, app.AppCodec(), config)
-
-	for i, operation := range weightedOperations {
-		operationName := runtime.FuncForPC(reflect.ValueOf(operation.Op()).Pointer()).Name()
-		if RegexExcludedOperations.MatchString(operationName) {
-			weightedOperations = append(weightedOperations[:i], weightedOperations[i+1:]...)
-			fmt.Println("Excluded operation: " + operationName)
-		}
-	}
 
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		tb,
@@ -177,10 +152,11 @@ func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *Ap
 	if config.Commit {
 		simapp.PrintStats(db)
 	}
-	return app, simParams, db, dir
+
+	return app, simParams, cleanup
 }
 
-func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, GenesisState, simulationtypes.Config, dbm.DB, string) {
+func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, GenesisState, simulationtypes.Config, dbm.DB, string, func()) {
 	config, db, dir, logger, _, err := simapp.SetupSimulation(dirPrevix, dbName)
 	require.NoError(tb, err, "simulation setup failed")
 
@@ -197,7 +173,12 @@ func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, 
 		simapp.EmptyAppOptions{},
 	)
 	genesisState := NewDefaultGenesisState(encoding.Codec)
-
-	return app, genesisState, config, db, dir
+	cleanup := func() {
+		err = db.Close()
+		require.NoError(tb, err)
+		err = os.RemoveAll(dir)
+		require.NoError(tb, err)
+	}
+	return app, genesisState, config, db, dir, cleanup
 
 }
