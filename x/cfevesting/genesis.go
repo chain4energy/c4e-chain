@@ -13,8 +13,7 @@ import (
 // InitGenesis initializes the capability module's state from a provided genesis
 // state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, ak types.AccountKeeper, bk types.BankKeeper, sk types.StakingKeeper) {
-	err := ValidateAccountsOnGenesis(ctx, k, genState, ak, bk, sk)
-	if err != nil {
+	if err := ValidateAccountsOnGenesis(ctx, k, genState, ak, bk, sk); err != nil {
 		panic(err)
 	}
 	// Set all the vestingAccount
@@ -27,7 +26,9 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState, 
 	k.SetVestingAccountTraceCount(ctx, genState.VestingAccountTraceCount)
 	k.Logger(ctx).Debug("set vesting account count", "VestingAccountTraceCount", genState.VestingAccountTraceCount)
 	// this line is used by starport scaffolding # genesis/module/init
-	k.SetParams(ctx, genState.Params)
+	if err := k.SetParams(ctx, genState.Params); err != nil {
+		panic(err)
+	}
 	vestingTypes := types.VestingTypes{}
 	for _, gVestingType := range genState.VestingTypes {
 		lockupPeriod, err := types.DurationFromUnits(types.PeriodUnit(gVestingType.LockupPeriodUnit), gVestingType.LockupPeriod)

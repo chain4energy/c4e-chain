@@ -52,6 +52,17 @@ func TestMsgSendToVestingAccount_ValidateBasic(t *testing.T) {
 			errMsg: "send to new vesting account - amount is <= 0: wrong amount value",
 		},
 		{
+			name: "zero amount",
+			msg: types.MsgSendToVestingAccount{
+				Owner:           sample.AccAddress(),
+				ToAddress:       sample.AccAddress(),
+				VestingPoolName: "pool",
+				Amount:          math.NewInt(0),
+			},
+			err:    types.ErrAmount,
+			errMsg: "send to new vesting account - amount is <= 0: wrong amount value",
+		},
+		{
 			name: "identical owner and to address",
 			msg: types.MsgSendToVestingAccount{
 				Owner:           sampleAccAddress,
