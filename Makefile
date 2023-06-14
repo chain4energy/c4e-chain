@@ -92,6 +92,22 @@ go.sum: go.mod
 test:
 	@go test -coverprofile=coverage.out -mod=readonly $(PACKAGES) -coverpkg ./...
 
+confirm:
+	@echo -n 'Is everything ok? [y/N] ' && read ans && [ $${ans:-N} = y ]
+
+RESULTS_DIR = test_results
+test-all:
+	mkdir -p $(RESULTS_DIR)
+	$(MAKE) test 2>&1 | tee $(RESULTS_DIR)/unit_tests.log
+	$(MAKE) confirm
+	$(MAKE) test-simulation-import-export SIM_NUM_BLOCKS=300 2>&1 | tee $(RESULTS_DIR)/simulation_tests.log
+	$(MAKE) confirm
+	$(MAKE) docker-build-debug
+	$(MAKE) docker-build-v1.2.0-chain
+	$(MAKE) confirm
+	$(MAKE) test-e2e 2>&1 | tee $(RESULTS_DIR)/e2e_tests.log
+	$(MAKE) confirm
+
 release:
 	@echo "--> Prepare release linux amd64"
 	$(call release,linux,amd64)
@@ -105,7 +121,7 @@ release:
 
 # blockchain simulation tests
 
-SIM_NUM_BLOCKS = 100
+SIM_NUM_BLOCKS = 200
 SIM_BLOCK_SIZE = 40
 SIM_COMMIT = true
 SIM_SEED = 1234
