@@ -83,7 +83,7 @@ func ValidateMissionWeight(weight sdk.Dec, missionType MissionType) error {
 	if weight.IsNil() {
 		return errors.Wrapf(c4eerrors.ErrParam, "add mission to claim campaign weight is nil error")
 	}
-	if weight.GT(sdk.NewDec(1)) || weight.LT(sdk.ZeroDec()) {
+	if weight.GT(sdk.NewDec(1)) || weight.IsNegative() {
 		return errors.Wrapf(c4eerrors.ErrParam, "weight (%s) is not between 0 and 1 error", weight.String())
 	}
 	if missionType != MissionInitialClaim {

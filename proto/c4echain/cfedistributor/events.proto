@@ -8,7 +8,7 @@ import "c4echain/cfedistributor/sub_distributor.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfedistributor/types";
 
-message Distribution {
+message EventDistribution {
   string subdistributor = 1;
   string share_name = 2;
   repeated Account sources = 3;
@@ -20,7 +20,7 @@ message Distribution {
   ];
 }
 
-message DistributionBurn {
+message EventDistributionBurn {
   string subdistributor = 1;
   repeated Account sources = 2;
   repeated cosmos.base.v1beta1.DecCoin amount = 3 [

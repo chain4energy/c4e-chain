@@ -109,7 +109,7 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 
 	}
 	var feegrantCoins sdk.Coins
-	if campaignBefore.FeegrantAmount.GT(math.ZeroInt()) {
+	if campaignBefore.FeegrantAmount.IsPositive() {
 		_, feegrandModuleAddress := cfeclaimmodulekeeper.CreateFeegrantAccountAddress(campaignId)
 		feegrantSum := campaignBefore.FeegrantAmount.MulRaw(int64(len(claimRecordEntries)))
 		feegrantCoins = sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, feegrantSum))
@@ -173,7 +173,7 @@ func (h *C4eClaimUtils) DeleteClaimRecord(ctx sdk.Context, ownerAddress sdk.AccA
 
 	if campaignBefore.CampaignType == cfeclaimtypes.VestingPoolCampaign {
 		_, vestingPool, _ := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, ownerAddress.String(), campaignBefore.VestingPoolName)
-		if campaignBefore.FeegrantAmount.GT(math.ZeroInt()) {
+		if campaignBefore.FeegrantAmount.IsPositive() {
 			h.BankUtils.VerifyAccountAllBalances(ctx, ownerAddress, ownerBalanceBefore.Add(basicAllowance.SpendLimit...))
 			_, err := h.FeegrantUtils.FeegrantKeeper.GetAllowance(ctx, granterAddress, userAccAddress)
 			require.Error(h.t, err)
@@ -256,7 +256,7 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 
 	userEntry, _ := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 	_, granterAddr := cfeclaimmodulekeeper.CreateFeegrantAccountAddress(campaignId)
-	if campaignBefore.FeegrantAmount.GT(math.ZeroInt()) {
+	if campaignBefore.FeegrantAmount.IsPositive() {
 		allowance, err := h.FeegrantUtils.FeegrantKeeper.GetAllowance(ctx, granterAddr, claimer)
 		require.NoError(h.t, err)
 		require.NotNil(h.t, allowance)
@@ -284,7 +284,7 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 	}
 
 	vestingAmount := math.NewInt(expectedAmount)
-	if campaignBefore.InitialClaimFreeAmount.GT(math.ZeroInt()) {
+	if campaignBefore.InitialClaimFreeAmount.IsPositive() {
 		initialClaimDec := sdk.NewDecFromInt(campaignBefore.InitialClaimFreeAmount).Quo(sdk.NewDec(expectedAmount))
 		if initialClaimDec.GT(sdk.NewDec(1)) {
 			initialClaimDec = sdk.NewDec(1)
@@ -638,7 +638,7 @@ func (h *C4eClaimUtils) CloseCampaign(ctx sdk.Context, owner string, campaignId 
 
 	if campaignAfter.CampaignType == cfeclaimtypes.VestingPoolCampaign {
 		_, vestingPool, _ := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, owner, campaignAfter.VestingPoolName)
-		if campaignAfter.FeegrantAmount.GT(math.ZeroInt()) {
+		if campaignAfter.FeegrantAmount.IsPositive() {
 			require.True(h.t, vestingPoolBefore.Sent.Sub(amountDiff.AmountOf(h.helperCfevestingKeeper.GetParams(ctx).Denom)).Equal(vestingPool.Sent))
 		} else {
 			require.Nil(h.t, vestingPool.GetReservation(campaignId))
@@ -679,16 +679,23 @@ func (h *C4eClaimUtils) RemoveCampaign(ctx sdk.Context, owner string, campaignId
 	require.NoError(h.t, h.helpeCfeclaimkeeper.RemoveCampaign(ctx, owner, campaignId))
 	_, found := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	require.False(h.t, found)
+	res, err := h.helpeCfeclaimkeeper.CampaignMissions(ctx, &cfeclaimtypes.QueryCampaignMissionsRequest{
+		CampaignId: campaignId,
+		Pagination: nil,
+	})
+	require.NoError(h.t, err)
+	require.Equal(h.t, 0, len(res.Missions))
+	missionCount := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignId)
+	require.Equal(h.t, uint64(0), missionCount)
 
 	if campaignBefore.FeegrantAmount.IsPositive() {
 		feegrantAmountLef := h.BankUtils.GetAccountAllBalances(ctx, feegrantAccountAddress)
 		require.True(h.t, feegrantAmountLef.IsZero())
 	}
-	//amountDiff := campaignAmoutLeftBefore.Amount.Sub(feegrantAmountLefBefore...)
 
 	if campaignBefore.CampaignType == cfeclaimtypes.VestingPoolCampaign {
 		_, vestingPool, _ := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, owner, campaignBefore.VestingPoolName)
-		if campaignBefore.FeegrantAmount.GT(math.ZeroInt()) {
+		if campaignBefore.FeegrantAmount.IsPositive() {
 			h.BankUtils.VerifyAccountAllBalances(ctx, ownerAccAddress, ownerBalanceBefore.Add(feegrantAmountLefBefore...))
 		}
 		require.Nil(h.t, vestingPool.GetReservation(campaignId))

@@ -81,28 +81,26 @@ func (s *VestingSetupSuite) TestWithdrawAllAvailable() {
 	vestingPoolDuration := 10 * time.Second
 	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), vestingPoolDuration.String(), vestingTypes[0].Name, creatorWalletName)
 
-	vestingPools := node.QueryVestingPoolsInfo(creatorAddress)
-	s.Equal(vestingPools[0].Withdrawable, "0")
-	s.Equal(vestingPools[0].CurrentlyLocked, vestingAmount.String())
-
-	s.Eventually(
-		func() bool {
-			vestingPools := node.QueryVestingPoolsInfo(creatorAddress)
-			if vestingAmount.String() == vestingPools[0].Withdrawable {
-				node.WithdrawAllAvailable(creatorAddress)
-				vestingPools = node.QueryVestingPoolsInfo(creatorAddress)
-				return s.True(vestingPools[0].Withdrawable == "0")
-			}
-			return false
-		},
-		time.Minute,
-		vestingPoolDuration,
-		"C4e node failed to withdraw all avaliable",
-	)
-
 	balanceAfter, err := node.QueryBalances(creatorAddress)
 	s.NoError(err)
-	s.Equal(balanceBeforeAmount, balanceAfter.AmountOf(appparams.MicroC4eUnit))
+	s.Equal(balanceBeforeAmount.Sub(vestingAmount), balanceAfter.AmountOf(appparams.MicroC4eUnit))
+
+	node.WaitUntilSpecifiedTime(time.Now().Add(vestingPoolDuration))
+	vestingPools := node.QueryVestingPoolsInfo(creatorAddress)
+	s.Equal(1, len(vestingPools))
+	withdrawableBefore := vestingPools[0].Withdrawable
+	withdrawableInt, ok := math.NewIntFromString(withdrawableBefore)
+	s.True(ok)
+	balanceBeforeWithdrawn, err := node.QueryBalances(creatorAddress)
+	node.WithdrawAllAvailable(creatorAddress)
+	vestingPools = node.QueryVestingPoolsInfo(creatorAddress)
+	withdrawableAfter := vestingPools[0].Withdrawable
+	withdrawableAfterInt, ok := math.NewIntFromString(withdrawableAfter)
+	s.True(ok)
+	balanceAfterWithdrawn, err := node.QueryBalances(creatorAddress)
+
+	s.True(balanceBeforeWithdrawn.Add(sdk.NewCoin(appparams.MicroC4eUnit, withdrawableInt)).IsEqual(balanceAfterWithdrawn))
+	s.True(withdrawableAfterInt.Equal(math.ZeroInt()))
 }
 
 func (s *VestingSetupSuite) TestCreateVestingPool() {

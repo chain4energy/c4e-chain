@@ -27,18 +27,6 @@ var (
 	UserEntryKeyPrefix     = []byte{0x04}
 )
 
-func UserEntryKey(
-	address string,
-) []byte {
-	var key []byte
-
-	indexBytes := []byte(address)
-	key = append(key, indexBytes...)
-	key = append(key, []byte("/")...)
-
-	return key
-}
-
 func MissionKey(campaignId uint64, missionId uint64) []byte {
 	bz := GetUint64Key(campaignId)
 	return append(bz, GetUint64Key(missionId)...)
@@ -47,8 +35,6 @@ func MissionKey(campaignId uint64, missionId uint64) []byte {
 func GetUint64Key(campaignId uint64) []byte {
 	key := make([]byte, 8)
 	binary.BigEndian.PutUint64(key, campaignId)
-
-	key = append(key, []byte("/")...)
 
 	return key
 }

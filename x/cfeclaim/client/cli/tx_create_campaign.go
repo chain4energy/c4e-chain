@@ -83,11 +83,11 @@ $ %s tx %s create-campaign "My Campaign" "Campaign description" "default" true "
 			}
 			argLockupPeriod, err := time.ParseDuration(args[9])
 			if err != nil {
-				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+				return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Wrong [lockup-period] value, error: %s. Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”", err.Error())
 			}
 			argVestingPeriod, err := time.ParseDuration(args[10])
 			if err != nil {
-				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+				return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Wrong [vesting-period] value, error: %s. Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”", err.Error())
 			}
 			argVestingPoolName := args[11]
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -110,7 +110,7 @@ $ %s tx %s create-campaign "My Campaign" "Campaign description" "default" true "
 				&argVestingPeriod,
 				argVestingPoolName,
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)

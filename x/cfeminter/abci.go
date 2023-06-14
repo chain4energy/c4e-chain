@@ -37,7 +37,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	}
 	bondedRatio := k.BondedRatio(ctx).String()
 	k.Logger(ctx).Debug("minted", "amount", amount, "bondedRatio", bondedRatio, "inflation", inflationStr)
-	event := &types.Mint{
+	event := &types.EventMint{
 		BondedRatio: bondedRatio,
 		Inflation:   inflationStr,
 		Amount:      amount.String(),

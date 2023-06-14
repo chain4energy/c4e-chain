@@ -15,12 +15,20 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	validDescription = "Valid description"
+	validName        = "Valid name"
+)
+
+var (
+	startTime    = time.Now().Add(time.Hour * 24 * 30) // start time 30 days from now
+	endTime      = startTime.Add(time.Hour * 24 * 30)  // end time 30 days from start time
+	zeroInt      = math.ZeroInt()
+	zeroDec      = sdk.ZeroDec()
+	zeroDuration = time.Duration(0)
+)
+
 func TestMsgCreateCampaign_ValidateBasic(t *testing.T) {
-	startTime := time.Now().Add(time.Hour * 24 * 30) // start time 30 days from now
-	endTime := startTime.Add(time.Hour * 24 * 30)    // end time 30 days from start time
-	zeroInt := math.ZeroInt()
-	zeroDec := sdk.ZeroDec()
-	zeroDuration := time.Duration(0)
 	tests := []struct {
 		name   string
 		msg    types.MsgCreateCampaign
@@ -198,11 +206,6 @@ func TestMsgCreateCampaign_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgCreateCampaignNilValues_ValidateBasic(t *testing.T) {
-	startTime := time.Now().Add(time.Hour * 24 * 30) // start time 30 days from now
-	endTime := startTime.Add(time.Hour * 24 * 30)    // end time 30 days from start time
-	zeroInt := math.ZeroInt()
-	zeroDec := sdk.ZeroDec()
-	zeroDuration := time.Duration(0)
 	tests := []struct {
 		name   string
 		msg    types.MsgCreateCampaign
@@ -364,13 +367,8 @@ func TestMsgCreateCampaignNilValues_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgCreateCampaignWrongValues_ValidateBasic(t *testing.T) {
-	startTime := time.Now().Add(time.Hour * 24 * 30) // start time 30 days from now
-	endTime := startTime.Add(time.Hour * 24 * 30)    // end time 30 days from start time
-	zeroInt := math.ZeroInt()
 	negativeInt := math.ZeroInt().SubRaw(1)
-	zeroDec := sdk.ZeroDec()
 	negativeDec := sdk.ZeroDec().Sub(sdk.NewDec(1))
-	zeroDuration := time.Duration(0)
 	negativeDuration := time.Duration(-100)
 	tests := []struct {
 		name   string

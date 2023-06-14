@@ -19,14 +19,14 @@ func CreateFeegrantAccountAddress(campaignId uint64) (string, sdk.AccAddress) {
 }
 
 func calculateFeegrantFeesSum(feegrantAmount math.Int, claimRecordEntriesNumber int64, feegrantDenom string) sdk.Coins {
-	if feegrantAmount.GT(math.ZeroInt()) {
+	if feegrantAmount.IsPositive() {
 		return sdk.NewCoins(sdk.NewCoin(feegrantDenom, feegrantAmount.MulRaw(claimRecordEntriesNumber)))
 	}
 	return nil
 }
 
 func (k Keeper) setupAndSendFeegrant(ctx sdk.Context, ownerAcc sdk.AccAddress, campaign *types.Campaign, feegrantFeesSum sdk.Coins, claimRecordEntries []*types.ClaimRecordEntry, feegrantDenom string) error {
-	if campaign.FeegrantAmount.GT(math.ZeroInt()) {
+	if campaign.FeegrantAmount.IsPositive() {
 		acc := k.SetupNewFeegrantAccount(ctx, campaign.Id)
 
 		if err := k.bankKeeper.SendCoins(ctx, ownerAcc, acc, feegrantFeesSum); err != nil {

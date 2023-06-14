@@ -2,13 +2,11 @@ package keeper
 
 import (
 	"cosmossdk.io/errors"
-	"cosmossdk.io/math"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"strconv"
 )
 
 func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64, destinationAddress string) (sdk.Coins, error) {
@@ -35,7 +33,7 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 		return nil, err
 	}
 
-	if campaign.FeegrantAmount.GT(math.ZeroInt()) {
+	if campaign.FeegrantAmount.IsPositive() {
 		granteeAddr, err := sdk.AccAddressFromBech32(userEntry.Address)
 		if err != nil {
 			return nil, err
@@ -49,9 +47,9 @@ func (k Keeper) InitialClaim(ctx sdk.Context, claimer string, campaignId uint64,
 
 	k.SetUserEntry(ctx, *userEntry)
 
-	event := &types.InitialClaim{
+	event := &types.EventInitialClaim{
 		Claimer:        claimer,
-		CampaignId:     strconv.FormatUint(campaignId, 10),
+		CampaignId:     campaignId,
 		AddressToClaim: destinationAddress,
 		Amount:         claimableAmount.String(),
 	}
@@ -91,10 +89,10 @@ func (k Keeper) Claim(ctx sdk.Context, campaignId uint64, missionId uint64, clai
 
 	k.SetUserEntry(ctx, *userEntry)
 
-	event := &types.Claim{
+	event := &types.EventClaim{
 		Claimer:    claimer,
-		CampaignId: strconv.FormatUint(campaignId, 10),
-		MissionId:  strconv.FormatUint(missionId, 10),
+		CampaignId: campaignId,
+		MissionId:  missionId,
 		Amount:     claimableAmount.String(),
 	}
 	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
@@ -116,9 +114,9 @@ func (k Keeper) CompleteMissionFromHook(ctx sdk.Context, campaignId uint64, miss
 
 	k.SetUserEntry(ctx, *userEntry)
 
-	event := &types.CompleteMission{
-		CampaignId:  strconv.FormatUint(campaignId, 10),
-		MissionId:   strconv.FormatUint(missionId, 10),
+	event := &types.EventCompleteMission{
+		CampaignId:  campaignId,
+		MissionId:   missionId,
 		UserAddress: address,
 	}
 	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {

@@ -3,10 +3,10 @@ package keeper
 import (
 	"cosmossdk.io/errors"
 	"encoding/binary"
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // AppendNewCampaign appends a campaign in the store with a new id and update the count
@@ -112,7 +112,7 @@ func (k Keeper) SetCampaignCount(ctx sdk.Context, count uint64) {
 func (k Keeper) MustGetCampaign(ctx sdk.Context, campaignId uint64) (*types.Campaign, error) {
 	campaign, found := k.GetCampaign(ctx, campaignId)
 	if !found {
-		return nil, errors.Wrapf(c4eerrors.ErrNotExists, "campaign with id %d not found", campaignId)
+		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "campaign with id %d not found", campaignId)
 	}
 
 	return &campaign, nil

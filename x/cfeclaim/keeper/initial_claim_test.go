@@ -86,7 +86,7 @@ func TestInitialClaimRecordDosentExist(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
-	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[10], 0, fmt.Sprintf("userEntry %s doesn't exist: entity does not exist", acountsAddresses[10].String()))
+	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[10], 0, fmt.Sprintf("userEntry %s doesn't exist: not found", acountsAddresses[10].String()))
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -98,7 +98,7 @@ func TestInitialClaimWrongCampaign(t *testing.T) {
 	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 1, "campaign with id 1 not found: entity does not exist")
+	testHelper.C4eClaimUtils.ClaimInitialError(acountsAddresses[1], 1, "campaign with id 1 not found: not found")
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 1, nil, nil)

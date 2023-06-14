@@ -5,7 +5,6 @@ import (
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"strconv"
 	"time"
 )
 
@@ -35,20 +34,15 @@ func (k Keeper) AddMission(ctx sdk.Context, owner string, campaignId uint64, nam
 	}
 	mission.Id = k.AppendNewMission(ctx, campaignId, mission)
 
-	eventClaimStartDate := ""
-	if claimStartDate != nil {
-		eventClaimStartDate = claimStartDate.String()
-	}
-
-	event := &types.AddMission{
-		Id:             strconv.FormatUint(mission.Id, 10),
+	event := &types.EventAddMission{
+		Id:             mission.Id,
 		Owner:          owner,
-		CampaignId:     strconv.FormatUint(campaignId, 10),
+		CampaignId:     campaignId,
 		Name:           name,
 		Description:    description,
-		MissionType:    missionType.String(),
-		Weight:         weight.String(),
-		ClaimStartDate: eventClaimStartDate,
+		MissionType:    missionType,
+		Weight:         weight,
+		ClaimStartDate: claimStartDate,
 	}
 
 	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {

@@ -3,7 +3,6 @@ package keeper
 import (
 	"cosmossdk.io/errors"
 	"fmt"
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"strconv"
 	"time"
 
@@ -119,7 +118,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, owner string) (withdrawn s
 
 	current := ctx.BlockTime()
 	toWithdraw := math.ZeroInt()
-	events := make([]types.WithdrawAvailable, 0)
+	events := make([]types.EventWithdrawAvailable, 0)
 	denom := k.GetParams(ctx).Denom
 	for _, vestingPool := range accVestingPools.VestingPools {
 		withdrawable := CalculateWithdrawable(current, *vestingPool)
@@ -128,7 +127,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, owner string) (withdrawn s
 		k.Logger(ctx).Debug("withdraw all available data", "owner", owner, "vestingPool", vestingPool, "withdrawable", withdrawable,
 			"toWithdraw", toWithdraw)
 		if toWithdraw.IsPositive() {
-			events = append(events, types.WithdrawAvailable{
+			events = append(events, types.EventWithdrawAvailable{
 				Owner:           owner,
 				VestingPoolName: vestingPool.Name,
 				Amount:          toWithdraw.String() + denom,
@@ -136,7 +135,7 @@ func (k Keeper) WithdrawAllAvailable(ctx sdk.Context, owner string) (withdrawn s
 		}
 	}
 
-	if toWithdraw.GT(math.ZeroInt()) {
+	if toWithdraw.IsPositive() {
 		coinToSend := sdk.NewCoin(denom, toWithdraw)
 		coinsToSend := sdk.NewCoins(coinToSend)
 		err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, ownerAddress, coinsToSend)
@@ -258,7 +257,7 @@ func (k Keeper) SendToNewVestingAccount(ctx sdk.Context, owner string, toAddr st
 }
 
 func (k Keeper) EmitNewVestingPeriodFromVestingPool(ctx sdk.Context, owner string, toAddress string, vestingPoolName string, amount math.Int, periodId uint64, restartVesting bool) {
-	if err := ctx.EventManager().EmitTypedEvent(&types.NewVestingPeriodFromVestingPool{
+	if err := ctx.EventManager().EmitTypedEvent(&types.EventNewVestingPeriodFromVestingPool{
 		Owner:           owner,
 		Address:         toAddress,
 		VestingPoolName: vestingPoolName,
@@ -358,7 +357,7 @@ func (k Keeper) newContinuousVestingAccount(ctx sdk.Context, to sdk.AccAddress, 
 	k.account.SetAccount(ctx, acc)
 	k.Logger(ctx).Debug("new continuous vesting account", "baseAccount", baseVestingAccount.BaseAccount, "baseVestingAccount",
 		baseVestingAccount, "startTime", startTime)
-	err := ctx.EventManager().EmitTypedEvent(&types.NewVestingAccount{
+	err := ctx.EventManager().EmitTypedEvent(&types.EventNewVestingAccount{
 		Address: acc.Address,
 	})
 	if err != nil {
@@ -367,16 +366,16 @@ func (k Keeper) newContinuousVestingAccount(ctx sdk.Context, to sdk.AccAddress, 
 	return acc, nil
 }
 
-func (k Keeper) GetVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64) (*types.VestingPoolReservation, error) {
+func (k Keeper) MustGetVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64) (*types.VestingPoolReservation, error) {
 	_, vestingPool, found := k.GetAccountVestingPool(ctx, owner, vestingPoolName)
 	if !found {
-		return nil, errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
+		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "vesting pools not found for address %s", owner)
 	}
 
 	reservation := vestingPool.GetReservation(reservationId)
 
 	if reservation == nil {
-		return nil, errors.Wrapf(c4eerrors.ErrNotExists, "reservation %d not found vesting pool %s", reservationId, vestingPoolName)
+		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "reservation %d not found vesting pool %s", reservationId, vestingPoolName)
 	}
 	return reservation, nil
 }
@@ -385,7 +384,7 @@ func (k Keeper) AddVestingPoolReservation(ctx sdk.Context, owner string, vesting
 	vestingDenom := k.Denom(ctx)
 	accountVestingPools, vestingPool, found := k.GetAccountVestingPool(ctx, owner, vestingPoolName)
 	if !found {
-		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
+		return errors.Wrapf(sdkerrors.ErrNotFound, "vesting pools not found for address %s", owner)
 	}
 
 	currentlyLocked := vestingPool.GetLockedNotReserved()
@@ -402,7 +401,7 @@ func (k Keeper) AddVestingPoolReservation(ctx sdk.Context, owner string, vesting
 func (k Keeper) RemoveVestingPoolReservation(ctx sdk.Context, owner string, vestingPoolName string, reservationId uint64, amout math.Int) error {
 	accountVestingPools, vestingPool, found := k.GetAccountVestingPool(ctx, owner, vestingPoolName)
 	if !found {
-		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pools not found for address %s", owner)
+		return errors.Wrapf(sdkerrors.ErrNotFound, "vesting pools not found for address %s", owner)
 	}
 	if err := vestingPool.SubstractFromReservation(reservationId, amout); err != nil {
 		return err

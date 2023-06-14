@@ -2,7 +2,6 @@ package v200_test
 
 import (
 	"cosmossdk.io/math"
-	"fmt"
 	v200 "github.com/chain4energy/c4e-chain/app/upgrades/v200"
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -109,7 +108,7 @@ func TestMigrateAirdropModuleAccountDoesntExist(t *testing.T) {
 func TestMigrateTeamdropAccount(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	addVestingTypes(testHelper)
-	addTeamdropVestingAccount(testHelper)
+	addTeamdropVestingAccount(t, testHelper)
 	accountVestingPools, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v200.TeamdropVestingAccount)
 	require.False(t, found)
 	err := v200.MigrateTeamdropVestingAccount(testHelper.Context, testHelper.App)
@@ -136,11 +135,9 @@ func TestMigrateTeamdropAccountAccountNotFound(t *testing.T) {
 	require.False(t, found)
 }
 
-func addTeamdropVestingAccount(testHelper *testapp.TestHelper) {
+func addTeamdropVestingAccount(t *testing.T, testHelper *testapp.TestHelper) {
 	err := testHelper.AuthUtils.CreateVestingAccount(v200.TeamdropVestingAccount, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(8899990000000))), testHelper.Context.BlockTime(), testHelper.Context.BlockTime().Add(time.Hour))
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	require.NoError(t, err)
 }
 
 func addAirdropModuleAccount(testHelper *testapp.TestHelper) sdk.AccAddress {

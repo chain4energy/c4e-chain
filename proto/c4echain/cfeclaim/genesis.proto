@@ -10,13 +10,20 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeclaim/types";
 
 // GenesisState defines the cfeclaim module's genesis state.
 message GenesisState {
-  repeated Campaign campaigns = 2 [
+  repeated Campaign campaigns = 1 [
     (gogoproto.nullable) = false
   ];
+  uint64 campaign_count = 2;
   repeated UserEntry users_entries = 3 [
     (gogoproto.nullable) = false
   ];
-  repeated Mission missions = 5 [
+  repeated Mission missions = 4 [
     (gogoproto.nullable) = false
   ];
+  repeated MissionCount mission_counts = 5;
+}
+
+message MissionCount {
+  uint64 campaign_id = 1;
+  uint64 count = 2;
 }

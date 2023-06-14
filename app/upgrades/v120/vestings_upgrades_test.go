@@ -64,11 +64,12 @@ var (
 )
 
 var (
-	validatorsLockStart, _ = time.Parse("2006-01-02T15:04:05.000Z", "2022-09-22T14:00:00.000Z")
-	validatorsLockEnd, _   = time.Parse("2006-01-02T15:04:05.000Z", "2024-12-26T00:00:00.000Z")
+	timeLayout             = "2006-01-02T15:04:05.000Z"
+	validatorsLockStart, _ = time.Parse(timeLayout, "2022-09-22T14:00:00.000Z")
+	validatorsLockEnd, _   = time.Parse(timeLayout, "2024-12-26T00:00:00.000Z")
 
-	advisorsLockStart, _ = time.Parse("2006-01-02T15:04:05.000Z", "2022-09-22T14:00:00.000Z")
-	advisorsLockEnd, _   = time.Parse("2006-01-02T15:04:05.000Z", "2025-09-25T00:00:00.000Z")
+	advisorsLockStart, _ = time.Parse(timeLayout, "2022-09-22T14:00:00.000Z")
+	advisorsLockEnd, _   = time.Parse(timeLayout, "2025-09-25T00:00:00.000Z")
 
 	oldAdvisorsPool = types.VestingPool{
 		Name:            "Advisors pool",

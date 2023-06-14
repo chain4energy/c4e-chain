@@ -1,14 +1,15 @@
 package claim
 
 import (
+	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	"embed"
 	"encoding/json"
 	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
-	"time"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"time"
 )
 
 //go:embed stakedrop.json santadrop.json gleamdrop.json teamdrop.json
@@ -21,7 +22,27 @@ const (
 	AirdropVestingPoolOwner  = "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54"
 )
 
-func SetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+func SetupAirdrops(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+	if err := validateSetupCampaigns(ctx, appKeepers); err != nil {
+		ctx.Logger().Error("validateSetupCampaigns", "err", err)
+		return nil
+	}
+	if err := setupCampaigns(ctx, appKeepers); err != nil {
+		ctx.Logger().Error("validateSetupCampaigns", "err", err)
+		return nil
+	}
+	if err := addClaimRecordsToCampaigns(ctx, appKeepers); err != nil {
+		ctx.Logger().Error("validateSetupCampaigns", "err", err)
+		return nil
+	}
+	ctx.Logger().Info("setup campaigns finished",
+		"campaignsLen", len(appKeepers.GetC4eClaimKeeper().GetAllCampaigns(ctx)),
+		"userEntriesLen", len(appKeepers.GetC4eClaimKeeper().GetAllUsersEntries(ctx)),
+	)
+	return nil
+}
+
+func setupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
 	ctx.Logger().Info("setup campaigns")
 
 	airdropLockupPeriod := 183 * 24 * time.Hour
@@ -33,41 +54,6 @@ func SetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) erro
 	zeroInt := math.ZeroInt()
 	zeroDec := sdk.ZeroDec()
 	inititalClaimOneC4E := math.NewInt(1000000)
-
-	airdropVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, AirdropVestingPoolOwner)
-	if !found {
-		ctx.Logger().Info("account vesting pools not found for NewAirdropVestingPoolOwner", "owner", AirdropVestingPoolOwner)
-		return nil
-	}
-	found = false
-	for _, vestingPool := range airdropVestingPools.VestingPools {
-		if vestingPool.Name == FairdropVestingPoolName {
-			found = true
-			break
-		}
-	}
-	if !found {
-		ctx.Logger().Info("fairdrop vesting pool not found fo for NewAirdropVestingPoolOwner", "owner", AirdropVestingPoolOwner)
-		return nil
-	}
-
-	teamdropVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, TeamdropVestingPoolOwner)
-	if !found {
-		ctx.Logger().Info("account vesting pools not found for TeamdropVestingPoolOwner", "owner", TeamdropVestingPoolOwner)
-		return nil
-	}
-	found = false
-	for _, vestingPool := range teamdropVestingPools.VestingPools {
-		if vestingPool.Name == TeamdropVestingPoolName {
-			found = true
-			break
-		}
-	}
-	if !found {
-		ctx.Logger().Info("teamdrop vesting pool not found fo for NewAirdropVestingPoolOwner", "owner", TeamdropVestingPoolOwner)
-		return nil
-	}
-
 	_, err := appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, TeamdropVestingPoolOwner, "teamdrop", "teamdrop",
 		types.VestingPoolCampaign, true, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, teamdropLockupPeriod, teamdropVestingPeriod, TeamdropVestingPoolName)
 	if err != nil {
@@ -88,10 +74,44 @@ func SetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) erro
 
 	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "gleamdrop", "gleamdrop",
 		types.VestingPoolCampaign, false, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
-	if err != nil {
-		return err
+
+	return err
+}
+
+func validateSetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+	airdropVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, AirdropVestingPoolOwner)
+	if !found {
+		return errors.Wrapf(sdkerrors.ErrNotFound, "account vesting pools not found for NewAirdropVestingPoolOwner %s", AirdropVestingPoolOwner)
+	}
+	found = false
+	for _, vestingPool := range airdropVestingPools.VestingPools {
+		if vestingPool.Name == FairdropVestingPoolName {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return errors.Wrapf(sdkerrors.ErrNotFound, "fairdrop vesting pool not found for NewAirdropVestingPoolOwner %s", AirdropVestingPoolOwner)
 	}
 
+	teamdropVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, TeamdropVestingPoolOwner)
+	if !found {
+		return errors.Wrapf(sdkerrors.ErrNotFound, "account vesting pools not found for TeamdropVestingPoolOwner %s", TeamdropVestingPoolOwner)
+	}
+	found = false
+	for _, vestingPool := range teamdropVestingPools.VestingPools {
+		if vestingPool.Name == TeamdropVestingPoolName {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return errors.Wrapf(sdkerrors.ErrNotFound, "teamdrop vesting pool not found fo for TeamdropVestingPoolOwner %s", TeamdropVestingPoolOwner)
+	}
+	return nil
+}
+
+func addClaimRecordsToCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
 	teamdropEntries, err := readClaimRecordEntriesFromJson("teamdrop.json")
 	if err != nil {
 		return err
@@ -120,16 +140,7 @@ func SetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) erro
 	if err != nil {
 		return err
 	}
-	if err = appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 3, gleamdropEntries); err != nil {
-		return err
-	}
-
-	ctx.Logger().Info("setup campaigns finished",
-		"campaignsLen", len(appKeepers.GetC4eClaimKeeper().GetAllCampaigns(ctx)),
-		"userEntriesLen", len(appKeepers.GetC4eClaimKeeper().GetAllUsersEntries(ctx)),
-	)
-
-	return nil
+	return appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 3, gleamdropEntries)
 }
 
 func readClaimRecordEntriesFromJson(fileName string) ([]*types.ClaimRecordEntry, error) {

@@ -159,7 +159,7 @@ func TestCreateCampaignAndEnableOwnerNotValidError(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[1].String(), 0, nil, nil, fmt.Sprintf("address %s is not owner of campaign with id %d: wrong transaction signer", acountsAddresses[1], 0))
+	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[1].String(), 0, nil, nil, fmt.Sprintf("address %s is not owner of campaign with id %d: tx intended signer does not match the given signer", acountsAddresses[1], 0))
 }
 
 func TestCreateCampaignCampaignDoesntExistError(t *testing.T) {
@@ -168,7 +168,7 @@ func TestCreateCampaignCampaignDoesntExistError(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[0].String(), 1, nil, nil, "campaign with id 1 not found: entity does not exist")
+	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[0].String(), 1, nil, nil, "campaign with id 1 not found: not found")
 }
 
 func TestCreateCampaignCampaignEnabledError(t *testing.T) {
@@ -204,7 +204,7 @@ func TestCreateVestingPoolCampaignWrongPoolName(t *testing.T) {
 	campaign.CampaignType = types.VestingPoolCampaign
 	campaign.VestingPoolName = vPool2
 
-	testHelper.C4eClaimUtils.CreateCampaignError(ownerAddress.String(), campaign, fmt.Sprintf("vesting pool %s not found for address %s: entity does not exist", vPool2, acountsAddresses[0]))
+	testHelper.C4eClaimUtils.CreateCampaignError(ownerAddress.String(), campaign, fmt.Sprintf("vesting pool %s not found for address %s: not found", vPool2, acountsAddresses[0]))
 }
 
 func TestCreateVestingPoolCampaignWrongVestingPeriod(t *testing.T) {
@@ -244,7 +244,7 @@ func TestCreateVestingPoolCampaignWrongOwner(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.CampaignType = types.VestingPoolCampaign
 	campaign.VestingPoolName = vPool1
-	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[1].String(), campaign, fmt.Sprintf("vesting pool %s not found for address %s: entity does not exist", vPool1, acountsAddresses[1]))
+	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[1].String(), campaign, fmt.Sprintf("vesting pool %s not found for address %s: not found", vPool1, acountsAddresses[1]))
 }
 
 func TestCreateVestingPoolCampaignWrongType(t *testing.T) {
@@ -341,7 +341,7 @@ func TestCloseCampaignCampaignDoesntExistError(t *testing.T) {
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[0].String(), 1, "campaign with id 1 not found: entity does not exist")
+	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[0].String(), 1, "campaign with id 1 not found: not found")
 }
 
 func TestCloseCampaignYouAreNotTheOwnerError(t *testing.T) {
@@ -353,7 +353,7 @@ func TestCloseCampaignYouAreNotTheOwnerError(t *testing.T) {
 	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[1].String(), 0, fmt.Sprintf("address %s is not owner of campaign with id %d: wrong transaction signer", acountsAddresses[1], 0))
+	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[1].String(), 0, fmt.Sprintf("address %s is not owner of campaign with id %d: tx intended signer does not match the given signer", acountsAddresses[1], 0))
 }
 
 func TestRemoveCampaignCampaignEnabled(t *testing.T) {
@@ -420,7 +420,7 @@ func TestRemoveCampaignCampaignDoesntExist(t *testing.T) {
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimRecordEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.RemoveCampaignError(acountsAddresses[0].String(), 3, "campaign with id 3 not found: entity does not exist")
+	testHelper.C4eClaimUtils.RemoveCampaignError(acountsAddresses[0].String(), 3, "campaign with id 3 not found: not found")
 }
 
 func TestRemoveCampaignWithNoClaimRecords(t *testing.T) {

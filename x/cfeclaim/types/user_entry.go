@@ -3,6 +3,7 @@ package types
 import (
 	"cosmossdk.io/errors"
 	"fmt"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -25,7 +26,10 @@ func (m *UserEntry) Validate() error {
 		campaignIDMap[elem.CampaignId] = struct{}{}
 	}
 
-	for _, claimRecord := range m.ClaimRecords {
+	for i, claimRecord := range m.ClaimRecords {
+		if err := claimRecord.Validate(); err != nil {
+			return errors.Wrapf(err, "claim record index %d", i)
+		}
 		if !claimRecord.Amount.IsAllPositive() {
 			return fmt.Errorf("claimable amount must be positive")
 		}
@@ -92,7 +96,7 @@ func (m *ClaimRecord) CompleteMission(campaignId uint64, missionId uint64) error
 	return nil
 }
 
-// CompleteMission checks if the specified mission ID is completed for the claim record
+// CalculateInitialClaimClaimableAmount calculates the initial claimable amount for the claim record
 func (m *ClaimRecord) CalculateInitialClaimClaimableAmount(weightSum sdk.Dec) sdk.Coins {
 	allMissionsAmountSum := sdk.NewCoins()
 	for _, amount := range m.Amount {
@@ -101,16 +105,7 @@ func (m *ClaimRecord) CalculateInitialClaimClaimableAmount(weightSum sdk.Dec) sd
 	return m.Amount.Sub(allMissionsAmountSum...)
 }
 
-// CompleteMission checks if the specified mission ID is completed for the claim record
-func (m *ClaimRecord) CalculateInitialClaimFree(weightSum sdk.Dec) sdk.Coins {
-	allMissionsAmountSum := sdk.NewCoins()
-	for _, amount := range m.Amount {
-		allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, weightSum.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
-	}
-	return m.Amount.Sub(allMissionsAmountSum...)
-}
-
-// IsMissionCompleted checks if the specified mission ID is completed for the claim record
+// ClaimMission claims the specified mission ID for the claim record
 func (m *ClaimRecord) ClaimMission(campaignId uint64, missionId uint64) error {
 	if !m.IsMissionCompleted(missionId) {
 		return errors.Wrapf(ErrMissionNotCompleted, "campaignId: %d, missionId: %d", campaignId, missionId)
@@ -141,6 +136,7 @@ func (cr *UserEntry) GetClaimRecord(campaignId uint64) *ClaimRecord {
 	return nil
 }
 
+// DeleteClaimRecord deletes the claim record for the specified campaign ID
 func (cr *UserEntry) DeleteClaimRecord(campaignId uint64) {
 	for i, claimRecord := range cr.ClaimRecords {
 		if claimRecord.CampaignId == campaignId {
@@ -156,4 +152,45 @@ func (cr *UserEntry) MustGetClaimRecord(camapaignId uint64) (*ClaimRecord, error
 		}
 	}
 	return nil, errors.Wrapf(sdkerrors.ErrNotFound, "claim record with campaign id %d not found for address %s", camapaignId, cr.Address)
+}
+
+func (claimRecord *ClaimRecord) Validate() error {
+	if claimRecord.Amount == nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record amount cannot be nil")
+	}
+	if claimRecord.Amount.IsAnyNil() {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record amount cannot be nil")
+	}
+	if err := claimRecord.Amount.Validate(); err != nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "wrong claim record amount (%s)", err)
+	}
+	return nil
+}
+
+func (claimRecordEntry *ClaimRecordEntry) Validate() error {
+	if claimRecordEntry.UserEntryAddress == "" {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record entry empty user entry address")
+	}
+	if claimRecordEntry.Amount == nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record entry amount cannot be nil")
+	}
+	if claimRecordEntry.Amount.IsAnyNil() {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record entry amount cannot be nil")
+	}
+	if err := claimRecordEntry.Amount.Validate(); err != nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "wrong claim record entry amount (%s)", err)
+	}
+	if !claimRecordEntry.Amount.IsAllPositive() {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record amount must be positive")
+	}
+	return nil
+}
+
+func ValidateClaimRecordEntries(claimRecordEntries []*ClaimRecordEntry) error {
+	for i, claimRecordEntry := range claimRecordEntries {
+		if err := claimRecordEntry.Validate(); err != nil {
+			return errors.Wrapf(err, "claim record entry index %d", i)
+		}
+	}
+	return nil
 }

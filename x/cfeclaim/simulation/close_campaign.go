@@ -54,7 +54,10 @@ func SimulateMsgCloseCampaign(
 			randomVestingPoolName := simtypes.RandStringOfLength(r, 10)
 			randVesingTypeId := utils.RandInt64(r, 3)
 			randomVestingType := "New vesting" + strconv.Itoa(int(randVesingTypeId))
-			_ = cfevestingKeeper.CreateVestingPool(ctx, simAccount.Address.String(), randomVestingPoolName, math.NewInt(10000), time.Hour, randomVestingType)
+			if err := cfevestingKeeper.CreateVestingPool(ctx, simAccount.Address.String(), randomVestingPoolName, math.NewInt(10000), time.Hour, randomVestingType); err != nil {
+				return simtypes.NewOperationMsg(&types.MsgCloseCampaign{}, false, "", nil), nil, nil
+			}
+
 			campaign.VestingPoolName = randomVestingPoolName
 		}
 		k.AppendNewCampaign(ctx, campaign)

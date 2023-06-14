@@ -11,9 +11,8 @@ import (
 func (k msgServer) Claim(goCtx context.Context, msg *types.MsgClaim) (*types.MsgClaimResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "claim message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	keeper := k.Keeper
 
-	amount, err := keeper.Claim(
+	amount, err := k.Keeper.Claim(
 		ctx,
 		msg.CampaignId,
 		msg.MissionId,
@@ -30,9 +29,8 @@ func (k msgServer) Claim(goCtx context.Context, msg *types.MsgClaim) (*types.Msg
 func (k msgServer) InitialClaim(goCtx context.Context, msg *types.MsgInitialClaim) (*types.MsgInitialClaimResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "initial claim message")
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	keeper := k.Keeper
 
-	amount, err := keeper.InitialClaim(
+	amount, err := k.Keeper.InitialClaim(
 		ctx,
 		msg.Claimer,
 		msg.CampaignId,

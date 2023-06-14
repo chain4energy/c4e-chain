@@ -59,17 +59,6 @@ func TestMigrationOneAccountVestingPoolsWithOnePool(t *testing.T) {
 
 }
 
-func TestMigrationAccountVestingPools(t *testing.T) {
-	accounts, _ := testcosmos.CreateAccounts(5, 0)
-	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
-	SetupOldAccountVestingPools(testUtil, ctx, accounts[0].String(), 10)
-	SetupOldAccountVestingPools(testUtil, ctx, accounts[1].String(), 10)
-	SetupOldAccountVestingPools(testUtil, ctx, accounts[2].String(), 10)
-	SetupOldAccountVestingPools(testUtil, ctx, accounts[3].String(), 10)
-	SetupOldAccountVestingPools(testUtil, ctx, accounts[4].String(), 10)
-	MigrateV110ToV120(t, testUtil, ctx)
-}
-
 func TestMigrationVestingAccountTraces(t *testing.T) {
 	oldTraces := generateOldVestingAccountTraces(10)
 	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)

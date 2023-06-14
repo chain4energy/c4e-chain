@@ -1,6 +1,8 @@
 package types_test
 
 import (
+	"fmt"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -50,12 +52,34 @@ func TestMsgAddClaimRecords_ValidateBasic(t *testing.T) {
 				ClaimRecordEntries: []*types.ClaimRecordEntry{{UserEntryAddress: sample.AccAddress(), Amount: sdk.Coins{}}},
 			},
 			err:    c4eerrors.ErrParam,
-			errMsg: "claim record entry index 0: claim record entry must has at least one coin and all amounts must be positive: wrong param value",
+			errMsg: "claim record entry index 0: claim record amount must be positive: wrong param value",
+		},
+		{
+			name: "Invalid ClaimRecord Amount",
+			msg: types.MsgAddClaimRecords{
+				Owner: sample.AccAddress(),
+				ClaimRecordEntries: []*types.ClaimRecordEntry{{UserEntryAddress: sample.AccAddress(), Amount: sdk.Coins{sdk.Coin{
+					Denom:  testenv.DefaultTestDenom,
+					Amount: sdk.Int{},
+				}}}},
+			},
+			err:    c4eerrors.ErrParam,
+			errMsg: "claim record entry index 0: claim record entry amount cannot be nil: wrong param value",
+		},
+		{
+			name: "Invalid ClaimRecord Amount",
+			msg: types.MsgAddClaimRecords{
+				Owner:              sample.AccAddress(),
+				ClaimRecordEntries: []*types.ClaimRecordEntry{{UserEntryAddress: sample.AccAddress(), Amount: nil}},
+			},
+			err:    c4eerrors.ErrParam,
+			errMsg: "claim record entry index 0: claim record entry amount cannot be nil: wrong param value",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.msg.ValidateBasic()
+			fmt.Println(err)
 			if tt.err != nil {
 				require.ErrorIs(t, err, tt.err)
 				require.EqualError(t, err, tt.errMsg)
