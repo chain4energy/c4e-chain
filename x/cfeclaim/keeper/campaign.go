@@ -111,6 +111,7 @@ func (k Keeper) RemoveCampaign(ctx sdk.Context, owner string, campaignId uint64)
 
 	k.removeCampaign(ctx, campaignId)
 	k.RemoveAllMissionForCampaign(ctx, campaignId)
+	k.RemoveMissionCount(ctx, campaignId)
 
 	event := &types.EventRemoveCampaign{
 		Owner:      owner,

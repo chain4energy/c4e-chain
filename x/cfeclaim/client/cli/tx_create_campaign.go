@@ -81,13 +81,13 @@ $ %s tx %s create-campaign "My Campaign" "Campaign description" "default" true "
 			if err != nil {
 				return err
 			}
-			argLockupPeriod, err := parseDuration(args[9])
+			argLockupPeriod, err := time.ParseDuration(args[9])
 			if err != nil {
-				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+				return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Wrong [lockup-period] value, error: %s. Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”", err.Error())
 			}
-			argVestingPeriod, err := parseDuration(args[10])
+			argVestingPeriod, err := time.ParseDuration(args[10])
 			if err != nil {
-				return errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
+				return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Wrong [vesting-period] value, error: %s. Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”", err.Error())
 			}
 			argVestingPoolName := args[11]
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -106,11 +106,11 @@ $ %s tx %s create-campaign "My Campaign" "Campaign description" "default" true "
 				&argFree,
 				&argStartTime,
 				&argEndTime,
-				argLockupPeriod,
-				argVestingPeriod,
+				&argLockupPeriod,
+				&argVestingPeriod,
 				argVestingPoolName,
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
@@ -120,12 +120,4 @@ $ %s tx %s create-campaign "My Campaign" "Campaign description" "default" true "
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
-}
-
-func parseDuration(arg string) (*time.Duration, error) {
-	parsedDuration, err := time.ParseDuration(arg)
-	if err != nil {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Expected duration format: e.g. 2h30m40s. Valid time units are “ns”, “us” (or “µs”), “ms”, “s”, “m”, “h”")
-	}
-	return &parsedDuration, nil
 }

@@ -92,7 +92,7 @@ func (k Keeper) AllMissionForCampaign(ctx sdk.Context, campaignId uint64) (list 
 	return
 }
 
-// GetAllMissionForCampaign returns all mission
+// RemoveAllMissionForCampaign removes all mission for campaign
 func (k Keeper) RemoveAllMissionForCampaign(ctx sdk.Context, campaignId uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
@@ -151,6 +151,11 @@ func (k Keeper) SetMissionCount(ctx sdk.Context, campaignId uint64, count uint64
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
 	store.Set(types.GetUint64Key(campaignId), bz)
+}
+
+func (k Keeper) RemoveMissionCount(ctx sdk.Context, campaignId uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionCountKeyPrefix)
+	store.Delete(types.GetUint64Key(campaignId))
 }
 
 // GetAllMissionCount returns all mission count
