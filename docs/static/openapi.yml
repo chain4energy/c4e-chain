@@ -1080,7 +1080,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /c4echain/cfeev/energy_transfer:
+  /c4e/ev/v1beta1/energy_transfer:
     get:
       summary: Queries a list of EnergyTransfer items.
       operationId: Chain4EnergyC4EchainCfeevEnergyTransferAll
@@ -1090,7 +1090,7 @@ paths:
           schema:
             type: object
             properties:
-              EnergyTransfer:
+              energy_transfer:
                 type: array
                 items:
                   type: object
@@ -1098,18 +1098,18 @@ paths:
                     id:
                       type: string
                       format: uint64
-                    energyTransferOfferId:
+                    energy_transfer_offer_id:
                       type: string
                       format: uint64
-                    chargerId:
+                    charger_id:
                       type: string
-                    ownerAccountAddress:
+                    owner_account_address:
                       type: string
-                    driverAccountAddress:
+                    driver_account_address:
                       type: string
-                    offeredTariff:
-                      type: integer
-                      format: int32
+                    offered_tariff:
+                      type: string
+                      format: uint64
                     status:
                       type: string
                       enum:
@@ -1117,18 +1117,19 @@ paths:
                         - ONGOING
                         - PAID
                         - CANCELLED
+                        - TRANSFER_STATUS_UNSPECIFIED
                       default: REQUESTED
                     collateral:
                       type: string
-                      format: uint64
-                    energyToTransfer:
-                      type: integer
-                      format: int32
-                    energyTransferred:
-                      type: integer
-                      format: int32
-                    paidDate:
+                    energy_to_transfer:
                       type: string
+                      format: uint64
+                    energy_transferred:
+                      type: string
+                      format: uint64
+                    paid_date:
+                      type: string
+                      format: date-time
               pagination:
                 type: object
                 properties:
@@ -1234,7 +1235,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /c4echain/cfeev/energy_transfer/{id}:
+  /c4e/ev/v1beta1/energy_transfer/{id}:
     get:
       summary: Queries a EnergyTransfer by id.
       operationId: Chain4EnergyC4EchainCfeevEnergyTransfer
@@ -1244,24 +1245,24 @@ paths:
           schema:
             type: object
             properties:
-              EnergyTransfer:
+              energy_transfer:
                 type: object
                 properties:
                   id:
                     type: string
                     format: uint64
-                  energyTransferOfferId:
+                  energy_transfer_offer_id:
                     type: string
                     format: uint64
-                  chargerId:
+                  charger_id:
                     type: string
-                  ownerAccountAddress:
+                  owner_account_address:
                     type: string
-                  driverAccountAddress:
+                  driver_account_address:
                     type: string
-                  offeredTariff:
-                    type: integer
-                    format: int32
+                  offered_tariff:
+                    type: string
+                    format: uint64
                   status:
                     type: string
                     enum:
@@ -1269,18 +1270,19 @@ paths:
                       - ONGOING
                       - PAID
                       - CANCELLED
+                      - TRANSFER_STATUS_UNSPECIFIED
                     default: REQUESTED
                   collateral:
                     type: string
-                    format: uint64
-                  energyToTransfer:
-                    type: integer
-                    format: int32
-                  energyTransferred:
-                    type: integer
-                    format: int32
-                  paidDate:
+                  energy_to_transfer:
                     type: string
+                    format: uint64
+                  energy_transferred:
+                    type: string
+                    format: uint64
+                  paid_date:
+                    type: string
+                    format: date-time
         default:
           description: An unexpected error response.
           schema:
@@ -1307,7 +1309,7 @@ paths:
           format: uint64
       tags:
         - Query
-  /c4echain/cfeev/energy_transfer_offer:
+  /c4e/ev/v1beta1/energy_transfer_offer:
     get:
       summary: Queries a list of EnergyTransferOffer items.
       operationId: Chain4EnergyC4EchainCfeevEnergyTransferOfferAll
@@ -1317,7 +1319,7 @@ paths:
           schema:
             type: object
             properties:
-              EnergyTransferOffer:
+              energy_transfer_offer:
                 type: array
                 items:
                   type: object
@@ -1329,12 +1331,13 @@ paths:
                       type: string
                     chargerId:
                       type: string
-                    chargerStatus:
+                    charger_status:
                       type: string
                       enum:
                         - ACTIVE
                         - BUSY
                         - INACTIVE
+                        - CHARGER_STATUS_UNSPECIFIED
                       default: ACTIVE
                     location:
                       type: object
@@ -1344,17 +1347,18 @@ paths:
                         longitude:
                           type: string
                     tariff:
-                      type: integer
-                      format: int32
+                      type: string
+                      format: uint64
                     name:
                       type: string
-                    plugType:
+                    plug_type:
                       type: string
                       enum:
                         - Type1
                         - Type2
                         - CHAdeMO
                         - CCS
+                        - PLUG_TYPE_UNSPECIFIED
                       default: Type1
               pagination:
                 type: object
@@ -1461,7 +1465,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /c4echain/cfeev/energy_transfer_offer/{id}:
+  /c4e/ev/v1beta1/energy_transfer_offer/{id}:
     get:
       summary: Queries a EnergyTransferOffer by id.
       operationId: Chain4EnergyC4EchainCfeevEnergyTransferOffer
@@ -1471,7 +1475,7 @@ paths:
           schema:
             type: object
             properties:
-              EnergyTransferOffer:
+              energy_transfer_offer:
                 type: object
                 properties:
                   id:
@@ -1481,12 +1485,13 @@ paths:
                     type: string
                   chargerId:
                     type: string
-                  chargerStatus:
+                  charger_status:
                     type: string
                     enum:
                       - ACTIVE
                       - BUSY
                       - INACTIVE
+                      - CHARGER_STATUS_UNSPECIFIED
                     default: ACTIVE
                   location:
                     type: object
@@ -1496,17 +1501,18 @@ paths:
                       longitude:
                         type: string
                   tariff:
-                    type: integer
-                    format: int32
+                    type: string
+                    format: uint64
                   name:
                     type: string
-                  plugType:
+                  plug_type:
                     type: string
                     enum:
                       - Type1
                       - Type2
                       - CHAdeMO
                       - CCS
+                      - PLUG_TYPE_UNSPECIFIED
                     default: Type1
         default:
           description: An unexpected error response.
@@ -1534,7 +1540,7 @@ paths:
           format: uint64
       tags:
         - Query
-  /c4echain/cfeev/list_own_energy_transfer/{driverAccAddress}:
+  /c4e/ev/v1beta1/list_own_energy_transfer/{driver_acc_address}:
     get:
       summary: Queries a list of ListOwnEnergyTransfer items.
       operationId: Chain4EnergyC4EchainCfeevListOwnEnergyTransfer
@@ -1544,7 +1550,7 @@ paths:
           schema:
             type: object
             properties:
-              energyTransfer:
+              energy_transfer:
                 type: array
                 items:
                   type: object
@@ -1552,18 +1558,18 @@ paths:
                     id:
                       type: string
                       format: uint64
-                    energyTransferOfferId:
+                    energy_transfer_offer_id:
                       type: string
                       format: uint64
-                    chargerId:
+                    charger_id:
                       type: string
-                    ownerAccountAddress:
+                    owner_account_address:
                       type: string
-                    driverAccountAddress:
+                    driver_account_address:
                       type: string
-                    offeredTariff:
-                      type: integer
-                      format: int32
+                    offered_tariff:
+                      type: string
+                      format: uint64
                     status:
                       type: string
                       enum:
@@ -1571,18 +1577,19 @@ paths:
                         - ONGOING
                         - PAID
                         - CANCELLED
+                        - TRANSFER_STATUS_UNSPECIFIED
                       default: REQUESTED
                     collateral:
                       type: string
-                      format: uint64
-                    energyToTransfer:
-                      type: integer
-                      format: int32
-                    energyTransferred:
-                      type: integer
-                      format: int32
-                    paidDate:
+                    energy_to_transfer:
                       type: string
+                      format: uint64
+                    energy_transferred:
+                      type: string
+                      format: uint64
+                    paid_date:
+                      type: string
+                      format: date-time
               pagination:
                 type: object
                 properties:
@@ -1630,11 +1637,11 @@ paths:
                       type: string
                   additionalProperties: {}
       parameters:
-        - name: driverAccAddress
+        - name: driver_acc_address
           in: path
           required: true
           type: string
-        - name: transferStatus
+        - name: transfer_status
           in: query
           required: false
           type: integer
@@ -1697,7 +1704,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /c4echain/cfeev/list_own_energy_transfer_offer/{ownerAccAddress}:
+  /c4e/ev/v1beta1/list_own_energy_transfer_offer/{owner_acc_address}:
     get:
       summary: Queries a list of ListOwnEnergyTransferOffer items.
       operationId: Chain4EnergyC4EchainCfeevListOwnEnergyTransferOffer
@@ -1707,7 +1714,7 @@ paths:
           schema:
             type: object
             properties:
-              energyTransferOffer:
+              energy_transfer_offer:
                 type: array
                 items:
                   type: object
@@ -1719,12 +1726,13 @@ paths:
                       type: string
                     chargerId:
                       type: string
-                    chargerStatus:
+                    charger_status:
                       type: string
                       enum:
                         - ACTIVE
                         - BUSY
                         - INACTIVE
+                        - CHARGER_STATUS_UNSPECIFIED
                       default: ACTIVE
                     location:
                       type: object
@@ -1734,17 +1742,18 @@ paths:
                         longitude:
                           type: string
                     tariff:
-                      type: integer
-                      format: int32
+                      type: string
+                      format: uint64
                     name:
                       type: string
-                    plugType:
+                    plug_type:
                       type: string
                       enum:
                         - Type1
                         - Type2
                         - CHAdeMO
                         - CCS
+                        - PLUG_TYPE_UNSPECIFIED
                       default: Type1
               pagination:
                 type: object
@@ -1793,7 +1802,7 @@ paths:
                       type: string
                   additionalProperties: {}
       parameters:
-        - name: ownerAccAddress
+        - name: owner_acc_address
           in: path
           required: true
           type: string
@@ -1855,7 +1864,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /c4echain/cfeev/list_owner_energy_transfer/{ownerAccAddress}:
+  /c4e/ev/v1beta1/list_owner_energy_transfer/{owner_acc_address}:
     get:
       summary: Queries a list of ListOwnerEnergyTransfer items.
       operationId: Chain4EnergyC4EchainCfeevListOwnerEnergyTransfer
@@ -1865,7 +1874,7 @@ paths:
           schema:
             type: object
             properties:
-              energyTransfer:
+              energy_transfer:
                 type: array
                 items:
                   type: object
@@ -1873,18 +1882,18 @@ paths:
                     id:
                       type: string
                       format: uint64
-                    energyTransferOfferId:
+                    energy_transfer_offer_id:
                       type: string
                       format: uint64
-                    chargerId:
+                    charger_id:
                       type: string
-                    ownerAccountAddress:
+                    owner_account_address:
                       type: string
-                    driverAccountAddress:
+                    driver_account_address:
                       type: string
-                    offeredTariff:
-                      type: integer
-                      format: int32
+                    offered_tariff:
+                      type: string
+                      format: uint64
                     status:
                       type: string
                       enum:
@@ -1892,18 +1901,19 @@ paths:
                         - ONGOING
                         - PAID
                         - CANCELLED
+                        - TRANSFER_STATUS_UNSPECIFIED
                       default: REQUESTED
                     collateral:
                       type: string
-                      format: uint64
-                    energyToTransfer:
-                      type: integer
-                      format: int32
-                    energyTransferred:
-                      type: integer
-                      format: int32
-                    paidDate:
+                    energy_to_transfer:
                       type: string
+                      format: uint64
+                    energy_transferred:
+                      type: string
+                      format: uint64
+                    paid_date:
+                      type: string
+                      format: date-time
               pagination:
                 type: object
                 properties:
@@ -1951,7 +1961,7 @@ paths:
                       type: string
                   additionalProperties: {}
       parameters:
-        - name: ownerAccAddress
+        - name: owner_acc_address
           in: path
           required: true
           type: string
@@ -2013,7 +2023,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /c4echain/cfeev/params:
+  /c4e/ev/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: Chain4EnergyC4EchainCfeevParams
@@ -50146,6 +50156,7 @@ definitions:
       - ACTIVE
       - BUSY
       - INACTIVE
+      - CHARGER_STATUS_UNSPECIFIED
     default: ACTIVE
   chain4energy.c4echain.cfeev.EnergyTransfer:
     type: object
@@ -50153,18 +50164,18 @@ definitions:
       id:
         type: string
         format: uint64
-      energyTransferOfferId:
+      energy_transfer_offer_id:
         type: string
         format: uint64
-      chargerId:
+      charger_id:
         type: string
-      ownerAccountAddress:
+      owner_account_address:
         type: string
-      driverAccountAddress:
+      driver_account_address:
         type: string
-      offeredTariff:
-        type: integer
-        format: int32
+      offered_tariff:
+        type: string
+        format: uint64
       status:
         type: string
         enum:
@@ -50172,18 +50183,19 @@ definitions:
           - ONGOING
           - PAID
           - CANCELLED
+          - TRANSFER_STATUS_UNSPECIFIED
         default: REQUESTED
       collateral:
         type: string
-        format: uint64
-      energyToTransfer:
-        type: integer
-        format: int32
-      energyTransferred:
-        type: integer
-        format: int32
-      paidDate:
+      energy_to_transfer:
         type: string
+        format: uint64
+      energy_transferred:
+        type: string
+        format: uint64
+      paid_date:
+        type: string
+        format: date-time
   chain4energy.c4echain.cfeev.EnergyTransferOffer:
     type: object
     properties:
@@ -50194,12 +50206,13 @@ definitions:
         type: string
       chargerId:
         type: string
-      chargerStatus:
+      charger_status:
         type: string
         enum:
           - ACTIVE
           - BUSY
           - INACTIVE
+          - CHARGER_STATUS_UNSPECIFIED
         default: ACTIVE
       location:
         type: object
@@ -50209,17 +50222,18 @@ definitions:
           longitude:
             type: string
       tariff:
-        type: integer
-        format: int32
+        type: string
+        format: uint64
       name:
         type: string
-      plugType:
+      plug_type:
         type: string
         enum:
           - Type1
           - Type2
           - CHAdeMO
           - CCS
+          - PLUG_TYPE_UNSPECIFIED
         default: Type1
   chain4energy.c4echain.cfeev.Location:
     type: object
@@ -50250,6 +50264,8 @@ definitions:
       id:
         type: string
         format: uint64
+  chain4energy.c4echain.cfeev.MsgUpdateDenomParamResponse:
+    type: object
   chain4energy.c4echain.cfeev.Params:
     type: object
     properties:
@@ -50263,11 +50279,12 @@ definitions:
       - Type2
       - CHAdeMO
       - CCS
+      - PLUG_TYPE_UNSPECIFIED
     default: Type1
   chain4energy.c4echain.cfeev.QueryAllEnergyTransferOfferResponse:
     type: object
     properties:
-      EnergyTransferOffer:
+      energy_transfer_offer:
         type: array
         items:
           type: object
@@ -50279,12 +50296,13 @@ definitions:
               type: string
             chargerId:
               type: string
-            chargerStatus:
+            charger_status:
               type: string
               enum:
                 - ACTIVE
                 - BUSY
                 - INACTIVE
+                - CHARGER_STATUS_UNSPECIFIED
               default: ACTIVE
             location:
               type: object
@@ -50294,17 +50312,18 @@ definitions:
                 longitude:
                   type: string
             tariff:
-              type: integer
-              format: int32
+              type: string
+              format: uint64
             name:
               type: string
-            plugType:
+            plug_type:
               type: string
               enum:
                 - Type1
                 - Type2
                 - CHAdeMO
                 - CCS
+                - PLUG_TYPE_UNSPECIFIED
               default: Type1
       pagination:
         type: object
@@ -50335,7 +50354,7 @@ definitions:
   chain4energy.c4echain.cfeev.QueryAllEnergyTransferResponse:
     type: object
     properties:
-      EnergyTransfer:
+      energy_transfer:
         type: array
         items:
           type: object
@@ -50343,18 +50362,18 @@ definitions:
             id:
               type: string
               format: uint64
-            energyTransferOfferId:
+            energy_transfer_offer_id:
               type: string
               format: uint64
-            chargerId:
+            charger_id:
               type: string
-            ownerAccountAddress:
+            owner_account_address:
               type: string
-            driverAccountAddress:
+            driver_account_address:
               type: string
-            offeredTariff:
-              type: integer
-              format: int32
+            offered_tariff:
+              type: string
+              format: uint64
             status:
               type: string
               enum:
@@ -50362,18 +50381,19 @@ definitions:
                 - ONGOING
                 - PAID
                 - CANCELLED
+                - TRANSFER_STATUS_UNSPECIFIED
               default: REQUESTED
             collateral:
               type: string
-              format: uint64
-            energyToTransfer:
-              type: integer
-              format: int32
-            energyTransferred:
-              type: integer
-              format: int32
-            paidDate:
+            energy_to_transfer:
               type: string
+              format: uint64
+            energy_transferred:
+              type: string
+              format: uint64
+            paid_date:
+              type: string
+              format: date-time
       pagination:
         type: object
         properties:
@@ -50403,7 +50423,7 @@ definitions:
   chain4energy.c4echain.cfeev.QueryGetEnergyTransferOfferResponse:
     type: object
     properties:
-      EnergyTransferOffer:
+      energy_transfer_offer:
         type: object
         properties:
           id:
@@ -50413,12 +50433,13 @@ definitions:
             type: string
           chargerId:
             type: string
-          chargerStatus:
+          charger_status:
             type: string
             enum:
               - ACTIVE
               - BUSY
               - INACTIVE
+              - CHARGER_STATUS_UNSPECIFIED
             default: ACTIVE
           location:
             type: object
@@ -50428,39 +50449,40 @@ definitions:
               longitude:
                 type: string
           tariff:
-            type: integer
-            format: int32
+            type: string
+            format: uint64
           name:
             type: string
-          plugType:
+          plug_type:
             type: string
             enum:
               - Type1
               - Type2
               - CHAdeMO
               - CCS
+              - PLUG_TYPE_UNSPECIFIED
             default: Type1
   chain4energy.c4echain.cfeev.QueryGetEnergyTransferResponse:
     type: object
     properties:
-      EnergyTransfer:
+      energy_transfer:
         type: object
         properties:
           id:
             type: string
             format: uint64
-          energyTransferOfferId:
+          energy_transfer_offer_id:
             type: string
             format: uint64
-          chargerId:
+          charger_id:
             type: string
-          ownerAccountAddress:
+          owner_account_address:
             type: string
-          driverAccountAddress:
+          driver_account_address:
             type: string
-          offeredTariff:
-            type: integer
-            format: int32
+          offered_tariff:
+            type: string
+            format: uint64
           status:
             type: string
             enum:
@@ -50468,22 +50490,23 @@ definitions:
               - ONGOING
               - PAID
               - CANCELLED
+              - TRANSFER_STATUS_UNSPECIFIED
             default: REQUESTED
           collateral:
             type: string
-            format: uint64
-          energyToTransfer:
-            type: integer
-            format: int32
-          energyTransferred:
-            type: integer
-            format: int32
-          paidDate:
+          energy_to_transfer:
             type: string
+            format: uint64
+          energy_transferred:
+            type: string
+            format: uint64
+          paid_date:
+            type: string
+            format: date-time
   chain4energy.c4echain.cfeev.QueryListOwnEnergyTransferOfferResponse:
     type: object
     properties:
-      energyTransferOffer:
+      energy_transfer_offer:
         type: array
         items:
           type: object
@@ -50495,12 +50518,13 @@ definitions:
               type: string
             chargerId:
               type: string
-            chargerStatus:
+            charger_status:
               type: string
               enum:
                 - ACTIVE
                 - BUSY
                 - INACTIVE
+                - CHARGER_STATUS_UNSPECIFIED
               default: ACTIVE
             location:
               type: object
@@ -50510,17 +50534,18 @@ definitions:
                 longitude:
                   type: string
             tariff:
-              type: integer
-              format: int32
+              type: string
+              format: uint64
             name:
               type: string
-            plugType:
+            plug_type:
               type: string
               enum:
                 - Type1
                 - Type2
                 - CHAdeMO
                 - CCS
+                - PLUG_TYPE_UNSPECIFIED
               default: Type1
       pagination:
         type: object
@@ -50551,7 +50576,7 @@ definitions:
   chain4energy.c4echain.cfeev.QueryListOwnEnergyTransferResponse:
     type: object
     properties:
-      energyTransfer:
+      energy_transfer:
         type: array
         items:
           type: object
@@ -50559,18 +50584,18 @@ definitions:
             id:
               type: string
               format: uint64
-            energyTransferOfferId:
+            energy_transfer_offer_id:
               type: string
               format: uint64
-            chargerId:
+            charger_id:
               type: string
-            ownerAccountAddress:
+            owner_account_address:
               type: string
-            driverAccountAddress:
+            driver_account_address:
               type: string
-            offeredTariff:
-              type: integer
-              format: int32
+            offered_tariff:
+              type: string
+              format: uint64
             status:
               type: string
               enum:
@@ -50578,18 +50603,19 @@ definitions:
                 - ONGOING
                 - PAID
                 - CANCELLED
+                - TRANSFER_STATUS_UNSPECIFIED
               default: REQUESTED
             collateral:
               type: string
-              format: uint64
-            energyToTransfer:
-              type: integer
-              format: int32
-            energyTransferred:
-              type: integer
-              format: int32
-            paidDate:
+            energy_to_transfer:
               type: string
+              format: uint64
+            energy_transferred:
+              type: string
+              format: uint64
+            paid_date:
+              type: string
+              format: date-time
       pagination:
         type: object
         properties:
@@ -50619,7 +50645,7 @@ definitions:
   chain4energy.c4echain.cfeev.QueryListOwnerEnergyTransferResponse:
     type: object
     properties:
-      energyTransfer:
+      energy_transfer:
         type: array
         items:
           type: object
@@ -50627,18 +50653,18 @@ definitions:
             id:
               type: string
               format: uint64
-            energyTransferOfferId:
+            energy_transfer_offer_id:
               type: string
               format: uint64
-            chargerId:
+            charger_id:
               type: string
-            ownerAccountAddress:
+            owner_account_address:
               type: string
-            driverAccountAddress:
+            driver_account_address:
               type: string
-            offeredTariff:
-              type: integer
-              format: int32
+            offered_tariff:
+              type: string
+              format: uint64
             status:
               type: string
               enum:
@@ -50646,18 +50672,19 @@ definitions:
                 - ONGOING
                 - PAID
                 - CANCELLED
+                - TRANSFER_STATUS_UNSPECIFIED
               default: REQUESTED
             collateral:
               type: string
-              format: uint64
-            energyToTransfer:
-              type: integer
-              format: int32
-            energyTransferred:
-              type: integer
-              format: int32
-            paidDate:
+            energy_to_transfer:
               type: string
+              format: uint64
+            energy_transferred:
+              type: string
+              format: uint64
+            paid_date:
+              type: string
+              format: date-time
       pagination:
         type: object
         properties:
@@ -50701,6 +50728,7 @@ definitions:
       - ONGOING
       - PAID
       - CANCELLED
+      - TRANSFER_STATUS_UNSPECIFIED
     default: REQUESTED
   chain4energy.c4echain.cfeminter.Minter:
     type: object

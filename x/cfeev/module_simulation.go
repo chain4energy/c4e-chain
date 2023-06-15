@@ -85,83 +85,83 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
-
-	var weightMsgPublishEnergyTransferOffer int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgPublishEnergyTransferOffer, &weightMsgPublishEnergyTransferOffer, nil,
-		func(_ *rand.Rand) {
-			weightMsgPublishEnergyTransferOffer = defaultWeightMsgPublishEnergyTransferOffer
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgPublishEnergyTransferOffer,
-		cfeevsimulation.SimulateMsgPublishEnergyTransferOffer(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgStartEnergyTransfer int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgStartEnergyTransfer, &weightMsgStartEnergyTransfer, nil,
-		func(_ *rand.Rand) {
-			weightMsgStartEnergyTransfer = defaultWeightMsgStartEnergyTransfer
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgStartEnergyTransfer,
-		cfeevsimulation.SimulateMsgStartEnergyTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgEnergyTransferStarted int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgEnergyTransferStarted, &weightMsgEnergyTransferStarted, nil,
-		func(_ *rand.Rand) {
-			weightMsgEnergyTransferStarted = defaultWeightMsgEnergyTransferStarted
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgEnergyTransferStarted,
-		cfeevsimulation.SimulateMsgEnergyTransferStarted(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgEnergyTransferCompleted int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgEnergyTransferCompleted, &weightMsgEnergyTransferCompleted, nil,
-		func(_ *rand.Rand) {
-			weightMsgEnergyTransferCompleted = defaultWeightMsgEnergyTransferCompleted
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgEnergyTransferCompleted,
-		cfeevsimulation.SimulateMsgEnergyTransferCompleted(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgCancelEnergyTransfer int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCancelEnergyTransfer, &weightMsgCancelEnergyTransfer, nil,
-		func(_ *rand.Rand) {
-			weightMsgCancelEnergyTransfer = defaultWeightMsgCancelEnergyTransfer
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCancelEnergyTransfer,
-		cfeevsimulation.SimulateMsgCancelEnergyTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgRemoveEnergyOffer int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgRemoveEnergyOffer, &weightMsgRemoveEnergyOffer, nil,
-		func(_ *rand.Rand) {
-			weightMsgRemoveEnergyOffer = defaultWeightMsgRemoveEnergyOffer
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgRemoveEnergyOffer,
-		cfeevsimulation.SimulateMsgRemoveEnergyOffer(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgRemoveTransfer int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgRemoveTransfer, &weightMsgRemoveTransfer, nil,
-		func(_ *rand.Rand) {
-			weightMsgRemoveTransfer = defaultWeightMsgRemoveTransfer
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgRemoveTransfer,
-		cfeevsimulation.SimulateMsgRemoveTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
+	//
+	//var weightMsgPublishEnergyTransferOffer int
+	//simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgPublishEnergyTransferOffer, &weightMsgPublishEnergyTransferOffer, nil,
+	//	func(_ *rand.Rand) {
+	//		weightMsgPublishEnergyTransferOffer = defaultWeightMsgPublishEnergyTransferOffer
+	//	},
+	//)
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgPublishEnergyTransferOffer,
+	//	cfeevsimulation.SimulateMsgPublishEnergyTransferOffer(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//
+	//var weightMsgStartEnergyTransfer int
+	//simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgStartEnergyTransfer, &weightMsgStartEnergyTransfer, nil,
+	//	func(_ *rand.Rand) {
+	//		weightMsgStartEnergyTransfer = defaultWeightMsgStartEnergyTransfer
+	//	},
+	//)
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgStartEnergyTransfer,
+	//	cfeevsimulation.SimulateMsgStartEnergyTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//
+	//var weightMsgEnergyTransferStarted int
+	//simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgEnergyTransferStarted, &weightMsgEnergyTransferStarted, nil,
+	//	func(_ *rand.Rand) {
+	//		weightMsgEnergyTransferStarted = defaultWeightMsgEnergyTransferStarted
+	//	},
+	//)
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgEnergyTransferStarted,
+	//	cfeevsimulation.SimulateMsgEnergyTransferStarted(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//
+	//var weightMsgEnergyTransferCompleted int
+	//simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgEnergyTransferCompleted, &weightMsgEnergyTransferCompleted, nil,
+	//	func(_ *rand.Rand) {
+	//		weightMsgEnergyTransferCompleted = defaultWeightMsgEnergyTransferCompleted
+	//	},
+	//)
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgEnergyTransferCompleted,
+	//	cfeevsimulation.SimulateMsgEnergyTransferCompleted(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//
+	//var weightMsgCancelEnergyTransfer int
+	//simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCancelEnergyTransfer, &weightMsgCancelEnergyTransfer, nil,
+	//	func(_ *rand.Rand) {
+	//		weightMsgCancelEnergyTransfer = defaultWeightMsgCancelEnergyTransfer
+	//	},
+	//)
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgCancelEnergyTransfer,
+	//	cfeevsimulation.SimulateMsgCancelEnergyTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//
+	//var weightMsgRemoveEnergyOffer int
+	//simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgRemoveEnergyOffer, &weightMsgRemoveEnergyOffer, nil,
+	//	func(_ *rand.Rand) {
+	//		weightMsgRemoveEnergyOffer = defaultWeightMsgRemoveEnergyOffer
+	//	},
+	//)
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgRemoveEnergyOffer,
+	//	cfeevsimulation.SimulateMsgRemoveEnergyOffer(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//
+	//var weightMsgRemoveTransfer int
+	//simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgRemoveTransfer, &weightMsgRemoveTransfer, nil,
+	//	func(_ *rand.Rand) {
+	//		weightMsgRemoveTransfer = defaultWeightMsgRemoveTransfer
+	//	},
+	//)
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgRemoveTransfer,
+	//	cfeevsimulation.SimulateMsgRemoveTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

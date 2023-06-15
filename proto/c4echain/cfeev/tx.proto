@@ -5,6 +5,7 @@ package chain4energy.c4echain.cfeev;
 import "c4echain/cfeev/location.proto";
 import "c4echain/cfeev/energy_transfer_offer.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeev/types";
 
@@ -17,13 +18,14 @@ service Msg {
   rpc CancelEnergyTransfer(MsgCancelEnergyTransfer) returns (MsgCancelEnergyTransferResponse);
   rpc RemoveEnergyOffer(MsgRemoveEnergyOffer) returns (MsgRemoveEnergyOfferResponse);
   rpc RemoveTransfer(MsgRemoveTransfer) returns (MsgRemoveTransferResponse);
+  rpc UpdateDenomParam(MsgUpdateDenomParam) returns (MsgUpdateDenomParamResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgPublishEnergyTransferOffer {
   string creator = 1;
   string charger_id = 2;
-  int32 tariff = 3;
+  uint64 tariff = 3;
   Location location = 4;
   string name = 5;
   PlugType plug_type = 6;
@@ -38,9 +40,12 @@ message MsgStartEnergyTransfer {
   uint64 energy_transfer_offer_id = 2;
   string charger_id = 3;
   string owner_account_address = 4;
-  string offered_tariff = 5;
-  cosmos.base.v1beta1.Coin collateral = 6;
-  int32 energy_to_transfer = 7;
+  uint64 offered_tariff = 5;
+  string collateral = 6 [
+    (gogoproto.nullable) = true,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+  uint64 energy_to_transfer = 7;
 }
 
 message MsgStartEnergyTransferResponse {
@@ -61,7 +66,7 @@ message MsgEnergyTransferCompleted {
   string creator = 1;
   uint64 energy_transfer_id = 2;
   string charger_id = 3;
-  int32 used_service_units = 4;
+  uint64 used_service_units = 4;
   string info = 5;
 }
 
@@ -95,4 +100,11 @@ message MsgRemoveTransfer {
 message MsgRemoveTransferResponse {
 }
 
+message MsgUpdateDenomParam {
+  // authority is the address of the governance account.
+  string authority = 1;
+  string denom = 2;
+}
+
+message MsgUpdateDenomParamResponse {}
 // this line is used by starport scaffolding # proto/tx/message

@@ -11,13 +11,11 @@ import (
 
 func (k msgServer) PublishEnergyTransferOffer(goCtx context.Context, msg *types.MsgPublishEnergyTransferOffer) (*types.MsgPublishEnergyTransferOfferResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "publish energy transfer offer")
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	id, err := k.Keeper.PostEnergyTransferOffer(ctx,
+	id, err := k.Keeper.PublishEnergyTransferOffer(ctx,
 		msg.Creator,
 		msg.ChargerId,
-		types.ChargerStatus_ACTIVE,
 		*msg.GetLocation(),
 		msg.GetTariff(),
 		msg.GetName(),
@@ -28,18 +26,5 @@ func (k msgServer) PublishEnergyTransferOffer(goCtx context.Context, msg *types.
 		return nil, err
 	}
 
-	event := &types.PublishOffer{
-		EnergyTransferOfferId: id,
-		Owner:                 msg.Creator,
-		ChargerId:             msg.ChargerId,
-		Tariff:                msg.GetTariff(),
-		Name:                  msg.GetName(),
-		PlugType:              msg.GetPlugType().String(),
-	}
-	err = ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
-		k.Logger(ctx).Error("new publish energy transfer offer emit event error", "event", event, "error", err.Error())
-	}
-
-	return &types.MsgPublishEnergyTransferOfferResponse{Id: id}, nil
+	return &types.MsgPublishEnergyTransferOfferResponse{Id: *id}, nil
 }

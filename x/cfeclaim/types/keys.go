@@ -1,6 +1,6 @@
 package types
 
-import "encoding/binary"
+import "github.com/chain4energy/c4e-chain/types/util"
 
 const (
 	// ModuleName defines the module name
@@ -28,13 +28,5 @@ var (
 )
 
 func MissionKey(campaignId uint64, missionId uint64) []byte {
-	bz := GetUint64Key(campaignId)
-	return append(bz, GetUint64Key(missionId)...)
-}
-
-func GetUint64Key(campaignId uint64) []byte {
-	key := make([]byte, 8)
-	binary.BigEndian.PutUint64(key, campaignId)
-
-	return key
+	return append(util.GetUint64Key(campaignId), util.GetUint64Key(missionId)...)
 }

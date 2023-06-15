@@ -1,20 +1,13 @@
 package keeper_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/testutil/app"
-	keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeev/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
-
-func setupTestMsgServer(t testing.TB) (types.MsgServer, context.Context, keeper.Keeper) {
-	k, ctx, _ := keepertest.CfeevKeeper(t)
-	return keeper.NewMsgServerImpl(*k), sdk.WrapSDKContext(ctx), *k
-}
 
 func TestEnergyTransferCancel(t *testing.T) {
 	testHelper := app.SetupTestApp(t)

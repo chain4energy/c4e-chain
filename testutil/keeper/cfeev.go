@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/app"
@@ -77,8 +78,8 @@ func CfeevKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, AdditionalDistribut
 		cdc,
 		storeKey,
 		memStoreKey,
-		paramsStore,
 		bankKeeper,
+		appparams.GetAuthority(),
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())

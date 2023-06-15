@@ -29,11 +29,8 @@ Arguments:
   [info] additional info - optional
 
 Example:
-$ %s tx %s energy-transfer-started 0 EVGC011221122GK0122 started
-`,
-				version.AppName, types.ModuleName,
-			),
-		),
+$ %s tx %s energy-transfer-started 0 EVGC011221122GK0122 started --from mykey
+`, version.AppName, types.ModuleName)),
 		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argEnergyTransferId, err := cast.ToUint64E(args[0])

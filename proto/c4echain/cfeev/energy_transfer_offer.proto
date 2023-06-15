@@ -9,8 +9,8 @@ message EnergyTransferOffer {
   string owner = 2; 
   string chargerId = 3; 
   ChargerStatus charger_status = 4; 
-  Location location = 5; 
-  int32 tariff = 6; 
+  Location location = 5;
+  uint64 tariff = 6;
   string name = 7;
   PlugType plug_type = 8;
 }
@@ -19,6 +19,7 @@ enum ChargerStatus {
     ACTIVE = 0;
     BUSY = 1;
     INACTIVE = 2;
+    CHARGER_STATUS_UNSPECIFIED = 3;
 }
 
 enum PlugType {
@@ -26,4 +27,5 @@ enum PlugType {
     Type2 = 1; 
     CHAdeMO = 2; 
     CCS = 3;
+    PLUG_TYPE_UNSPECIFIED = 4;
 }

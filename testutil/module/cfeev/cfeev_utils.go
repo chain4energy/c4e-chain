@@ -1,8 +1,6 @@
 package cfeevutils
 
 import (
-	"strconv"
-
 	"cosmossdk.io/math"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
@@ -91,7 +89,7 @@ func (h *C4eEvUtils) CreateExampleTestEVObjects() (types.EnergyTransferOffer, ty
 		Status:                types.TransferStatus_REQUESTED,
 		OfferedTariff:         56,
 		EnergyToTransfer:      22,
-		Collateral:            1232,
+		Collateral:            math.NewInt(1232),
 	}
 
 	return energyTransferOffer, energyTransfer
@@ -119,16 +117,14 @@ func (h *C4eEvUtils) PublishAndVerifyEnergyTransferOffer(ctx sdk.Context, offer 
 }
 
 func (h *C4eEvUtils) StartEnergyTransfer(ctx sdk.Context, transfer types.EnergyTransfer, newOfferId uint64) uint64 {
-
-	collateral := sdk.Coin{Denom: "uc4e", Amount: math.NewInt(int64(transfer.Collateral))}
 	msgStartTransfer := &types.MsgStartEnergyTransfer{
 		Creator:               transfer.DriverAccountAddress,
 		EnergyTransferOfferId: newOfferId,
 		ChargerId:             transfer.ChargerId,
 		OwnerAccountAddress:   transfer.OwnerAccountAddress,
-		OfferedTariff:         strconv.Itoa(int(transfer.OfferedTariff)),
+		OfferedTariff:         transfer.OfferedTariff,
 		EnergyToTransfer:      transfer.EnergyToTransfer,
-		Collateral:            &collateral,
+		Collateral:            &transfer.Collateral,
 	}
 
 	msgServer := keeper.NewMsgServerImpl(*h.helperCfeevKeeper)
@@ -139,7 +135,7 @@ func (h *C4eEvUtils) StartEnergyTransfer(ctx sdk.Context, transfer types.EnergyT
 	return startTransferResponse.GetId()
 }
 
-func (h *C4eEvUtils) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64, usedServiceUnits int32) {
+func (h *C4eEvUtils) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64, usedServiceUnits uint64) {
 	msg := &types.MsgEnergyTransferCompleted{EnergyTransferId: energyTransferId, UsedServiceUnits: usedServiceUnits}
 
 	msgServer := keeper.NewMsgServerImpl(*h.helperCfeevKeeper)

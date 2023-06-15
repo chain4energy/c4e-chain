@@ -35,33 +35,28 @@ Arguments:
   [plug-type] charger plug type
 
 Example:
-$ %s tx %s publish-energy-transfer-offer EVGC011221122GK0122 56 '{"latitude": "34.4", "longitude": "5.2"}' MySuperCharger 2
-`,
-				version.AppName, types.ModuleName,
-			),
-		),
+$ %s tx %s publish-energy-transfer-offer EVGC011221122GK0122 56 '{"latitude": "34.4", "longitude": "5.2"}' MySuperCharger 2 --from mykey
+`, version.AppName, types.ModuleName)),
 		Args: cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argChargerId := args[0]
-			argTariff, err := cast.ToInt32E(args[1])
+			argTariff, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}
 
-			argLocation := new(types.Location)
-			argName := args[3]
+			var argLocation *types.Location
 			err = json.Unmarshal([]byte(args[2]), argLocation)
 			if err != nil {
 				return err
 			}
 
-			// handle plug type enum values
-			i, err := strconv.ParseInt(args[4], 10, 64)
+			argName := args[3]
+
+			argPlugType, err := types.PlugTypeFromString(types.NormalizePlugType(args[2]))
 			if err != nil {
 				return err
 			}
-			i32 := int32(i)
-			argPlugType := types.PlugType(i32)
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -76,7 +71,7 @@ $ %s tx %s publish-energy-transfer-offer EVGC011221122GK0122 56 '{"latitude": "3
 				argName,
 				argPlugType,
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)

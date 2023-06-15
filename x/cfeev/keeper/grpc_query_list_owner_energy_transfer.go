@@ -20,7 +20,7 @@ func (k Keeper) ListOwnerEnergyTransfer(goCtx context.Context, req *types.QueryL
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	store := ctx.KVStore(k.storeKey)
-	energyTransferStore := prefix.NewStore(store, types.KeyPrefix(types.EnergyTransferKey))
+	energyTransferStore := prefix.NewStore(store, types.EnergyTransferKey)
 
 	pageRes, err := query.Paginate(energyTransferStore, req.Pagination, func(key []byte, value []byte) error {
 		var energyTransfer types.EnergyTransfer

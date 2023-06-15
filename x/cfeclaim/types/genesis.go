@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"github.com/chain4energy/c4e-chain/types/util"
 )
 
 // DefaultIndex is the default capability global index
@@ -33,7 +34,7 @@ func (gs GenesisState) Validate() error {
 	campaignIndexMap := make(map[string]struct{})
 
 	for _, elem := range gs.Campaigns {
-		index := string(GetUint64Key(elem.Id))
+		index := string(util.GetUint64Key(elem.Id))
 		if _, ok := campaignIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for initialClaim")
 		}

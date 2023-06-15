@@ -1,9 +1,11 @@
 package types
 
 var (
-	ParamsKey                    = []byte{0x00}
-	VestingTypesKeyPrefix        = []byte{0x01}
-	AccountVestingPoolsKeyPrefix = []byte{0x02}
+	ParamsKey                   = []byte{0x00}
+	EnergyTransferOfferKey      = []byte{0x01}
+	EnergyTransferOfferCountKey = []byte{0x02}
+	EnergyTransferKey           = []byte{0x03}
+	EnergyTransferCountKey      = []byte{0x04}
 )
 
 const (
@@ -18,18 +20,4 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_cfeev"
-)
-
-func KeyPrefix(p string) []byte {
-	return []byte(p)
-}
-
-const (
-	EnergyTransferOfferKey      = "EnergyTransferOffer/value/"
-	EnergyTransferOfferCountKey = "EnergyTransferOffer/count/"
-)
-
-const (
-	EnergyTransferKey      = "EnergyTransfer/value/"
-	EnergyTransferCountKey = "EnergyTransfer/count/"
 )

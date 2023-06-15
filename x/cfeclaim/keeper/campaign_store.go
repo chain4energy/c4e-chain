@@ -3,6 +3,7 @@ package keeper
 import (
 	"cosmossdk.io/errors"
 	"encoding/binary"
+	"github.com/chain4energy/c4e-chain/types/util"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -22,7 +23,7 @@ func (k Keeper) AppendNewCampaign(
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CampaignKeyPrefix)
 	appendedValue := k.cdc.MustMarshal(&campaign)
-	store.Set(types.GetUint64Key(
+	store.Set(util.GetUint64Key(
 		campaign.Id,
 	), appendedValue)
 
@@ -37,7 +38,7 @@ func (k Keeper) SetCampaign(ctx sdk.Context, campaign types.Campaign) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CampaignKeyPrefix)
 
 	b := k.cdc.MustMarshal(&campaign)
-	store.Set(types.GetUint64Key(
+	store.Set(util.GetUint64Key(
 		campaign.Id,
 	), b)
 }
@@ -49,7 +50,7 @@ func (k Keeper) GetCampaign(
 ) (val types.Campaign, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CampaignKeyPrefix)
 
-	b := store.Get(types.GetUint64Key(
+	b := store.Get(util.GetUint64Key(
 		campaignId,
 	))
 	if b == nil {
@@ -66,7 +67,7 @@ func (k Keeper) removeCampaign(
 	campaignId uint64,
 ) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CampaignKeyPrefix)
-	store.Delete(types.GetUint64Key(
+	store.Delete(util.GetUint64Key(
 		campaignId,
 	))
 }

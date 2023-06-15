@@ -21,7 +21,7 @@ func (k Keeper) EnergyTransferOfferAll(c context.Context, req *types.QueryAllEne
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
-	energyTransferOfferStore := prefix.NewStore(store, types.KeyPrefix(types.EnergyTransferOfferKey))
+	energyTransferOfferStore := prefix.NewStore(store, types.EnergyTransferOfferKey)
 
 	pageRes, err := query.Paginate(energyTransferOfferStore, req.Pagination, func(key []byte, value []byte) error {
 		var energyTransferOffer types.EnergyTransferOffer

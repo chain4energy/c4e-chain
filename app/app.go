@@ -591,9 +591,8 @@ func New(
 		appCodec,
 		keys[cfeevmoduletypes.StoreKey],
 		keys[cfeevmoduletypes.MemStoreKey],
-		app.GetSubspace(cfeevmoduletypes.ModuleName),
-
 		app.BankKeeper,
+		appparams.GetAuthority(),
 	)
 	cfeevModule := cfeevmodule.NewAppModule(appCodec, app.CfeevKeeper, app.AccountKeeper, app.BankKeeper)
 
@@ -991,7 +990,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(cfesignaturemoduletypes.ModuleName)
 	paramsKeeper.Subspace(cfemintermoduletypes.ModuleName)
 	paramsKeeper.Subspace(cfedistributormoduletypes.ModuleName)
-	paramsKeeper.Subspace(cfeevmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

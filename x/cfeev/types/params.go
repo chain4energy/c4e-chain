@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	DefaultDenom string = "uc4e"
-) //
+	DefaultDenom = "uc4e"
+)
 
 // NewParams creates a new Params instance
 func NewParams(denom string) Params {

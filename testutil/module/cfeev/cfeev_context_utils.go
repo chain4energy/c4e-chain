@@ -14,7 +14,7 @@ func (h *ContextC4eEvUtils) VerifyEnergyTransferStatus(id uint64, status types.T
 	h.C4eEvUtils.VerifyEnergyTransferStatus(h.testContext.GetContext(), id, status)
 }
 
-func (h *ContextC4eEvUtils) EnergyTransferCompleted(energyTransferId uint64, usedServiceUnits int32) {
+func (h *ContextC4eEvUtils) EnergyTransferCompleted(energyTransferId uint64, usedServiceUnits uint64) {
 	h.C4eEvUtils.EnergyTransferCompleted(h.testContext.GetContext(), energyTransferId, usedServiceUnits)
 }
 

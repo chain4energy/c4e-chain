@@ -21,7 +21,7 @@ func (k Keeper) ListOwnEnergyTransfer(goCtx context.Context, req *types.QueryLis
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	store := ctx.KVStore(k.storeKey)
-	energyTransferStore := prefix.NewStore(store, types.KeyPrefix(types.EnergyTransferKey))
+	energyTransferStore := prefix.NewStore(store, types.EnergyTransferKey)
 
 	pageRes, err := query.Paginate(energyTransferStore, req.Pagination, func(key []byte, value []byte) error {
 		var energyTransfer types.EnergyTransfer
@@ -29,7 +29,7 @@ func (k Keeper) ListOwnEnergyTransfer(goCtx context.Context, req *types.QueryLis
 			return err
 		}
 
-		if energyTransfer.GetDriverAccountAddress() == req.GetDriverAccAddress() && energyTransfer.Status == types.TransferStatus(types.TransferStatus(req.GetTransferStatus())) {
+		if energyTransfer.GetDriverAccountAddress() == req.GetDriverAccAddress() && energyTransfer.Status == types.TransferStatus(req.GetTransferStatus()) {
 			energyTransfers = append(energyTransfers, energyTransfer)
 		}
 

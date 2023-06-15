@@ -25,7 +25,7 @@ func (k Keeper) ListOwnEnergyTransferOffer(goCtx context.Context, req *types.Que
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	store := ctx.KVStore(k.storeKey)
-	energyTransferOfferStore := prefix.NewStore(store, types.KeyPrefix(types.EnergyTransferOfferKey))
+	energyTransferOfferStore := prefix.NewStore(store, types.EnergyTransferOfferKey)
 
 	pageRes, err := query.Paginate(energyTransferOfferStore, req.Pagination, func(key []byte, value []byte) error {
 		var energyTransferOffer types.EnergyTransferOffer

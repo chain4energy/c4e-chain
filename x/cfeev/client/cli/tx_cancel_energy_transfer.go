@@ -30,11 +30,8 @@ Arguments:
   [error-code] error code - optional 
 
 Example:
-$ %s tx %s cancel-energy-transfer 0 EVGC011221122GK0122 charger_not_responding 4
-`,
-				version.AppName, types.ModuleName,
-			),
-		),
+$ %s tx %s cancel-energy-transfer 0 EVGC011221122GK0122 charger_not_responding 4 --from mykey
+`, version.AppName, types.ModuleName)),
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argEnergyTransferId, err := cast.ToUint64E(args[0])

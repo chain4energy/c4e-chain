@@ -22,25 +22,24 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type EnergyTransferCreatedEvent struct {
+type EventEnergyTransferCreated struct {
 	EnergyTransferId       uint64 `protobuf:"varint,1,opt,name=energy_transfer_id,json=energyTransferId,proto3" json:"energy_transfer_id,omitempty"`
 	ChargerId              string `protobuf:"bytes,2,opt,name=charger_id,json=chargerId,proto3" json:"charger_id,omitempty"`
-	EnergyAmountToTransfer int32  `protobuf:"varint,3,opt,name=energy_amount_to_transfer,json=energyAmountToTransfer,proto3" json:"energy_amount_to_transfer,omitempty"`
-	Action                 string `protobuf:"bytes,4,opt,name=action,proto3" json:"action,omitempty"`
+	EnergyAmountToTransfer uint64 `protobuf:"varint,3,opt,name=energy_amount_to_transfer,json=energyAmountToTransfer,proto3" json:"energy_amount_to_transfer,omitempty"`
 }
 
-func (m *EnergyTransferCreatedEvent) Reset()         { *m = EnergyTransferCreatedEvent{} }
-func (m *EnergyTransferCreatedEvent) String() string { return proto.CompactTextString(m) }
-func (*EnergyTransferCreatedEvent) ProtoMessage()    {}
-func (*EnergyTransferCreatedEvent) Descriptor() ([]byte, []int) {
+func (m *EventEnergyTransferCreated) Reset()         { *m = EventEnergyTransferCreated{} }
+func (m *EventEnergyTransferCreated) String() string { return proto.CompactTextString(m) }
+func (*EventEnergyTransferCreated) ProtoMessage()    {}
+func (*EventEnergyTransferCreated) Descriptor() ([]byte, []int) {
 	return fileDescriptor_cae1e842fd47ccec, []int{0}
 }
-func (m *EnergyTransferCreatedEvent) XXX_Unmarshal(b []byte) error {
+func (m *EventEnergyTransferCreated) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EnergyTransferCreatedEvent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventEnergyTransferCreated) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EnergyTransferCreatedEvent.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventEnergyTransferCreated.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -50,64 +49,57 @@ func (m *EnergyTransferCreatedEvent) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
-func (m *EnergyTransferCreatedEvent) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EnergyTransferCreatedEvent.Merge(m, src)
+func (m *EventEnergyTransferCreated) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventEnergyTransferCreated.Merge(m, src)
 }
-func (m *EnergyTransferCreatedEvent) XXX_Size() int {
+func (m *EventEnergyTransferCreated) XXX_Size() int {
 	return m.Size()
 }
-func (m *EnergyTransferCreatedEvent) XXX_DiscardUnknown() {
-	xxx_messageInfo_EnergyTransferCreatedEvent.DiscardUnknown(m)
+func (m *EventEnergyTransferCreated) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventEnergyTransferCreated.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EnergyTransferCreatedEvent proto.InternalMessageInfo
+var xxx_messageInfo_EventEnergyTransferCreated proto.InternalMessageInfo
 
-func (m *EnergyTransferCreatedEvent) GetEnergyTransferId() uint64 {
+func (m *EventEnergyTransferCreated) GetEnergyTransferId() uint64 {
 	if m != nil {
 		return m.EnergyTransferId
 	}
 	return 0
 }
 
-func (m *EnergyTransferCreatedEvent) GetChargerId() string {
+func (m *EventEnergyTransferCreated) GetChargerId() string {
 	if m != nil {
 		return m.ChargerId
 	}
 	return ""
 }
 
-func (m *EnergyTransferCreatedEvent) GetEnergyAmountToTransfer() int32 {
+func (m *EventEnergyTransferCreated) GetEnergyAmountToTransfer() uint64 {
 	if m != nil {
 		return m.EnergyAmountToTransfer
 	}
 	return 0
 }
 
-func (m *EnergyTransferCreatedEvent) GetAction() string {
-	if m != nil {
-		return m.Action
-	}
-	return ""
+type EventChangeOfferStatus struct {
+	EnergyTransferOfferId uint64        `protobuf:"varint,1,opt,name=energy_transfer_offer_id,json=energyTransferOfferId,proto3" json:"energy_transfer_offer_id,omitempty"`
+	OldStatus             ChargerStatus `protobuf:"varint,2,opt,name=old_status,json=oldStatus,proto3,enum=chain4energy.c4echain.cfeev.ChargerStatus" json:"old_status,omitempty"`
+	NewStatus             ChargerStatus `protobuf:"varint,3,opt,name=new_status,json=newStatus,proto3,enum=chain4energy.c4echain.cfeev.ChargerStatus" json:"new_status,omitempty"`
 }
 
-type ChangeOfferStatus struct {
-	EnergyTransferOfferId uint64 `protobuf:"varint,1,opt,name=energy_transfer_offer_id,json=energyTransferOfferId,proto3" json:"energy_transfer_offer_id,omitempty"`
-	OldStatus             string `protobuf:"bytes,2,opt,name=old_status,json=oldStatus,proto3" json:"old_status,omitempty"`
-	NewStatus             string `protobuf:"bytes,3,opt,name=new_status,json=newStatus,proto3" json:"new_status,omitempty"`
-}
-
-func (m *ChangeOfferStatus) Reset()         { *m = ChangeOfferStatus{} }
-func (m *ChangeOfferStatus) String() string { return proto.CompactTextString(m) }
-func (*ChangeOfferStatus) ProtoMessage()    {}
-func (*ChangeOfferStatus) Descriptor() ([]byte, []int) {
+func (m *EventChangeOfferStatus) Reset()         { *m = EventChangeOfferStatus{} }
+func (m *EventChangeOfferStatus) String() string { return proto.CompactTextString(m) }
+func (*EventChangeOfferStatus) ProtoMessage()    {}
+func (*EventChangeOfferStatus) Descriptor() ([]byte, []int) {
 	return fileDescriptor_cae1e842fd47ccec, []int{1}
 }
-func (m *ChangeOfferStatus) XXX_Unmarshal(b []byte) error {
+func (m *EventChangeOfferStatus) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ChangeOfferStatus) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventChangeOfferStatus) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ChangeOfferStatus.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventChangeOfferStatus.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -117,60 +109,60 @@ func (m *ChangeOfferStatus) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *ChangeOfferStatus) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ChangeOfferStatus.Merge(m, src)
+func (m *EventChangeOfferStatus) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventChangeOfferStatus.Merge(m, src)
 }
-func (m *ChangeOfferStatus) XXX_Size() int {
+func (m *EventChangeOfferStatus) XXX_Size() int {
 	return m.Size()
 }
-func (m *ChangeOfferStatus) XXX_DiscardUnknown() {
-	xxx_messageInfo_ChangeOfferStatus.DiscardUnknown(m)
+func (m *EventChangeOfferStatus) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventChangeOfferStatus.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ChangeOfferStatus proto.InternalMessageInfo
+var xxx_messageInfo_EventChangeOfferStatus proto.InternalMessageInfo
 
-func (m *ChangeOfferStatus) GetEnergyTransferOfferId() uint64 {
+func (m *EventChangeOfferStatus) GetEnergyTransferOfferId() uint64 {
 	if m != nil {
 		return m.EnergyTransferOfferId
 	}
 	return 0
 }
 
-func (m *ChangeOfferStatus) GetOldStatus() string {
+func (m *EventChangeOfferStatus) GetOldStatus() ChargerStatus {
 	if m != nil {
 		return m.OldStatus
 	}
-	return ""
+	return ChargerStatus_ACTIVE
 }
 
-func (m *ChangeOfferStatus) GetNewStatus() string {
+func (m *EventChangeOfferStatus) GetNewStatus() ChargerStatus {
 	if m != nil {
 		return m.NewStatus
 	}
-	return ""
+	return ChargerStatus_ACTIVE
 }
 
-type PublishOffer struct {
-	EnergyTransferOfferId uint64 `protobuf:"varint,1,opt,name=energy_transfer_offer_id,json=energyTransferOfferId,proto3" json:"energy_transfer_offer_id,omitempty"`
-	Owner                 string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
-	ChargerId             string `protobuf:"bytes,3,opt,name=charger_id,json=chargerId,proto3" json:"charger_id,omitempty"`
-	Tariff                int32  `protobuf:"varint,4,opt,name=tariff,proto3" json:"tariff,omitempty"`
-	Name                  string `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
-	PlugType              string `protobuf:"bytes,6,opt,name=plug_type,json=plugType,proto3" json:"plug_type,omitempty"`
+type EventPublishOffer struct {
+	EnergyTransferOfferId uint64   `protobuf:"varint,1,opt,name=energy_transfer_offer_id,json=energyTransferOfferId,proto3" json:"energy_transfer_offer_id,omitempty"`
+	Owner                 string   `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
+	ChargerId             string   `protobuf:"bytes,3,opt,name=charger_id,json=chargerId,proto3" json:"charger_id,omitempty"`
+	Tariff                uint64   `protobuf:"varint,4,opt,name=tariff,proto3" json:"tariff,omitempty"`
+	Name                  string   `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
+	PlugType              PlugType `protobuf:"varint,6,opt,name=plug_type,json=plugType,proto3,enum=chain4energy.c4echain.cfeev.PlugType" json:"plug_type,omitempty"`
 }
 
-func (m *PublishOffer) Reset()         { *m = PublishOffer{} }
-func (m *PublishOffer) String() string { return proto.CompactTextString(m) }
-func (*PublishOffer) ProtoMessage()    {}
-func (*PublishOffer) Descriptor() ([]byte, []int) {
+func (m *EventPublishOffer) Reset()         { *m = EventPublishOffer{} }
+func (m *EventPublishOffer) String() string { return proto.CompactTextString(m) }
+func (*EventPublishOffer) ProtoMessage()    {}
+func (*EventPublishOffer) Descriptor() ([]byte, []int) {
 	return fileDescriptor_cae1e842fd47ccec, []int{2}
 }
-func (m *PublishOffer) XXX_Unmarshal(b []byte) error {
+func (m *EventPublishOffer) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *PublishOffer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventPublishOffer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_PublishOffer.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventPublishOffer.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -180,78 +172,78 @@ func (m *PublishOffer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 		return b[:n], nil
 	}
 }
-func (m *PublishOffer) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PublishOffer.Merge(m, src)
+func (m *EventPublishOffer) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventPublishOffer.Merge(m, src)
 }
-func (m *PublishOffer) XXX_Size() int {
+func (m *EventPublishOffer) XXX_Size() int {
 	return m.Size()
 }
-func (m *PublishOffer) XXX_DiscardUnknown() {
-	xxx_messageInfo_PublishOffer.DiscardUnknown(m)
+func (m *EventPublishOffer) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventPublishOffer.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_PublishOffer proto.InternalMessageInfo
+var xxx_messageInfo_EventPublishOffer proto.InternalMessageInfo
 
-func (m *PublishOffer) GetEnergyTransferOfferId() uint64 {
+func (m *EventPublishOffer) GetEnergyTransferOfferId() uint64 {
 	if m != nil {
 		return m.EnergyTransferOfferId
 	}
 	return 0
 }
 
-func (m *PublishOffer) GetOwner() string {
+func (m *EventPublishOffer) GetOwner() string {
 	if m != nil {
 		return m.Owner
 	}
 	return ""
 }
 
-func (m *PublishOffer) GetChargerId() string {
+func (m *EventPublishOffer) GetChargerId() string {
 	if m != nil {
 		return m.ChargerId
 	}
 	return ""
 }
 
-func (m *PublishOffer) GetTariff() int32 {
+func (m *EventPublishOffer) GetTariff() uint64 {
 	if m != nil {
 		return m.Tariff
 	}
 	return 0
 }
 
-func (m *PublishOffer) GetName() string {
+func (m *EventPublishOffer) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-func (m *PublishOffer) GetPlugType() string {
+func (m *EventPublishOffer) GetPlugType() PlugType {
 	if m != nil {
 		return m.PlugType
 	}
-	return ""
+	return PlugType_Type1
 }
 
-type CancelEnergyTransfer struct {
+type EventCancelEnergyTransfer struct {
 	EnergyTransferId uint64 `protobuf:"varint,1,opt,name=energy_transfer_id,json=energyTransferId,proto3" json:"energy_transfer_id,omitempty"`
 	ChargerId        string `protobuf:"bytes,2,opt,name=charger_id,json=chargerId,proto3" json:"charger_id,omitempty"`
 	CancelReason     string `protobuf:"bytes,3,opt,name=cancel_reason,json=cancelReason,proto3" json:"cancel_reason,omitempty"`
 }
 
-func (m *CancelEnergyTransfer) Reset()         { *m = CancelEnergyTransfer{} }
-func (m *CancelEnergyTransfer) String() string { return proto.CompactTextString(m) }
-func (*CancelEnergyTransfer) ProtoMessage()    {}
-func (*CancelEnergyTransfer) Descriptor() ([]byte, []int) {
+func (m *EventCancelEnergyTransfer) Reset()         { *m = EventCancelEnergyTransfer{} }
+func (m *EventCancelEnergyTransfer) String() string { return proto.CompactTextString(m) }
+func (*EventCancelEnergyTransfer) ProtoMessage()    {}
+func (*EventCancelEnergyTransfer) Descriptor() ([]byte, []int) {
 	return fileDescriptor_cae1e842fd47ccec, []int{3}
 }
-func (m *CancelEnergyTransfer) XXX_Unmarshal(b []byte) error {
+func (m *EventCancelEnergyTransfer) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *CancelEnergyTransfer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventCancelEnergyTransfer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_CancelEnergyTransfer.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventCancelEnergyTransfer.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -261,56 +253,56 @@ func (m *CancelEnergyTransfer) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *CancelEnergyTransfer) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CancelEnergyTransfer.Merge(m, src)
+func (m *EventCancelEnergyTransfer) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventCancelEnergyTransfer.Merge(m, src)
 }
-func (m *CancelEnergyTransfer) XXX_Size() int {
+func (m *EventCancelEnergyTransfer) XXX_Size() int {
 	return m.Size()
 }
-func (m *CancelEnergyTransfer) XXX_DiscardUnknown() {
-	xxx_messageInfo_CancelEnergyTransfer.DiscardUnknown(m)
+func (m *EventCancelEnergyTransfer) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventCancelEnergyTransfer.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CancelEnergyTransfer proto.InternalMessageInfo
+var xxx_messageInfo_EventCancelEnergyTransfer proto.InternalMessageInfo
 
-func (m *CancelEnergyTransfer) GetEnergyTransferId() uint64 {
+func (m *EventCancelEnergyTransfer) GetEnergyTransferId() uint64 {
 	if m != nil {
 		return m.EnergyTransferId
 	}
 	return 0
 }
 
-func (m *CancelEnergyTransfer) GetChargerId() string {
+func (m *EventCancelEnergyTransfer) GetChargerId() string {
 	if m != nil {
 		return m.ChargerId
 	}
 	return ""
 }
 
-func (m *CancelEnergyTransfer) GetCancelReason() string {
+func (m *EventCancelEnergyTransfer) GetCancelReason() string {
 	if m != nil {
 		return m.CancelReason
 	}
 	return ""
 }
 
-type BeginEnergyTransfer struct {
+type EventBeginEnergyTransfer struct {
 	EnergyTransferId      uint64 `protobuf:"varint,1,opt,name=energy_transfer_id,json=energyTransferId,proto3" json:"energy_transfer_id,omitempty"`
 	EnergyTransferOfferId uint64 `protobuf:"varint,2,opt,name=energy_transfer_offer_id,json=energyTransferOfferId,proto3" json:"energy_transfer_offer_id,omitempty"`
 }
 
-func (m *BeginEnergyTransfer) Reset()         { *m = BeginEnergyTransfer{} }
-func (m *BeginEnergyTransfer) String() string { return proto.CompactTextString(m) }
-func (*BeginEnergyTransfer) ProtoMessage()    {}
-func (*BeginEnergyTransfer) Descriptor() ([]byte, []int) {
+func (m *EventBeginEnergyTransfer) Reset()         { *m = EventBeginEnergyTransfer{} }
+func (m *EventBeginEnergyTransfer) String() string { return proto.CompactTextString(m) }
+func (*EventBeginEnergyTransfer) ProtoMessage()    {}
+func (*EventBeginEnergyTransfer) Descriptor() ([]byte, []int) {
 	return fileDescriptor_cae1e842fd47ccec, []int{4}
 }
-func (m *BeginEnergyTransfer) XXX_Unmarshal(b []byte) error {
+func (m *EventBeginEnergyTransfer) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *BeginEnergyTransfer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventBeginEnergyTransfer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_BeginEnergyTransfer.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventBeginEnergyTransfer.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -320,50 +312,50 @@ func (m *BeginEnergyTransfer) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *BeginEnergyTransfer) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_BeginEnergyTransfer.Merge(m, src)
+func (m *EventBeginEnergyTransfer) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventBeginEnergyTransfer.Merge(m, src)
 }
-func (m *BeginEnergyTransfer) XXX_Size() int {
+func (m *EventBeginEnergyTransfer) XXX_Size() int {
 	return m.Size()
 }
-func (m *BeginEnergyTransfer) XXX_DiscardUnknown() {
-	xxx_messageInfo_BeginEnergyTransfer.DiscardUnknown(m)
+func (m *EventBeginEnergyTransfer) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventBeginEnergyTransfer.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_BeginEnergyTransfer proto.InternalMessageInfo
+var xxx_messageInfo_EventBeginEnergyTransfer proto.InternalMessageInfo
 
-func (m *BeginEnergyTransfer) GetEnergyTransferId() uint64 {
+func (m *EventBeginEnergyTransfer) GetEnergyTransferId() uint64 {
 	if m != nil {
 		return m.EnergyTransferId
 	}
 	return 0
 }
 
-func (m *BeginEnergyTransfer) GetEnergyTransferOfferId() uint64 {
+func (m *EventBeginEnergyTransfer) GetEnergyTransferOfferId() uint64 {
 	if m != nil {
 		return m.EnergyTransferOfferId
 	}
 	return 0
 }
 
-type CompleteEnergyTransfer struct {
+type EventCompleteEnergyTransfer struct {
 	EnergyTransferId      uint64 `protobuf:"varint,1,opt,name=energy_transfer_id,json=energyTransferId,proto3" json:"energy_transfer_id,omitempty"`
 	EnergyTransferOfferId uint64 `protobuf:"varint,2,opt,name=energy_transfer_offer_id,json=energyTransferOfferId,proto3" json:"energy_transfer_offer_id,omitempty"`
-	EnergyTransferred     int32  `protobuf:"varint,3,opt,name=energy_transferred,json=energyTransferred,proto3" json:"energy_transferred,omitempty"`
+	EnergyTransferred     uint64 `protobuf:"varint,3,opt,name=energy_transferred,json=energyTransferred,proto3" json:"energy_transferred,omitempty"`
 }
 
-func (m *CompleteEnergyTransfer) Reset()         { *m = CompleteEnergyTransfer{} }
-func (m *CompleteEnergyTransfer) String() string { return proto.CompactTextString(m) }
-func (*CompleteEnergyTransfer) ProtoMessage()    {}
-func (*CompleteEnergyTransfer) Descriptor() ([]byte, []int) {
+func (m *EventCompleteEnergyTransfer) Reset()         { *m = EventCompleteEnergyTransfer{} }
+func (m *EventCompleteEnergyTransfer) String() string { return proto.CompactTextString(m) }
+func (*EventCompleteEnergyTransfer) ProtoMessage()    {}
+func (*EventCompleteEnergyTransfer) Descriptor() ([]byte, []int) {
 	return fileDescriptor_cae1e842fd47ccec, []int{5}
 }
-func (m *CompleteEnergyTransfer) XXX_Unmarshal(b []byte) error {
+func (m *EventCompleteEnergyTransfer) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *CompleteEnergyTransfer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventCompleteEnergyTransfer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_CompleteEnergyTransfer.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventCompleteEnergyTransfer.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -373,33 +365,33 @@ func (m *CompleteEnergyTransfer) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *CompleteEnergyTransfer) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CompleteEnergyTransfer.Merge(m, src)
+func (m *EventCompleteEnergyTransfer) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventCompleteEnergyTransfer.Merge(m, src)
 }
-func (m *CompleteEnergyTransfer) XXX_Size() int {
+func (m *EventCompleteEnergyTransfer) XXX_Size() int {
 	return m.Size()
 }
-func (m *CompleteEnergyTransfer) XXX_DiscardUnknown() {
-	xxx_messageInfo_CompleteEnergyTransfer.DiscardUnknown(m)
+func (m *EventCompleteEnergyTransfer) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventCompleteEnergyTransfer.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CompleteEnergyTransfer proto.InternalMessageInfo
+var xxx_messageInfo_EventCompleteEnergyTransfer proto.InternalMessageInfo
 
-func (m *CompleteEnergyTransfer) GetEnergyTransferId() uint64 {
+func (m *EventCompleteEnergyTransfer) GetEnergyTransferId() uint64 {
 	if m != nil {
 		return m.EnergyTransferId
 	}
 	return 0
 }
 
-func (m *CompleteEnergyTransfer) GetEnergyTransferOfferId() uint64 {
+func (m *EventCompleteEnergyTransfer) GetEnergyTransferOfferId() uint64 {
 	if m != nil {
 		return m.EnergyTransferOfferId
 	}
 	return 0
 }
 
-func (m *CompleteEnergyTransfer) GetEnergyTransferred() int32 {
+func (m *EventCompleteEnergyTransfer) GetEnergyTransferred() uint64 {
 	if m != nil {
 		return m.EnergyTransferred
 	}
@@ -407,51 +399,53 @@ func (m *CompleteEnergyTransfer) GetEnergyTransferred() int32 {
 }
 
 func init() {
-	proto.RegisterType((*EnergyTransferCreatedEvent)(nil), "chain4energy.c4echain.cfeev.EnergyTransferCreatedEvent")
-	proto.RegisterType((*ChangeOfferStatus)(nil), "chain4energy.c4echain.cfeev.ChangeOfferStatus")
-	proto.RegisterType((*PublishOffer)(nil), "chain4energy.c4echain.cfeev.PublishOffer")
-	proto.RegisterType((*CancelEnergyTransfer)(nil), "chain4energy.c4echain.cfeev.CancelEnergyTransfer")
-	proto.RegisterType((*BeginEnergyTransfer)(nil), "chain4energy.c4echain.cfeev.BeginEnergyTransfer")
-	proto.RegisterType((*CompleteEnergyTransfer)(nil), "chain4energy.c4echain.cfeev.CompleteEnergyTransfer")
+	proto.RegisterType((*EventEnergyTransferCreated)(nil), "chain4energy.c4echain.cfeev.EventEnergyTransferCreated")
+	proto.RegisterType((*EventChangeOfferStatus)(nil), "chain4energy.c4echain.cfeev.EventChangeOfferStatus")
+	proto.RegisterType((*EventPublishOffer)(nil), "chain4energy.c4echain.cfeev.EventPublishOffer")
+	proto.RegisterType((*EventCancelEnergyTransfer)(nil), "chain4energy.c4echain.cfeev.EventCancelEnergyTransfer")
+	proto.RegisterType((*EventBeginEnergyTransfer)(nil), "chain4energy.c4echain.cfeev.EventBeginEnergyTransfer")
+	proto.RegisterType((*EventCompleteEnergyTransfer)(nil), "chain4energy.c4echain.cfeev.EventCompleteEnergyTransfer")
 }
 
 func init() { proto.RegisterFile("c4echain/cfeev/event.proto", fileDescriptor_cae1e842fd47ccec) }
 
 var fileDescriptor_cae1e842fd47ccec = []byte{
-	// 480 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x54, 0xbf, 0x8e, 0xd3, 0x4e,
-	0x10, 0xce, 0x5e, 0xfe, 0xe8, 0x97, 0xd1, 0xfd, 0x24, 0x6e, 0x39, 0x22, 0x73, 0xa7, 0xb3, 0x22,
-	0xd3, 0xa4, 0xe0, 0xe2, 0x82, 0x48, 0x88, 0x92, 0x8b, 0xae, 0x48, 0x05, 0x32, 0xa9, 0x68, 0xac,
-	0x8d, 0x3d, 0xfe, 0x23, 0x39, 0xbb, 0xd6, 0x7a, 0x7d, 0x21, 0x12, 0x0f, 0x80, 0xa8, 0x78, 0x12,
-	0x9e, 0x80, 0x16, 0x89, 0xf2, 0x4a, 0x4a, 0x94, 0xbc, 0x08, 0xca, 0xee, 0x06, 0xe1, 0x20, 0x5d,
-	0x01, 0x48, 0x74, 0xde, 0xf9, 0xe6, 0xfb, 0xf6, 0x9b, 0xd9, 0xf1, 0xc0, 0x59, 0x34, 0xc1, 0x28,
-	0x63, 0x39, 0xf7, 0xa3, 0x04, 0xf1, 0xc6, 0xc7, 0x1b, 0xe4, 0x6a, 0x5c, 0x4a, 0xa1, 0x04, 0x3d,
-	0xd7, 0xc0, 0x04, 0x39, 0xca, 0x74, 0x3d, 0xde, 0x27, 0x8e, 0x75, 0xa2, 0xf7, 0x89, 0xc0, 0xd9,
-	0xb5, 0x46, 0xe6, 0x92, 0xf1, 0x2a, 0x41, 0x39, 0x95, 0xc8, 0x14, 0xc6, 0xd7, 0x3b, 0x05, 0xfa,
-	0x18, 0xa8, 0xe1, 0x85, 0xca, 0xc2, 0x61, 0x1e, 0x3b, 0x64, 0x48, 0x46, 0x9d, 0xe0, 0x1e, 0x36,
-	0x78, 0xb3, 0x98, 0x5e, 0x00, 0x44, 0x19, 0x93, 0xa9, 0xc9, 0x3a, 0x1a, 0x92, 0x51, 0x3f, 0xe8,
-	0xdb, 0xc8, 0x2c, 0xa6, 0xcf, 0xe0, 0xa1, 0x15, 0x63, 0x4b, 0x51, 0x73, 0x15, 0x2a, 0xf1, 0x43,
-	0xd6, 0x69, 0x0f, 0xc9, 0xa8, 0x1b, 0x0c, 0x4c, 0xc2, 0x73, 0x8d, 0xcf, 0xc5, 0x5e, 0x9b, 0x0e,
-	0xa0, 0xc7, 0x22, 0x95, 0x0b, 0xee, 0x74, 0xb4, 0xaa, 0x3d, 0x79, 0xef, 0x09, 0x9c, 0x4c, 0x33,
-	0xc6, 0x53, 0x7c, 0x91, 0x24, 0x28, 0x5f, 0x29, 0xa6, 0xea, 0x8a, 0x3e, 0x05, 0xe7, 0xd0, 0xb5,
-	0x48, 0x1a, 0xde, 0x1f, 0x34, 0xbd, 0x6b, 0xb2, 0x29, 0x40, 0x14, 0x71, 0x58, 0x69, 0x99, 0x7d,
-	0x01, 0xa2, 0x88, 0xad, 0xee, 0x05, 0x00, 0xc7, 0xd5, 0x1e, 0x6e, 0x1b, 0x98, 0xe3, 0xca, 0xc0,
-	0xde, 0x67, 0x02, 0xc7, 0x2f, 0xeb, 0x45, 0x91, 0x57, 0x99, 0x16, 0xfc, 0x7d, 0x1f, 0xa7, 0xd0,
-	0x15, 0x2b, 0x8e, 0xd2, 0x5a, 0x30, 0x87, 0x83, 0xf6, 0xb6, 0x0f, 0xdb, 0x3b, 0x80, 0x9e, 0x62,
-	0x32, 0x4f, 0x12, 0xdd, 0xa3, 0x6e, 0x60, 0x4f, 0x94, 0x42, 0x87, 0xb3, 0x25, 0x3a, 0x5d, 0x4d,
-	0xd0, 0xdf, 0xf4, 0x1c, 0xfa, 0x65, 0x51, 0xa7, 0xa1, 0x5a, 0x97, 0xe8, 0xf4, 0x34, 0xf0, 0xdf,
-	0x2e, 0x30, 0x5f, 0x97, 0xe8, 0xbd, 0x23, 0x70, 0x3a, 0x65, 0x3c, 0xc2, 0xa2, 0x39, 0x19, 0x7f,
-	0x77, 0x1a, 0x1e, 0xc1, 0xff, 0x91, 0xbe, 0x24, 0x94, 0xc8, 0x2a, 0xc1, 0x6d, 0x41, 0xc7, 0x26,
-	0x18, 0xe8, 0x98, 0xf7, 0x16, 0xee, 0x5f, 0x61, 0x9a, 0xf3, 0x3f, 0x32, 0x72, 0xd7, 0x33, 0x1c,
-	0xdd, 0xf1, 0x0c, 0xde, 0x47, 0x02, 0x83, 0xa9, 0x58, 0x96, 0x05, 0x2a, 0xfc, 0x27, 0x0e, 0xe8,
-	0xe5, 0x2f, 0xd7, 0x48, 0x8c, 0xed, 0xbf, 0x72, 0xd2, 0xa4, 0x48, 0x8c, 0xaf, 0x66, 0x5f, 0x36,
-	0x2e, 0xb9, 0xdd, 0xb8, 0xe4, 0xdb, 0xc6, 0x25, 0x1f, 0xb6, 0x6e, 0xeb, 0x76, 0xeb, 0xb6, 0xbe,
-	0x6e, 0xdd, 0xd6, 0x6b, 0x3f, 0xcd, 0x55, 0x56, 0x2f, 0xc6, 0x91, 0x58, 0xfa, 0x3f, 0xef, 0x03,
-	0x3f, 0x9a, 0xe0, 0xa5, 0xd9, 0x1c, 0x6f, 0xec, 0xee, 0xd8, 0xcd, 0x44, 0xb5, 0xe8, 0xe9, 0xe5,
-	0xf1, 0xe4, 0x7b, 0x00, 0x00, 0x00, 0xff, 0xff, 0x7f, 0x8d, 0x54, 0xbb, 0x5a, 0x04, 0x00, 0x00,
+	// 510 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x54, 0x4d, 0x8b, 0xd3, 0x40,
+	0x18, 0xee, 0x6c, 0xbb, 0xc5, 0xbe, 0xa8, 0xb8, 0x83, 0x96, 0x6c, 0x17, 0xc3, 0x12, 0x11, 0x96,
+	0xc5, 0x4d, 0x41, 0x0b, 0xe2, 0xd1, 0x96, 0x3d, 0xe4, 0xe4, 0x52, 0x7b, 0xf2, 0x12, 0xa6, 0xc9,
+	0x9b, 0x34, 0x90, 0xce, 0x84, 0xc9, 0x64, 0x6b, 0x8f, 0xfe, 0x00, 0xc1, 0x1f, 0xe1, 0x3f, 0xf0,
+	0x4f, 0x78, 0xdc, 0xa3, 0x47, 0x69, 0x0f, 0x9e, 0xfd, 0x07, 0xd2, 0x99, 0xa9, 0xda, 0x2a, 0x05,
+	0x3f, 0x60, 0x6f, 0x93, 0x99, 0xe7, 0x7d, 0xe6, 0x79, 0xe6, 0x79, 0xf3, 0x42, 0x27, 0xea, 0x61,
+	0x34, 0x61, 0x19, 0xef, 0x46, 0x09, 0xe2, 0x65, 0x17, 0x2f, 0x91, 0x2b, 0xbf, 0x90, 0x42, 0x09,
+	0x7a, 0xa4, 0x0f, 0x7a, 0xc8, 0x51, 0xa6, 0x73, 0x7f, 0x0d, 0xf4, 0x35, 0xb0, 0x73, 0xba, 0x5d,
+	0xa8, 0x51, 0xa1, 0x92, 0x8c, 0x97, 0x09, 0xca, 0x50, 0x24, 0x09, 0x4a, 0x43, 0xe4, 0xbd, 0x27,
+	0xd0, 0x39, 0x5f, 0x11, 0x9f, 0x6b, 0xd0, 0xc8, 0x62, 0x06, 0x12, 0x99, 0xc2, 0x98, 0x3e, 0x02,
+	0xba, 0x5d, 0x9d, 0xc5, 0x0e, 0x39, 0x26, 0x27, 0x8d, 0xe1, 0x1d, 0xdc, 0x28, 0x09, 0x62, 0x7a,
+	0x1f, 0x20, 0x9a, 0x30, 0x99, 0x1a, 0xd4, 0xde, 0x31, 0x39, 0x69, 0x0d, 0x5b, 0x76, 0x27, 0x88,
+	0xe9, 0x33, 0x38, 0xb4, 0x64, 0x6c, 0x2a, 0x2a, 0xae, 0x42, 0x25, 0xbe, 0xd3, 0x3a, 0x75, 0xcd,
+	0xd9, 0x36, 0x80, 0xe7, 0xfa, 0x7c, 0x24, 0xd6, 0xdc, 0xde, 0x17, 0x02, 0x6d, 0x2d, 0x73, 0x30,
+	0x61, 0x3c, 0xc5, 0x17, 0x2b, 0x07, 0x2f, 0x15, 0x53, 0x55, 0x49, 0x9f, 0x82, 0xf3, 0x5b, 0x83,
+	0x3f, 0x84, 0xde, 0xdb, 0x14, 0xaa, 0x8b, 0x83, 0x98, 0x06, 0x00, 0x22, 0x8f, 0xc3, 0x52, 0xd3,
+	0x68, 0xb5, 0xb7, 0x1f, 0x9f, 0xfa, 0x3b, 0x1e, 0xd6, 0x1f, 0x18, 0x2b, 0xe6, 0xe2, 0x61, 0x4b,
+	0xe4, 0xb1, 0xd5, 0x10, 0x00, 0x70, 0x9c, 0xad, 0xa9, 0xea, 0x7f, 0x4e, 0xc5, 0x71, 0x66, 0x96,
+	0xde, 0x57, 0x02, 0x07, 0xda, 0xe9, 0x45, 0x35, 0xce, 0xb3, 0x72, 0xa2, 0xd5, 0xfe, 0xbd, 0xc9,
+	0xbb, 0xb0, 0x2f, 0x66, 0x1c, 0xa5, 0x4d, 0xc3, 0x7c, 0x6c, 0x05, 0x55, 0xdf, 0x0e, 0xaa, 0x0d,
+	0x4d, 0xc5, 0x64, 0x96, 0x24, 0x4e, 0x43, 0x73, 0xdb, 0x2f, 0x4a, 0xa1, 0xc1, 0xd9, 0x14, 0x9d,
+	0x7d, 0x5d, 0xa0, 0xd7, 0xb4, 0x0f, 0xad, 0x22, 0xaf, 0xd2, 0x50, 0xcd, 0x0b, 0x74, 0x9a, 0xda,
+	0xf9, 0xc3, 0x9d, 0xce, 0x2f, 0xf2, 0x2a, 0x1d, 0xcd, 0x0b, 0x1c, 0xde, 0x28, 0xec, 0xca, 0x7b,
+	0x4b, 0xe0, 0xd0, 0xa4, 0xcb, 0x78, 0x84, 0xf9, 0x66, 0x2b, 0xfe, 0xdf, 0x1e, 0x7c, 0x00, 0xb7,
+	0x22, 0x7d, 0x49, 0x28, 0x91, 0x95, 0x82, 0x5b, 0xf3, 0x37, 0xcd, 0xe6, 0x50, 0xef, 0x79, 0x6f,
+	0x08, 0x38, 0x5a, 0x4f, 0x1f, 0xd3, 0x8c, 0xff, 0x93, 0x9c, 0x5d, 0xc1, 0xed, 0xed, 0x08, 0xce,
+	0xfb, 0x40, 0xe0, 0xc8, 0xbc, 0x89, 0x98, 0x16, 0x39, 0x2a, 0xbc, 0x16, 0x19, 0xf4, 0xec, 0x97,
+	0x6b, 0x24, 0xc6, 0xf6, 0x67, 0x3d, 0xd8, 0x2c, 0x91, 0x18, 0xf7, 0x83, 0x8f, 0x0b, 0x97, 0x5c,
+	0x2d, 0x5c, 0xf2, 0x79, 0xe1, 0x92, 0x77, 0x4b, 0xb7, 0x76, 0xb5, 0x74, 0x6b, 0x9f, 0x96, 0x6e,
+	0xed, 0x55, 0x37, 0xcd, 0xd4, 0xa4, 0x1a, 0xfb, 0x91, 0x98, 0x76, 0x7f, 0x6e, 0x8f, 0x6e, 0xd4,
+	0xc3, 0x33, 0x33, 0xad, 0x5e, 0xdb, 0x79, 0xb5, 0x6a, 0xa5, 0x72, 0xdc, 0xd4, 0x03, 0xea, 0xc9,
+	0xb7, 0x00, 0x00, 0x00, 0xff, 0xff, 0xd9, 0xbe, 0xa0, 0x1c, 0x07, 0x05, 0x00, 0x00,
 }
 
-func (m *EnergyTransferCreatedEvent) Marshal() (dAtA []byte, err error) {
+func (m *EventEnergyTransferCreated) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -461,23 +455,16 @@ func (m *EnergyTransferCreatedEvent) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EnergyTransferCreatedEvent) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventEnergyTransferCreated) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EnergyTransferCreatedEvent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventEnergyTransferCreated) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Action) > 0 {
-		i -= len(m.Action)
-		copy(dAtA[i:], m.Action)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.Action)))
-		i--
-		dAtA[i] = 0x22
-	}
 	if m.EnergyAmountToTransfer != 0 {
 		i = encodeVarintEvent(dAtA, i, uint64(m.EnergyAmountToTransfer))
 		i--
@@ -498,7 +485,7 @@ func (m *EnergyTransferCreatedEvent) MarshalToSizedBuffer(dAtA []byte) (int, err
 	return len(dAtA) - i, nil
 }
 
-func (m *ChangeOfferStatus) Marshal() (dAtA []byte, err error) {
+func (m *EventChangeOfferStatus) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -508,29 +495,25 @@ func (m *ChangeOfferStatus) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ChangeOfferStatus) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventChangeOfferStatus) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ChangeOfferStatus) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventChangeOfferStatus) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.NewStatus) > 0 {
-		i -= len(m.NewStatus)
-		copy(dAtA[i:], m.NewStatus)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.NewStatus)))
+	if m.NewStatus != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.NewStatus))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x18
 	}
-	if len(m.OldStatus) > 0 {
-		i -= len(m.OldStatus)
-		copy(dAtA[i:], m.OldStatus)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.OldStatus)))
+	if m.OldStatus != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.OldStatus))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
 	if m.EnergyTransferOfferId != 0 {
 		i = encodeVarintEvent(dAtA, i, uint64(m.EnergyTransferOfferId))
@@ -540,7 +523,7 @@ func (m *ChangeOfferStatus) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *PublishOffer) Marshal() (dAtA []byte, err error) {
+func (m *EventPublishOffer) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -550,22 +533,20 @@ func (m *PublishOffer) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *PublishOffer) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventPublishOffer) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *PublishOffer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventPublishOffer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.PlugType) > 0 {
-		i -= len(m.PlugType)
-		copy(dAtA[i:], m.PlugType)
-		i = encodeVarintEvent(dAtA, i, uint64(len(m.PlugType)))
+	if m.PlugType != 0 {
+		i = encodeVarintEvent(dAtA, i, uint64(m.PlugType))
 		i--
-		dAtA[i] = 0x32
+		dAtA[i] = 0x30
 	}
 	if len(m.Name) > 0 {
 		i -= len(m.Name)
@@ -601,7 +582,7 @@ func (m *PublishOffer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *CancelEnergyTransfer) Marshal() (dAtA []byte, err error) {
+func (m *EventCancelEnergyTransfer) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -611,12 +592,12 @@ func (m *CancelEnergyTransfer) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CancelEnergyTransfer) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventCancelEnergyTransfer) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CancelEnergyTransfer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventCancelEnergyTransfer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -643,7 +624,7 @@ func (m *CancelEnergyTransfer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *BeginEnergyTransfer) Marshal() (dAtA []byte, err error) {
+func (m *EventBeginEnergyTransfer) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -653,12 +634,12 @@ func (m *BeginEnergyTransfer) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *BeginEnergyTransfer) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventBeginEnergyTransfer) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *BeginEnergyTransfer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventBeginEnergyTransfer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -676,7 +657,7 @@ func (m *BeginEnergyTransfer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *CompleteEnergyTransfer) Marshal() (dAtA []byte, err error) {
+func (m *EventCompleteEnergyTransfer) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -686,12 +667,12 @@ func (m *CompleteEnergyTransfer) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CompleteEnergyTransfer) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventCompleteEnergyTransfer) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompleteEnergyTransfer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventCompleteEnergyTransfer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -725,7 +706,7 @@ func encodeVarintEvent(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *EnergyTransferCreatedEvent) Size() (n int) {
+func (m *EventEnergyTransferCreated) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -741,14 +722,10 @@ func (m *EnergyTransferCreatedEvent) Size() (n int) {
 	if m.EnergyAmountToTransfer != 0 {
 		n += 1 + sovEvent(uint64(m.EnergyAmountToTransfer))
 	}
-	l = len(m.Action)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
-	}
 	return n
 }
 
-func (m *ChangeOfferStatus) Size() (n int) {
+func (m *EventChangeOfferStatus) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -757,18 +734,16 @@ func (m *ChangeOfferStatus) Size() (n int) {
 	if m.EnergyTransferOfferId != 0 {
 		n += 1 + sovEvent(uint64(m.EnergyTransferOfferId))
 	}
-	l = len(m.OldStatus)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.OldStatus != 0 {
+		n += 1 + sovEvent(uint64(m.OldStatus))
 	}
-	l = len(m.NewStatus)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.NewStatus != 0 {
+		n += 1 + sovEvent(uint64(m.NewStatus))
 	}
 	return n
 }
 
-func (m *PublishOffer) Size() (n int) {
+func (m *EventPublishOffer) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -792,14 +767,13 @@ func (m *PublishOffer) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvent(uint64(l))
 	}
-	l = len(m.PlugType)
-	if l > 0 {
-		n += 1 + l + sovEvent(uint64(l))
+	if m.PlugType != 0 {
+		n += 1 + sovEvent(uint64(m.PlugType))
 	}
 	return n
 }
 
-func (m *CancelEnergyTransfer) Size() (n int) {
+func (m *EventCancelEnergyTransfer) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -819,7 +793,7 @@ func (m *CancelEnergyTransfer) Size() (n int) {
 	return n
 }
 
-func (m *BeginEnergyTransfer) Size() (n int) {
+func (m *EventBeginEnergyTransfer) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -834,7 +808,7 @@ func (m *BeginEnergyTransfer) Size() (n int) {
 	return n
 }
 
-func (m *CompleteEnergyTransfer) Size() (n int) {
+func (m *EventCompleteEnergyTransfer) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -858,7 +832,7 @@ func sovEvent(x uint64) (n int) {
 func sozEvent(x uint64) (n int) {
 	return sovEvent(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *EnergyTransferCreatedEvent) Unmarshal(dAtA []byte) error {
+func (m *EventEnergyTransferCreated) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -881,10 +855,10 @@ func (m *EnergyTransferCreatedEvent) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EnergyTransferCreatedEvent: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventEnergyTransferCreated: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EnergyTransferCreatedEvent: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventEnergyTransferCreated: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -952,43 +926,11 @@ func (m *EnergyTransferCreatedEvent) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.EnergyAmountToTransfer |= int32(b&0x7F) << shift
+				m.EnergyAmountToTransfer |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Action", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvent
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Action = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvent(dAtA[iNdEx:])
@@ -1010,7 +952,7 @@ func (m *EnergyTransferCreatedEvent) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ChangeOfferStatus) Unmarshal(dAtA []byte) error {
+func (m *EventChangeOfferStatus) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1033,10 +975,10 @@ func (m *ChangeOfferStatus) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ChangeOfferStatus: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventChangeOfferStatus: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ChangeOfferStatus: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventChangeOfferStatus: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1059,10 +1001,10 @@ func (m *ChangeOfferStatus) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OldStatus", wireType)
 			}
-			var stringLen uint64
+			m.OldStatus = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -1072,29 +1014,16 @@ func (m *ChangeOfferStatus) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.OldStatus |= ChargerStatus(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.OldStatus = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 3:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NewStatus", wireType)
 			}
-			var stringLen uint64
+			m.NewStatus = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -1104,24 +1033,11 @@ func (m *ChangeOfferStatus) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.NewStatus |= ChargerStatus(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.NewStatus = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvent(dAtA[iNdEx:])
@@ -1143,7 +1059,7 @@ func (m *ChangeOfferStatus) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *PublishOffer) Unmarshal(dAtA []byte) error {
+func (m *EventPublishOffer) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1166,10 +1082,10 @@ func (m *PublishOffer) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: PublishOffer: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventPublishOffer: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PublishOffer: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventPublishOffer: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1269,7 +1185,7 @@ func (m *PublishOffer) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Tariff |= int32(b&0x7F) << shift
+				m.Tariff |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1307,10 +1223,10 @@ func (m *PublishOffer) Unmarshal(dAtA []byte) error {
 			m.Name = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 6:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlugType", wireType)
 			}
-			var stringLen uint64
+			m.PlugType = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvent
@@ -1320,24 +1236,11 @@ func (m *PublishOffer) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.PlugType |= PlugType(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvent
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.PlugType = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvent(dAtA[iNdEx:])
@@ -1359,7 +1262,7 @@ func (m *PublishOffer) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CancelEnergyTransfer) Unmarshal(dAtA []byte) error {
+func (m *EventCancelEnergyTransfer) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1382,10 +1285,10 @@ func (m *CancelEnergyTransfer) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: CancelEnergyTransfer: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventCancelEnergyTransfer: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CancelEnergyTransfer: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventCancelEnergyTransfer: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1492,7 +1395,7 @@ func (m *CancelEnergyTransfer) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *BeginEnergyTransfer) Unmarshal(dAtA []byte) error {
+func (m *EventBeginEnergyTransfer) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1515,10 +1418,10 @@ func (m *BeginEnergyTransfer) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: BeginEnergyTransfer: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventBeginEnergyTransfer: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: BeginEnergyTransfer: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventBeginEnergyTransfer: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1580,7 +1483,7 @@ func (m *BeginEnergyTransfer) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CompleteEnergyTransfer) Unmarshal(dAtA []byte) error {
+func (m *EventCompleteEnergyTransfer) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1603,10 +1506,10 @@ func (m *CompleteEnergyTransfer) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: CompleteEnergyTransfer: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventCompleteEnergyTransfer: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CompleteEnergyTransfer: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventCompleteEnergyTransfer: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1661,7 +1564,7 @@ func (m *CompleteEnergyTransfer) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.EnergyTransferred |= int32(b&0x7F) << shift
+				m.EnergyTransferred |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

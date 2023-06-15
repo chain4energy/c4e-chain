@@ -3,6 +3,7 @@ package keeper
 import (
 	"cosmossdk.io/errors"
 	"encoding/binary"
+	"github.com/chain4energy/c4e-chain/types/util"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -136,7 +137,7 @@ func (k Keeper) AppendNewMission(
 
 func (k Keeper) GetMissionCount(ctx sdk.Context, campaignId uint64) uint64 {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionCountKeyPrefix)
-	bz := store.Get(types.GetUint64Key(campaignId))
+	bz := store.Get(util.GetUint64Key(campaignId))
 
 	// Count doesn't exist: no element
 	if bz == nil {
@@ -150,12 +151,12 @@ func (k Keeper) SetMissionCount(ctx sdk.Context, campaignId uint64, count uint64
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionCountKeyPrefix)
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
-	store.Set(types.GetUint64Key(campaignId), bz)
+	store.Set(util.GetUint64Key(campaignId), bz)
 }
 
 func (k Keeper) RemoveMissionCount(ctx sdk.Context, campaignId uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.MissionCountKeyPrefix)
-	store.Delete(types.GetUint64Key(campaignId))
+	store.Delete(util.GetUint64Key(campaignId))
 }
 
 // GetAllMissionCount returns all mission count

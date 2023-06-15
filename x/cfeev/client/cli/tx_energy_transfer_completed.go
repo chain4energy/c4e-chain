@@ -31,11 +31,8 @@ Arguments:
   [info] additional info - optional
 
 Example:
-$ %s tx %s energy-transfer-completed 0 EVGC011221122GK0122 22 completed
-`,
-				version.AppName, types.ModuleName,
-			),
-		),
+$ %s tx %s energy-transfer-completed 0 EVGC011221122GK0122 22 completed --from mykey
+`, version.AppName, types.ModuleName)),
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argEnergyTransferId, err := cast.ToUint64E(args[0])
@@ -43,7 +40,7 @@ $ %s tx %s energy-transfer-completed 0 EVGC011221122GK0122 22 completed
 				return err
 			}
 			argChargerId := args[1]
-			argUsedServiceUnits, err := cast.ToInt32E(args[2])
+			argUsedServiceUnits, err := cast.ToUint64E(args[2])
 			if err != nil {
 				return err
 			}
