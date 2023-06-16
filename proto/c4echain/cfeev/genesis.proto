@@ -12,9 +12,13 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfeev/types";
 // GenesisState defines the cfeev module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
-  repeated EnergyTransferOffer energy_transfer_offer_list = 2 [(gogoproto.nullable) = false];
+  repeated EnergyTransferOffer energy_transfer_offers = 2 [
+    (gogoproto.nullable) = false
+  ];
   uint64 energy_transfer_offer_count = 3;
-  repeated EnergyTransfer energy_transfer_list = 4 [(gogoproto.nullable) = false];
+  repeated EnergyTransfer energy_transfers = 4 [
+    (gogoproto.nullable) = false
+  ];
   uint64 energy_transfer_count = 5;
   // this line is used by starport scaffolding # genesis/proto/state
 }

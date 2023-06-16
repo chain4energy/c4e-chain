@@ -1,8 +1,10 @@
 package cli_test
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
@@ -25,15 +27,25 @@ func networkWithEnergyTransferObjects(t *testing.T, n int) (*network.Network, []
 
 	for i := 0; i < n; i++ {
 		energyTransfer := types.EnergyTransfer{
-			Id: uint64(i),
+			Id:                    uint64(i),
+			EnergyTransferOfferId: 0,
+			ChargerId:             "",
+			OwnerAccountAddress:   "",
+			DriverAccountAddress:  "",
+			OfferedTariff:         0,
+			Status:                0,
+			Collateral:            math.NewInt(1000),
+			EnergyToTransfer:      0,
+			EnergyTransferred:     0,
+			PaidDate:              time.Time{},
 		}
 		nullify.Fill(&energyTransfer)
-		state.EnergyTransferList = append(state.EnergyTransferList, energyTransfer)
+		state.EnergyTransfers = append(state.EnergyTransfers, energyTransfer)
 	}
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.EnergyTransferList
+	return network.New(t, cfg), state.EnergyTransfers
 }
 
 func TestShowEnergyTransfer(t *testing.T) {

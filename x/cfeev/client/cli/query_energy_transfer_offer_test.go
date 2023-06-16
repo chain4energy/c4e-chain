@@ -28,12 +28,12 @@ func networkWithEnergyTransferOfferObjects(t *testing.T, n int) (*network.Networ
 			Id: uint64(i),
 		}
 		nullify.Fill(&energyTransferOffer)
-		state.EnergyTransferOfferList = append(state.EnergyTransferOfferList, energyTransferOffer)
+		state.EnergyTransferOffers = append(state.EnergyTransferOffers, energyTransferOffer)
 	}
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.EnergyTransferOfferList
+	return network.New(t, cfg), state.EnergyTransferOffers
 }
 
 func TestShowEnergyTransferOffer(t *testing.T) {

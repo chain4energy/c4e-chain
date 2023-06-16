@@ -17,23 +17,23 @@ func (k Keeper) OwnEnergyTransfers(goCtx context.Context, req *types.QueryOwnEne
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var energyTransfers []types.EnergyTransfer
+	var EnergyTransfers []types.EnergyTransfer
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	store := ctx.KVStore(k.storeKey)
-	energyTransferStore := prefix.NewStore(store, types.EnergyTransferKey)
+	EnergyTransferstore := prefix.NewStore(store, types.EnergyTransferKey)
 	_, err := sdk.AccAddressFromBech32(req.Driver)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "wrong driver address (%s)", err.Error())
 	}
-	pageRes, err := query.Paginate(energyTransferStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(EnergyTransferstore, req.Pagination, func(key []byte, value []byte) error {
 		var energyTransfer types.EnergyTransfer
 		if err := k.cdc.Unmarshal(value, &energyTransfer); err != nil {
 			return err
 		}
 
 		if energyTransfer.GetDriverAccountAddress() == req.GetDriver() && energyTransfer.Status == types.TransferStatus(req.GetTransferStatus()) {
-			energyTransfers = append(energyTransfers, energyTransfer)
+			EnergyTransfers = append(EnergyTransfers, energyTransfer)
 		}
 
 		return nil
@@ -43,5 +43,5 @@ func (k Keeper) OwnEnergyTransfers(goCtx context.Context, req *types.QueryOwnEne
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryOwnEnergyTransfersResponse{EnergyTransfer: energyTransfers, Pagination: pageRes}, nil
+	return &types.QueryOwnEnergyTransfersResponse{EnergyTransfer: EnergyTransfers, Pagination: pageRes}, nil
 }

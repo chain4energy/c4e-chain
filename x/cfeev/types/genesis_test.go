@@ -1,6 +1,7 @@
 package types_test
 
 import (
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
@@ -21,8 +22,10 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "valid genesis state",
 			genState: &types.GenesisState{
-
-				EnergyTransferOfferList: []types.EnergyTransferOffer{
+				Params: types.Params{
+					Denom: testenv.DefaultTestDenom,
+				},
+				EnergyTransferOffers: []types.EnergyTransferOffer{
 					{
 						Id: 0,
 					},
@@ -31,7 +34,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				EnergyTransferOfferCount: 2,
-				EnergyTransferList: []types.EnergyTransfer{
+				EnergyTransfers: []types.EnergyTransfer{
 					{
 						Id: 0,
 					},
@@ -47,7 +50,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "duplicated energyTransferOffer",
 			genState: &types.GenesisState{
-				EnergyTransferOfferList: []types.EnergyTransferOffer{
+				EnergyTransferOffers: []types.EnergyTransferOffer{
 					{
 						Id: 0,
 					},
@@ -61,7 +64,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "invalid energyTransferOffer count",
 			genState: &types.GenesisState{
-				EnergyTransferOfferList: []types.EnergyTransferOffer{
+				EnergyTransferOffers: []types.EnergyTransferOffer{
 					{
 						Id: 1,
 					},
@@ -73,7 +76,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "duplicated energyTransfer",
 			genState: &types.GenesisState{
-				EnergyTransferList: []types.EnergyTransfer{
+				EnergyTransfers: []types.EnergyTransfer{
 					{
 						Id: 0,
 					},
@@ -87,7 +90,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "invalid energyTransfer count",
 			genState: &types.GenesisState{
-				EnergyTransferList: []types.EnergyTransfer{
+				EnergyTransfers: []types.EnergyTransfer{
 					{
 						Id: 1,
 					},

@@ -7,8 +7,8 @@ import (
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		EnergyTransferOfferList: []EnergyTransferOffer{},
-		EnergyTransferList:      []EnergyTransfer{},
+		EnergyTransferOffers: []EnergyTransferOffer{},
+		EnergyTransfers:      []EnergyTransfer{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -20,7 +20,7 @@ func (gs GenesisState) Validate() error {
 	// Check for duplicated ID in energyTransferOffer
 	energyTransferOfferIdMap := make(map[uint64]bool)
 	energyTransferOfferCount := gs.GetEnergyTransferOfferCount()
-	for _, elem := range gs.EnergyTransferOfferList {
+	for _, elem := range gs.EnergyTransferOffers {
 		if _, ok := energyTransferOfferIdMap[elem.Id]; ok {
 			return fmt.Errorf("duplicated id for energyTransferOffer")
 		}
@@ -32,7 +32,7 @@ func (gs GenesisState) Validate() error {
 	// Check for duplicated ID in energyTransfer
 	energyTransferIdMap := make(map[uint64]bool)
 	energyTransferCount := gs.GetEnergyTransferCount()
-	for _, elem := range gs.EnergyTransferList {
+	for _, elem := range gs.EnergyTransfers {
 		if _, ok := energyTransferIdMap[elem.Id]; ok {
 			return fmt.Errorf("duplicated id for energyTransfer")
 		}

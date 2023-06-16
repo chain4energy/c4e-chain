@@ -1,6 +1,8 @@
-package types
+package types_test
 
 import (
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
+	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
@@ -8,23 +10,81 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const validChargerName = "valid_charger_name"
+
+var validLocation = types.Location{
+	Latitude:  "0.123",
+	Longitude: "0.123",
+}
+
 func TestMsgPublishEnergyTransferOffer_ValidateBasic(t *testing.T) {
 	tests := []struct {
-		name string
-		msg  MsgPublishEnergyTransferOffer
-		err  error
+		name   string
+		msg    types.MsgPublishEnergyTransferOffer
+		err    error
+		errMsg string
 	}{
 		{
 			name: "invalid address",
-			msg: MsgPublishEnergyTransferOffer{
-				Creator: "invalid_address",
+			msg: types.MsgPublishEnergyTransferOffer{
+				Creator:   "invalid_address",
+				ChargerId: validChargerId,
+				Tariff:    0,
+				Location:  nil,
+				Name:      "",
+				PlugType:  0,
 			},
-			err: sdkerrors.ErrInvalidAddress,
+			err:    sdkerrors.ErrInvalidAddress,
+			errMsg: "invalid creator address (decoding bech32 failed: invalid separator index -1): invalid address",
 		}, {
-			name: "valid address",
-			msg: MsgPublishEnergyTransferOffer{
-				Creator: sample.AccAddress(),
+			name: "valid message",
+			msg: types.MsgPublishEnergyTransferOffer{
+				Creator:   sample.AccAddress(),
+				ChargerId: validChargerId,
+				Tariff:    0,
+				Location:  &validLocation,
+				Name:      validChargerName,
+				PlugType:  0,
 			},
+		},
+		{
+			name: "empty charger id",
+			msg: types.MsgPublishEnergyTransferOffer{
+				Creator:   sample.AccAddress(),
+				ChargerId: "",
+				Tariff:    0,
+				Location:  &validLocation,
+				Name:      validChargerName,
+				PlugType:  0,
+			},
+			err:    c4eerrors.ErrParam,
+			errMsg: "charger id cannot be empty: wrong param value",
+		},
+		{
+			name: "empty name",
+			msg: types.MsgPublishEnergyTransferOffer{
+				Creator:   sample.AccAddress(),
+				ChargerId: validChargerName,
+				Tariff:    0,
+				Location:  &validLocation,
+				Name:      "",
+				PlugType:  0,
+			},
+			err:    c4eerrors.ErrParam,
+			errMsg: "charger name cannot be empty: wrong param value",
+		},
+		{
+			name: "location nil",
+			msg: types.MsgPublishEnergyTransferOffer{
+				Creator:   sample.AccAddress(),
+				ChargerId: validChargerName,
+				Tariff:    0,
+				Location:  nil,
+				Name:      validChargerName,
+				PlugType:  0,
+			},
+			err:    c4eerrors.ErrParam,
+			errMsg: "charger location cannot be nil: wrong param value",
 		},
 	}
 	for _, tt := range tests {
@@ -32,6 +92,7 @@ func TestMsgPublishEnergyTransferOffer_ValidateBasic(t *testing.T) {
 			err := tt.msg.ValidateBasic()
 			if tt.err != nil {
 				require.ErrorIs(t, err, tt.err)
+				require.EqualError(t, err, tt.errMsg)
 				return
 			}
 			require.NoError(t, err)

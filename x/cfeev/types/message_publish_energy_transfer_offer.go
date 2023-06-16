@@ -2,6 +2,7 @@ package types
 
 import (
 	"cosmossdk.io/errors"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -48,13 +49,13 @@ func (msg *MsgPublishEnergyTransferOffer) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
 	if msg.GetChargerId() == "" {
-		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Charger ID is empty")
+		return errors.Wrapf(c4eerrors.ErrParam, "charger id cannot be empty")
 	}
 	if msg.GetName() == "" {
-		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Charger name is empty")
+		return errors.Wrapf(c4eerrors.ErrParam, "charger name cannot be empty")
 	}
 	if msg.GetLocation() == nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Charger location is not specified")
+		return errors.Wrapf(c4eerrors.ErrParam, "charger location cannot be nil")
 	}
 	return nil
 }

@@ -51,23 +51,24 @@ func (msg *MsgStartEnergyTransfer) ValidateBasic() error {
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
-	if msg.GetChargerId() == "" {
-		return errors.Wrapf(c4eerrors.ErrParam, "Charger ID is empty")
+	_, err = sdk.AccAddressFromBech32(msg.OwnerAccountAddress)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
-	if msg.GetOwnerAccountAddress() == "" {
-		return errors.Wrapf(c4eerrors.ErrParam, "CP owner account address cannot be empty")
+	if msg.GetChargerId() == "" {
+		return errors.Wrapf(c4eerrors.ErrParam, "charger id cannot be empty")
 	}
 	if msg.GetOfferedTariff() == 0 {
-		return errors.Wrapf(c4eerrors.ErrParam, "Offered tariff cannot be empty")
+		return errors.Wrapf(c4eerrors.ErrParam, "offered tariff cannot be empty")
 	}
 	if msg.GetEnergyToTransfer() == 0 {
-		return errors.Wrapf(c4eerrors.ErrParam, "Cannot transfer zero [kWh] energy")
+		return errors.Wrapf(c4eerrors.ErrParam, "cannot transfer zero [kWh] energy")
 	}
 	if msg.Collateral == nil {
 		return errors.Wrapf(c4eerrors.ErrParam, "collateral cannot be nil")
 	}
 	if !msg.Collateral.IsPositive() {
-		return errors.Wrapf(c4eerrors.ErrParam, "collateral cannot be negative")
+		return errors.Wrapf(c4eerrors.ErrParam, "collateral must be positive")
 	}
 	return nil
 }

@@ -88,8 +88,8 @@ func (k Keeper) RemoveEnergyTransferOffer(ctx sdk.Context, id uint64) {
 	store.Delete(util.GetUint64Key(id))
 }
 
-// GetAllEnergyTransferOffer returns all energyTransferOffer
-func (k Keeper) GetAllEnergyTransferOffer(ctx sdk.Context) (list []types.EnergyTransferOffer) {
+// GetAllEnergyTransferOffers returns all energyTransferOffer
+func (k Keeper) GetAllEnergyTransferOffers(ctx sdk.Context) (list []types.EnergyTransferOffer) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.EnergyTransferOfferKey)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 

@@ -22,7 +22,7 @@ func TestEnergyTransferCancel(t *testing.T) {
 	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransfer(transfer, newOfferId)
 
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_BUSY)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_REQUESTED)
+	testHelper.C4eEvUtils.VerifyEnergyTransferstatus(energyTransferId, types.TransferStatus_REQUESTED)
 
 	// Energy transfer can be canceled when it has REQUESTED status so before the actual transfer begins
 	// A similar approach to the SIP
@@ -40,7 +40,7 @@ func TestEnergyTransferCancel(t *testing.T) {
 		panic(err)
 	}
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_ACTIVE)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_CANCELLED)
+	testHelper.C4eEvUtils.VerifyEnergyTransferstatus(energyTransferId, types.TransferStatus_CANCELLED)
 }
 
 func TestEnergyTransferStartedFull(t *testing.T) {
@@ -56,19 +56,19 @@ func TestEnergyTransferStartedFull(t *testing.T) {
 	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransfer(transfer, newOfferId)
 
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_BUSY)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_REQUESTED)
+	testHelper.C4eEvUtils.VerifyEnergyTransferstatus(energyTransferId, types.TransferStatus_REQUESTED)
 
 	// confirm that energy transfer has been started
 	testHelper.C4eEvUtils.EnergyTransferStarted(energyTransferId)
 
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_BUSY)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_ONGOING)
+	testHelper.C4eEvUtils.VerifyEnergyTransferstatus(energyTransferId, types.TransferStatus_ONGOING)
 
 	// when energy transfer is completed - full charging
 	testHelper.C4eEvUtils.EnergyTransferCompleted(energyTransferId, transfer.GetEnergyToTransfer())
 
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_ACTIVE)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_PAID)
+	testHelper.C4eEvUtils.VerifyEnergyTransferstatus(energyTransferId, types.TransferStatus_PAID)
 
 	bankutils.VerifyAccountDefaultDenomBalance(sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()), sdk.NewInt(3768))
 	bankutils.VerifyAccountDefaultDenomBalance(sdk.MustAccAddressFromBech32(transfer.GetOwnerAccountAddress()), sdk.NewInt(1232))
@@ -87,19 +87,19 @@ func TestEnergyTransferStartedPartial(t *testing.T) {
 	energyTransferId := testHelper.C4eEvUtils.StartEnergyTransfer(transfer, newOfferId)
 
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_BUSY)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_REQUESTED)
+	testHelper.C4eEvUtils.VerifyEnergyTransferstatus(energyTransferId, types.TransferStatus_REQUESTED)
 
 	// confirm that energy transfer has been started
 	testHelper.C4eEvUtils.EnergyTransferStarted(energyTransferId)
 
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_BUSY)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_ONGOING)
+	testHelper.C4eEvUtils.VerifyEnergyTransferstatus(energyTransferId, types.TransferStatus_ONGOING)
 
 	// when energy transfer is completed - partial charging
 	testHelper.C4eEvUtils.EnergyTransferCompleted(energyTransferId, 10)
 
 	testHelper.C4eEvUtils.VerifyEnergyTransferOfferStatus(newOfferId, types.ChargerStatus_ACTIVE)
-	testHelper.C4eEvUtils.VerifyEnergyTransferStatus(energyTransferId, types.TransferStatus_PAID)
+	testHelper.C4eEvUtils.VerifyEnergyTransferstatus(energyTransferId, types.TransferStatus_PAID)
 
 	bankutils.VerifyAccountDefaultDenomBalance(sdk.MustAccAddressFromBech32(transfer.GetDriverAccountAddress()), sdk.NewInt(4440))
 	bankutils.VerifyAccountDefaultDenomBalance(sdk.MustAccAddressFromBech32(transfer.GetOwnerAccountAddress()), sdk.NewInt(560))

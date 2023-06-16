@@ -1,6 +1,7 @@
-package types
+package types_test
 
 import (
+	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
@@ -10,20 +11,24 @@ import (
 
 func TestMsgRemoveEnergyOffer_ValidateBasic(t *testing.T) {
 	tests := []struct {
-		name string
-		msg  MsgRemoveEnergyOffer
-		err  error
+		name   string
+		msg    types.MsgRemoveEnergyOffer
+		err    error
+		errMsg string
 	}{
 		{
 			name: "invalid address",
-			msg: MsgRemoveEnergyOffer{
+			msg: types.MsgRemoveEnergyOffer{
 				Creator: "invalid_address",
+				Id:      0,
 			},
-			err: sdkerrors.ErrInvalidAddress,
+			err:    sdkerrors.ErrInvalidAddress,
+			errMsg: "invalid creator address (decoding bech32 failed: invalid separator index -1): invalid address",
 		}, {
 			name: "valid address",
-			msg: MsgRemoveEnergyOffer{
+			msg: types.MsgRemoveEnergyOffer{
 				Creator: sample.AccAddress(),
+				Id:      0,
 			},
 		},
 	}
@@ -32,6 +37,7 @@ func TestMsgRemoveEnergyOffer_ValidateBasic(t *testing.T) {
 			err := tt.msg.ValidateBasic()
 			if tt.err != nil {
 				require.ErrorIs(t, err, tt.err)
+				require.EqualError(t, err, tt.errMsg)
 				return
 			}
 			require.NoError(t, err)

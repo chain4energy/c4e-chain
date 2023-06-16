@@ -55,7 +55,7 @@ func (h *C4eEvUtils) VerifyGetEnergyTransfer(ctx sdk.Context, id uint64) {
 	require.True(h.t, found)
 }
 
-func (h *C4eEvUtils) VerifyEnergyTransferStatus(ctx sdk.Context, id uint64, status types.TransferStatus) {
+func (h *C4eEvUtils) VerifyEnergyTransferstatus(ctx sdk.Context, id uint64, status types.TransferStatus) {
 	et, found := h.C4eEvKeeperUtils.helperCfeevKeeper.GetEnergyTransfer(ctx, id)
 	require.True(h.t, found)
 	require.Equal(h.t, status, et.Status)

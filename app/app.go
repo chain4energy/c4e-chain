@@ -792,6 +792,7 @@ func New(
 		cfeminterModule,
 		cfedistributorModule,
 		cfeclaimModule,
+		cfeevModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()

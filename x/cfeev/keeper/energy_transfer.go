@@ -117,12 +117,20 @@ func (k Keeper) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64
 			return err
 		}
 	} else if usedServiceUnits > energyTransferObj.EnergyToTransfer {
-		if (usedServiceUnits - energyTransferObj.EnergyToTransfer) < 4 {
+		// TODO: In some cases, the charger may charge more watt-hours than intended, please handle these cases accordingly.
+		// Proposal - if the number of watt-hours that has been sent exceeds the number set earlier by less than 4, do not return
+		// an error, otherwise inform the user about it
+		if (usedServiceUnits - energyTransferObj.EnergyToTransfer) < types.SAFE_AMOUNT_TO_EXCEED_BY_CHARGER {
 			if err = k.sendEntireCallateralToCPOwner(ctx, energyTransferObj); err != nil {
 				return err
 			}
 		}
-		// TODO: handle exceeded limit value
+		// TODO: for now we don't inform the user about the exceeded amount of energy, but we should do it in the future
+		if err = k.sendEntireCallateralToCPOwner(ctx, energyTransferObj); err != nil {
+			return err
+		}
+		k.Logger(ctx).Error("used service units exeed energy to transfer", "energyToTransfer",
+			energyTransferObj.EnergyToTransfer, "usedServiceUnits", usedServiceUnits)
 	}
 
 	energyTransferObj.Status = types.TransferStatus_PAID

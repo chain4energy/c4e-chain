@@ -10,8 +10,8 @@ func (h *ContextC4eEvUtils) VerifyEnergyTransferOfferStatus(id uint64, status ty
 	h.C4eEvUtils.VerifyEnergyTransferOfferStatus(h.testContext.GetContext(), id, status)
 }
 
-func (h *ContextC4eEvUtils) VerifyEnergyTransferStatus(id uint64, status types.TransferStatus) {
-	h.C4eEvUtils.VerifyEnergyTransferStatus(h.testContext.GetContext(), id, status)
+func (h *ContextC4eEvUtils) VerifyEnergyTransferstatus(id uint64, status types.TransferStatus) {
+	h.C4eEvUtils.VerifyEnergyTransferstatus(h.testContext.GetContext(), id, status)
 }
 
 func (h *ContextC4eEvUtils) EnergyTransferCompleted(energyTransferId uint64, usedServiceUnits uint64) {

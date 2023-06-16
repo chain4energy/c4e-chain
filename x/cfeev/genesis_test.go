@@ -14,7 +14,7 @@ func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 
-		EnergyTransferOfferList: []types.EnergyTransferOffer{
+		EnergyTransferOffers: []types.EnergyTransferOffer{
 			{
 				Id: 0,
 			},
@@ -23,7 +23,7 @@ func TestGenesis(t *testing.T) {
 			},
 		},
 		EnergyTransferOfferCount: 2,
-		EnergyTransferList: []types.EnergyTransfer{
+		EnergyTransfers: []types.EnergyTransfer{
 			{
 				Id: 0,
 			},
@@ -43,9 +43,9 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
 
-	require.ElementsMatch(t, genesisState.EnergyTransferOfferList, got.EnergyTransferOfferList)
+	require.ElementsMatch(t, genesisState.EnergyTransferOffers, got.EnergyTransferOffers)
 	require.Equal(t, genesisState.EnergyTransferOfferCount, got.EnergyTransferOfferCount)
-	require.ElementsMatch(t, genesisState.EnergyTransferList, got.EnergyTransferList)
+	require.ElementsMatch(t, genesisState.EnergyTransfers, got.EnergyTransfers)
 	require.Equal(t, genesisState.EnergyTransferCount, got.EnergyTransferCount)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

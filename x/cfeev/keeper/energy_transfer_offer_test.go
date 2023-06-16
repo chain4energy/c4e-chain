@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createNEnergyTransferOffer(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.EnergyTransferOffer {
+func createAndAppendNEnergyTransfersOffer(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.EnergyTransferOffer {
 	items := make([]types.EnergyTransferOffer, n)
 	for i := range items {
 		items[i].Id = keeper.AppendEnergyTransferOffer(ctx, items[i])
@@ -21,7 +21,7 @@ func createNEnergyTransferOffer(keeper *keeper.Keeper, ctx sdk.Context, n int) [
 
 func TestEnergyTransferOfferGet(t *testing.T) {
 	keeper, ctx, _ := keepertest.CfeevKeeper(t)
-	items := createNEnergyTransferOffer(keeper, ctx, 10)
+	items := createAndAppendNEnergyTransfersOffer(keeper, ctx, 10)
 	for _, item := range items {
 		got, found := keeper.GetEnergyTransferOffer(ctx, item.Id)
 		require.True(t, found)
@@ -34,7 +34,7 @@ func TestEnergyTransferOfferGet(t *testing.T) {
 
 func TestEnergyTransferOfferRemove(t *testing.T) {
 	keeper, ctx, _ := keepertest.CfeevKeeper(t)
-	items := createNEnergyTransferOffer(keeper, ctx, 10)
+	items := createAndAppendNEnergyTransfersOffer(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveEnergyTransferOffer(ctx, item.Id)
 		_, found := keeper.GetEnergyTransferOffer(ctx, item.Id)
@@ -44,16 +44,16 @@ func TestEnergyTransferOfferRemove(t *testing.T) {
 
 func TestEnergyTransferOfferGetAll(t *testing.T) {
 	keeper, ctx, _ := keepertest.CfeevKeeper(t)
-	items := createNEnergyTransferOffer(keeper, ctx, 10)
+	items := createAndAppendNEnergyTransfersOffer(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
-		nullify.Fill(keeper.GetAllEnergyTransferOffer(ctx)),
+		nullify.Fill(keeper.GetAllEnergyTransferOffers(ctx)),
 	)
 }
 
 func TestEnergyTransferOfferCount(t *testing.T) {
 	keeper, ctx, _ := keepertest.CfeevKeeper(t)
-	items := createNEnergyTransferOffer(keeper, ctx, 10)
+	items := createAndAppendNEnergyTransfersOffer(keeper, ctx, 10)
 	count := uint64(len(items))
 	require.Equal(t, count, keeper.GetEnergyTransferOfferCount(ctx))
 }

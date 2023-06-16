@@ -18,7 +18,7 @@ import (
 func TestEnergyTransferOfferQuerySingle(t *testing.T) {
 	keeper, ctx, _ := keepertest.CfeevKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNEnergyTransferOffer(keeper, ctx, 2)
+	msgs := createAndAppendNEnergyTransfersOffer(keeper, ctx, 2)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryEnergyTransferOfferRequest
@@ -63,7 +63,7 @@ func TestEnergyTransferOfferQuerySingle(t *testing.T) {
 func TestEnergyTransferOfferQueryPaginated(t *testing.T) {
 	keeper, ctx, _ := keepertest.CfeevKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNEnergyTransferOffer(keeper, ctx, 5)
+	msgs := createAndAppendNEnergyTransfersOffer(keeper, ctx, 5)
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllEnergyTransferOffersRequest {
 		return &types.QueryAllEnergyTransferOffersRequest{

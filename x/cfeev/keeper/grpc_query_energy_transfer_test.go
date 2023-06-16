@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"fmt"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,7 +19,7 @@ import (
 func TestEnergyTransferQuerySingle(t *testing.T) {
 	keeper, ctx, _ := keepertest.CfeevKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNEnergyTransfer(keeper, ctx, 2)
+	msgs := createAndAppendNEnergyTransfers(keeper, ctx, 2)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryEnergyTransferRequest
@@ -63,7 +64,7 @@ func TestEnergyTransferQuerySingle(t *testing.T) {
 func TestEnergyTransferQueryPaginated(t *testing.T) {
 	keeper, ctx, _ := keepertest.CfeevKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNEnergyTransfer(keeper, ctx, 5)
+	msgs := createAndAppendNEnergyTransfers(keeper, ctx, 5)
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllEnergyTransfersRequest {
 		return &types.QueryAllEnergyTransfersRequest{
@@ -81,6 +82,8 @@ func TestEnergyTransferQueryPaginated(t *testing.T) {
 			resp, err := keeper.AllEnergyTransfers(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
 			require.LessOrEqual(t, len(resp.EnergyTransfer), step)
+			fmt.Println(resp.EnergyTransfer)
+			fmt.Println(msgs)
 			require.Subset(t,
 				nullify.Fill(msgs),
 				nullify.Fill(resp.EnergyTransfer),

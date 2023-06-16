@@ -1,6 +1,8 @@
-package types
+package types_test
 
 import (
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
+	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
@@ -8,23 +10,48 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const validChargerId = "valid_charger_id"
+
 func TestMsgEnergyTransferCompleted_ValidateBasic(t *testing.T) {
 	tests := []struct {
-		name string
-		msg  MsgEnergyTransferCompleted
-		err  error
+		name   string
+		msg    types.MsgEnergyTransferCompleted
+		err    error
+		errMsg string
 	}{
 		{
 			name: "invalid address",
-			msg: MsgEnergyTransferCompleted{
-				Creator: "invalid_address",
+			msg: types.MsgEnergyTransferCompleted{
+				Creator:          "invalid_address",
+				EnergyTransferId: 0,
+				ChargerId:        validChargerId,
+				UsedServiceUnits: 0,
+				Info:             "",
 			},
-			err: sdkerrors.ErrInvalidAddress,
-		}, {
+			err:    sdkerrors.ErrInvalidAddress,
+			errMsg: "invalid creator address (decoding bech32 failed: invalid separator index -1): invalid address",
+		},
+		{
 			name: "valid address",
-			msg: MsgEnergyTransferCompleted{
-				Creator: sample.AccAddress(),
+			msg: types.MsgEnergyTransferCompleted{
+				Creator:          sample.AccAddress(),
+				EnergyTransferId: 0,
+				ChargerId:        validChargerId,
+				UsedServiceUnits: 0,
+				Info:             "",
 			},
+		},
+		{
+			name: "empty charger id",
+			msg: types.MsgEnergyTransferCompleted{
+				Creator:          sample.AccAddress(),
+				EnergyTransferId: 0,
+				ChargerId:        "",
+				UsedServiceUnits: 0,
+				Info:             "",
+			},
+			err:    c4eerrors.ErrParam,
+			errMsg: "charger id cannot be empty: wrong param value",
 		},
 	}
 	for _, tt := range tests {
@@ -32,6 +59,7 @@ func TestMsgEnergyTransferCompleted_ValidateBasic(t *testing.T) {
 			err := tt.msg.ValidateBasic()
 			if tt.err != nil {
 				require.ErrorIs(t, err, tt.err)
+				require.EqualError(t, err, tt.errMsg)
 				return
 			}
 			require.NoError(t, err)
