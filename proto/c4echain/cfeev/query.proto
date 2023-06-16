@@ -18,115 +18,131 @@ service Query {
     option (google.api.http).get = "/c4e/ev/v1beta1/params";
   }
   // Queries a EnergyTransferOffer by id.
-	rpc EnergyTransferOffer(QueryGetEnergyTransferOfferRequest) returns (QueryGetEnergyTransferOfferResponse) {
+	rpc EnergyTransferOffer(QueryEnergyTransferOfferRequest) returns (QueryEnergyTransferOfferResponse) {
 		option (google.api.http).get = "/c4e/ev/v1beta1/energy_transfer_offer/{id}";
 	}
 
 	// Queries a list of EnergyTransferOffer items.
-	rpc EnergyTransferOfferAll(QueryAllEnergyTransferOfferRequest) returns (QueryAllEnergyTransferOfferResponse) {
-		option (google.api.http).get = "/c4e/ev/v1beta1/energy_transfer_offer";
+	rpc AllEnergyTransferOffers(QueryAllEnergyTransferOffersRequest) returns (QueryAllEnergyTransferOfferResponse) {
+		option (google.api.http).get = "/c4e/ev/v1beta1/energy_transfer_offers";
 	}
 
 // Queries a EnergyTransfer by id.
-	rpc EnergyTransfer(QueryGetEnergyTransferRequest) returns (QueryGetEnergyTransferResponse) {
+	rpc EnergyTransfer(QueryEnergyTransferRequest) returns (QueryEnergyTransferResponse) {
 		option (google.api.http).get = "/c4e/ev/v1beta1/energy_transfer/{id}";
 	}
 
 	// Queries a list of EnergyTransfer items.
-	rpc EnergyTransferAll(QueryAllEnergyTransferRequest) returns (QueryAllEnergyTransferResponse) {
-		option (google.api.http).get = "/c4e/ev/v1beta1/energy_transfer";
+	rpc AllEnergyTransfers(QueryAllEnergyTransfersRequest) returns (QueryAllEnergyTransfersResponse) {
+		option (google.api.http).get = "/c4e/ev/v1beta1/energy_transfers";
 	}
 
 // Queries a list of ListOwnEnergyTransferOffer items.
-	rpc ListOwnEnergyTransferOffer(QueryListOwnEnergyTransferOfferRequest) returns (QueryListOwnEnergyTransferOfferResponse) {
-		option (google.api.http).get = "/c4e/ev/v1beta1/list_own_energy_transfer_offer/{owner_acc_address}";
+	rpc EnergyTransferOffers(QueryEnergyTransferOffersRequest) returns (QueryEnergyTransferOffersResponse) {
+		option (google.api.http).get = "/c4e/ev/v1beta1/energy_transfer_offers/{owner}";
 	}
 
-// Queries a list of ListOwnEnergyTransfer items.
-	rpc ListOwnEnergyTransfer(QueryListOwnEnergyTransferRequest) returns (QueryListOwnEnergyTransferResponse) {
-		option (google.api.http).get = "/c4e/ev/v1beta1/list_own_energy_transfer/{driver_acc_address}";
+	// Queries a list of ListOwnEnergyTransfer items.
+	rpc OwnEnergyTransfers(QueryOwnEnergyTransfersRequest) returns (QueryOwnEnergyTransfersResponse) {
+		option (google.api.http).get = "/c4e/ev/v1beta1/own_energy_transfers/{driver}/{transfer_status}";
 	}
+
 
 // Queries a list of ListOwnerEnergyTransfer items.
-	rpc ListOwnerEnergyTransfer(QueryListOwnerEnergyTransferRequest) returns (QueryListOwnerEnergyTransferResponse) {
-		option (google.api.http).get = "/c4e/ev/v1beta1/list_owner_energy_transfer/{owner_acc_address}";
+	rpc EnergyTransfers(QueryEnergyTransfersRequest) returns (QueryEnergyTransfersResponse) {
+		option (google.api.http).get = "/c4e/ev/v1beta1/energy_transfers/{owner}";
 	}
 
 // this line is used by starport scaffolding # 2
 }
 
-// QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 
-// QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
-  // params holds all the parameters of this module.
-  Params params = 1 [(gogoproto.nullable) = false];
+  Params params = 1 [
+		(gogoproto.nullable) = false
+	];
 }
 
-message QueryGetEnergyTransferOfferRequest {
+message QueryEnergyTransferOfferRequest {
 	uint64 id = 1;
 }
 
-message QueryGetEnergyTransferOfferResponse {
-	EnergyTransferOffer energy_transfer_offer = 1 [(gogoproto.nullable) = false];
+message QueryEnergyTransferOfferResponse {
+	EnergyTransferOffer energy_transfer_offer = 1 [
+		(gogoproto.nullable) = false
+	];
 }
 
-message QueryAllEnergyTransferOfferRequest {
+message QueryAllEnergyTransferOffersRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 message QueryAllEnergyTransferOfferResponse {
-	repeated EnergyTransferOffer energy_transfer_offer = 1 [(gogoproto.nullable) = false];
+	repeated EnergyTransferOffer energy_transfer_offer = 1 [
+		(gogoproto.nullable) = false
+	];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryGetEnergyTransferRequest {
+message QueryEnergyTransferRequest {
 	uint64 id = 1;
 }
 
-message QueryGetEnergyTransferResponse {
-	EnergyTransfer energy_transfer = 1 [(gogoproto.nullable) = false];
+message QueryEnergyTransferResponse {
+	EnergyTransfer energy_transfer = 1 [
+		(gogoproto.nullable) = false
+	];
 }
 
-message QueryAllEnergyTransferRequest {
+message QueryAllEnergyTransfersRequest {
 	cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryAllEnergyTransferResponse {
-	repeated EnergyTransfer energy_transfer = 1 [(gogoproto.nullable) = false];
+message QueryAllEnergyTransfersResponse {
+	repeated EnergyTransfer energy_transfer = 1 [
+		(gogoproto.nullable) = false
+	];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryListOwnEnergyTransferOfferRequest {
-  string owner_acc_address = 1;
-cosmos.base.query.v1beta1.PageRequest pagination = 2;
+message QueryEnergyTransferOffersRequest {
+  string owner = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-message QueryListOwnEnergyTransferOfferResponse {
-  repeated EnergyTransferOffer energy_transfer_offer = 1 [(gogoproto.nullable) = false];
-cosmos.base.query.v1beta1.PageResponse pagination = 2;
+message QueryEnergyTransferOffersResponse {
+  repeated EnergyTransferOffer energy_transfer_offer = 1 [
+		(gogoproto.nullable) = false
+	];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryListOwnEnergyTransferRequest {
-  string driver_acc_address = 1;
-  int32 transfer_status = 2;
-cosmos.base.query.v1beta1.PageRequest pagination = 3;
+
+message QueryEnergyTransfersRequest {
+  string owner = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-message QueryListOwnEnergyTransferResponse {
-  repeated EnergyTransfer energy_transfer = 1 [(gogoproto.nullable) = false];
-cosmos.base.query.v1beta1.PageResponse pagination = 2;
+message QueryEnergyTransfersResponse {
+  repeated EnergyTransfer energy_transfer = 1 [
+		(gogoproto.nullable) = false
+	];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryListOwnerEnergyTransferRequest {
-  string owner_acc_address = 1;
-cosmos.base.query.v1beta1.PageRequest pagination = 2;
+message QueryOwnEnergyTransfersRequest {
+	string driver = 1;
+	int32 transfer_status = 2;
+	cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
-message QueryListOwnerEnergyTransferResponse {
-  repeated EnergyTransfer energy_transfer = 1 [(gogoproto.nullable) = false];
-cosmos.base.query.v1beta1.PageResponse pagination = 2;
+message QueryOwnEnergyTransfersResponse {
+	repeated EnergyTransfer energy_transfer = 1 [
+		(gogoproto.nullable) = false
+	];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
+
 
 // this line is used by starport scaffolding # 3

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -11,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) ListOwnerEnergyTransfer(goCtx context.Context, req *types.QueryListOwnerEnergyTransferRequest) (*types.QueryListOwnerEnergyTransferResponse, error) {
+func (k Keeper) OwnEnergyTransfers(goCtx context.Context, req *types.QueryOwnEnergyTransfersRequest) (*types.QueryOwnEnergyTransfersResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -21,14 +22,17 @@ func (k Keeper) ListOwnerEnergyTransfer(goCtx context.Context, req *types.QueryL
 
 	store := ctx.KVStore(k.storeKey)
 	energyTransferStore := prefix.NewStore(store, types.EnergyTransferKey)
-
+	_, err := sdk.AccAddressFromBech32(req.Driver)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "wrong driver address (%s)", err.Error())
+	}
 	pageRes, err := query.Paginate(energyTransferStore, req.Pagination, func(key []byte, value []byte) error {
 		var energyTransfer types.EnergyTransfer
 		if err := k.cdc.Unmarshal(value, &energyTransfer); err != nil {
 			return err
 		}
 
-		if energyTransfer.GetOwnerAccountAddress() == req.GetOwnerAccAddress() && energyTransfer.Status == types.TransferStatus_PAID {
+		if energyTransfer.GetDriverAccountAddress() == req.GetDriver() && energyTransfer.Status == types.TransferStatus(req.GetTransferStatus()) {
 			energyTransfers = append(energyTransfers, energyTransfer)
 		}
 
@@ -39,5 +43,5 @@ func (k Keeper) ListOwnerEnergyTransfer(goCtx context.Context, req *types.QueryL
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryListOwnerEnergyTransferResponse{EnergyTransfer: energyTransfers, Pagination: pageRes}, nil
+	return &types.QueryOwnEnergyTransfersResponse{EnergyTransfer: energyTransfers, Pagination: pageRes}, nil
 }

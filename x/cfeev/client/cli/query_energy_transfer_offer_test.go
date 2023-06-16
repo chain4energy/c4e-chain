@@ -67,14 +67,14 @@ func TestShowEnergyTransferOffer(t *testing.T) {
 		t.Run(tc.desc, func(t *testing.T) {
 			args := []string{tc.id}
 			args = append(args, tc.args...)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowEnergyTransferOffer(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdEnergyTransferOffer(), args)
 			if tc.err != nil {
 				stat, ok := status.FromError(tc.err)
 				require.True(t, ok)
 				require.ErrorIs(t, stat.Err(), tc.err)
 			} else {
 				require.NoError(t, err)
-				var resp types.QueryGetEnergyTransferOfferResponse
+				var resp types.QueryEnergyTransferOfferResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 				require.NotNil(t, resp.EnergyTransferOffer)
 				require.Equal(t,
@@ -109,7 +109,7 @@ func TestListEnergyTransferOffer(t *testing.T) {
 		step := 2
 		for i := 0; i < len(objs); i += step {
 			args := request(nil, uint64(i), uint64(step), false)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListEnergyTransferOffer(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdAllEnergyTransfeOffers(), args)
 			require.NoError(t, err)
 			var resp types.QueryAllEnergyTransferOfferResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
@@ -125,7 +125,7 @@ func TestListEnergyTransferOffer(t *testing.T) {
 		var next []byte
 		for i := 0; i < len(objs); i += step {
 			args := request(next, 0, uint64(step), false)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListEnergyTransferOffer(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdAllEnergyTransfeOffers(), args)
 			require.NoError(t, err)
 			var resp types.QueryAllEnergyTransferOfferResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
@@ -139,7 +139,7 @@ func TestListEnergyTransferOffer(t *testing.T) {
 	})
 	t.Run("Total", func(t *testing.T) {
 		args := request(nil, 0, uint64(len(objs)), true)
-		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListEnergyTransferOffer(), args)
+		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdAllEnergyTransfeOffers(), args)
 		require.NoError(t, err)
 		var resp types.QueryAllEnergyTransferOfferResponse
 		require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))

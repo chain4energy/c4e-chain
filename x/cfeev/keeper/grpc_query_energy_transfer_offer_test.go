@@ -21,23 +21,23 @@ func TestEnergyTransferOfferQuerySingle(t *testing.T) {
 	msgs := createNEnergyTransferOffer(keeper, ctx, 2)
 	for _, tc := range []struct {
 		desc     string
-		request  *types.QueryGetEnergyTransferOfferRequest
-		response *types.QueryGetEnergyTransferOfferResponse
+		request  *types.QueryEnergyTransferOfferRequest
+		response *types.QueryEnergyTransferOfferResponse
 		err      error
 	}{
 		{
 			desc:     "First",
-			request:  &types.QueryGetEnergyTransferOfferRequest{Id: msgs[0].Id},
-			response: &types.QueryGetEnergyTransferOfferResponse{EnergyTransferOffer: msgs[0]},
+			request:  &types.QueryEnergyTransferOfferRequest{Id: msgs[0].Id},
+			response: &types.QueryEnergyTransferOfferResponse{EnergyTransferOffer: msgs[0]},
 		},
 		{
 			desc:     "Second",
-			request:  &types.QueryGetEnergyTransferOfferRequest{Id: msgs[1].Id},
-			response: &types.QueryGetEnergyTransferOfferResponse{EnergyTransferOffer: msgs[1]},
+			request:  &types.QueryEnergyTransferOfferRequest{Id: msgs[1].Id},
+			response: &types.QueryEnergyTransferOfferResponse{EnergyTransferOffer: msgs[1]},
 		},
 		{
 			desc:    "KeyNotFound",
-			request: &types.QueryGetEnergyTransferOfferRequest{Id: uint64(len(msgs))},
+			request: &types.QueryEnergyTransferOfferRequest{Id: uint64(len(msgs))},
 			err:     sdkerrors.ErrKeyNotFound,
 		},
 		{
@@ -65,8 +65,8 @@ func TestEnergyTransferOfferQueryPaginated(t *testing.T) {
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNEnergyTransferOffer(keeper, ctx, 5)
 
-	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllEnergyTransferOfferRequest {
-		return &types.QueryAllEnergyTransferOfferRequest{
+	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllEnergyTransferOffersRequest {
+		return &types.QueryAllEnergyTransferOffersRequest{
 			Pagination: &query.PageRequest{
 				Key:        next,
 				Offset:     offset,
@@ -78,7 +78,7 @@ func TestEnergyTransferOfferQueryPaginated(t *testing.T) {
 	t.Run("ByOffset", func(t *testing.T) {
 		step := 2
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.EnergyTransferOfferAll(wctx, request(nil, uint64(i), uint64(step), false))
+			resp, err := keeper.AllEnergyTransferOffers(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
 			require.LessOrEqual(t, len(resp.EnergyTransferOffer), step)
 			require.Subset(t,
@@ -91,7 +91,7 @@ func TestEnergyTransferOfferQueryPaginated(t *testing.T) {
 		step := 2
 		var next []byte
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.EnergyTransferOfferAll(wctx, request(next, 0, uint64(step), false))
+			resp, err := keeper.AllEnergyTransferOffers(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
 			require.LessOrEqual(t, len(resp.EnergyTransferOffer), step)
 			require.Subset(t,
@@ -102,7 +102,7 @@ func TestEnergyTransferOfferQueryPaginated(t *testing.T) {
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
-		resp, err := keeper.EnergyTransferOfferAll(wctx, request(nil, 0, 0, true))
+		resp, err := keeper.AllEnergyTransferOffers(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
@@ -111,7 +111,7 @@ func TestEnergyTransferOfferQueryPaginated(t *testing.T) {
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {
-		_, err := keeper.EnergyTransferOfferAll(wctx, nil)
+		_, err := keeper.AllEnergyTransferOffers(wctx, nil)
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
 }

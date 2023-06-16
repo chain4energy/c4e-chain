@@ -52,7 +52,7 @@ func local_request_Query_Params_0(ctx context.Context, marshaler runtime.Marshal
 }
 
 func request_Query_EnergyTransferOffer_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryGetEnergyTransferOfferRequest
+	var protoReq QueryEnergyTransferOfferRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -79,7 +79,7 @@ func request_Query_EnergyTransferOffer_0(ctx context.Context, marshaler runtime.
 }
 
 func local_request_Query_EnergyTransferOffer_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryGetEnergyTransferOfferRequest
+	var protoReq QueryEnergyTransferOfferRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -106,43 +106,43 @@ func local_request_Query_EnergyTransferOffer_0(ctx context.Context, marshaler ru
 }
 
 var (
-	filter_Query_EnergyTransferOfferAll_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_Query_AllEnergyTransferOffers_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_Query_EnergyTransferOfferAll_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryAllEnergyTransferOfferRequest
+func request_Query_AllEnergyTransferOffers_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryAllEnergyTransferOffersRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_EnergyTransferOfferAll_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_AllEnergyTransferOffers_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.EnergyTransferOfferAll(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.AllEnergyTransferOffers(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_EnergyTransferOfferAll_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryAllEnergyTransferOfferRequest
+func local_request_Query_AllEnergyTransferOffers_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryAllEnergyTransferOffersRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_EnergyTransferOfferAll_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_AllEnergyTransferOffers_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.EnergyTransferOfferAll(ctx, &protoReq)
+	msg, err := server.AllEnergyTransferOffers(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
 func request_Query_EnergyTransfer_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryGetEnergyTransferRequest
+	var protoReq QueryEnergyTransferRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -169,7 +169,7 @@ func request_Query_EnergyTransfer_0(ctx context.Context, marshaler runtime.Marsh
 }
 
 func local_request_Query_EnergyTransfer_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryGetEnergyTransferRequest
+	var protoReq QueryEnergyTransferRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -196,47 +196,47 @@ func local_request_Query_EnergyTransfer_0(ctx context.Context, marshaler runtime
 }
 
 var (
-	filter_Query_EnergyTransferAll_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_Query_AllEnergyTransfers_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_Query_EnergyTransferAll_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryAllEnergyTransferRequest
+func request_Query_AllEnergyTransfers_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryAllEnergyTransfersRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_EnergyTransferAll_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_AllEnergyTransfers_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.EnergyTransferAll(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.AllEnergyTransfers(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_EnergyTransferAll_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryAllEnergyTransferRequest
+func local_request_Query_AllEnergyTransfers_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryAllEnergyTransfersRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_EnergyTransferAll_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_AllEnergyTransfers_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.EnergyTransferAll(ctx, &protoReq)
+	msg, err := server.AllEnergyTransfers(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
 var (
-	filter_Query_ListOwnEnergyTransferOffer_0 = &utilities.DoubleArray{Encoding: map[string]int{"owner_acc_address": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+	filter_Query_EnergyTransferOffers_0 = &utilities.DoubleArray{Encoding: map[string]int{"owner": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
 
-func request_Query_ListOwnEnergyTransferOffer_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryListOwnEnergyTransferOfferRequest
+func request_Query_EnergyTransferOffers_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryEnergyTransferOffersRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -246,31 +246,31 @@ func request_Query_ListOwnEnergyTransferOffer_0(ctx context.Context, marshaler r
 		_   = err
 	)
 
-	val, ok = pathParams["owner_acc_address"]
+	val, ok = pathParams["owner"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner_acc_address")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner")
 	}
 
-	protoReq.OwnerAccAddress, err = runtime.String(val)
+	protoReq.Owner, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner_acc_address", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_ListOwnEnergyTransferOffer_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_EnergyTransferOffers_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.ListOwnEnergyTransferOffer(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.EnergyTransferOffers(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_ListOwnEnergyTransferOffer_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryListOwnEnergyTransferOfferRequest
+func local_request_Query_EnergyTransferOffers_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryEnergyTransferOffersRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -280,35 +280,35 @@ func local_request_Query_ListOwnEnergyTransferOffer_0(ctx context.Context, marsh
 		_   = err
 	)
 
-	val, ok = pathParams["owner_acc_address"]
+	val, ok = pathParams["owner"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner_acc_address")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner")
 	}
 
-	protoReq.OwnerAccAddress, err = runtime.String(val)
+	protoReq.Owner, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner_acc_address", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_ListOwnEnergyTransferOffer_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_EnergyTransferOffers_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.ListOwnEnergyTransferOffer(ctx, &protoReq)
+	msg, err := server.EnergyTransferOffers(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
 var (
-	filter_Query_ListOwnEnergyTransfer_0 = &utilities.DoubleArray{Encoding: map[string]int{"driver_acc_address": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+	filter_Query_OwnEnergyTransfers_0 = &utilities.DoubleArray{Encoding: map[string]int{"driver": 0, "transfer_status": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
 )
 
-func request_Query_ListOwnEnergyTransfer_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryListOwnEnergyTransferRequest
+func request_Query_OwnEnergyTransfers_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryOwnEnergyTransfersRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -318,31 +318,42 @@ func request_Query_ListOwnEnergyTransfer_0(ctx context.Context, marshaler runtim
 		_   = err
 	)
 
-	val, ok = pathParams["driver_acc_address"]
+	val, ok = pathParams["driver"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "driver_acc_address")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "driver")
 	}
 
-	protoReq.DriverAccAddress, err = runtime.String(val)
+	protoReq.Driver, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "driver_acc_address", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "driver", err)
+	}
+
+	val, ok = pathParams["transfer_status"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "transfer_status")
+	}
+
+	protoReq.TransferStatus, err = runtime.Int32(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "transfer_status", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_ListOwnEnergyTransfer_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_OwnEnergyTransfers_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.ListOwnEnergyTransfer(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.OwnEnergyTransfers(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_ListOwnEnergyTransfer_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryListOwnEnergyTransferRequest
+func local_request_Query_OwnEnergyTransfers_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryOwnEnergyTransfersRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -352,35 +363,46 @@ func local_request_Query_ListOwnEnergyTransfer_0(ctx context.Context, marshaler 
 		_   = err
 	)
 
-	val, ok = pathParams["driver_acc_address"]
+	val, ok = pathParams["driver"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "driver_acc_address")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "driver")
 	}
 
-	protoReq.DriverAccAddress, err = runtime.String(val)
+	protoReq.Driver, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "driver_acc_address", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "driver", err)
+	}
+
+	val, ok = pathParams["transfer_status"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "transfer_status")
+	}
+
+	protoReq.TransferStatus, err = runtime.Int32(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "transfer_status", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_ListOwnEnergyTransfer_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_OwnEnergyTransfers_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.ListOwnEnergyTransfer(ctx, &protoReq)
+	msg, err := server.OwnEnergyTransfers(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
 var (
-	filter_Query_ListOwnerEnergyTransfer_0 = &utilities.DoubleArray{Encoding: map[string]int{"owner_acc_address": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+	filter_Query_EnergyTransfers_0 = &utilities.DoubleArray{Encoding: map[string]int{"owner": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
 
-func request_Query_ListOwnerEnergyTransfer_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryListOwnerEnergyTransferRequest
+func request_Query_EnergyTransfers_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryEnergyTransfersRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -390,31 +412,31 @@ func request_Query_ListOwnerEnergyTransfer_0(ctx context.Context, marshaler runt
 		_   = err
 	)
 
-	val, ok = pathParams["owner_acc_address"]
+	val, ok = pathParams["owner"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner_acc_address")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner")
 	}
 
-	protoReq.OwnerAccAddress, err = runtime.String(val)
+	protoReq.Owner, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner_acc_address", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_ListOwnerEnergyTransfer_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_EnergyTransfers_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.ListOwnerEnergyTransfer(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.EnergyTransfers(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_ListOwnerEnergyTransfer_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryListOwnerEnergyTransferRequest
+func local_request_Query_EnergyTransfers_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryEnergyTransfersRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -424,25 +446,25 @@ func local_request_Query_ListOwnerEnergyTransfer_0(ctx context.Context, marshale
 		_   = err
 	)
 
-	val, ok = pathParams["owner_acc_address"]
+	val, ok = pathParams["owner"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner_acc_address")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner")
 	}
 
-	protoReq.OwnerAccAddress, err = runtime.String(val)
+	protoReq.Owner, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner_acc_address", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_ListOwnerEnergyTransfer_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_EnergyTransfers_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.ListOwnerEnergyTransfer(ctx, &protoReq)
+	msg, err := server.EnergyTransfers(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -499,7 +521,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_EnergyTransferOfferAll_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_AllEnergyTransferOffers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -510,7 +532,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_EnergyTransferOfferAll_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_AllEnergyTransferOffers_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -518,7 +540,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_EnergyTransferOfferAll_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_AllEnergyTransferOffers_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -545,7 +567,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_EnergyTransferAll_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_AllEnergyTransfers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -556,7 +578,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_EnergyTransferAll_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_AllEnergyTransfers_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -564,11 +586,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_EnergyTransferAll_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_AllEnergyTransfers_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_ListOwnEnergyTransferOffer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_EnergyTransferOffers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -579,7 +601,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_ListOwnEnergyTransferOffer_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_EnergyTransferOffers_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -587,11 +609,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_ListOwnEnergyTransferOffer_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_EnergyTransferOffers_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_ListOwnEnergyTransfer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_OwnEnergyTransfers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -602,7 +624,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_ListOwnEnergyTransfer_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_OwnEnergyTransfers_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -610,11 +632,11 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_ListOwnEnergyTransfer_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_OwnEnergyTransfers_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_ListOwnerEnergyTransfer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_EnergyTransfers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -625,7 +647,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_ListOwnerEnergyTransfer_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_EnergyTransfers_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -633,7 +655,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_ListOwnerEnergyTransfer_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_EnergyTransfers_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -718,7 +740,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_EnergyTransferOfferAll_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_AllEnergyTransferOffers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -727,14 +749,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_EnergyTransferOfferAll_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_AllEnergyTransferOffers_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_EnergyTransferOfferAll_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_AllEnergyTransferOffers_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -758,7 +780,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_EnergyTransferAll_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_AllEnergyTransfers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -767,18 +789,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_EnergyTransferAll_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_AllEnergyTransfers_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_EnergyTransferAll_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_AllEnergyTransfers_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_ListOwnEnergyTransferOffer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_EnergyTransferOffers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -787,18 +809,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_ListOwnEnergyTransferOffer_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_EnergyTransferOffers_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_ListOwnEnergyTransferOffer_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_EnergyTransferOffers_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_ListOwnEnergyTransfer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_OwnEnergyTransfers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -807,18 +829,18 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_ListOwnEnergyTransfer_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_OwnEnergyTransfers_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_ListOwnEnergyTransfer_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_OwnEnergyTransfers_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_Query_ListOwnerEnergyTransfer_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_EnergyTransfers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -827,14 +849,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_ListOwnerEnergyTransfer_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_EnergyTransfers_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_ListOwnerEnergyTransfer_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_EnergyTransfers_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -846,17 +868,17 @@ var (
 
 	pattern_Query_EnergyTransferOffer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "ev", "v1beta1", "energy_transfer_offer", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_EnergyTransferOfferAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"c4e", "ev", "v1beta1", "energy_transfer_offer"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_AllEnergyTransferOffers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"c4e", "ev", "v1beta1", "energy_transfer_offers"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_EnergyTransfer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "ev", "v1beta1", "energy_transfer", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_EnergyTransferAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"c4e", "ev", "v1beta1", "energy_transfer"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_AllEnergyTransfers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"c4e", "ev", "v1beta1", "energy_transfers"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListOwnEnergyTransferOffer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "ev", "v1beta1", "list_own_energy_transfer_offer", "owner_acc_address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_EnergyTransferOffers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "ev", "v1beta1", "energy_transfer_offers", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListOwnEnergyTransfer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "ev", "v1beta1", "list_own_energy_transfer", "driver_acc_address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_OwnEnergyTransfers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"c4e", "ev", "v1beta1", "own_energy_transfers", "driver", "transfer_status"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListOwnerEnergyTransfer_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "ev", "v1beta1", "list_owner_energy_transfer", "owner_acc_address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_EnergyTransfers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "ev", "v1beta1", "energy_transfers", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
@@ -864,15 +886,15 @@ var (
 
 	forward_Query_EnergyTransferOffer_0 = runtime.ForwardResponseMessage
 
-	forward_Query_EnergyTransferOfferAll_0 = runtime.ForwardResponseMessage
+	forward_Query_AllEnergyTransferOffers_0 = runtime.ForwardResponseMessage
 
 	forward_Query_EnergyTransfer_0 = runtime.ForwardResponseMessage
 
-	forward_Query_EnergyTransferAll_0 = runtime.ForwardResponseMessage
+	forward_Query_AllEnergyTransfers_0 = runtime.ForwardResponseMessage
 
-	forward_Query_ListOwnEnergyTransferOffer_0 = runtime.ForwardResponseMessage
+	forward_Query_EnergyTransferOffers_0 = runtime.ForwardResponseMessage
 
-	forward_Query_ListOwnEnergyTransfer_0 = runtime.ForwardResponseMessage
+	forward_Query_OwnEnergyTransfers_0 = runtime.ForwardResponseMessage
 
-	forward_Query_ListOwnerEnergyTransfer_0 = runtime.ForwardResponseMessage
+	forward_Query_EnergyTransfers_0 = runtime.ForwardResponseMessage
 )

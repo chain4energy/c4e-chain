@@ -30,7 +30,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// QueryParamsRequest is request type for the Query/Params RPC method.
 type QueryParamsRequest struct {
 }
 
@@ -67,9 +66,7 @@ func (m *QueryParamsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
 
-// QueryParamsResponse is response type for the Query/Params RPC method.
 type QueryParamsResponse struct {
-	// params holds all the parameters of this module.
 	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 }
 
@@ -113,22 +110,22 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
-type QueryGetEnergyTransferOfferRequest struct {
+type QueryEnergyTransferOfferRequest struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *QueryGetEnergyTransferOfferRequest) Reset()         { *m = QueryGetEnergyTransferOfferRequest{} }
-func (m *QueryGetEnergyTransferOfferRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryGetEnergyTransferOfferRequest) ProtoMessage()    {}
-func (*QueryGetEnergyTransferOfferRequest) Descriptor() ([]byte, []int) {
+func (m *QueryEnergyTransferOfferRequest) Reset()         { *m = QueryEnergyTransferOfferRequest{} }
+func (m *QueryEnergyTransferOfferRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryEnergyTransferOfferRequest) ProtoMessage()    {}
+func (*QueryEnergyTransferOfferRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_78ae7a5fcfa04e9a, []int{2}
 }
-func (m *QueryGetEnergyTransferOfferRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryEnergyTransferOfferRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetEnergyTransferOfferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryEnergyTransferOfferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetEnergyTransferOfferRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryEnergyTransferOfferRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -138,41 +135,41 @@ func (m *QueryGetEnergyTransferOfferRequest) XXX_Marshal(b []byte, deterministic
 		return b[:n], nil
 	}
 }
-func (m *QueryGetEnergyTransferOfferRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetEnergyTransferOfferRequest.Merge(m, src)
+func (m *QueryEnergyTransferOfferRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryEnergyTransferOfferRequest.Merge(m, src)
 }
-func (m *QueryGetEnergyTransferOfferRequest) XXX_Size() int {
+func (m *QueryEnergyTransferOfferRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetEnergyTransferOfferRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetEnergyTransferOfferRequest.DiscardUnknown(m)
+func (m *QueryEnergyTransferOfferRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryEnergyTransferOfferRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetEnergyTransferOfferRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryEnergyTransferOfferRequest proto.InternalMessageInfo
 
-func (m *QueryGetEnergyTransferOfferRequest) GetId() uint64 {
+func (m *QueryEnergyTransferOfferRequest) GetId() uint64 {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-type QueryGetEnergyTransferOfferResponse struct {
+type QueryEnergyTransferOfferResponse struct {
 	EnergyTransferOffer EnergyTransferOffer `protobuf:"bytes,1,opt,name=energy_transfer_offer,json=energyTransferOffer,proto3" json:"energy_transfer_offer"`
 }
 
-func (m *QueryGetEnergyTransferOfferResponse) Reset()         { *m = QueryGetEnergyTransferOfferResponse{} }
-func (m *QueryGetEnergyTransferOfferResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryGetEnergyTransferOfferResponse) ProtoMessage()    {}
-func (*QueryGetEnergyTransferOfferResponse) Descriptor() ([]byte, []int) {
+func (m *QueryEnergyTransferOfferResponse) Reset()         { *m = QueryEnergyTransferOfferResponse{} }
+func (m *QueryEnergyTransferOfferResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryEnergyTransferOfferResponse) ProtoMessage()    {}
+func (*QueryEnergyTransferOfferResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_78ae7a5fcfa04e9a, []int{3}
 }
-func (m *QueryGetEnergyTransferOfferResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryEnergyTransferOfferResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetEnergyTransferOfferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryEnergyTransferOfferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetEnergyTransferOfferResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryEnergyTransferOfferResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -182,41 +179,41 @@ func (m *QueryGetEnergyTransferOfferResponse) XXX_Marshal(b []byte, deterministi
 		return b[:n], nil
 	}
 }
-func (m *QueryGetEnergyTransferOfferResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetEnergyTransferOfferResponse.Merge(m, src)
+func (m *QueryEnergyTransferOfferResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryEnergyTransferOfferResponse.Merge(m, src)
 }
-func (m *QueryGetEnergyTransferOfferResponse) XXX_Size() int {
+func (m *QueryEnergyTransferOfferResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetEnergyTransferOfferResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetEnergyTransferOfferResponse.DiscardUnknown(m)
+func (m *QueryEnergyTransferOfferResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryEnergyTransferOfferResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetEnergyTransferOfferResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryEnergyTransferOfferResponse proto.InternalMessageInfo
 
-func (m *QueryGetEnergyTransferOfferResponse) GetEnergyTransferOffer() EnergyTransferOffer {
+func (m *QueryEnergyTransferOfferResponse) GetEnergyTransferOffer() EnergyTransferOffer {
 	if m != nil {
 		return m.EnergyTransferOffer
 	}
 	return EnergyTransferOffer{}
 }
 
-type QueryAllEnergyTransferOfferRequest struct {
+type QueryAllEnergyTransferOffersRequest struct {
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryAllEnergyTransferOfferRequest) Reset()         { *m = QueryAllEnergyTransferOfferRequest{} }
-func (m *QueryAllEnergyTransferOfferRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAllEnergyTransferOfferRequest) ProtoMessage()    {}
-func (*QueryAllEnergyTransferOfferRequest) Descriptor() ([]byte, []int) {
+func (m *QueryAllEnergyTransferOffersRequest) Reset()         { *m = QueryAllEnergyTransferOffersRequest{} }
+func (m *QueryAllEnergyTransferOffersRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllEnergyTransferOffersRequest) ProtoMessage()    {}
+func (*QueryAllEnergyTransferOffersRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_78ae7a5fcfa04e9a, []int{4}
 }
-func (m *QueryAllEnergyTransferOfferRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryAllEnergyTransferOffersRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAllEnergyTransferOfferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryAllEnergyTransferOffersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAllEnergyTransferOfferRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryAllEnergyTransferOffersRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -226,19 +223,19 @@ func (m *QueryAllEnergyTransferOfferRequest) XXX_Marshal(b []byte, deterministic
 		return b[:n], nil
 	}
 }
-func (m *QueryAllEnergyTransferOfferRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllEnergyTransferOfferRequest.Merge(m, src)
+func (m *QueryAllEnergyTransferOffersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllEnergyTransferOffersRequest.Merge(m, src)
 }
-func (m *QueryAllEnergyTransferOfferRequest) XXX_Size() int {
+func (m *QueryAllEnergyTransferOffersRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAllEnergyTransferOfferRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllEnergyTransferOfferRequest.DiscardUnknown(m)
+func (m *QueryAllEnergyTransferOffersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllEnergyTransferOffersRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAllEnergyTransferOfferRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryAllEnergyTransferOffersRequest proto.InternalMessageInfo
 
-func (m *QueryAllEnergyTransferOfferRequest) GetPagination() *query.PageRequest {
+func (m *QueryAllEnergyTransferOffersRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
@@ -297,22 +294,22 @@ func (m *QueryAllEnergyTransferOfferResponse) GetPagination() *query.PageRespons
 	return nil
 }
 
-type QueryGetEnergyTransferRequest struct {
+type QueryEnergyTransferRequest struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *QueryGetEnergyTransferRequest) Reset()         { *m = QueryGetEnergyTransferRequest{} }
-func (m *QueryGetEnergyTransferRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryGetEnergyTransferRequest) ProtoMessage()    {}
-func (*QueryGetEnergyTransferRequest) Descriptor() ([]byte, []int) {
+func (m *QueryEnergyTransferRequest) Reset()         { *m = QueryEnergyTransferRequest{} }
+func (m *QueryEnergyTransferRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryEnergyTransferRequest) ProtoMessage()    {}
+func (*QueryEnergyTransferRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_78ae7a5fcfa04e9a, []int{6}
 }
-func (m *QueryGetEnergyTransferRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryEnergyTransferRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetEnergyTransferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryEnergyTransferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetEnergyTransferRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryEnergyTransferRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -322,41 +319,41 @@ func (m *QueryGetEnergyTransferRequest) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *QueryGetEnergyTransferRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetEnergyTransferRequest.Merge(m, src)
+func (m *QueryEnergyTransferRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryEnergyTransferRequest.Merge(m, src)
 }
-func (m *QueryGetEnergyTransferRequest) XXX_Size() int {
+func (m *QueryEnergyTransferRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetEnergyTransferRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetEnergyTransferRequest.DiscardUnknown(m)
+func (m *QueryEnergyTransferRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryEnergyTransferRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetEnergyTransferRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryEnergyTransferRequest proto.InternalMessageInfo
 
-func (m *QueryGetEnergyTransferRequest) GetId() uint64 {
+func (m *QueryEnergyTransferRequest) GetId() uint64 {
 	if m != nil {
 		return m.Id
 	}
 	return 0
 }
 
-type QueryGetEnergyTransferResponse struct {
+type QueryEnergyTransferResponse struct {
 	EnergyTransfer EnergyTransfer `protobuf:"bytes,1,opt,name=energy_transfer,json=energyTransfer,proto3" json:"energy_transfer"`
 }
 
-func (m *QueryGetEnergyTransferResponse) Reset()         { *m = QueryGetEnergyTransferResponse{} }
-func (m *QueryGetEnergyTransferResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryGetEnergyTransferResponse) ProtoMessage()    {}
-func (*QueryGetEnergyTransferResponse) Descriptor() ([]byte, []int) {
+func (m *QueryEnergyTransferResponse) Reset()         { *m = QueryEnergyTransferResponse{} }
+func (m *QueryEnergyTransferResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryEnergyTransferResponse) ProtoMessage()    {}
+func (*QueryEnergyTransferResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_78ae7a5fcfa04e9a, []int{7}
 }
-func (m *QueryGetEnergyTransferResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryEnergyTransferResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetEnergyTransferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryEnergyTransferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetEnergyTransferResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryEnergyTransferResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -366,41 +363,41 @@ func (m *QueryGetEnergyTransferResponse) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *QueryGetEnergyTransferResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetEnergyTransferResponse.Merge(m, src)
+func (m *QueryEnergyTransferResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryEnergyTransferResponse.Merge(m, src)
 }
-func (m *QueryGetEnergyTransferResponse) XXX_Size() int {
+func (m *QueryEnergyTransferResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetEnergyTransferResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetEnergyTransferResponse.DiscardUnknown(m)
+func (m *QueryEnergyTransferResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryEnergyTransferResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetEnergyTransferResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryEnergyTransferResponse proto.InternalMessageInfo
 
-func (m *QueryGetEnergyTransferResponse) GetEnergyTransfer() EnergyTransfer {
+func (m *QueryEnergyTransferResponse) GetEnergyTransfer() EnergyTransfer {
 	if m != nil {
 		return m.EnergyTransfer
 	}
 	return EnergyTransfer{}
 }
 
-type QueryAllEnergyTransferRequest struct {
+type QueryAllEnergyTransfersRequest struct {
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryAllEnergyTransferRequest) Reset()         { *m = QueryAllEnergyTransferRequest{} }
-func (m *QueryAllEnergyTransferRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAllEnergyTransferRequest) ProtoMessage()    {}
-func (*QueryAllEnergyTransferRequest) Descriptor() ([]byte, []int) {
+func (m *QueryAllEnergyTransfersRequest) Reset()         { *m = QueryAllEnergyTransfersRequest{} }
+func (m *QueryAllEnergyTransfersRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllEnergyTransfersRequest) ProtoMessage()    {}
+func (*QueryAllEnergyTransfersRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_78ae7a5fcfa04e9a, []int{8}
 }
-func (m *QueryAllEnergyTransferRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryAllEnergyTransfersRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAllEnergyTransferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryAllEnergyTransfersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAllEnergyTransferRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryAllEnergyTransfersRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -410,42 +407,42 @@ func (m *QueryAllEnergyTransferRequest) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *QueryAllEnergyTransferRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllEnergyTransferRequest.Merge(m, src)
+func (m *QueryAllEnergyTransfersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllEnergyTransfersRequest.Merge(m, src)
 }
-func (m *QueryAllEnergyTransferRequest) XXX_Size() int {
+func (m *QueryAllEnergyTransfersRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAllEnergyTransferRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllEnergyTransferRequest.DiscardUnknown(m)
+func (m *QueryAllEnergyTransfersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllEnergyTransfersRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAllEnergyTransferRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryAllEnergyTransfersRequest proto.InternalMessageInfo
 
-func (m *QueryAllEnergyTransferRequest) GetPagination() *query.PageRequest {
+func (m *QueryAllEnergyTransfersRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-type QueryAllEnergyTransferResponse struct {
+type QueryAllEnergyTransfersResponse struct {
 	EnergyTransfer []EnergyTransfer    `protobuf:"bytes,1,rep,name=energy_transfer,json=energyTransfer,proto3" json:"energy_transfer"`
 	Pagination     *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryAllEnergyTransferResponse) Reset()         { *m = QueryAllEnergyTransferResponse{} }
-func (m *QueryAllEnergyTransferResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAllEnergyTransferResponse) ProtoMessage()    {}
-func (*QueryAllEnergyTransferResponse) Descriptor() ([]byte, []int) {
+func (m *QueryAllEnergyTransfersResponse) Reset()         { *m = QueryAllEnergyTransfersResponse{} }
+func (m *QueryAllEnergyTransfersResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllEnergyTransfersResponse) ProtoMessage()    {}
+func (*QueryAllEnergyTransfersResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_78ae7a5fcfa04e9a, []int{9}
 }
-func (m *QueryAllEnergyTransferResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryAllEnergyTransfersResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAllEnergyTransferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryAllEnergyTransfersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAllEnergyTransferResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryAllEnergyTransfersResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -455,51 +452,49 @@ func (m *QueryAllEnergyTransferResponse) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *QueryAllEnergyTransferResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllEnergyTransferResponse.Merge(m, src)
+func (m *QueryAllEnergyTransfersResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllEnergyTransfersResponse.Merge(m, src)
 }
-func (m *QueryAllEnergyTransferResponse) XXX_Size() int {
+func (m *QueryAllEnergyTransfersResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAllEnergyTransferResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllEnergyTransferResponse.DiscardUnknown(m)
+func (m *QueryAllEnergyTransfersResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllEnergyTransfersResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAllEnergyTransferResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryAllEnergyTransfersResponse proto.InternalMessageInfo
 
-func (m *QueryAllEnergyTransferResponse) GetEnergyTransfer() []EnergyTransfer {
+func (m *QueryAllEnergyTransfersResponse) GetEnergyTransfer() []EnergyTransfer {
 	if m != nil {
 		return m.EnergyTransfer
 	}
 	return nil
 }
 
-func (m *QueryAllEnergyTransferResponse) GetPagination() *query.PageResponse {
+func (m *QueryAllEnergyTransfersResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-type QueryListOwnEnergyTransferOfferRequest struct {
-	OwnerAccAddress string             `protobuf:"bytes,1,opt,name=owner_acc_address,json=ownerAccAddress,proto3" json:"owner_acc_address,omitempty"`
-	Pagination      *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+type QueryEnergyTransferOffersRequest struct {
+	Owner      string             `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryListOwnEnergyTransferOfferRequest) Reset() {
-	*m = QueryListOwnEnergyTransferOfferRequest{}
-}
-func (m *QueryListOwnEnergyTransferOfferRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryListOwnEnergyTransferOfferRequest) ProtoMessage()    {}
-func (*QueryListOwnEnergyTransferOfferRequest) Descriptor() ([]byte, []int) {
+func (m *QueryEnergyTransferOffersRequest) Reset()         { *m = QueryEnergyTransferOffersRequest{} }
+func (m *QueryEnergyTransferOffersRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryEnergyTransferOffersRequest) ProtoMessage()    {}
+func (*QueryEnergyTransferOffersRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_78ae7a5fcfa04e9a, []int{10}
 }
-func (m *QueryListOwnEnergyTransferOfferRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryEnergyTransferOffersRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryListOwnEnergyTransferOfferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryEnergyTransferOffersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryListOwnEnergyTransferOfferRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryEnergyTransferOffersRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -509,51 +504,49 @@ func (m *QueryListOwnEnergyTransferOfferRequest) XXX_Marshal(b []byte, determini
 		return b[:n], nil
 	}
 }
-func (m *QueryListOwnEnergyTransferOfferRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryListOwnEnergyTransferOfferRequest.Merge(m, src)
+func (m *QueryEnergyTransferOffersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryEnergyTransferOffersRequest.Merge(m, src)
 }
-func (m *QueryListOwnEnergyTransferOfferRequest) XXX_Size() int {
+func (m *QueryEnergyTransferOffersRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryListOwnEnergyTransferOfferRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryListOwnEnergyTransferOfferRequest.DiscardUnknown(m)
+func (m *QueryEnergyTransferOffersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryEnergyTransferOffersRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryListOwnEnergyTransferOfferRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryEnergyTransferOffersRequest proto.InternalMessageInfo
 
-func (m *QueryListOwnEnergyTransferOfferRequest) GetOwnerAccAddress() string {
+func (m *QueryEnergyTransferOffersRequest) GetOwner() string {
 	if m != nil {
-		return m.OwnerAccAddress
+		return m.Owner
 	}
 	return ""
 }
 
-func (m *QueryListOwnEnergyTransferOfferRequest) GetPagination() *query.PageRequest {
+func (m *QueryEnergyTransferOffersRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-type QueryListOwnEnergyTransferOfferResponse struct {
+type QueryEnergyTransferOffersResponse struct {
 	EnergyTransferOffer []EnergyTransferOffer `protobuf:"bytes,1,rep,name=energy_transfer_offer,json=energyTransferOffer,proto3" json:"energy_transfer_offer"`
 	Pagination          *query.PageResponse   `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryListOwnEnergyTransferOfferResponse) Reset() {
-	*m = QueryListOwnEnergyTransferOfferResponse{}
-}
-func (m *QueryListOwnEnergyTransferOfferResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryListOwnEnergyTransferOfferResponse) ProtoMessage()    {}
-func (*QueryListOwnEnergyTransferOfferResponse) Descriptor() ([]byte, []int) {
+func (m *QueryEnergyTransferOffersResponse) Reset()         { *m = QueryEnergyTransferOffersResponse{} }
+func (m *QueryEnergyTransferOffersResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryEnergyTransferOffersResponse) ProtoMessage()    {}
+func (*QueryEnergyTransferOffersResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_78ae7a5fcfa04e9a, []int{11}
 }
-func (m *QueryListOwnEnergyTransferOfferResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryEnergyTransferOffersResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryListOwnEnergyTransferOfferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryEnergyTransferOffersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryListOwnEnergyTransferOfferResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryEnergyTransferOffersResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -563,50 +556,49 @@ func (m *QueryListOwnEnergyTransferOfferResponse) XXX_Marshal(b []byte, determin
 		return b[:n], nil
 	}
 }
-func (m *QueryListOwnEnergyTransferOfferResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryListOwnEnergyTransferOfferResponse.Merge(m, src)
+func (m *QueryEnergyTransferOffersResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryEnergyTransferOffersResponse.Merge(m, src)
 }
-func (m *QueryListOwnEnergyTransferOfferResponse) XXX_Size() int {
+func (m *QueryEnergyTransferOffersResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryListOwnEnergyTransferOfferResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryListOwnEnergyTransferOfferResponse.DiscardUnknown(m)
+func (m *QueryEnergyTransferOffersResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryEnergyTransferOffersResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryListOwnEnergyTransferOfferResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryEnergyTransferOffersResponse proto.InternalMessageInfo
 
-func (m *QueryListOwnEnergyTransferOfferResponse) GetEnergyTransferOffer() []EnergyTransferOffer {
+func (m *QueryEnergyTransferOffersResponse) GetEnergyTransferOffer() []EnergyTransferOffer {
 	if m != nil {
 		return m.EnergyTransferOffer
 	}
 	return nil
 }
 
-func (m *QueryListOwnEnergyTransferOfferResponse) GetPagination() *query.PageResponse {
+func (m *QueryEnergyTransferOffersResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-type QueryListOwnEnergyTransferRequest struct {
-	DriverAccAddress string             `protobuf:"bytes,1,opt,name=driver_acc_address,json=driverAccAddress,proto3" json:"driver_acc_address,omitempty"`
-	TransferStatus   int32              `protobuf:"varint,2,opt,name=transfer_status,json=transferStatus,proto3" json:"transfer_status,omitempty"`
-	Pagination       *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
+type QueryEnergyTransfersRequest struct {
+	Owner      string             `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryListOwnEnergyTransferRequest) Reset()         { *m = QueryListOwnEnergyTransferRequest{} }
-func (m *QueryListOwnEnergyTransferRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryListOwnEnergyTransferRequest) ProtoMessage()    {}
-func (*QueryListOwnEnergyTransferRequest) Descriptor() ([]byte, []int) {
+func (m *QueryEnergyTransfersRequest) Reset()         { *m = QueryEnergyTransfersRequest{} }
+func (m *QueryEnergyTransfersRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryEnergyTransfersRequest) ProtoMessage()    {}
+func (*QueryEnergyTransfersRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_78ae7a5fcfa04e9a, []int{12}
 }
-func (m *QueryListOwnEnergyTransferRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryEnergyTransfersRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryListOwnEnergyTransferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryEnergyTransfersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryListOwnEnergyTransferRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryEnergyTransfersRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -616,160 +608,161 @@ func (m *QueryListOwnEnergyTransferRequest) XXX_Marshal(b []byte, deterministic 
 		return b[:n], nil
 	}
 }
-func (m *QueryListOwnEnergyTransferRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryListOwnEnergyTransferRequest.Merge(m, src)
+func (m *QueryEnergyTransfersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryEnergyTransfersRequest.Merge(m, src)
 }
-func (m *QueryListOwnEnergyTransferRequest) XXX_Size() int {
+func (m *QueryEnergyTransfersRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryListOwnEnergyTransferRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryListOwnEnergyTransferRequest.DiscardUnknown(m)
+func (m *QueryEnergyTransfersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryEnergyTransfersRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryListOwnEnergyTransferRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryEnergyTransfersRequest proto.InternalMessageInfo
 
-func (m *QueryListOwnEnergyTransferRequest) GetDriverAccAddress() string {
+func (m *QueryEnergyTransfersRequest) GetOwner() string {
 	if m != nil {
-		return m.DriverAccAddress
+		return m.Owner
 	}
 	return ""
 }
 
-func (m *QueryListOwnEnergyTransferRequest) GetTransferStatus() int32 {
+func (m *QueryEnergyTransfersRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryEnergyTransfersResponse struct {
+	EnergyTransfer []EnergyTransfer    `protobuf:"bytes,1,rep,name=energy_transfer,json=energyTransfer,proto3" json:"energy_transfer"`
+	Pagination     *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryEnergyTransfersResponse) Reset()         { *m = QueryEnergyTransfersResponse{} }
+func (m *QueryEnergyTransfersResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryEnergyTransfersResponse) ProtoMessage()    {}
+func (*QueryEnergyTransfersResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_78ae7a5fcfa04e9a, []int{13}
+}
+func (m *QueryEnergyTransfersResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryEnergyTransfersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryEnergyTransfersResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryEnergyTransfersResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryEnergyTransfersResponse.Merge(m, src)
+}
+func (m *QueryEnergyTransfersResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryEnergyTransfersResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryEnergyTransfersResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryEnergyTransfersResponse proto.InternalMessageInfo
+
+func (m *QueryEnergyTransfersResponse) GetEnergyTransfer() []EnergyTransfer {
+	if m != nil {
+		return m.EnergyTransfer
+	}
+	return nil
+}
+
+func (m *QueryEnergyTransfersResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryOwnEnergyTransfersRequest struct {
+	Driver         string             `protobuf:"bytes,1,opt,name=driver,proto3" json:"driver,omitempty"`
+	TransferStatus int32              `protobuf:"varint,2,opt,name=transfer_status,json=transferStatus,proto3" json:"transfer_status,omitempty"`
+	Pagination     *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryOwnEnergyTransfersRequest) Reset()         { *m = QueryOwnEnergyTransfersRequest{} }
+func (m *QueryOwnEnergyTransfersRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryOwnEnergyTransfersRequest) ProtoMessage()    {}
+func (*QueryOwnEnergyTransfersRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_78ae7a5fcfa04e9a, []int{14}
+}
+func (m *QueryOwnEnergyTransfersRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryOwnEnergyTransfersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryOwnEnergyTransfersRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryOwnEnergyTransfersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOwnEnergyTransfersRequest.Merge(m, src)
+}
+func (m *QueryOwnEnergyTransfersRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryOwnEnergyTransfersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOwnEnergyTransfersRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryOwnEnergyTransfersRequest proto.InternalMessageInfo
+
+func (m *QueryOwnEnergyTransfersRequest) GetDriver() string {
+	if m != nil {
+		return m.Driver
+	}
+	return ""
+}
+
+func (m *QueryOwnEnergyTransfersRequest) GetTransferStatus() int32 {
 	if m != nil {
 		return m.TransferStatus
 	}
 	return 0
 }
 
-func (m *QueryListOwnEnergyTransferRequest) GetPagination() *query.PageRequest {
+func (m *QueryOwnEnergyTransfersRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-type QueryListOwnEnergyTransferResponse struct {
+type QueryOwnEnergyTransfersResponse struct {
 	EnergyTransfer []EnergyTransfer    `protobuf:"bytes,1,rep,name=energy_transfer,json=energyTransfer,proto3" json:"energy_transfer"`
 	Pagination     *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryListOwnEnergyTransferResponse) Reset()         { *m = QueryListOwnEnergyTransferResponse{} }
-func (m *QueryListOwnEnergyTransferResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryListOwnEnergyTransferResponse) ProtoMessage()    {}
-func (*QueryListOwnEnergyTransferResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_78ae7a5fcfa04e9a, []int{13}
-}
-func (m *QueryListOwnEnergyTransferResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryListOwnEnergyTransferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryListOwnEnergyTransferResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryListOwnEnergyTransferResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryListOwnEnergyTransferResponse.Merge(m, src)
-}
-func (m *QueryListOwnEnergyTransferResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryListOwnEnergyTransferResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryListOwnEnergyTransferResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryListOwnEnergyTransferResponse proto.InternalMessageInfo
-
-func (m *QueryListOwnEnergyTransferResponse) GetEnergyTransfer() []EnergyTransfer {
-	if m != nil {
-		return m.EnergyTransfer
-	}
-	return nil
-}
-
-func (m *QueryListOwnEnergyTransferResponse) GetPagination() *query.PageResponse {
-	if m != nil {
-		return m.Pagination
-	}
-	return nil
-}
-
-type QueryListOwnerEnergyTransferRequest struct {
-	OwnerAccAddress string             `protobuf:"bytes,1,opt,name=owner_acc_address,json=ownerAccAddress,proto3" json:"owner_acc_address,omitempty"`
-	Pagination      *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-}
-
-func (m *QueryListOwnerEnergyTransferRequest) Reset()         { *m = QueryListOwnerEnergyTransferRequest{} }
-func (m *QueryListOwnerEnergyTransferRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryListOwnerEnergyTransferRequest) ProtoMessage()    {}
-func (*QueryListOwnerEnergyTransferRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_78ae7a5fcfa04e9a, []int{14}
-}
-func (m *QueryListOwnerEnergyTransferRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryListOwnerEnergyTransferRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryListOwnerEnergyTransferRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryListOwnerEnergyTransferRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryListOwnerEnergyTransferRequest.Merge(m, src)
-}
-func (m *QueryListOwnerEnergyTransferRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryListOwnerEnergyTransferRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryListOwnerEnergyTransferRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryListOwnerEnergyTransferRequest proto.InternalMessageInfo
-
-func (m *QueryListOwnerEnergyTransferRequest) GetOwnerAccAddress() string {
-	if m != nil {
-		return m.OwnerAccAddress
-	}
-	return ""
-}
-
-func (m *QueryListOwnerEnergyTransferRequest) GetPagination() *query.PageRequest {
-	if m != nil {
-		return m.Pagination
-	}
-	return nil
-}
-
-type QueryListOwnerEnergyTransferResponse struct {
-	EnergyTransfer []EnergyTransfer    `protobuf:"bytes,1,rep,name=energy_transfer,json=energyTransfer,proto3" json:"energy_transfer"`
-	Pagination     *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
-}
-
-func (m *QueryListOwnerEnergyTransferResponse) Reset()         { *m = QueryListOwnerEnergyTransferResponse{} }
-func (m *QueryListOwnerEnergyTransferResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryListOwnerEnergyTransferResponse) ProtoMessage()    {}
-func (*QueryListOwnerEnergyTransferResponse) Descriptor() ([]byte, []int) {
+func (m *QueryOwnEnergyTransfersResponse) Reset()         { *m = QueryOwnEnergyTransfersResponse{} }
+func (m *QueryOwnEnergyTransfersResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryOwnEnergyTransfersResponse) ProtoMessage()    {}
+func (*QueryOwnEnergyTransfersResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_78ae7a5fcfa04e9a, []int{15}
 }
-func (m *QueryListOwnerEnergyTransferResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryOwnEnergyTransfersResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryListOwnerEnergyTransferResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryOwnEnergyTransfersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryListOwnerEnergyTransferResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryOwnEnergyTransfersResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -779,26 +772,26 @@ func (m *QueryListOwnerEnergyTransferResponse) XXX_Marshal(b []byte, determinist
 		return b[:n], nil
 	}
 }
-func (m *QueryListOwnerEnergyTransferResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryListOwnerEnergyTransferResponse.Merge(m, src)
+func (m *QueryOwnEnergyTransfersResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOwnEnergyTransfersResponse.Merge(m, src)
 }
-func (m *QueryListOwnerEnergyTransferResponse) XXX_Size() int {
+func (m *QueryOwnEnergyTransfersResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryListOwnerEnergyTransferResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryListOwnerEnergyTransferResponse.DiscardUnknown(m)
+func (m *QueryOwnEnergyTransfersResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOwnEnergyTransfersResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryListOwnerEnergyTransferResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryOwnEnergyTransfersResponse proto.InternalMessageInfo
 
-func (m *QueryListOwnerEnergyTransferResponse) GetEnergyTransfer() []EnergyTransfer {
+func (m *QueryOwnEnergyTransfersResponse) GetEnergyTransfer() []EnergyTransfer {
 	if m != nil {
 		return m.EnergyTransfer
 	}
 	return nil
 }
 
-func (m *QueryListOwnerEnergyTransferResponse) GetPagination() *query.PageResponse {
+func (m *QueryOwnEnergyTransfersResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
@@ -808,83 +801,80 @@ func (m *QueryListOwnerEnergyTransferResponse) GetPagination() *query.PageRespon
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "chain4energy.c4echain.cfeev.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "chain4energy.c4echain.cfeev.QueryParamsResponse")
-	proto.RegisterType((*QueryGetEnergyTransferOfferRequest)(nil), "chain4energy.c4echain.cfeev.QueryGetEnergyTransferOfferRequest")
-	proto.RegisterType((*QueryGetEnergyTransferOfferResponse)(nil), "chain4energy.c4echain.cfeev.QueryGetEnergyTransferOfferResponse")
-	proto.RegisterType((*QueryAllEnergyTransferOfferRequest)(nil), "chain4energy.c4echain.cfeev.QueryAllEnergyTransferOfferRequest")
+	proto.RegisterType((*QueryEnergyTransferOfferRequest)(nil), "chain4energy.c4echain.cfeev.QueryEnergyTransferOfferRequest")
+	proto.RegisterType((*QueryEnergyTransferOfferResponse)(nil), "chain4energy.c4echain.cfeev.QueryEnergyTransferOfferResponse")
+	proto.RegisterType((*QueryAllEnergyTransferOffersRequest)(nil), "chain4energy.c4echain.cfeev.QueryAllEnergyTransferOffersRequest")
 	proto.RegisterType((*QueryAllEnergyTransferOfferResponse)(nil), "chain4energy.c4echain.cfeev.QueryAllEnergyTransferOfferResponse")
-	proto.RegisterType((*QueryGetEnergyTransferRequest)(nil), "chain4energy.c4echain.cfeev.QueryGetEnergyTransferRequest")
-	proto.RegisterType((*QueryGetEnergyTransferResponse)(nil), "chain4energy.c4echain.cfeev.QueryGetEnergyTransferResponse")
-	proto.RegisterType((*QueryAllEnergyTransferRequest)(nil), "chain4energy.c4echain.cfeev.QueryAllEnergyTransferRequest")
-	proto.RegisterType((*QueryAllEnergyTransferResponse)(nil), "chain4energy.c4echain.cfeev.QueryAllEnergyTransferResponse")
-	proto.RegisterType((*QueryListOwnEnergyTransferOfferRequest)(nil), "chain4energy.c4echain.cfeev.QueryListOwnEnergyTransferOfferRequest")
-	proto.RegisterType((*QueryListOwnEnergyTransferOfferResponse)(nil), "chain4energy.c4echain.cfeev.QueryListOwnEnergyTransferOfferResponse")
-	proto.RegisterType((*QueryListOwnEnergyTransferRequest)(nil), "chain4energy.c4echain.cfeev.QueryListOwnEnergyTransferRequest")
-	proto.RegisterType((*QueryListOwnEnergyTransferResponse)(nil), "chain4energy.c4echain.cfeev.QueryListOwnEnergyTransferResponse")
-	proto.RegisterType((*QueryListOwnerEnergyTransferRequest)(nil), "chain4energy.c4echain.cfeev.QueryListOwnerEnergyTransferRequest")
-	proto.RegisterType((*QueryListOwnerEnergyTransferResponse)(nil), "chain4energy.c4echain.cfeev.QueryListOwnerEnergyTransferResponse")
+	proto.RegisterType((*QueryEnergyTransferRequest)(nil), "chain4energy.c4echain.cfeev.QueryEnergyTransferRequest")
+	proto.RegisterType((*QueryEnergyTransferResponse)(nil), "chain4energy.c4echain.cfeev.QueryEnergyTransferResponse")
+	proto.RegisterType((*QueryAllEnergyTransfersRequest)(nil), "chain4energy.c4echain.cfeev.QueryAllEnergyTransfersRequest")
+	proto.RegisterType((*QueryAllEnergyTransfersResponse)(nil), "chain4energy.c4echain.cfeev.QueryAllEnergyTransfersResponse")
+	proto.RegisterType((*QueryEnergyTransferOffersRequest)(nil), "chain4energy.c4echain.cfeev.QueryEnergyTransferOffersRequest")
+	proto.RegisterType((*QueryEnergyTransferOffersResponse)(nil), "chain4energy.c4echain.cfeev.QueryEnergyTransferOffersResponse")
+	proto.RegisterType((*QueryEnergyTransfersRequest)(nil), "chain4energy.c4echain.cfeev.QueryEnergyTransfersRequest")
+	proto.RegisterType((*QueryEnergyTransfersResponse)(nil), "chain4energy.c4echain.cfeev.QueryEnergyTransfersResponse")
+	proto.RegisterType((*QueryOwnEnergyTransfersRequest)(nil), "chain4energy.c4echain.cfeev.QueryOwnEnergyTransfersRequest")
+	proto.RegisterType((*QueryOwnEnergyTransfersResponse)(nil), "chain4energy.c4echain.cfeev.QueryOwnEnergyTransfersResponse")
 }
 
 func init() { proto.RegisterFile("c4echain/cfeev/query.proto", fileDescriptor_78ae7a5fcfa04e9a) }
 
 var fileDescriptor_78ae7a5fcfa04e9a = []byte{
-	// 898 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x97, 0x4d, 0x4f, 0x13, 0x41,
-	0x18, 0xc7, 0x3b, 0xe5, 0x25, 0x71, 0x34, 0x45, 0x86, 0x17, 0xc9, 0xa2, 0x8b, 0x2c, 0x48, 0x0d,
-	0xc2, 0x0e, 0x60, 0x4f, 0x18, 0x81, 0x22, 0x2f, 0xd1, 0x98, 0x80, 0xd5, 0x83, 0xe1, 0xd2, 0x6c,
-	0xb7, 0xc3, 0xb2, 0xa6, 0xec, 0x96, 0xdd, 0x6d, 0x91, 0x20, 0x17, 0xaf, 0x5e, 0x34, 0x9e, 0x4c,
-	0xfc, 0x1a, 0xc6, 0xbb, 0x89, 0x09, 0xbe, 0x1c, 0x48, 0xbc, 0x18, 0x0f, 0x68, 0x80, 0xf8, 0x05,
-	0xfc, 0x02, 0xa6, 0xb3, 0xb3, 0xd8, 0x97, 0x7d, 0x29, 0x4b, 0x13, 0xc3, 0xad, 0xd9, 0x99, 0xe7,
-	0x79, 0x7e, 0xff, 0xff, 0xb3, 0x33, 0x7d, 0x16, 0x72, 0x72, 0x82, 0xc8, 0x6b, 0x92, 0xaa, 0x61,
-	0x79, 0x95, 0x90, 0x22, 0xde, 0x28, 0x10, 0x63, 0x4b, 0xcc, 0x1b, 0xba, 0xa5, 0xa3, 0x5e, 0xba,
-	0x90, 0x20, 0x1a, 0x31, 0x94, 0x2d, 0xd1, 0xd9, 0x28, 0xd2, 0x8d, 0x5c, 0xa7, 0xa2, 0x2b, 0x3a,
-	0xdd, 0x87, 0x4b, 0xbf, 0xec, 0x10, 0xee, 0xb2, 0xa2, 0xeb, 0x4a, 0x8e, 0x60, 0x29, 0xaf, 0x62,
-	0x49, 0xd3, 0x74, 0x4b, 0xb2, 0x54, 0x5d, 0x33, 0xd9, 0xea, 0xb0, 0xac, 0x9b, 0xeb, 0xba, 0x89,
-	0x33, 0x92, 0x49, 0xec, 0x4a, 0xb8, 0x38, 0x9e, 0x21, 0x96, 0x34, 0x8e, 0xf3, 0x92, 0xa2, 0x6a,
-	0x74, 0x33, 0xdb, 0xdb, 0x5b, 0x05, 0x96, 0x97, 0x0c, 0x69, 0xdd, 0x49, 0x34, 0x58, 0xb5, 0x68,
-	0x23, 0xa6, 0x2d, 0x43, 0xd2, 0xcc, 0x55, 0x62, 0x1c, 0x97, 0xf3, 0xdd, 0x95, 0xd6, 0x57, 0x8f,
-	0xf7, 0x0a, 0x9d, 0x10, 0x3d, 0x28, 0x01, 0x2d, 0xd3, 0x32, 0x29, 0xb2, 0x51, 0x20, 0xa6, 0x25,
-	0x3c, 0x86, 0x1d, 0x15, 0x4f, 0xcd, 0xbc, 0xae, 0x99, 0x04, 0x25, 0x61, 0xab, 0x8d, 0xd3, 0x03,
-	0xae, 0x82, 0xeb, 0xe7, 0x27, 0x06, 0x44, 0x1f, 0xa7, 0x44, 0x3b, 0x78, 0xb6, 0x79, 0x77, 0xbf,
-	0x2f, 0x92, 0x62, 0x81, 0x42, 0x02, 0x0a, 0x34, 0xf3, 0x22, 0xb1, 0xe6, 0x69, 0xd4, 0x23, 0x46,
-	0xb5, 0x54, 0x82, 0x62, 0xf5, 0x51, 0x0c, 0x46, 0xd5, 0x2c, 0x2d, 0xd2, 0x9c, 0x8a, 0xaa, 0x59,
-	0xe1, 0x15, 0x80, 0x03, 0xbe, 0x61, 0x0c, 0xf0, 0x09, 0xec, 0x72, 0x15, 0xcb, 0x78, 0xc7, 0x7c,
-	0x79, 0x5d, 0x12, 0x33, 0xf8, 0x0e, 0x52, 0xbb, 0x24, 0xe4, 0x98, 0x92, 0x64, 0x2e, 0xe7, 0xa3,
-	0x64, 0x01, 0xc2, 0x7f, 0x2d, 0x66, 0x18, 0x43, 0xa2, 0xfd, 0x3e, 0x88, 0xa5, 0xf7, 0x41, 0xb4,
-	0xdf, 0x3c, 0xf6, 0x3e, 0x88, 0xcb, 0x92, 0x42, 0x58, 0x6c, 0xaa, 0x2c, 0x52, 0xf8, 0xe1, 0x38,
-	0xe0, 0x55, 0x2e, 0xd8, 0x81, 0xa6, 0x06, 0x3b, 0x80, 0x16, 0x2b, 0xb4, 0x45, 0xa9, 0xb6, 0x78,
-	0xa0, 0x36, 0x1b, 0xb4, 0x42, 0x1c, 0x86, 0x57, 0xdc, 0xbb, 0xeb, 0xf5, 0x3e, 0x3c, 0x83, 0xbc,
-	0x57, 0x00, 0xf3, 0x61, 0x05, 0xb6, 0x55, 0xf9, 0xc0, 0xcc, 0xbf, 0x71, 0x02, 0x07, 0x98, 0xf8,
-	0x58, 0xa5, 0x78, 0x41, 0x61, 0xb8, 0x35, 0xad, 0x68, 0x74, 0xd3, 0x3f, 0x02, 0xa6, 0xd3, 0xa5,
-	0x92, 0x9f, 0xce, 0xa6, 0x86, 0xe8, 0x6c, 0x5c, 0x7f, 0xdf, 0x02, 0x38, 0x44, 0x75, 0xdc, 0x57,
-	0x4d, 0x6b, 0x69, 0x53, 0xf3, 0x39, 0x2f, 0xc3, 0xb0, 0x5d, 0xdf, 0xd4, 0x88, 0x91, 0x96, 0x64,
-	0x39, 0x2d, 0x65, 0xb3, 0x06, 0x31, 0xed, 0xdb, 0xe6, 0x5c, 0xaa, 0x8d, 0x2e, 0x24, 0x65, 0x39,
-	0x69, 0x3f, 0xae, 0xb2, 0x39, 0x1a, 0xda, 0xe6, 0x7d, 0x00, 0xe3, 0x81, 0x78, 0x67, 0xf9, 0x7c,
-	0x7d, 0x00, 0xb0, 0xdf, 0x5b, 0xa0, 0x63, 0xfd, 0x08, 0x44, 0x59, 0x43, 0x2d, 0xba, 0x7a, 0x7f,
-	0xd1, 0x5e, 0x29, 0x33, 0x3f, 0x0e, 0xdb, 0x8e, 0x1d, 0x30, 0x2d, 0xc9, 0x2a, 0x98, 0x94, 0xb0,
-	0x25, 0x15, 0x73, 0x1e, 0x3f, 0xa4, 0x4f, 0xab, 0xba, 0xd4, 0x14, 0xba, 0x4b, 0x9f, 0x00, 0xbb,
-	0x70, 0x3d, 0x44, 0x9c, 0xa5, 0x03, 0xf1, 0xc6, 0xb9, 0xcd, 0x99, 0x16, 0x62, 0xb8, 0xb7, 0xe4,
-	0x7f, 0x9c, 0x86, 0x2f, 0x00, 0x0e, 0xfa, 0xb3, 0x9d, 0x21, 0xa7, 0x27, 0x8e, 0x2e, 0xc0, 0x16,
-	0xaa, 0x06, 0xbd, 0x00, 0xb0, 0xd5, 0x1e, 0x49, 0x10, 0xf6, 0x05, 0xac, 0x9d, 0x87, 0xb8, 0xb1,
-	0xfa, 0x03, 0x6c, 0x06, 0x81, 0x7f, 0xfe, 0xed, 0xe8, 0x75, 0xb4, 0x07, 0x75, 0x63, 0x39, 0x41,
-	0x30, 0x29, 0x96, 0x0d, 0x7c, 0x14, 0xe1, 0x2b, 0x80, 0x1d, 0x2e, 0xd7, 0x01, 0x9a, 0x0e, 0xae,
-	0xe4, 0x3b, 0x3a, 0x71, 0x33, 0xe1, 0x13, 0x30, 0xf4, 0x09, 0x8a, 0x3e, 0x82, 0x86, 0xab, 0xd1,
-	0x5d, 0x2f, 0x3e, 0xbc, 0xad, 0x66, 0x77, 0xd0, 0x67, 0x00, 0xbb, 0x5d, 0x72, 0x26, 0x73, 0xb9,
-	0x7a, 0x14, 0xf9, 0x8e, 0x50, 0xf5, 0x28, 0xf2, 0x1f, 0x8a, 0x84, 0x51, 0xaa, 0x28, 0x8e, 0xae,
-	0xd5, 0xa5, 0x08, 0xbd, 0x07, 0x30, 0x56, 0x99, 0x0e, 0x4d, 0x86, 0x70, 0xd5, 0xe1, 0xbf, 0x15,
-	0x2a, 0x96, 0xa1, 0x8f, 0x50, 0xf4, 0x21, 0x34, 0x18, 0x80, 0x6e, 0xb7, 0xe1, 0x1d, 0x80, 0xed,
-	0x95, 0x89, 0x4a, 0x1d, 0x98, 0x0c, 0x61, 0xe0, 0x09, 0xe0, 0x3d, 0x87, 0x13, 0x21, 0x4e, 0xe1,
-	0xfb, 0x51, 0x5f, 0x00, 0x3c, 0xfa, 0x03, 0x20, 0xe7, 0xfd, 0xe7, 0x8b, 0xee, 0x04, 0x43, 0x04,
-	0x4e, 0x16, 0xdc, 0xdc, 0xe9, 0x92, 0x30, 0x49, 0xf7, 0xa8, 0xa4, 0x39, 0x34, 0x5b, 0x2d, 0x29,
-	0xa7, 0x9a, 0x56, 0x5a, 0xdf, 0xd4, 0xd2, 0x1e, 0xa7, 0xa4, 0xe6, 0x1e, 0xdf, 0x41, 0x3f, 0x01,
-	0xec, 0x72, 0x2d, 0x89, 0xa6, 0x42, 0xb2, 0x3a, 0x5a, 0xa7, 0x43, 0xc7, 0x33, 0x99, 0xf3, 0x54,
-	0xe6, 0x34, 0xba, 0x5d, 0xaf, 0x4c, 0xbc, 0x5d, 0x3b, 0x3b, 0xec, 0xa0, 0xdf, 0x00, 0x5e, 0xf2,
-	0xf8, 0x1b, 0x41, 0x33, 0x75, 0x33, 0x7a, 0xfc, 0x3b, 0x72, 0xc9, 0x53, 0x64, 0x60, 0x3a, 0x17,
-	0xa8, 0xce, 0x19, 0x34, 0xe5, 0xa5, 0x93, 0x18, 0xb5, 0x4a, 0x6b, 0x5b, 0x39, 0x7b, 0x77, 0xf7,
-	0x80, 0x07, 0x7b, 0x07, 0x3c, 0xf8, 0x75, 0xc0, 0x83, 0x97, 0x87, 0x7c, 0x64, 0xef, 0x90, 0x8f,
-	0x7c, 0x3f, 0xe4, 0x23, 0x2b, 0x58, 0x51, 0xad, 0xb5, 0x42, 0x46, 0x94, 0xf5, 0x75, 0x5c, 0x8e,
-	0x5b, 0x2a, 0x38, 0x6a, 0x7f, 0xa5, 0x3f, 0x65, 0xdf, 0xe9, 0xd6, 0x56, 0x9e, 0x98, 0x99, 0x56,
-	0xfa, 0x61, 0x7e, 0xf3, 0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x65, 0xde, 0xbb, 0x1a, 0xa2, 0x10,
-	0x00, 0x00,
+	// 854 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x97, 0xcf, 0x4b, 0x1b, 0x5b,
+	0x14, 0xc7, 0x73, 0xa3, 0x06, 0xde, 0x79, 0x8f, 0x08, 0xd7, 0x3c, 0x9f, 0x44, 0x19, 0x7d, 0xa3,
+	0x68, 0xb0, 0x76, 0x6e, 0xb4, 0xd2, 0x1f, 0xd4, 0xfe, 0x50, 0x68, 0xa5, 0x2b, 0x6d, 0xda, 0x45,
+	0x71, 0x23, 0x93, 0xe4, 0x3a, 0x4e, 0x31, 0x73, 0x63, 0x66, 0x12, 0x1b, 0x42, 0xa0, 0x94, 0xee,
+	0x0a, 0xa5, 0xd0, 0xbf, 0xa2, 0xcb, 0xee, 0xda, 0x75, 0x41, 0xdc, 0x14, 0x84, 0x6e, 0xa4, 0x8b,
+	0x52, 0xb4, 0x7f, 0x48, 0xc9, 0x9d, 0x9b, 0xa9, 0x99, 0xcc, 0x4c, 0x92, 0x69, 0x28, 0xb8, 0x4b,
+	0x66, 0xee, 0xb9, 0xe7, 0xf3, 0xfd, 0x9e, 0x73, 0x7f, 0x0c, 0x24, 0x73, 0xcb, 0x34, 0xb7, 0xab,
+	0xea, 0x06, 0xc9, 0xed, 0x50, 0x5a, 0x21, 0xfb, 0x65, 0x5a, 0xaa, 0x2a, 0xc5, 0x12, 0xb3, 0x18,
+	0x1e, 0xe7, 0x2f, 0x96, 0xa9, 0x41, 0x4b, 0x5a, 0x55, 0x69, 0x0e, 0x54, 0xf8, 0xc0, 0x64, 0x42,
+	0x63, 0x1a, 0xe3, 0xe3, 0x48, 0xe3, 0x97, 0x1d, 0x92, 0x9c, 0xd0, 0x18, 0xd3, 0xf6, 0x28, 0x51,
+	0x8b, 0x3a, 0x51, 0x0d, 0x83, 0x59, 0xaa, 0xa5, 0x33, 0xc3, 0x14, 0x6f, 0xe7, 0x73, 0xcc, 0x2c,
+	0x30, 0x93, 0x64, 0x55, 0x93, 0xda, 0x99, 0x48, 0x65, 0x31, 0x4b, 0x2d, 0x75, 0x91, 0x14, 0x55,
+	0x4d, 0x37, 0xf8, 0x60, 0x31, 0x76, 0xdc, 0x05, 0x56, 0x54, 0x4b, 0x6a, 0xa1, 0x39, 0xd1, 0x8c,
+	0xeb, 0xa5, 0x8d, 0xb8, 0x6d, 0x95, 0x54, 0xc3, 0xdc, 0xa1, 0x25, 0x27, 0x5d, 0xe0, 0xa8, 0x6d,
+	0xb6, 0xe3, 0x8c, 0x95, 0x13, 0x80, 0x1f, 0x36, 0x80, 0x36, 0x79, 0x9a, 0x0c, 0xdd, 0x2f, 0x53,
+	0xd3, 0x92, 0x9f, 0xc0, 0x48, 0xcb, 0x53, 0xb3, 0xc8, 0x0c, 0x93, 0xe2, 0x55, 0x88, 0xd9, 0x38,
+	0x63, 0x68, 0x0a, 0xa5, 0xfe, 0x5e, 0x9a, 0x56, 0x02, 0x9c, 0x52, 0xec, 0xe0, 0xb5, 0xc1, 0xa3,
+	0x6f, 0x93, 0x91, 0x8c, 0x08, 0x94, 0x17, 0x61, 0x92, 0xcf, 0x7c, 0x8f, 0x87, 0x3c, 0x16, 0x48,
+	0x1b, 0x0d, 0x22, 0x91, 0x1c, 0xc7, 0x21, 0xaa, 0xe7, 0x79, 0x86, 0xc1, 0x4c, 0x54, 0xcf, 0xcb,
+	0xaf, 0x11, 0x4c, 0xf9, 0xc7, 0x08, 0xb4, 0xa7, 0xf0, 0xaf, 0xa7, 0x4c, 0x41, 0x9a, 0x0e, 0x24,
+	0xf5, 0x98, 0x58, 0x60, 0x8f, 0xd0, 0xf6, 0x57, 0x72, 0x01, 0xa6, 0x39, 0xcf, 0xea, 0xde, 0x9e,
+	0x47, 0x64, 0xd3, 0x44, 0x7c, 0x1f, 0xe0, 0x57, 0x75, 0x05, 0xc7, 0xac, 0x62, 0xb7, 0x82, 0xd2,
+	0x68, 0x05, 0xc5, 0x6e, 0x3a, 0xd1, 0x0a, 0xca, 0xa6, 0xaa, 0x51, 0x11, 0x9b, 0x39, 0x17, 0x29,
+	0x7f, 0x45, 0x81, 0xf9, 0xba, 0xb1, 0x60, 0xa0, 0xcf, 0x16, 0xe0, 0xf5, 0x16, 0x6d, 0x51, 0xae,
+	0x6d, 0xae, 0xa3, 0x36, 0x1b, 0xb4, 0x45, 0xdc, 0x02, 0x24, 0x3d, 0x6a, 0xeb, 0xd7, 0x0a, 0x55,
+	0x18, 0xf7, 0x1c, 0x2d, 0x1c, 0xd8, 0x82, 0x61, 0x97, 0x03, 0xc2, 0xf6, 0x4b, 0x3d, 0x68, 0x17,
+	0xb2, 0xe3, 0xad, 0xb2, 0xe5, 0x5d, 0x90, 0xbc, 0x8b, 0xd0, 0xf7, 0x7a, 0x1f, 0x22, 0xb1, 0x46,
+	0xbc, 0x52, 0x05, 0x29, 0x1d, 0xe8, 0x8b, 0xd2, 0xfe, 0xd5, 0xf6, 0x79, 0xc0, 0xc2, 0x75, 0x5c,
+	0x4b, 0xc0, 0x10, 0x3b, 0x30, 0x44, 0xa5, 0xfe, 0xca, 0xd8, 0x7f, 0x5c, 0x5e, 0x46, 0x43, 0x7b,
+	0x79, 0x82, 0xe0, 0xff, 0x00, 0x84, 0x8b, 0xbc, 0x72, 0x6a, 0x9e, 0x6b, 0xe1, 0x0f, 0xf9, 0xfa,
+	0x09, 0xc1, 0x84, 0x77, 0xf6, 0x8b, 0xd4, 0xa0, 0xef, 0x90, 0x58, 0xd4, 0x1b, 0x07, 0x86, 0x8f,
+	0x8d, 0xa3, 0x10, 0xcb, 0x97, 0xf4, 0x8a, 0xe3, 0xa3, 0xf8, 0x87, 0xe7, 0x60, 0xd8, 0xe9, 0x15,
+	0xd3, 0x52, 0xad, 0xb2, 0xc9, 0x41, 0x86, 0x32, 0xf1, 0xe6, 0xe3, 0x47, 0xfc, 0xa9, 0xcb, 0xf1,
+	0x81, 0xdf, 0xdf, 0x15, 0xbc, 0x58, 0x2f, 0x90, 0xe9, 0x4b, 0x2f, 0xff, 0x81, 0x21, 0x2e, 0x04,
+	0xbf, 0x42, 0x10, 0xb3, 0x2f, 0x09, 0x98, 0x04, 0x02, 0xb6, 0xdf, 0x50, 0x92, 0xe9, 0xee, 0x03,
+	0x6c, 0x06, 0x59, 0x7a, 0xf1, 0xe5, 0xc7, 0xdb, 0xe8, 0x18, 0x1e, 0x25, 0xb9, 0x65, 0x4a, 0x68,
+	0xe5, 0xdc, 0x15, 0x8c, 0x23, 0x1c, 0x22, 0x18, 0xf1, 0x58, 0xcb, 0x78, 0xa5, 0x73, 0x26, 0xff,
+	0xcb, 0x4c, 0xf2, 0x56, 0xc8, 0x68, 0x01, 0xbd, 0xc4, 0xa1, 0x17, 0xf0, 0xbc, 0x1b, 0xda, 0x73,
+	0xbf, 0x22, 0x35, 0x3d, 0x5f, 0xc7, 0x9f, 0x11, 0xfc, 0xe7, 0x73, 0x35, 0xc1, 0x77, 0x3b, 0xe3,
+	0x04, 0xdf, 0x6a, 0x92, 0xa1, 0x67, 0x70, 0x34, 0x29, 0x5c, 0x53, 0x0a, 0xcf, 0x76, 0xa5, 0xc9,
+	0xc4, 0xef, 0x11, 0xc4, 0x5b, 0xe7, 0xc3, 0xd7, 0x7a, 0x75, 0xb5, 0x49, 0x7f, 0xbd, 0xf7, 0x40,
+	0x41, 0xbd, 0xc0, 0xa9, 0x67, 0xf1, 0x4c, 0x07, 0x6a, 0xbb, 0x06, 0x1f, 0x11, 0xe0, 0xf6, 0xe3,
+	0x1b, 0xdf, 0x0c, 0x61, 0x9e, 0xe3, 0xfc, 0x4a, 0xb8, 0x60, 0xc1, 0x9f, 0xe2, 0xfc, 0x32, 0x9e,
+	0xea, 0xc0, 0x6f, 0x36, 0xfa, 0x27, 0xe1, 0xd9, 0x3c, 0xe1, 0x7a, 0xd9, 0xe1, 0xbf, 0x1d, 0x36,
+	0x5c, 0x28, 0xb8, 0xca, 0x15, 0xa4, 0xb1, 0xd2, 0x5d, 0xdf, 0x90, 0x1a, 0x3f, 0xf2, 0xea, 0xf8,
+	0x04, 0x01, 0x6e, 0xdf, 0x34, 0xbb, 0xa9, 0x85, 0xef, 0xb1, 0xd0, 0x4d, 0x2d, 0xfc, 0xf7, 0x69,
+	0x79, 0x9d, 0x2b, 0x59, 0xc5, 0x77, 0xdc, 0x4a, 0xd8, 0x81, 0xb1, 0xed, 0xae, 0x07, 0xa9, 0xd9,
+	0x47, 0x4e, 0x9d, 0xd4, 0x5c, 0x27, 0x4e, 0x1d, 0x7f, 0x40, 0x30, 0xec, 0xd6, 0xd5, 0x73, 0x8b,
+	0x3b, 0xa2, 0x6e, 0x84, 0x88, 0x14, 0x8a, 0xd2, 0x5c, 0xd1, 0x3c, 0x4e, 0x75, 0xea, 0xae, 0x66,
+	0x55, 0xd6, 0x1e, 0x1c, 0x9d, 0x4a, 0xe8, 0xf8, 0x54, 0x42, 0xdf, 0x4f, 0x25, 0xf4, 0xe6, 0x4c,
+	0x8a, 0x1c, 0x9f, 0x49, 0x91, 0x93, 0x33, 0x29, 0xb2, 0x45, 0x34, 0xdd, 0xda, 0x2d, 0x67, 0x95,
+	0x1c, 0x2b, 0x90, 0xf3, 0x40, 0x8d, 0xa9, 0x2f, 0xdb, 0xdf, 0xb5, 0xcf, 0xc4, 0x97, 0xad, 0x55,
+	0x2d, 0x52, 0x33, 0x1b, 0xe3, 0x9f, 0xb2, 0x57, 0x7e, 0x06, 0x00, 0x00, 0xff, 0xff, 0x80, 0xaa,
+	0xa9, 0x86, 0xd4, 0x0f, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -902,19 +892,19 @@ type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// Queries a EnergyTransferOffer by id.
-	EnergyTransferOffer(ctx context.Context, in *QueryGetEnergyTransferOfferRequest, opts ...grpc.CallOption) (*QueryGetEnergyTransferOfferResponse, error)
+	EnergyTransferOffer(ctx context.Context, in *QueryEnergyTransferOfferRequest, opts ...grpc.CallOption) (*QueryEnergyTransferOfferResponse, error)
 	// Queries a list of EnergyTransferOffer items.
-	EnergyTransferOfferAll(ctx context.Context, in *QueryAllEnergyTransferOfferRequest, opts ...grpc.CallOption) (*QueryAllEnergyTransferOfferResponse, error)
+	AllEnergyTransferOffers(ctx context.Context, in *QueryAllEnergyTransferOffersRequest, opts ...grpc.CallOption) (*QueryAllEnergyTransferOfferResponse, error)
 	// Queries a EnergyTransfer by id.
-	EnergyTransfer(ctx context.Context, in *QueryGetEnergyTransferRequest, opts ...grpc.CallOption) (*QueryGetEnergyTransferResponse, error)
+	EnergyTransfer(ctx context.Context, in *QueryEnergyTransferRequest, opts ...grpc.CallOption) (*QueryEnergyTransferResponse, error)
 	// Queries a list of EnergyTransfer items.
-	EnergyTransferAll(ctx context.Context, in *QueryAllEnergyTransferRequest, opts ...grpc.CallOption) (*QueryAllEnergyTransferResponse, error)
+	AllEnergyTransfers(ctx context.Context, in *QueryAllEnergyTransfersRequest, opts ...grpc.CallOption) (*QueryAllEnergyTransfersResponse, error)
 	// Queries a list of ListOwnEnergyTransferOffer items.
-	ListOwnEnergyTransferOffer(ctx context.Context, in *QueryListOwnEnergyTransferOfferRequest, opts ...grpc.CallOption) (*QueryListOwnEnergyTransferOfferResponse, error)
+	EnergyTransferOffers(ctx context.Context, in *QueryEnergyTransferOffersRequest, opts ...grpc.CallOption) (*QueryEnergyTransferOffersResponse, error)
 	// Queries a list of ListOwnEnergyTransfer items.
-	ListOwnEnergyTransfer(ctx context.Context, in *QueryListOwnEnergyTransferRequest, opts ...grpc.CallOption) (*QueryListOwnEnergyTransferResponse, error)
+	OwnEnergyTransfers(ctx context.Context, in *QueryOwnEnergyTransfersRequest, opts ...grpc.CallOption) (*QueryOwnEnergyTransfersResponse, error)
 	// Queries a list of ListOwnerEnergyTransfer items.
-	ListOwnerEnergyTransfer(ctx context.Context, in *QueryListOwnerEnergyTransferRequest, opts ...grpc.CallOption) (*QueryListOwnerEnergyTransferResponse, error)
+	EnergyTransfers(ctx context.Context, in *QueryEnergyTransfersRequest, opts ...grpc.CallOption) (*QueryEnergyTransfersResponse, error)
 }
 
 type queryClient struct {
@@ -934,8 +924,8 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
-func (c *queryClient) EnergyTransferOffer(ctx context.Context, in *QueryGetEnergyTransferOfferRequest, opts ...grpc.CallOption) (*QueryGetEnergyTransferOfferResponse, error) {
-	out := new(QueryGetEnergyTransferOfferResponse)
+func (c *queryClient) EnergyTransferOffer(ctx context.Context, in *QueryEnergyTransferOfferRequest, opts ...grpc.CallOption) (*QueryEnergyTransferOfferResponse, error) {
+	out := new(QueryEnergyTransferOfferResponse)
 	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeev.Query/EnergyTransferOffer", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -943,17 +933,17 @@ func (c *queryClient) EnergyTransferOffer(ctx context.Context, in *QueryGetEnerg
 	return out, nil
 }
 
-func (c *queryClient) EnergyTransferOfferAll(ctx context.Context, in *QueryAllEnergyTransferOfferRequest, opts ...grpc.CallOption) (*QueryAllEnergyTransferOfferResponse, error) {
+func (c *queryClient) AllEnergyTransferOffers(ctx context.Context, in *QueryAllEnergyTransferOffersRequest, opts ...grpc.CallOption) (*QueryAllEnergyTransferOfferResponse, error) {
 	out := new(QueryAllEnergyTransferOfferResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeev.Query/EnergyTransferOfferAll", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeev.Query/AllEnergyTransferOffers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) EnergyTransfer(ctx context.Context, in *QueryGetEnergyTransferRequest, opts ...grpc.CallOption) (*QueryGetEnergyTransferResponse, error) {
-	out := new(QueryGetEnergyTransferResponse)
+func (c *queryClient) EnergyTransfer(ctx context.Context, in *QueryEnergyTransferRequest, opts ...grpc.CallOption) (*QueryEnergyTransferResponse, error) {
+	out := new(QueryEnergyTransferResponse)
 	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeev.Query/EnergyTransfer", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -961,36 +951,36 @@ func (c *queryClient) EnergyTransfer(ctx context.Context, in *QueryGetEnergyTran
 	return out, nil
 }
 
-func (c *queryClient) EnergyTransferAll(ctx context.Context, in *QueryAllEnergyTransferRequest, opts ...grpc.CallOption) (*QueryAllEnergyTransferResponse, error) {
-	out := new(QueryAllEnergyTransferResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeev.Query/EnergyTransferAll", in, out, opts...)
+func (c *queryClient) AllEnergyTransfers(ctx context.Context, in *QueryAllEnergyTransfersRequest, opts ...grpc.CallOption) (*QueryAllEnergyTransfersResponse, error) {
+	out := new(QueryAllEnergyTransfersResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeev.Query/AllEnergyTransfers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) ListOwnEnergyTransferOffer(ctx context.Context, in *QueryListOwnEnergyTransferOfferRequest, opts ...grpc.CallOption) (*QueryListOwnEnergyTransferOfferResponse, error) {
-	out := new(QueryListOwnEnergyTransferOfferResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeev.Query/ListOwnEnergyTransferOffer", in, out, opts...)
+func (c *queryClient) EnergyTransferOffers(ctx context.Context, in *QueryEnergyTransferOffersRequest, opts ...grpc.CallOption) (*QueryEnergyTransferOffersResponse, error) {
+	out := new(QueryEnergyTransferOffersResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeev.Query/EnergyTransferOffers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) ListOwnEnergyTransfer(ctx context.Context, in *QueryListOwnEnergyTransferRequest, opts ...grpc.CallOption) (*QueryListOwnEnergyTransferResponse, error) {
-	out := new(QueryListOwnEnergyTransferResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeev.Query/ListOwnEnergyTransfer", in, out, opts...)
+func (c *queryClient) OwnEnergyTransfers(ctx context.Context, in *QueryOwnEnergyTransfersRequest, opts ...grpc.CallOption) (*QueryOwnEnergyTransfersResponse, error) {
+	out := new(QueryOwnEnergyTransfersResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeev.Query/OwnEnergyTransfers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) ListOwnerEnergyTransfer(ctx context.Context, in *QueryListOwnerEnergyTransferRequest, opts ...grpc.CallOption) (*QueryListOwnerEnergyTransferResponse, error) {
-	out := new(QueryListOwnerEnergyTransferResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeev.Query/ListOwnerEnergyTransfer", in, out, opts...)
+func (c *queryClient) EnergyTransfers(ctx context.Context, in *QueryEnergyTransfersRequest, opts ...grpc.CallOption) (*QueryEnergyTransfersResponse, error) {
+	out := new(QueryEnergyTransfersResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeev.Query/EnergyTransfers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1002,19 +992,19 @@ type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// Queries a EnergyTransferOffer by id.
-	EnergyTransferOffer(context.Context, *QueryGetEnergyTransferOfferRequest) (*QueryGetEnergyTransferOfferResponse, error)
+	EnergyTransferOffer(context.Context, *QueryEnergyTransferOfferRequest) (*QueryEnergyTransferOfferResponse, error)
 	// Queries a list of EnergyTransferOffer items.
-	EnergyTransferOfferAll(context.Context, *QueryAllEnergyTransferOfferRequest) (*QueryAllEnergyTransferOfferResponse, error)
+	AllEnergyTransferOffers(context.Context, *QueryAllEnergyTransferOffersRequest) (*QueryAllEnergyTransferOfferResponse, error)
 	// Queries a EnergyTransfer by id.
-	EnergyTransfer(context.Context, *QueryGetEnergyTransferRequest) (*QueryGetEnergyTransferResponse, error)
+	EnergyTransfer(context.Context, *QueryEnergyTransferRequest) (*QueryEnergyTransferResponse, error)
 	// Queries a list of EnergyTransfer items.
-	EnergyTransferAll(context.Context, *QueryAllEnergyTransferRequest) (*QueryAllEnergyTransferResponse, error)
+	AllEnergyTransfers(context.Context, *QueryAllEnergyTransfersRequest) (*QueryAllEnergyTransfersResponse, error)
 	// Queries a list of ListOwnEnergyTransferOffer items.
-	ListOwnEnergyTransferOffer(context.Context, *QueryListOwnEnergyTransferOfferRequest) (*QueryListOwnEnergyTransferOfferResponse, error)
+	EnergyTransferOffers(context.Context, *QueryEnergyTransferOffersRequest) (*QueryEnergyTransferOffersResponse, error)
 	// Queries a list of ListOwnEnergyTransfer items.
-	ListOwnEnergyTransfer(context.Context, *QueryListOwnEnergyTransferRequest) (*QueryListOwnEnergyTransferResponse, error)
+	OwnEnergyTransfers(context.Context, *QueryOwnEnergyTransfersRequest) (*QueryOwnEnergyTransfersResponse, error)
 	// Queries a list of ListOwnerEnergyTransfer items.
-	ListOwnerEnergyTransfer(context.Context, *QueryListOwnerEnergyTransferRequest) (*QueryListOwnerEnergyTransferResponse, error)
+	EnergyTransfers(context.Context, *QueryEnergyTransfersRequest) (*QueryEnergyTransfersResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -1024,26 +1014,26 @@ type UnimplementedQueryServer struct {
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
-func (*UnimplementedQueryServer) EnergyTransferOffer(ctx context.Context, req *QueryGetEnergyTransferOfferRequest) (*QueryGetEnergyTransferOfferResponse, error) {
+func (*UnimplementedQueryServer) EnergyTransferOffer(ctx context.Context, req *QueryEnergyTransferOfferRequest) (*QueryEnergyTransferOfferResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EnergyTransferOffer not implemented")
 }
-func (*UnimplementedQueryServer) EnergyTransferOfferAll(ctx context.Context, req *QueryAllEnergyTransferOfferRequest) (*QueryAllEnergyTransferOfferResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EnergyTransferOfferAll not implemented")
+func (*UnimplementedQueryServer) AllEnergyTransferOffers(ctx context.Context, req *QueryAllEnergyTransferOffersRequest) (*QueryAllEnergyTransferOfferResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllEnergyTransferOffers not implemented")
 }
-func (*UnimplementedQueryServer) EnergyTransfer(ctx context.Context, req *QueryGetEnergyTransferRequest) (*QueryGetEnergyTransferResponse, error) {
+func (*UnimplementedQueryServer) EnergyTransfer(ctx context.Context, req *QueryEnergyTransferRequest) (*QueryEnergyTransferResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EnergyTransfer not implemented")
 }
-func (*UnimplementedQueryServer) EnergyTransferAll(ctx context.Context, req *QueryAllEnergyTransferRequest) (*QueryAllEnergyTransferResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EnergyTransferAll not implemented")
+func (*UnimplementedQueryServer) AllEnergyTransfers(ctx context.Context, req *QueryAllEnergyTransfersRequest) (*QueryAllEnergyTransfersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllEnergyTransfers not implemented")
 }
-func (*UnimplementedQueryServer) ListOwnEnergyTransferOffer(ctx context.Context, req *QueryListOwnEnergyTransferOfferRequest) (*QueryListOwnEnergyTransferOfferResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListOwnEnergyTransferOffer not implemented")
+func (*UnimplementedQueryServer) EnergyTransferOffers(ctx context.Context, req *QueryEnergyTransferOffersRequest) (*QueryEnergyTransferOffersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EnergyTransferOffers not implemented")
 }
-func (*UnimplementedQueryServer) ListOwnEnergyTransfer(ctx context.Context, req *QueryListOwnEnergyTransferRequest) (*QueryListOwnEnergyTransferResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListOwnEnergyTransfer not implemented")
+func (*UnimplementedQueryServer) OwnEnergyTransfers(ctx context.Context, req *QueryOwnEnergyTransfersRequest) (*QueryOwnEnergyTransfersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OwnEnergyTransfers not implemented")
 }
-func (*UnimplementedQueryServer) ListOwnerEnergyTransfer(ctx context.Context, req *QueryListOwnerEnergyTransferRequest) (*QueryListOwnerEnergyTransferResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListOwnerEnergyTransfer not implemented")
+func (*UnimplementedQueryServer) EnergyTransfers(ctx context.Context, req *QueryEnergyTransfersRequest) (*QueryEnergyTransfersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EnergyTransfers not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -1069,7 +1059,7 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 }
 
 func _Query_EnergyTransferOffer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetEnergyTransferOfferRequest)
+	in := new(QueryEnergyTransferOfferRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1081,31 +1071,31 @@ func _Query_EnergyTransferOffer_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/chain4energy.c4echain.cfeev.Query/EnergyTransferOffer",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).EnergyTransferOffer(ctx, req.(*QueryGetEnergyTransferOfferRequest))
+		return srv.(QueryServer).EnergyTransferOffer(ctx, req.(*QueryEnergyTransferOfferRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_EnergyTransferOfferAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAllEnergyTransferOfferRequest)
+func _Query_AllEnergyTransferOffers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllEnergyTransferOffersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).EnergyTransferOfferAll(ctx, in)
+		return srv.(QueryServer).AllEnergyTransferOffers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeev.Query/EnergyTransferOfferAll",
+		FullMethod: "/chain4energy.c4echain.cfeev.Query/AllEnergyTransferOffers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).EnergyTransferOfferAll(ctx, req.(*QueryAllEnergyTransferOfferRequest))
+		return srv.(QueryServer).AllEnergyTransferOffers(ctx, req.(*QueryAllEnergyTransferOffersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Query_EnergyTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetEnergyTransferRequest)
+	in := new(QueryEnergyTransferRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1117,79 +1107,79 @@ func _Query_EnergyTransfer_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/chain4energy.c4echain.cfeev.Query/EnergyTransfer",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).EnergyTransfer(ctx, req.(*QueryGetEnergyTransferRequest))
+		return srv.(QueryServer).EnergyTransfer(ctx, req.(*QueryEnergyTransferRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_EnergyTransferAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAllEnergyTransferRequest)
+func _Query_AllEnergyTransfers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllEnergyTransfersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).EnergyTransferAll(ctx, in)
+		return srv.(QueryServer).AllEnergyTransfers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeev.Query/EnergyTransferAll",
+		FullMethod: "/chain4energy.c4echain.cfeev.Query/AllEnergyTransfers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).EnergyTransferAll(ctx, req.(*QueryAllEnergyTransferRequest))
+		return srv.(QueryServer).AllEnergyTransfers(ctx, req.(*QueryAllEnergyTransfersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ListOwnEnergyTransferOffer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryListOwnEnergyTransferOfferRequest)
+func _Query_EnergyTransferOffers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryEnergyTransferOffersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ListOwnEnergyTransferOffer(ctx, in)
+		return srv.(QueryServer).EnergyTransferOffers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeev.Query/ListOwnEnergyTransferOffer",
+		FullMethod: "/chain4energy.c4echain.cfeev.Query/EnergyTransferOffers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ListOwnEnergyTransferOffer(ctx, req.(*QueryListOwnEnergyTransferOfferRequest))
+		return srv.(QueryServer).EnergyTransferOffers(ctx, req.(*QueryEnergyTransferOffersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ListOwnEnergyTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryListOwnEnergyTransferRequest)
+func _Query_OwnEnergyTransfers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOwnEnergyTransfersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ListOwnEnergyTransfer(ctx, in)
+		return srv.(QueryServer).OwnEnergyTransfers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeev.Query/ListOwnEnergyTransfer",
+		FullMethod: "/chain4energy.c4echain.cfeev.Query/OwnEnergyTransfers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ListOwnEnergyTransfer(ctx, req.(*QueryListOwnEnergyTransferRequest))
+		return srv.(QueryServer).OwnEnergyTransfers(ctx, req.(*QueryOwnEnergyTransfersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ListOwnerEnergyTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryListOwnerEnergyTransferRequest)
+func _Query_EnergyTransfers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryEnergyTransfersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ListOwnerEnergyTransfer(ctx, in)
+		return srv.(QueryServer).EnergyTransfers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeev.Query/ListOwnerEnergyTransfer",
+		FullMethod: "/chain4energy.c4echain.cfeev.Query/EnergyTransfers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ListOwnerEnergyTransfer(ctx, req.(*QueryListOwnerEnergyTransferRequest))
+		return srv.(QueryServer).EnergyTransfers(ctx, req.(*QueryEnergyTransfersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1207,28 +1197,28 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_EnergyTransferOffer_Handler,
 		},
 		{
-			MethodName: "EnergyTransferOfferAll",
-			Handler:    _Query_EnergyTransferOfferAll_Handler,
+			MethodName: "AllEnergyTransferOffers",
+			Handler:    _Query_AllEnergyTransferOffers_Handler,
 		},
 		{
 			MethodName: "EnergyTransfer",
 			Handler:    _Query_EnergyTransfer_Handler,
 		},
 		{
-			MethodName: "EnergyTransferAll",
-			Handler:    _Query_EnergyTransferAll_Handler,
+			MethodName: "AllEnergyTransfers",
+			Handler:    _Query_AllEnergyTransfers_Handler,
 		},
 		{
-			MethodName: "ListOwnEnergyTransferOffer",
-			Handler:    _Query_ListOwnEnergyTransferOffer_Handler,
+			MethodName: "EnergyTransferOffers",
+			Handler:    _Query_EnergyTransferOffers_Handler,
 		},
 		{
-			MethodName: "ListOwnEnergyTransfer",
-			Handler:    _Query_ListOwnEnergyTransfer_Handler,
+			MethodName: "OwnEnergyTransfers",
+			Handler:    _Query_OwnEnergyTransfers_Handler,
 		},
 		{
-			MethodName: "ListOwnerEnergyTransfer",
-			Handler:    _Query_ListOwnerEnergyTransfer_Handler,
+			MethodName: "EnergyTransfers",
+			Handler:    _Query_EnergyTransfers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1291,7 +1281,7 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetEnergyTransferOfferRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryEnergyTransferOfferRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1301,12 +1291,12 @@ func (m *QueryGetEnergyTransferOfferRequest) Marshal() (dAtA []byte, err error) 
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetEnergyTransferOfferRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransferOfferRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetEnergyTransferOfferRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransferOfferRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1319,7 +1309,7 @@ func (m *QueryGetEnergyTransferOfferRequest) MarshalToSizedBuffer(dAtA []byte) (
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetEnergyTransferOfferResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryEnergyTransferOfferResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1329,12 +1319,12 @@ func (m *QueryGetEnergyTransferOfferResponse) Marshal() (dAtA []byte, err error)
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetEnergyTransferOfferResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransferOfferResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetEnergyTransferOfferResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransferOfferResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1352,7 +1342,7 @@ func (m *QueryGetEnergyTransferOfferResponse) MarshalToSizedBuffer(dAtA []byte) 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAllEnergyTransferOfferRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryAllEnergyTransferOffersRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1362,12 +1352,12 @@ func (m *QueryAllEnergyTransferOfferRequest) Marshal() (dAtA []byte, err error) 
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllEnergyTransferOfferRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryAllEnergyTransferOffersRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllEnergyTransferOfferRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryAllEnergyTransferOffersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1436,7 +1426,7 @@ func (m *QueryAllEnergyTransferOfferResponse) MarshalToSizedBuffer(dAtA []byte) 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetEnergyTransferRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryEnergyTransferRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1446,12 +1436,12 @@ func (m *QueryGetEnergyTransferRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetEnergyTransferRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransferRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetEnergyTransferRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransferRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1464,7 +1454,7 @@ func (m *QueryGetEnergyTransferRequest) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetEnergyTransferResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryEnergyTransferResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1474,12 +1464,12 @@ func (m *QueryGetEnergyTransferResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetEnergyTransferResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransferResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetEnergyTransferResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransferResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1497,7 +1487,7 @@ func (m *QueryGetEnergyTransferResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAllEnergyTransferRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryAllEnergyTransfersRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1507,12 +1497,12 @@ func (m *QueryAllEnergyTransferRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllEnergyTransferRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryAllEnergyTransfersRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllEnergyTransferRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryAllEnergyTransfersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1532,7 +1522,7 @@ func (m *QueryAllEnergyTransferRequest) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAllEnergyTransferResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryAllEnergyTransfersResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1542,12 +1532,12 @@ func (m *QueryAllEnergyTransferResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllEnergyTransferResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryAllEnergyTransfersResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllEnergyTransferResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryAllEnergyTransfersResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1581,7 +1571,7 @@ func (m *QueryAllEnergyTransferResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryListOwnEnergyTransferOfferRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryEnergyTransferOffersRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1591,12 +1581,12 @@ func (m *QueryListOwnEnergyTransferOfferRequest) Marshal() (dAtA []byte, err err
 	return dAtA[:n], nil
 }
 
-func (m *QueryListOwnEnergyTransferOfferRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransferOffersRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryListOwnEnergyTransferOfferRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransferOffersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1613,17 +1603,17 @@ func (m *QueryListOwnEnergyTransferOfferRequest) MarshalToSizedBuffer(dAtA []byt
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.OwnerAccAddress) > 0 {
-		i -= len(m.OwnerAccAddress)
-		copy(dAtA[i:], m.OwnerAccAddress)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.OwnerAccAddress)))
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Owner)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryListOwnEnergyTransferOfferResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryEnergyTransferOffersResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1633,12 +1623,12 @@ func (m *QueryListOwnEnergyTransferOfferResponse) Marshal() (dAtA []byte, err er
 	return dAtA[:n], nil
 }
 
-func (m *QueryListOwnEnergyTransferOfferResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransferOffersResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryListOwnEnergyTransferOfferResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransferOffersResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1672,7 +1662,7 @@ func (m *QueryListOwnEnergyTransferOfferResponse) MarshalToSizedBuffer(dAtA []by
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryListOwnEnergyTransferRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryEnergyTransfersRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1682,12 +1672,12 @@ func (m *QueryListOwnEnergyTransferRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryListOwnEnergyTransferRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransfersRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryListOwnEnergyTransferRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransfersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1702,24 +1692,19 @@ func (m *QueryListOwnEnergyTransferRequest) MarshalToSizedBuffer(dAtA []byte) (i
 			i = encodeVarintQuery(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x12
 	}
-	if m.TransferStatus != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.TransferStatus))
-		i--
-		dAtA[i] = 0x10
-	}
-	if len(m.DriverAccAddress) > 0 {
-		i -= len(m.DriverAccAddress)
-		copy(dAtA[i:], m.DriverAccAddress)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.DriverAccAddress)))
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Owner)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryListOwnEnergyTransferResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryEnergyTransfersResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1729,12 +1714,12 @@ func (m *QueryListOwnEnergyTransferResponse) Marshal() (dAtA []byte, err error) 
 	return dAtA[:n], nil
 }
 
-func (m *QueryListOwnEnergyTransferResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransfersResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryListOwnEnergyTransferResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryEnergyTransfersResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1768,7 +1753,7 @@ func (m *QueryListOwnEnergyTransferResponse) MarshalToSizedBuffer(dAtA []byte) (
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryListOwnerEnergyTransferRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryOwnEnergyTransfersRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1778,12 +1763,12 @@ func (m *QueryListOwnerEnergyTransferRequest) Marshal() (dAtA []byte, err error)
 	return dAtA[:n], nil
 }
 
-func (m *QueryListOwnerEnergyTransferRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryOwnEnergyTransfersRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryListOwnerEnergyTransferRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryOwnEnergyTransfersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1798,19 +1783,24 @@ func (m *QueryListOwnerEnergyTransferRequest) MarshalToSizedBuffer(dAtA []byte) 
 			i = encodeVarintQuery(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x1a
 	}
-	if len(m.OwnerAccAddress) > 0 {
-		i -= len(m.OwnerAccAddress)
-		copy(dAtA[i:], m.OwnerAccAddress)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.OwnerAccAddress)))
+	if m.TransferStatus != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.TransferStatus))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Driver) > 0 {
+		i -= len(m.Driver)
+		copy(dAtA[i:], m.Driver)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Driver)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryListOwnerEnergyTransferResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryOwnEnergyTransfersResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1820,12 +1810,12 @@ func (m *QueryListOwnerEnergyTransferResponse) Marshal() (dAtA []byte, err error
 	return dAtA[:n], nil
 }
 
-func (m *QueryListOwnerEnergyTransferResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryOwnEnergyTransfersResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryListOwnerEnergyTransferResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryOwnEnergyTransfersResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1890,7 +1880,7 @@ func (m *QueryParamsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryGetEnergyTransferOfferRequest) Size() (n int) {
+func (m *QueryEnergyTransferOfferRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1902,7 +1892,7 @@ func (m *QueryGetEnergyTransferOfferRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryGetEnergyTransferOfferResponse) Size() (n int) {
+func (m *QueryEnergyTransferOfferResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1913,7 +1903,7 @@ func (m *QueryGetEnergyTransferOfferResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryAllEnergyTransferOfferRequest) Size() (n int) {
+func (m *QueryAllEnergyTransferOffersRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1945,7 +1935,7 @@ func (m *QueryAllEnergyTransferOfferResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryGetEnergyTransferRequest) Size() (n int) {
+func (m *QueryEnergyTransferRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1957,7 +1947,7 @@ func (m *QueryGetEnergyTransferRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryGetEnergyTransferResponse) Size() (n int) {
+func (m *QueryEnergyTransferResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1968,7 +1958,7 @@ func (m *QueryGetEnergyTransferResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryAllEnergyTransferRequest) Size() (n int) {
+func (m *QueryAllEnergyTransfersRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1981,7 +1971,7 @@ func (m *QueryAllEnergyTransferRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryAllEnergyTransferResponse) Size() (n int) {
+func (m *QueryAllEnergyTransfersResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2000,13 +1990,13 @@ func (m *QueryAllEnergyTransferResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryListOwnEnergyTransferOfferRequest) Size() (n int) {
+func (m *QueryEnergyTransferOffersRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.OwnerAccAddress)
+	l = len(m.Owner)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
@@ -2017,7 +2007,7 @@ func (m *QueryListOwnEnergyTransferOfferRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryListOwnEnergyTransferOfferResponse) Size() (n int) {
+func (m *QueryEnergyTransferOffersResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2036,18 +2026,15 @@ func (m *QueryListOwnEnergyTransferOfferResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryListOwnEnergyTransferRequest) Size() (n int) {
+func (m *QueryEnergyTransfersRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.DriverAccAddress)
+	l = len(m.Owner)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
-	}
-	if m.TransferStatus != 0 {
-		n += 1 + sovQuery(uint64(m.TransferStatus))
 	}
 	if m.Pagination != nil {
 		l = m.Pagination.Size()
@@ -2056,7 +2043,7 @@ func (m *QueryListOwnEnergyTransferRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryListOwnEnergyTransferResponse) Size() (n int) {
+func (m *QueryEnergyTransfersResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2075,15 +2062,18 @@ func (m *QueryListOwnEnergyTransferResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryListOwnerEnergyTransferRequest) Size() (n int) {
+func (m *QueryOwnEnergyTransfersRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.OwnerAccAddress)
+	l = len(m.Driver)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.TransferStatus != 0 {
+		n += 1 + sovQuery(uint64(m.TransferStatus))
 	}
 	if m.Pagination != nil {
 		l = m.Pagination.Size()
@@ -2092,7 +2082,7 @@ func (m *QueryListOwnerEnergyTransferRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryListOwnerEnergyTransferResponse) Size() (n int) {
+func (m *QueryOwnEnergyTransfersResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2250,7 +2240,7 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryGetEnergyTransferOfferRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryEnergyTransferOfferRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2273,10 +2263,10 @@ func (m *QueryGetEnergyTransferOfferRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetEnergyTransferOfferRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryEnergyTransferOfferRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetEnergyTransferOfferRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryEnergyTransferOfferRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2319,7 +2309,7 @@ func (m *QueryGetEnergyTransferOfferRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryGetEnergyTransferOfferResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryEnergyTransferOfferResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2342,10 +2332,10 @@ func (m *QueryGetEnergyTransferOfferResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetEnergyTransferOfferResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryEnergyTransferOfferResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetEnergyTransferOfferResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryEnergyTransferOfferResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2402,7 +2392,7 @@ func (m *QueryGetEnergyTransferOfferResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAllEnergyTransferOfferRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryAllEnergyTransferOffersRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2425,10 +2415,10 @@ func (m *QueryAllEnergyTransferOfferRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllEnergyTransferOfferRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryAllEnergyTransferOffersRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllEnergyTransferOfferRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryAllEnergyTransferOffersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2608,7 +2598,7 @@ func (m *QueryAllEnergyTransferOfferResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryGetEnergyTransferRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryEnergyTransferRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2631,10 +2621,10 @@ func (m *QueryGetEnergyTransferRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetEnergyTransferRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryEnergyTransferRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetEnergyTransferRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryEnergyTransferRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2677,7 +2667,7 @@ func (m *QueryGetEnergyTransferRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryGetEnergyTransferResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryEnergyTransferResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2700,10 +2690,10 @@ func (m *QueryGetEnergyTransferResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetEnergyTransferResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryEnergyTransferResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetEnergyTransferResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryEnergyTransferResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2760,7 +2750,7 @@ func (m *QueryGetEnergyTransferResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAllEnergyTransferRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryAllEnergyTransfersRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2783,10 +2773,10 @@ func (m *QueryAllEnergyTransferRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllEnergyTransferRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryAllEnergyTransfersRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllEnergyTransferRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryAllEnergyTransfersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2846,7 +2836,7 @@ func (m *QueryAllEnergyTransferRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAllEnergyTransferResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryAllEnergyTransfersResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2869,10 +2859,10 @@ func (m *QueryAllEnergyTransferResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllEnergyTransferResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryAllEnergyTransfersResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllEnergyTransferResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryAllEnergyTransfersResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2966,7 +2956,7 @@ func (m *QueryAllEnergyTransferResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryListOwnEnergyTransferOfferRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryEnergyTransferOffersRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2989,15 +2979,15 @@ func (m *QueryListOwnEnergyTransferOfferRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryListOwnEnergyTransferOfferRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryEnergyTransferOffersRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryListOwnEnergyTransferOfferRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryEnergyTransferOffersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OwnerAccAddress", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3025,7 +3015,7 @@ func (m *QueryListOwnEnergyTransferOfferRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.OwnerAccAddress = string(dAtA[iNdEx:postIndex])
+			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -3084,7 +3074,7 @@ func (m *QueryListOwnEnergyTransferOfferRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryListOwnEnergyTransferOfferResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryEnergyTransferOffersResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3107,10 +3097,10 @@ func (m *QueryListOwnEnergyTransferOfferResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryListOwnEnergyTransferOfferResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryEnergyTransferOffersResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryListOwnEnergyTransferOfferResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryEnergyTransferOffersResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3204,7 +3194,7 @@ func (m *QueryListOwnEnergyTransferOfferResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryListOwnEnergyTransferRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryEnergyTransfersRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3227,15 +3217,15 @@ func (m *QueryListOwnEnergyTransferRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryListOwnEnergyTransferRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryEnergyTransfersRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryListOwnEnergyTransferRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryEnergyTransfersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DriverAccAddress", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3263,28 +3253,9 @@ func (m *QueryListOwnEnergyTransferRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DriverAccAddress = string(dAtA[iNdEx:postIndex])
+			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TransferStatus", wireType)
-			}
-			m.TransferStatus = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.TransferStatus |= int32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
 			}
@@ -3341,7 +3312,7 @@ func (m *QueryListOwnEnergyTransferRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryListOwnEnergyTransferResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryEnergyTransfersResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3364,10 +3335,10 @@ func (m *QueryListOwnEnergyTransferResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryListOwnEnergyTransferResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryEnergyTransfersResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryListOwnEnergyTransferResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryEnergyTransfersResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3461,7 +3432,7 @@ func (m *QueryListOwnEnergyTransferResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryListOwnerEnergyTransferRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryOwnEnergyTransfersRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3484,15 +3455,15 @@ func (m *QueryListOwnerEnergyTransferRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryListOwnerEnergyTransferRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryOwnEnergyTransfersRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryListOwnerEnergyTransferRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryOwnEnergyTransfersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OwnerAccAddress", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Driver", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3520,9 +3491,28 @@ func (m *QueryListOwnerEnergyTransferRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.OwnerAccAddress = string(dAtA[iNdEx:postIndex])
+			m.Driver = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TransferStatus", wireType)
+			}
+			m.TransferStatus = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.TransferStatus |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
 			}
@@ -3579,7 +3569,7 @@ func (m *QueryListOwnerEnergyTransferRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryListOwnerEnergyTransferResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryOwnEnergyTransfersResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3602,10 +3592,10 @@ func (m *QueryListOwnerEnergyTransferResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryListOwnerEnergyTransferResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryOwnEnergyTransfersResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryListOwnerEnergyTransferResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryOwnEnergyTransfersResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
