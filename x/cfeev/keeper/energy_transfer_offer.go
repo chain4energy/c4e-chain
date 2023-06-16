@@ -51,6 +51,6 @@ func (k Keeper) PublishEnergyTransferOffer(
 	if err := ctx.EventManager().EmitTypedEvent(event); err != nil {
 		k.Logger(ctx).Error("new publish energy transfer offer emit event error", "event", event, "error", err.Error())
 	}
-
+	k.Logger(ctx).Debug("new publish energy transfer ret", "id", id)
 	return &id, nil
 }

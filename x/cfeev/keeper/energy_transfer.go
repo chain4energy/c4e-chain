@@ -69,7 +69,7 @@ func (k Keeper) StartEnergyTransfer(
 	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
 		k.Logger(ctx).Error("energy transfer created emit event error", "event", event, "error", err.Error())
 	}
-
+	k.Logger(ctx).Debug("start energy transfer ret", "energyTransferId", energyTransferId)
 	return &energyTransferId, nil
 }
 
