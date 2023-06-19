@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
+	cfefingerprintsimualtion "github.com/chain4energy/c4e-chain/x/cfefingerprint/simulation"
 	"github.com/chain4energy/c4e-chain/x/cfefingerprint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
@@ -19,14 +20,6 @@ var (
 	_ = simappparams.StakePerAccount
 	_ = simulation.MsgEntryKind
 	_ = baseapp.Paramspace
-)
-
-const (
-	opWeightMsgCreateReferencePayloadLink = "op_weight_msg_create_reference_payload_link"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgCreateReferencePayloadLink int = 100
-
-	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module
@@ -58,16 +51,11 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	//var weightMsgCreateReferencePayloadLink int
-	//simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateReferencePayloadLink, &weightMsgCreateReferencePayloadLink, nil,
-	//	func(_ *rand.Rand) {
-	//		weightMsgCreateReferencePayloadLink = defaultWeightMsgCreateReferencePayloadLink
-	//	},
-	//)
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgCreateReferencePayloadLink,
-	//	energychainsimulation.SimulateMsgCreateReferencePayloadLink(am.accountKeeper, am.bankKeeper, am.keeper),
-	//))
+	var weightMsgCreateReferencePayloadLink = 100
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateReferencePayloadLink,
+		cfefingerprintsimualtion.SimulateMsgCreateReferencePayloadLink(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

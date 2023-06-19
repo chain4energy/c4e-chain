@@ -15,36 +15,34 @@ import (
 
 func SendMessageWithFees(ctx sdk.Context, r *rand.Rand, ak authkeeper.AccountKeeper, app *baseapp.BaseApp,
 	simAccount simtypes.Account, msg sdk.Msg, spendable sdk.Coins, chainID string) error {
-	account := ak.GetAccount(ctx, simAccount.Address)
-	if !spendable.IsAllPositive() {
-		return sdkerrors.ErrInsufficientFunds
-	}
-
-	fees, err := simtypes.RandomFees(r, ctx, spendable)
-	if err != nil {
-		return err
-	}
-
-	txConfig := params.MakeTestEncodingConfig().TxConfig
-	tx, err := helpers2.GenSignedMockTx(r, params.MakeTestEncodingConfig().TxConfig, []sdk.Msg{msg}, fees, helpers2.DefaultGenTxGas, chainID, []uint64{account.GetAccountNumber()}, []uint64{account.GetSequence()},
-		simAccount.PrivKey,
-	)
-	if err != nil {
-		return errors.Wrap(sdkerrors.ErrConflict, "unable to generate mock tx")
-	}
-
-	_, _, err = app.SimDeliver(txConfig.TxEncoder(), tx)
+	_, _, err := sendMessage(ctx, r, ak, app, simAccount, msg, spendable, chainID)
 	return err
 }
 
 func SendMessageWithRandomFees(ctx sdk.Context, r *rand.Rand, ak authkeeper.AccountKeeper, bk bankkeeper.Keeper, app *baseapp.BaseApp,
 	simAccount simtypes.Account, msg sdk.Msg, chainID string) error {
-	account := ak.GetAccount(ctx, simAccount.Address)
 	spendable := bk.SpendableCoins(ctx, simAccount.Address)
+	_, _, err := sendMessage(ctx, r, ak, app, simAccount, msg, spendable, chainID)
+	return err
+}
+
+func SendMessageWithRandomFeesWithResult(ctx sdk.Context, r *rand.Rand, ak authkeeper.AccountKeeper, bk bankkeeper.Keeper, app *baseapp.BaseApp,
+	simAccount simtypes.Account, msg sdk.Msg, chainID string) (*sdk.Result, error) {
+	spendable := bk.SpendableCoins(ctx, simAccount.Address)
+	_, result, err := sendMessage(ctx, r, ak, app, simAccount, msg, spendable, chainID)
+	return result, err
+}
+
+func sendMessage(ctx sdk.Context, r *rand.Rand, ak authkeeper.AccountKeeper, app *baseapp.BaseApp,
+	simAccount simtypes.Account, msg sdk.Msg, spendable sdk.Coins, chainID string) (sdk.GasInfo, *sdk.Result, error) {
+	account := ak.GetAccount(ctx, simAccount.Address)
+	if !spendable.IsAllPositive() {
+		return sdk.GasInfo{}, nil, sdkerrors.ErrInsufficientFunds
+	}
 
 	fees, err := simtypes.RandomFees(r, ctx, spendable)
 	if err != nil {
-		return err
+		return sdk.GasInfo{}, nil, err
 	}
 
 	txConfig := params.MakeTestEncodingConfig().TxConfig
@@ -52,9 +50,8 @@ func SendMessageWithRandomFees(ctx sdk.Context, r *rand.Rand, ak authkeeper.Acco
 		simAccount.PrivKey,
 	)
 	if err != nil {
-		return errors.Wrap(sdkerrors.ErrConflict, "unable to generate mock tx")
+		return sdk.GasInfo{}, nil, errors.Wrap(sdkerrors.ErrConflict, "unable to generate mock tx")
 	}
 
-	_, _, err = app.SimDeliver(txConfig.TxEncoder(), tx)
-	return err
+	return app.SimDeliver(txConfig.TxEncoder(), tx)
 }

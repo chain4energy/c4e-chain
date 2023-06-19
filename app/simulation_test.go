@@ -5,6 +5,7 @@ import (
 	"fmt"
 	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	cfefingerprinttypes "github.com/chain4energy/c4e-chain/x/cfefingerprint/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
@@ -107,6 +108,7 @@ func BenchmarkSimTest(b *testing.B) {
 		{app.keys[cfedistributortypes.StoreKey], newApp.keys[cfedistributortypes.StoreKey], [][]byte{}},
 		{app.keys[cfemintertypes.StoreKey], newApp.keys[cfemintertypes.StoreKey], [][]byte{}},
 		{app.keys[cfeclaimtypes.StoreKey], newApp.keys[cfeclaimtypes.StoreKey], [][]byte{}},
+		{app.keys[cfefingerprinttypes.StoreKey], newApp.keys[cfefingerprinttypes.StoreKey], [][]byte{}},
 	}
 
 	for _, skp := range storeKeysPrefixes {
