@@ -2,23 +2,24 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	authzcodec "github.com/cosmos/cosmos-sdk/x/authz/codec"
 )
 
-func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreateReferencePayloadLink{}, "cfefingerprint/CreateReferencePayloadLink", nil)
-	cdc.RegisterConcrete(&MsgCreateNewAccount{}, "cfefingerprint/CreateNewAccount", nil)
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	legacy.RegisterAminoMsg(cdc, &MsgCreateReferencePayloadLink{}, "fingerprint/CreateReferencePayloadLink")
+	legacy.RegisterAminoMsg(cdc, &MsgCreateNewAccount{}, "fingerprint/CreateNewAccount")
 	// this line is used by starport scaffolding # 2
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgCreateReferencePayloadLink{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCreateNewAccount{},
+		&MsgCreateReferencePayloadLink{},
 	)
 	// this line is used by starport scaffolding # 3
 
@@ -27,5 +28,15 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
 var (
 	Amino     = codec.NewLegacyAmino()
-	ModuleCdc = codec.NewProtoCodec(cdctypes.NewInterfaceRegistry())
+	ModuleCdc = codec.NewAminoCodec(Amino)
 )
+
+func init() {
+	RegisterLegacyAminoCodec(Amino)
+	cryptocodec.RegisterCrypto(Amino)
+	sdk.RegisterLegacyAminoCodec(Amino)
+
+	// Register all Amino interfaces and concrete types on the authz Amino codec so that this can later be
+	// used to properly serialize MsgGrant and MsgExec instances
+	RegisterLegacyAminoCodec(authzcodec.Amino)
+}

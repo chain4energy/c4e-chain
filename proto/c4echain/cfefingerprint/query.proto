@@ -10,22 +10,21 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfefingerprint/types";
 
 // Query defines the gRPC querier service.
 service Query {
-  
-// Queries a list of VerifyReferencePayloadLink items.
+  // Queries a list of VerifyReferencePayloadLink items.
 	rpc VerifyReferencePayloadLink(QueryVerifyReferencePayloadLinkRequest) returns (QueryVerifyReferencePayloadLinkResponse) {
-		option (google.api.http).get = "/chain4energy/c4echain/cfefingerprint/verify_reference_payload_link/{referenceId}/{payloadHash}";
+		option (google.api.http).get = "/c4e/fingerprint/verify_reference_payload_link/{reference_id}/{payload_hash}";
 	}
 
-// this line is used by starport scaffolding # 2
+  // this line is used by starport scaffolding # 2
 }
 
 message QueryVerifyReferencePayloadLinkRequest {
-  string referenceId = 1;
-  string payloadHash = 2;
+  string reference_id = 1;
+  string payload_hash = 2;
 }
 
 message QueryVerifyReferencePayloadLinkResponse {
-  string isValid = 1;
+  bool is_valid = 1;
 }
 
 // this line is used by starport scaffolding # 3

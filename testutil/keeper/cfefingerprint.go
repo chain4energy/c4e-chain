@@ -43,13 +43,6 @@ func CfefingerprintKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	registry := codectypes.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(registry)
 
-	paramsSubspace := typesparams.NewSubspace(cdc,
-		types.Amino,
-		storeKey,
-		memStoreKey,
-		"EnergychainParams",
-	)
-
 	paramsAuthSubspace := typesparams.NewSubspace(cdc,
 		types.Amino,
 		authStoreKey,
@@ -89,14 +82,9 @@ func CfefingerprintKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		cdc,
 		storeKey,
 		memStoreKey,
-		paramsSubspace,
 		accountKeeper,
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
-
-	// Initialize params
-	k.SetParams(ctx, types.DefaultParams())
-
 	return k, ctx
 }

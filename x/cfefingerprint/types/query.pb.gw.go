@@ -44,26 +44,26 @@ func request_Query_VerifyReferencePayloadLink_0(ctx context.Context, marshaler r
 		_   = err
 	)
 
-	val, ok = pathParams["referenceId"]
+	val, ok = pathParams["reference_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "referenceId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "reference_id")
 	}
 
 	protoReq.ReferenceId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "referenceId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "reference_id", err)
 	}
 
-	val, ok = pathParams["payloadHash"]
+	val, ok = pathParams["payload_hash"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "payloadHash")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "payload_hash")
 	}
 
 	protoReq.PayloadHash, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "payloadHash", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "payload_hash", err)
 	}
 
 	msg, err := client.VerifyReferencePayloadLink(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -82,26 +82,26 @@ func local_request_Query_VerifyReferencePayloadLink_0(ctx context.Context, marsh
 		_   = err
 	)
 
-	val, ok = pathParams["referenceId"]
+	val, ok = pathParams["reference_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "referenceId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "reference_id")
 	}
 
 	protoReq.ReferenceId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "referenceId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "reference_id", err)
 	}
 
-	val, ok = pathParams["payloadHash"]
+	val, ok = pathParams["payload_hash"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "payloadHash")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "payload_hash")
 	}
 
 	protoReq.PayloadHash, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "payloadHash", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "payload_hash", err)
 	}
 
 	msg, err := server.VerifyReferencePayloadLink(ctx, &protoReq)
@@ -203,7 +203,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_VerifyReferencePayloadLink_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"chain4energy", "c4echain", "cfefingerprint", "verify_reference_payload_link", "referenceId", "payloadHash"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_VerifyReferencePayloadLink_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"c4e", "fingerprint", "verify_reference_payload_link", "reference_id", "payload_hash"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

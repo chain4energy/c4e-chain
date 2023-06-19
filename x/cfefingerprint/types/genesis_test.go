@@ -7,34 +7,86 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	validReferenceKey   = "abcs123123"
+	validReferenceValue = "abcs123123"
+)
+
 func TestGenesisState_Validate(t *testing.T) {
-	for _, tc := range []struct {
-		desc     string
+	tests := []struct {
+		name     string
 		genState *types.GenesisState
-		valid    bool
+		errMsg   string
 	}{
 		{
-			desc:     "default is valid",
+			name:     "default is valid",
 			genState: types.DefaultGenesis(),
-			valid:    true,
 		},
 		{
-			desc:     "valid genesis state",
+			name:     "empty genesis state",
+			genState: &types.GenesisState{},
+		},
+		{
+			name: "valid genesis state",
 			genState: &types.GenesisState{
-
-				// this line is used by starport scaffolding # types/genesis/validField
+				PayloadLinks: []*types.GenesisPayloadLink{
+					{
+						ReferenceKey:   validReferenceKey,
+						ReferenceValue: validReferenceValue,
+					},
+				},
 			},
-			valid: true,
+		},
+		{
+			name: "invalid genesis state - empty reference key",
+			genState: &types.GenesisState{
+				PayloadLinks: []*types.GenesisPayloadLink{
+					{
+						ReferenceKey:   "",
+						ReferenceValue: validReferenceValue,
+					},
+				},
+			},
+			errMsg: "referance key cannot be empty",
+		},
+		{
+			name: "invalid genesis state - empty reference value",
+			genState: &types.GenesisState{
+				PayloadLinks: []*types.GenesisPayloadLink{
+					{
+						ReferenceKey:   validReferenceKey,
+						ReferenceValue: "",
+					},
+				},
+			},
+			errMsg: "referance value cannot be empty",
+		},
+		{
+			name: "invalid genesis state - dyplicated reference key",
+			genState: &types.GenesisState{
+				PayloadLinks: []*types.GenesisPayloadLink{
+					{
+						ReferenceKey:   validReferenceKey,
+						ReferenceValue: validReferenceValue,
+					},
+					{
+						ReferenceKey:   validReferenceKey,
+						ReferenceValue: validReferenceValue,
+					},
+				},
+			},
+			errMsg: "duplicated reference key abcs123123",
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
-			err := tc.genState.Validate()
-			if tc.valid {
-				require.NoError(t, err)
-			} else {
-				require.Error(t, err)
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.genState.Validate()
+			if tt.errMsg != "" {
+				require.EqualError(t, err, tt.errMsg)
+				return
 			}
+			require.NoError(t, err)
 		})
 	}
 }

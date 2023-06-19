@@ -1,5 +1,7 @@
 package types
 
+var PayloadLinkKey = []byte{0x00}
+
 const (
 	// ModuleName defines the module name
 	ModuleName = "cfefingerprint"
@@ -12,10 +14,8 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_cfefingerprint"
-
-	PayloadLinkKey = "Payload-Value-"
 )
 
-func KeyPrefix(p string) []byte {
-	return []byte(p)
+func GetStringKey(id string) []byte {
+	return []byte(id)
 }

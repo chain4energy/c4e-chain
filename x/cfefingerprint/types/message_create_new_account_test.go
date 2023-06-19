@@ -1,6 +1,7 @@
-package types
+package types_test
 
 import (
+	"github.com/chain4energy/c4e-chain/x/cfefingerprint/types"
 	"testing"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
@@ -10,19 +11,21 @@ import (
 
 func TestMsgCreateNewAccount_ValidateBasic(t *testing.T) {
 	tests := []struct {
-		name string
-		msg  MsgCreateNewAccount
-		err  error
+		name   string
+		msg    types.MsgCreateNewAccount
+		err    error
+		errMsg string
 	}{
 		{
 			name: "invalid address",
-			msg: MsgCreateNewAccount{
+			msg: types.MsgCreateNewAccount{
 				Creator: "invalid_address",
 			},
-			err: sdkerrors.ErrInvalidAddress,
+			err:    sdkerrors.ErrInvalidAddress,
+			errMsg: "invalid creator address (decoding bech32 failed: invalid separator index -1): invalid address",
 		}, {
 			name: "valid address",
-			msg: MsgCreateNewAccount{
+			msg: types.MsgCreateNewAccount{
 				Creator: sample.AccAddress(),
 			},
 		},
@@ -32,6 +35,7 @@ func TestMsgCreateNewAccount_ValidateBasic(t *testing.T) {
 			err := tt.msg.ValidateBasic()
 			if tt.err != nil {
 				require.ErrorIs(t, err, tt.err)
+				require.EqualError(t, err, tt.errMsg)
 				return
 			}
 			require.NoError(t, err)

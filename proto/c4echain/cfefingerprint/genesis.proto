@@ -9,10 +9,10 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfefingerprint/types";
 // GenesisState defines the cfefingerprint module's genesis state.
 message GenesisState {
   // this line is used by starport scaffolding # genesis/proto/state
-  repeated GenesisPayloadLink payloadLinks = 1;
+  repeated GenesisPayloadLink payload_links = 1;
 }
 
 message GenesisPayloadLink {
-  string referenceKey = 1;
-  string referenceValue = 2;
+  string reference_key = 1;
+  string reference_value = 2;
 }

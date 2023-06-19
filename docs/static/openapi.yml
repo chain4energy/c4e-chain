@@ -1080,7 +1080,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /chain4energy/c4echain/cfefingerprint/verify_reference_payload_link/{referenceId}/{payloadHash}:
+  /c4e/fingerprint/verify_reference_payload_link/{reference_id}/{payload_hash}:
     get:
       summary: Queries a list of VerifyReferencePayloadLink items.
       operationId: Chain4EnergyC4EchainCfefingerprintVerifyReferencePayloadLink
@@ -1090,8 +1090,8 @@ paths:
           schema:
             type: object
             properties:
-              isValid:
-                type: string
+              is_valid:
+                type: boolean
         default:
           description: An unexpected error response.
           schema:
@@ -1111,11 +1111,11 @@ paths:
                       type: string
                   additionalProperties: {}
       parameters:
-        - name: referenceId
+        - name: reference_id
           in: path
           required: true
           type: string
-        - name: payloadHash
+        - name: payload_hash
           in: path
           required: true
           type: string
@@ -1943,329 +1943,6 @@ paths:
                           "@type": "type.googleapis.com/google.protobuf.Duration",
                           "value": "1.212s"
                         }
-      tags:
-        - Query
-  /c4e/signature/v1beta1/create_reference_id/{creator}:
-    get:
-      summary: Queries a list of CreateReferenceId items.
-      operationId: Chain4EnergyC4EchainCfesignatureCreateReferenceId
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              referenceId:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: creator
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/signature/v1beta1/create_reference_payload_link/{referenceId}/{payloadHash}:
-    get:
-      summary: Queries a list of CreateReferencePayloadLink items.
-      operationId: Chain4EnergyC4EchainCfesignatureCreateReferencePayloadLink
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              referenceKey:
-                type: string
-              referenceValue:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: referenceId
-          in: path
-          required: true
-          type: string
-        - name: payloadHash
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/signature/v1beta1/create_storage_key/{targetAccAddress}/{referenceId}:
-    get:
-      summary: Queries a list of CreateStorageKey items.
-      operationId: Chain4EnergyC4EchainCfesignatureCreateStorageKey
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              storageKey:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: targetAccAddress
-          in: path
-          required: true
-          type: string
-        - name: referenceId
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/signature/v1beta1/get_account_info/{accAddressString}:
-    get:
-      summary: Queries a list of GetAccountInfo items.
-      operationId: Chain4EnergyC4EchainCfesignatureGetAccountInfo
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              accAddress:
-                type: string
-              pubKey:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: accAddressString
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/signature/v1beta1/get_reference_payload_link/{referenceId}:
-    get:
-      summary: Queries a list of GetReferencePayloadLink items.
-      operationId: Chain4EnergyC4EchainCfesignatureGetReferencePayloadLink
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              referencePayloadLinkValue:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: referenceId
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/signature/v1beta1/params:
-    get:
-      summary: Parameters queries the parameters of the module.
-      operationId: Chain4EnergyC4EchainCfesignatureParams
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params holds all the parameters of this module.
-                type: object
-            description: >-
-              QueryParamsResponse is response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /c4e/signature/v1beta1/verify_reference_payload_link/{referenceId}/{payloadHash}:
-    get:
-      summary: Queries a list of VerifyReferencePayloadLink items.
-      operationId: Chain4EnergyC4EchainCfesignatureVerifyReferencePayloadLink
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              isValid:
-                type: boolean
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: referenceId
-          in: path
-          required: true
-          type: string
-        - name: payloadHash
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /c4e/signature/v1beta1/verify_signature/{referenceId}/{targetAccAddress}:
-    get:
-      summary: Queries a list of VerifySignature items.
-      operationId: Chain4EnergyC4EchainCfesignatureVerifySignature
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              signature:
-                type: string
-              algorithm:
-                type: string
-              certificate:
-                type: string
-              timestamp:
-                type: string
-              valid:
-                type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: referenceId
-          in: path
-          required: true
-          type: string
-        - name: targetAccAddress
-          in: path
-          required: true
-          type: string
       tags:
         - Query
   /c4e/vesting/v1beta1/genesis_summary:
@@ -49212,19 +48889,19 @@ definitions:
   chain4energy.c4echain.cfefingerprint.MsgCreateNewAccountResponse:
     type: object
     properties:
-      accountNumber:
+      account_number:
         type: string
         format: uint64
   chain4energy.c4echain.cfefingerprint.MsgCreateReferencePayloadLinkResponse:
     type: object
     properties:
-      referenceId:
+      reference_id:
         type: string
   chain4energy.c4echain.cfefingerprint.QueryVerifyReferencePayloadLinkResponse:
     type: object
     properties:
-      isValid:
-        type: string
+      is_valid:
+        type: boolean
   chain4energy.c4echain.cfeminter.Minter:
     type: object
     properties:
@@ -49836,80 +49513,6 @@ definitions:
               format: date-time
             remainder_from_previous_minter:
               type: string
-  chain4energy.c4echain.cfesignature.MsgCreateAccountResponse:
-    type: object
-    properties:
-      accountNumber:
-        type: string
-  chain4energy.c4echain.cfesignature.MsgPublishReferencePayloadLinkResponse:
-    type: object
-    properties:
-      txTimestamp:
-        type: string
-  chain4energy.c4echain.cfesignature.MsgStoreSignatureResponse:
-    type: object
-    properties:
-      txId:
-        type: string
-      txTimestamp:
-        type: string
-  chain4energy.c4echain.cfesignature.Params:
-    type: object
-    description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfesignature.QueryCreateReferenceIdResponse:
-    type: object
-    properties:
-      referenceId:
-        type: string
-  chain4energy.c4echain.cfesignature.QueryCreateReferencePayloadLinkResponse:
-    type: object
-    properties:
-      referenceKey:
-        type: string
-      referenceValue:
-        type: string
-  chain4energy.c4echain.cfesignature.QueryCreateStorageKeyResponse:
-    type: object
-    properties:
-      storageKey:
-        type: string
-  chain4energy.c4echain.cfesignature.QueryGetAccountInfoResponse:
-    type: object
-    properties:
-      accAddress:
-        type: string
-      pubKey:
-        type: string
-  chain4energy.c4echain.cfesignature.QueryGetReferencePayloadLinkResponse:
-    type: object
-    properties:
-      referencePayloadLinkValue:
-        type: string
-  chain4energy.c4echain.cfesignature.QueryParamsResponse:
-    type: object
-    properties:
-      params:
-        description: params holds all the parameters of this module.
-        type: object
-    description: QueryParamsResponse is response type for the Query/Params RPC method.
-  chain4energy.c4echain.cfesignature.QueryVerifyReferencePayloadLinkResponse:
-    type: object
-    properties:
-      isValid:
-        type: boolean
-  chain4energy.c4echain.cfesignature.QueryVerifySignatureResponse:
-    type: object
-    properties:
-      signature:
-        type: string
-      algorithm:
-        type: string
-      certificate:
-        type: string
-      timestamp:
-        type: string
-      valid:
-        type: string
   chain4energy.c4echain.cfevesting.GenesisVestingType:
     type: object
     properties:

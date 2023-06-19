@@ -13,21 +13,12 @@ func (k Keeper) VerifyReferencePayloadLink(goCtx context.Context, req *types.Que
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	result, err := k.VerifyPayloadLink(ctx, req.ReferenceId, req.PayloadHash)
-	if err != nil {
-		k.Logger(ctx).Error("verify reference payload link - validation error", "error", err)
-		return &types.QueryVerifyReferencePayloadLinkResponse{IsValid: "false"}, err
+	if err := k.VerifyPayloadLink(ctx, req.ReferenceId, req.PayloadHash); err != nil {
+		k.Logger(ctx).Error("verify reference payload link error", "error", err)
+		return &types.QueryVerifyReferencePayloadLinkResponse{IsValid: false}, err
 	}
 
-	if result {
-		return &types.QueryVerifyReferencePayloadLinkResponse{IsValid: "true"}, nil
-	}
-
-	// verification failed
-	ctx.Logger().Debug("PayloadLink verification failed: payloadHash:", req.PayloadHash)
-
-	return &types.QueryVerifyReferencePayloadLinkResponse{IsValid: "false"}, nil
+	return &types.QueryVerifyReferencePayloadLinkResponse{IsValid: true}, nil
 }

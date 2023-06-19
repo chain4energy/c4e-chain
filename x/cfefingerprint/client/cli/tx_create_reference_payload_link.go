@@ -18,19 +18,16 @@ var _ = strconv.Itoa(0)
 func CmdCreateReferencePayloadLink() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-reference-payload-link [payload-hash]",
-		Short: "Create and publish reference payload link based on payload hash",
+		Short: "Create reference payload link based on payload hash",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Create and publish reference payload link based on payload hash.
+			fmt.Sprintf(`Create reference payload link based on payload hash.
 
 Arguments:
   [payloadHash] hash for a given payload e.g. some document
 
 Example:
-$ %s tx %s create-reference-payload-link 5b3f2de5a5a6a7054d04171dbd692f66f5236f06
-`,
-				version.AppName, types.ModuleName,
-			),
-		),
+$ %s tx %s create-reference-payload-link 5b3f2de5a5a6a7054d04171dbd692f66f5236f06 --from mykey
+`, version.AppName, types.ModuleName)),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argPayloadHash := args[0]
@@ -44,7 +41,7 @@ $ %s tx %s create-reference-payload-link 5b3f2de5a5a6a7054d04171dbd692f66f5236f0
 				clientCtx.GetFromAddress().String(),
 				argPayloadHash,
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)

@@ -26,9 +26,6 @@ import (
 	cfemintermodule "github.com/chain4energy/c4e-chain/x/cfeminter"
 	cfemintermodulekeeper "github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
 	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
-	cfesignaturemodule "github.com/chain4energy/c4e-chain/x/cfesignature"
-	cfesignaturemodulekeeper "github.com/chain4energy/c4e-chain/x/cfesignature/keeper"
-	cfesignaturemoduletypes "github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	cfevestingmodule "github.com/chain4energy/c4e-chain/x/cfevesting"
 	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -180,7 +177,6 @@ var (
 		ica.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		cfevestingmodule.AppModuleBasic{},
-		cfesignaturemodule.AppModuleBasic{},
 		cfemintermodule.AppModuleBasic{},
 		cfedistributormodule.AppModuleBasic{},
 		cfeclaimmodule.AppModuleBasic{},
@@ -270,7 +266,6 @@ type App struct {
 
 	CfevestingKeeper cfevestingmodulekeeper.Keeper
 
-	CfesignatureKeeper   cfesignaturemodulekeeper.Keeper
 	CfeminterKeeper      cfemintermodulekeeper.Keeper
 	CfedistributorKeeper cfedistributormodulekeeper.Keeper
 	CfeclaimKeeper       cfeclaimmodulekeeper.Keeper
@@ -314,7 +309,6 @@ func New(
 		govtypes.StoreKey,
 		evidencetypes.StoreKey,
 		cfevestingmoduletypes.StoreKey,
-		cfesignaturemoduletypes.StoreKey,
 		cfemintermoduletypes.StoreKey,
 		cfedistributormoduletypes.StoreKey,
 		cfeclaimmoduletypes.StoreKey,
@@ -543,23 +537,12 @@ func New(
 	cfevestingModule := cfevestingmodule.NewAppModule(appCodec, app.CfevestingKeeper, app.AccountKeeper, app.BankKeeper,
 		app.StakingKeeper, app.GetSubspace(cfevestingmoduletypes.ModuleName))
 
-	app.CfesignatureKeeper = *cfesignaturemodulekeeper.NewKeeper(
-		appCodec,
-		appCodec,
-		keys[cfesignaturemoduletypes.StoreKey],
-		keys[cfesignaturemoduletypes.MemStoreKey],
-		app.GetSubspace(cfesignaturemoduletypes.ModuleName),
-		app.AccountKeeper,
-	)
-	cfesignatureModule := cfesignaturemodule.NewAppModule(appCodec, app.CfesignatureKeeper)
-
 	// fingerprint keeper and module
 	app.CfefingerprintKeeper = *cfefingerprintmodulekeeper.NewKeeper(
 		appCodec,
 		appCodec,
 		keys[cfefingerprintmoduletypes.StoreKey],
 		keys[cfefingerprintmoduletypes.MemStoreKey],
-		app.GetSubspace(cfefingerprintmoduletypes.ModuleName),
 		app.AccountKeeper,
 	)
 	cfefingerprintModule := cfefingerprintmodule.NewAppModule(appCodec, app.CfefingerprintKeeper, app.AccountKeeper, app.BankKeeper)
@@ -654,7 +637,6 @@ func New(
 		transferModule,
 		icaModule,
 		cfevestingModule,
-		cfesignatureModule,
 		cfeminterModule,
 		cfedistributorModule,
 		cfeclaimModule,
@@ -687,7 +669,6 @@ func New(
 		feegrant.ModuleName,
 		group.ModuleName,
 		paramstypes.ModuleName,
-		cfesignaturemoduletypes.ModuleName,
 		cfeclaimmoduletypes.ModuleName,
 		cfefingerprintmoduletypes.ModuleName,
 
@@ -716,7 +697,6 @@ func New(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		cfevestingmoduletypes.ModuleName,
-		cfesignaturemoduletypes.ModuleName,
 		cfemintermoduletypes.ModuleName,
 		cfedistributormoduletypes.ModuleName,
 		cfeclaimmoduletypes.ModuleName,
@@ -753,7 +733,6 @@ func New(
 		group.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
-		cfesignaturemoduletypes.ModuleName,
 		cfemintermoduletypes.ModuleName,
 		cfefingerprintmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
@@ -793,7 +772,6 @@ func New(
 		transferModule,
 		icaModule,
 		cfevestingModule,
-		cfesignatureModule, // - no simulations yey
 		cfeminterModule,
 		cfedistributorModule,
 		cfeclaimModule,
@@ -993,10 +971,8 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(cfevestingmoduletypes.ModuleName)
-	paramsKeeper.Subspace(cfesignaturemoduletypes.ModuleName)
 	paramsKeeper.Subspace(cfemintermoduletypes.ModuleName)
 	paramsKeeper.Subspace(cfedistributormoduletypes.ModuleName)
-	paramsKeeper.Subspace(cfefingerprintmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

@@ -6,7 +6,6 @@ import (
 	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
-	cfesignaturetypes "github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -107,7 +106,6 @@ func BenchmarkSimTest(b *testing.B) {
 		{app.keys[cfevestingtypes.StoreKey], newApp.keys[cfevestingtypes.StoreKey], [][]byte{}},
 		{app.keys[cfedistributortypes.StoreKey], newApp.keys[cfedistributortypes.StoreKey], [][]byte{}},
 		{app.keys[cfemintertypes.StoreKey], newApp.keys[cfemintertypes.StoreKey], [][]byte{}},
-		{app.keys[cfesignaturetypes.StoreKey], newApp.keys[cfesignaturetypes.StoreKey], [][]byte{}},
 		{app.keys[cfeclaimtypes.StoreKey], newApp.keys[cfeclaimtypes.StoreKey], [][]byte{}},
 	}
 

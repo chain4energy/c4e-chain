@@ -10,25 +10,26 @@ service Msg {
   rpc CreateReferencePayloadLink(MsgCreateReferencePayloadLink) returns (MsgCreateReferencePayloadLinkResponse);
   // Temporary message - to remove in the future
   rpc CreateNewAccount(MsgCreateNewAccount) returns (MsgCreateNewAccountResponse);
-// this line is used by starport scaffolding # proto/tx/rpc
+  // this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgCreateReferencePayloadLink {
   string creator = 1;
-  string payloadHash = 2;
+  string payload_hash = 2;
 }
 
 message MsgCreateReferencePayloadLinkResponse {
-  string referenceId = 1;
+  string reference_id = 1;
 }
+
 // Temporary message - to remove in the future
 message MsgCreateNewAccount {
   string creator = 1;
-  string accAddressString = 2;
+  string acc_address_string = 2;
 }
 
 message MsgCreateNewAccountResponse {
-  uint64 accountNumber = 1;
+  uint64 account_number = 1;
 }
 
 // this line is used by starport scaffolding # proto/tx/message

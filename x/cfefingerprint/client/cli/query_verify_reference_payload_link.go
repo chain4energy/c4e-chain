@@ -14,7 +14,7 @@ var _ = strconv.Itoa(0)
 func CmdVerifyReferencePayloadLink() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "verify-reference-payload-link [reference-id] [payload-hash]",
-		Short: "Query verifyReferencePayloadLink",
+		Short: "Verify reference payload link by passing reference id and payload hash",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			reqReferenceId := args[0]
