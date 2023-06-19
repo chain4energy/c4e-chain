@@ -18,7 +18,6 @@ type TestContext interface {
 var TestEnvTime = time.Now()
 
 const DefaultTestDenom = "uc4e"
-const DefaultBechPrefix = "c4e"
 const DefaultDistributionDestination = cfedistributortypes.GreenEnergyBoosterCollector
 
 var NoMintingConfig, _ = codectypes.NewAnyWithValue(&types.NoMinting{})

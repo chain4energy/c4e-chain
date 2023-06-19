@@ -1,81 +1,116 @@
 syntax = "proto3";
 package chain4energy.c4echain.cfeclaim;
 
+import "c4echain/cfeclaim/campaign.proto";
 import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+import "c4echain/cfeclaim/mission.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeclaim/types";
 
-message NewCampaign {
+message EventNewCampaign {
+    uint64 id = 1;
     string owner = 2;
     string name = 3;
     string description = 4;
-    string campaign_type = 5;
-    string feegrant_amount = 6;
-    string initial_claim_free_amount = 7;
-    string enabled = 8;
-    string start_time = 9;
-    string end_time = 10;
-    string lockup_period = 11;
-    string vesting_period = 12;
-    string vesting_poolName = 13;
+    CampaignType campaign_type = 5;
+    bool removable_claim_records = 6;
+    string feegrant_amount = 7 [
+        (gogoproto.nullable) = false,
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+    ];
+    string initial_claim_free_amount = 8 [
+        (gogoproto.nullable) = false,
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+    ];
+    string free = 9 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable) = false
+    ];
+    bool enabled = 10;
+    google.protobuf.Timestamp start_time = 11 [
+        (gogoproto.nullable) = false,
+        (gogoproto.stdtime) = true
+    ];
+    google.protobuf.Timestamp end_time = 12 [
+        (gogoproto.nullable) = false,
+        (gogoproto.stdtime) = true
+    ];
+    google.protobuf.Duration lockup_period = 13 [
+        (gogoproto.nullable) = false,
+        (gogoproto.stdduration) = true
+    ];
+    google.protobuf.Duration vesting_period = 14 [
+        (gogoproto.nullable) = false,
+        (gogoproto.stdduration) = true
+    ];
+    string vesting_poolName = 15;
 }
 
-message CloseCampaign {
+message EventCloseCampaign {
     string owner = 1;
-    string campaign_id = 2;
+    uint64 campaign_id = 2;
     string campaign_close_action = 3;
 }
 
-message RemoveCampaign {
+message EventRemoveCampaign {
     string owner = 1;
-    string campaignId = 2;
+    uint64 campaign_id = 2;
 }
 
-message EnableCampaign {
+message EventEnableCampaign {
     string owner = 1;
-    string campaignId = 2;
+    uint64 campaign_id = 2;
 }
 
-message AddMissionToCampaign {
-    string owner = 1;
-    string campaignId = 2;
-    string name = 3;
-    string description = 4;
-    string missionType = 5;
-    string weight = 6;
-    string claim_start_date = 7;
+message EventAddMission {
+    uint64 id = 1;
+    string owner = 2;
+    uint64 campaign_id = 3;
+    string name = 4;
+    string description = 5;
+    MissionType mission_type = 6;
+    string weight = 7 [
+        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.nullable) = false
+    ];
+    google.protobuf.Timestamp claim_start_date = 8 [
+        (gogoproto.nullable) = true,
+        (gogoproto.stdtime) = true
+    ];
 }
 
-message Claim {
+message EventClaim {
     string claimer = 1;
-    string campaign_id = 2;
-    string mission_id = 3;
+    uint64 campaign_id = 2;
+    uint64 mission_id = 3;
     string amount = 4;
 }
 
-message InitialClaim {
+message EventInitialClaim {
     string claimer = 1;
-    string campaign_id = 2;
-    string addressToClaim = 3;
+    uint64 campaign_id = 2;
+    string address_to_claim = 3;
     string amount = 4;
 }
 
-message AddClaimRecords {
+message EventAddClaimRecords {
     string owner = 1;
-    string campaign_id = 2;
+    uint64 campaign_id = 2;
     string claim_records_total_amount = 3;
-    string claim_records_number = 4;
+    int64 claim_records_number = 4;
 }
 
-message DeleteClaimRecord {
+message EventDeleteClaimRecord {
     string owner = 1;
-    string campaignId = 2;
+    uint64 campaign_id = 2;
     string userAddress = 3;
     string claim_record_amount = 4;
 }
 
-message CompleteMissionFromHook {
-    string campaign_id = 1;
-    string mission_id = 2;
+message EventCompleteMission {
+    uint64 campaign_id = 1;
+    uint64 mission_id = 2;
     string user_address = 3;
 }

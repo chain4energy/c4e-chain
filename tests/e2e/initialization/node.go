@@ -35,6 +35,8 @@ import (
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 )
 
+const configTomlFile = "config.toml"
+
 type internalNode struct {
 	chain        *internalChain
 	moniker      string
@@ -284,7 +286,7 @@ func (n *internalNode) init(appState map[string]json.RawMessage) error {
 		return fmt.Errorf("failed to export app genesis state: %w", err)
 	}
 
-	tmconfig.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
+	tmconfig.WriteConfigFile(filepath.Join(config.RootDir, "config", configTomlFile), config)
 	return nil
 }
 
@@ -303,7 +305,7 @@ func (n *internalNode) createMnemonic() (string, error) {
 }
 
 func (n *internalNode) initNodeConfigs(persistentPeers []string) error {
-	tmCfgPath := filepath.Join(n.configDir(), "config", "config.toml")
+	tmCfgPath := filepath.Join(n.configDir(), "config", configTomlFile)
 
 	vpr := viper.New()
 	vpr.SetConfigFile(tmCfgPath)
@@ -330,7 +332,7 @@ func (n *internalNode) initNodeConfigs(persistentPeers []string) error {
 }
 
 func (n *internalNode) initStateSyncConfig(trustHeight int64, trustHash string, stateSyncRPCServers []string) error {
-	tmCfgPath := filepath.Join(n.configDir(), "config", "config.toml")
+	tmCfgPath := filepath.Join(n.configDir(), "config", configTomlFile)
 
 	vpr := viper.New()
 	vpr.SetConfigFile(tmCfgPath)

@@ -1,8 +1,11 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	"fmt"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // Validate checks the userEntry is valid
@@ -23,17 +26,20 @@ func (m *UserEntry) Validate() error {
 		campaignIDMap[elem.CampaignId] = struct{}{}
 	}
 
-	for _, claimRecord := range m.ClaimRecords {
+	for i, claimRecord := range m.ClaimRecords {
+		if err := claimRecord.Validate(); err != nil {
+			return errors.Wrapf(err, "claim record index %d", i)
+		}
 		if !claimRecord.Amount.IsAllPositive() {
 			return fmt.Errorf("claimable amount must be positive")
 		}
 
-		missionIDMap := make(map[uint64]struct{})
+		missionIdMap := make(map[uint64]struct{})
 		for _, elem := range claimRecord.CompletedMissions {
-			if _, ok := missionIDMap[elem]; ok {
+			if _, ok := missionIdMap[elem]; ok {
 				return fmt.Errorf("duplicated mission id for completed mission")
 			}
-			missionIDMap[elem] = struct{}{}
+			missionIdMap[elem] = struct{}{}
 		}
 	}
 
@@ -41,42 +47,33 @@ func (m *UserEntry) Validate() error {
 }
 
 // IsMissionCompleted checks if the specified mission ID is completed for the claim record
-func (m *UserEntry) IsMissionCompleted(campaignId uint64, missionID uint64) bool {
-	for _, claimRecord := range m.ClaimRecords {
-		if claimRecord.CampaignId == campaignId {
-			for _, completed := range claimRecord.CompletedMissions {
-				if completed == missionID {
-					return true
-				}
-			}
+func (m *ClaimRecord) IsMissionCompleted(missionId uint64) bool {
+	for _, completed := range m.CompletedMissions {
+		if completed == missionId {
+			return true
 		}
 	}
+
 	return false
 }
 
-func (m *UserEntry) IsMissionClaimed(campaignId uint64, missionID uint64) bool {
-	for _, claimRecord := range m.ClaimRecords {
-		if claimRecord.CampaignId == campaignId {
-			for _, claimed := range claimRecord.ClaimedMissions {
-				if claimed == missionID {
-					return true
-				}
-			}
+func (m *ClaimRecord) IsMissionClaimed(missionId uint64) bool {
+	for _, claimed := range m.ClaimedMissions {
+		if claimed == missionId {
+			return true
 		}
 	}
+
 	return false
 }
 
-func (m *UserEntry) IsInitialMissionClaimed(campaignId uint64) bool {
-	for _, claimRecord := range m.ClaimRecords {
-		if claimRecord.CampaignId == campaignId {
-			for _, claimed := range claimRecord.ClaimedMissions {
-				if claimed == InitialMissionId {
-					return true
-				}
-			}
+func (m *ClaimRecord) IsInitialMissionClaimed() bool {
+	for _, claimed := range m.ClaimedMissions {
+		if claimed == InitialMissionId {
+			return true
 		}
 	}
+
 	return false
 }
 
@@ -90,45 +87,109 @@ func (m *UserEntry) HasCampaign(campaignId uint64) bool {
 	return false
 }
 
-// IsMissionCompleted checks if the specified mission ID is completed for the claim record
-func (m *UserEntry) CompleteMission(campaignId uint64, missionID uint64) error {
-	claimRecord := m.GetClaimRecord(campaignId)
-	if claimRecord == nil {
-		return fmt.Errorf("no campaign record with id %d for address %s", campaignId, m.Address)
+// CompleteMission checks if the specified mission ID is completed for the claim record
+func (m *ClaimRecord) CompleteMission(campaignId uint64, missionId uint64) error {
+	if m.IsMissionCompleted(missionId) {
+		return errors.Wrapf(ErrMissionCompleted, "campaignId: %d, missionId: %d", campaignId, missionId)
 	}
-	claimRecord.CompletedMissions = append(claimRecord.CompletedMissions, missionID)
+	m.CompletedMissions = append(m.CompletedMissions, missionId)
 	return nil
 }
 
-// IsMissionCompleted checks if the specified mission ID is completed for the claim record
-func (m *UserEntry) ClaimMission(campaignId uint64, missionID uint64) error {
-	claimRecord := m.GetClaimRecord(campaignId)
-	if claimRecord == nil {
-		return fmt.Errorf("no campaign record with id %d for address %s", campaignId, m.Address)
+// CalculateInitialClaimClaimableAmount calculates the initial claimable amount for the claim record
+func (m *ClaimRecord) CalculateInitialClaimClaimableAmount(weightSum sdk.Dec) sdk.Coins {
+	allMissionsAmountSum := sdk.NewCoins()
+	for _, amount := range m.Amount {
+		allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, weightSum.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
 	}
-	claimRecord.ClaimedMissions = append(claimRecord.ClaimedMissions, missionID)
+	return m.Amount.Sub(allMissionsAmountSum...)
+}
+
+// ClaimMission claims the specified mission ID for the claim record
+func (m *ClaimRecord) ClaimMission(campaignId uint64, missionId uint64) error {
+	if !m.IsMissionCompleted(missionId) {
+		return errors.Wrapf(ErrMissionNotCompleted, "campaignId: %d, missionId: %d", campaignId, missionId)
+	}
+
+	if m.IsMissionClaimed(missionId) {
+		return errors.Wrapf(ErrMissionClaimed, "campaignId: %d, missionId: %d", campaignId, missionId)
+	}
+	m.ClaimedMissions = append(m.ClaimedMissions, missionId)
 	return nil
 }
 
 // ClaimableFromMission returns the amount claimable for this claim record from the provided mission completion
-func (m UserEntry) ClaimableFromMission(mission *Mission) (sdk.Coins, error) {
-	claimRecord := m.GetClaimRecord(mission.CampaignId)
-
-	if claimRecord == nil {
-		return nil, fmt.Errorf("no campaign record with id %d for address %s", mission.CampaignId, m.Address)
-	}
-
+func (m ClaimRecord) ClaimableFromMission(mission *Mission) (sdk.Coins, error) {
 	var coinSum sdk.Coins
-	for _, coin := range claimRecord.Amount {
+	for _, coin := range m.Amount {
 		coinSum = coinSum.Add(sdk.NewCoin(coin.Denom, mission.Weight.Mul(sdk.NewDecFromInt(coin.Amount)).TruncateInt()))
 	}
 	return coinSum, nil
 }
 
-func (cr *UserEntry) GetClaimRecord(camapaignId uint64) *ClaimRecord {
+func (cr *UserEntry) GetClaimRecord(campaignId uint64) *ClaimRecord {
+	for _, claimRecord := range cr.ClaimRecords {
+		if claimRecord.CampaignId == campaignId {
+			return claimRecord
+		}
+	}
+	return nil
+}
+
+// DeleteClaimRecord deletes the claim record for the specified campaign ID
+func (cr *UserEntry) DeleteClaimRecord(campaignId uint64) {
+	for i, claimRecord := range cr.ClaimRecords {
+		if claimRecord.CampaignId == campaignId {
+			cr.ClaimRecords = append(cr.ClaimRecords[:i], cr.ClaimRecords[i+1:]...)
+		}
+	}
+}
+
+func (cr *UserEntry) MustGetClaimRecord(camapaignId uint64) (*ClaimRecord, error) {
 	for _, claimRecord := range cr.ClaimRecords {
 		if claimRecord.CampaignId == camapaignId {
-			return claimRecord
+			return claimRecord, nil
+		}
+	}
+	return nil, errors.Wrapf(sdkerrors.ErrNotFound, "claim record with campaign id %d not found for address %s", camapaignId, cr.Address)
+}
+
+func (claimRecord *ClaimRecord) Validate() error {
+	if claimRecord.Amount == nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record amount cannot be nil")
+	}
+	if claimRecord.Amount.IsAnyNil() {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record amount cannot be nil")
+	}
+	if err := claimRecord.Amount.Validate(); err != nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "wrong claim record amount (%s)", err)
+	}
+	return nil
+}
+
+func (claimRecordEntry *ClaimRecordEntry) Validate() error {
+	if claimRecordEntry.UserEntryAddress == "" {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record entry empty user entry address")
+	}
+	if claimRecordEntry.Amount == nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record entry amount cannot be nil")
+	}
+	if claimRecordEntry.Amount.IsAnyNil() {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record entry amount cannot be nil")
+	}
+	if err := claimRecordEntry.Amount.Validate(); err != nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "wrong claim record entry amount (%s)", err)
+	}
+	if !claimRecordEntry.Amount.IsAllPositive() {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record amount must be positive")
+	}
+	return nil
+}
+
+func ValidateClaimRecordEntries(claimRecordEntries []*ClaimRecordEntry) error {
+	for i, claimRecordEntry := range claimRecordEntries {
+		if err := claimRecordEntry.Validate(); err != nil {
+			return errors.Wrapf(err, "claim record entry index %d", i)
 		}
 	}
 	return nil

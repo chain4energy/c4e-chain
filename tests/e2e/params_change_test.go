@@ -2,14 +2,13 @@ package e2e
 
 import (
 	"cosmossdk.io/math"
-	"fmt"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/chain"
 	"github.com/chain4energy/c4e-chain/tests/e2e/helpers"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-	testhelpers "github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	testhelpers "github.com/chain4energy/c4e-chain/testutil/utils"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -30,7 +29,7 @@ func TestParamsChangeSuite(t *testing.T) {
 }
 
 func (s *ParamsSetupSuite) SetupSuite() {
-	s.BaseSetupSuite.SetupSuite(false, false)
+	s.BaseSetupSuite.SetupSuite(false, false, false)
 }
 
 func (s *ParamsSetupSuite) TestMinterAndDistributorCustom() {
@@ -124,7 +123,7 @@ func (s *ParamsSetupSuite) TestMinterAndDistributorMainnetShort() {
 	s.NoError(err)
 	node.SubmitDepositAndVoteOnProposal(proposalJSON, initialization.ValidatorWalletName, chainA)
 
-	totalSupplyBefore, err := node.QuerySupplyOf(appparams.CoinDenom)
+	totalSupplyBefore, err := node.QuerySupplyOf(appparams.MicroC4eUnit)
 	time.Sleep(time.Minute * 1)
 	totalSupplyAfter, err := node.QuerySupplyOf(newDenom)
 	s.Greater(totalSupplyAfter.Int64(), totalSupplyBefore.Int64())
@@ -166,16 +165,11 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenom() {
 
 	node.SubmitDepositAndVoteOnProposal(proposalJSON, initialization.ValidatorWalletName, chainA)
 
-	s.Eventually(
-		func() bool {
-			var params cfevestingtypes.QueryParamsResponse
-			node.QueryCfevestingParams(&params)
-			return s.Equal(params.Params.Denom, newVestingDenom)
-		},
-		time.Minute,
-		time.Second*5,
-		"C4e node failed to validate params",
-	)
+	s.validateParams(func() bool {
+		var params cfevestingtypes.QueryParamsResponse
+		node.QueryCfevestingParams(&params)
+		return s.Equal(params.Params.Denom, newVestingDenom)
+	})
 }
 
 func (s *ParamsSetupSuite) TestCfevestingNewDenomVestingPoolsExist() {
@@ -185,7 +179,7 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenomVestingPoolsExist() {
 	// set previous denom
 	proposalMessage := cfevestingtypes.MsgUpdateDenomParam{
 		Authority: appparams.GetAuthority(),
-		Denom:     appparams.CoinDenom,
+		Denom:     appparams.MicroC4eUnit,
 	}
 	proposalJSON, err := util.NewProposalJSON([]sdk.Msg{&proposalMessage})
 	s.NoError(err)
@@ -195,12 +189,12 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenomVestingPoolsExist() {
 	// transfer funds and create vesting pool
 	creatorWalletName := testhelpers.RandStringOfLength(10)
 	creatorAddress := node.CreateWallet(creatorWalletName)
-	node.BankSend(sdk.NewCoin(appparams.CoinDenom, math.NewInt(baseBalance)).String(), chainA.NodeConfigs[0].PublicAddress, creatorAddress)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
 	balanceBefore, err := node.QueryBalances(creatorAddress)
 
 	vestingTypes := node.QueryVestingTypes()
 	s.NoError(err)
-	balanceBeforeAmount := balanceBefore.AmountOf(appparams.CoinDenom)
+	balanceBeforeAmount := balanceBefore.AmountOf(appparams.MicroC4eUnit)
 	randVestingPoolName := testhelpers.RandStringOfLength(5)
 	vestingAmount := balanceBeforeAmount.Quo(math.NewInt(4))
 	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), (10 * time.Minute).String(), vestingTypes[0].Name, creatorWalletName)
@@ -410,25 +404,19 @@ func (s *ParamsSetupSuite) TestCfedistributorMsgUpdateSubdistributor() {
 
 	node.SubmitDepositAndVoteOnProposal(proposalJSON3, initialization.ValidatorWalletName, chainA)
 	var params cfedistributortypes.QueryParamsResponse
-	s.Eventually(
-		func() bool {
-			node.QueryCfedistributorParams(&params)
-			if correctMsgUpdateSubdistributor.SubDistributor.Name != params.Params.SubDistributors[0].Name {
-				return false
-			}
-			if !assert.ObjectsAreEqualValues(correctMsgUpdateSubdistributor.SubDistributor.Sources, params.Params.SubDistributors[0].Sources) {
-				return false
-			}
-			if !assert.ObjectsAreEqualValues(correctMsgUpdateSubdistributor.SubDistributor.Destinations, params.Params.SubDistributors[0].Destinations) {
-				return false
-			}
-
-			return true
-		},
-		time.Minute,
-		time.Second*5,
-		"C4e node failed to validate params",
-	)
+	s.validateParams(func() bool {
+		node.QueryCfedistributorParams(&params)
+		if correctMsgUpdateSubdistributor.SubDistributor.Name != params.Params.SubDistributors[0].Name {
+			return false
+		}
+		if !assert.ObjectsAreEqualValues(correctMsgUpdateSubdistributor.SubDistributor.Sources, params.Params.SubDistributors[0].Sources) {
+			return false
+		}
+		if !assert.ObjectsAreEqualValues(correctMsgUpdateSubdistributor.SubDistributor.Destinations, params.Params.SubDistributors[0].Destinations) {
+			return false
+		}
+		return true
+	})
 }
 
 func (s *ParamsSetupSuite) TestCfedistributorMsgUpdateBurnShare() {
@@ -470,22 +458,17 @@ func (s *ParamsSetupSuite) TestCfedistributorMsgUpdateBurnShare() {
 
 	node.SubmitDepositAndVoteOnProposal(proposalJSON3, initialization.ValidatorWalletName, chainA)
 	var params cfedistributortypes.QueryParamsResponse
-	s.Eventually(
-		func() bool {
-			node.QueryCfedistributorParams(&params)
-			if correctMsgUpdateSubdistributorBurnShare.SubDistributorName != params.Params.SubDistributors[0].Name {
-				return false
-			}
-			if !correctMsgUpdateSubdistributorBurnShare.BurnShare.Equal(params.Params.SubDistributors[0].Destinations.BurnShare) {
-				return false
-			}
+	s.validateParams(func() bool {
+		node.QueryCfedistributorParams(&params)
+		if correctMsgUpdateSubdistributorBurnShare.SubDistributorName != params.Params.SubDistributors[0].Name {
+			return false
+		}
+		if !correctMsgUpdateSubdistributorBurnShare.BurnShare.Equal(params.Params.SubDistributors[0].Destinations.BurnShare) {
+			return false
+		}
 
-			return true
-		},
-		time.Minute,
-		time.Second*5,
-		"C4e node failed to validate params",
-	)
+		return true
+	})
 }
 
 func (s *ParamsSetupSuite) TestCfedistributorMsgUpdateSubDistributorDestinationShareParam() {
@@ -529,22 +512,17 @@ func (s *ParamsSetupSuite) TestCfedistributorMsgUpdateSubDistributorDestinationS
 
 	node.SubmitDepositAndVoteOnProposal(proposalJSON3, initialization.ValidatorWalletName, chainA)
 	var params cfedistributortypes.QueryParamsResponse
-	s.Eventually(
-		func() bool {
-			node.QueryCfedistributorParams(&params)
-			if correctMsgUpdateSubdistributorBurnShare.SubDistributorName != params.Params.SubDistributors[1].Name {
-				return false
-			}
-			if !correctMsgUpdateSubdistributorBurnShare.Share.Equal(params.Params.SubDistributors[1].Destinations.Shares[0].Share) {
-				return false
-			}
+	s.validateParams(func() bool {
+		node.QueryCfedistributorParams(&params)
+		if correctMsgUpdateSubdistributorBurnShare.SubDistributorName != params.Params.SubDistributors[1].Name {
+			return false
+		}
+		if !correctMsgUpdateSubdistributorBurnShare.Share.Equal(params.Params.SubDistributors[1].Destinations.Shares[0].Share) {
+			return false
+		}
 
-			return true
-		},
-		time.Minute,
-		time.Second*5,
-		"C4e node failed to validate params",
-	)
+		return true
+	})
 }
 
 func (s *ParamsSetupSuite) TestCfedistributorNoSubdistributors() {
@@ -564,66 +542,60 @@ func (s *ParamsSetupSuite) TestCfedistributorNoSubdistributors() {
 	node.QueryFailedProposal(chainA.LatestProposalNumber + 1)
 }
 
-func (s *ParamsSetupSuite) ValidateNewMinterParams(node *chain.NodeConfig, minters []*cfemintertypes.Minter, startTime time.Time, mintDenom string, totalSupplyIncreasing bool) {
+func (s *ParamsSetupSuite) ValidateNewMinterParams(node *chain.NodeConfig, expectedMinters []*cfemintertypes.Minter, startTime time.Time, mintDenom string, totalSupplyIncreasing bool) {
 	var params cfemintertypes.QueryParamsResponse
 	s.validateTotalSupply(node, mintDenom, totalSupplyIncreasing, 25)
-	s.Eventually(
-		func() bool {
-			node.QueryCfeminterParams(&params)
-			paramsMinters := params.Params.Minters
-			if !(len(minters) == len(paramsMinters)) {
+	s.validateParams(func() bool {
+		node.QueryCfeminterParams(&params)
+		paramsMinters := params.Params.Minters
+		if len(expectedMinters) != len(paramsMinters) {
+			return false
+		}
+		if !startTime.Equal(params.Params.StartTime) {
+			return false
+		}
+		if mintDenom != params.Params.MintDenom {
+			return false
+		}
+		return validateMinterParams(expectedMinters, paramsMinters)
+	})
+}
+
+func validateMinterParams(expectedMinters []*cfemintertypes.Minter, paramsMinters []*cfemintertypes.Minter) bool {
+	for i, minter := range expectedMinters {
+		minterFromParams := paramsMinters[i]
+		if minter.EndTime == nil {
+			if minterFromParams.EndTime != nil {
 				return false
 			}
-			if !startTime.Equal(params.Params.StartTime) {
+		} else {
+			if !minter.EndTime.Equal(*minterFromParams.EndTime) {
 				return false
 			}
-			if mintDenom != params.Params.MintDenom {
-				return false
-			}
-			for i, minter := range minters {
-				minterFromParams := paramsMinters[i]
-				if minter.EndTime == nil {
-					if minterFromParams.EndTime != nil {
-						return false
-					}
-				} else {
-					if !minter.EndTime.Equal(*minterFromParams.EndTime) {
-						return false
-					}
-				}
-				if minter.SequenceId != minterFromParams.SequenceId {
-					return false
-				}
-				if !minter.Config.Equal(minterFromParams.Config) {
-					return false
-				}
-			}
-			return true
-		},
-		time.Minute,
-		time.Second*5,
-		"C4e node failed to validate params",
-	)
+		}
+		if minter.SequenceId != minterFromParams.SequenceId {
+			return false
+		}
+		if !minter.Config.Equal(minterFromParams.Config) {
+			return false
+		}
+	}
+	return true
 }
 
 func (s *ParamsSetupSuite) ValidateSubdistributorParams(node *chain.NodeConfig, subDistributors []cfedistributortypes.SubDistributor) {
 	var params cfedistributortypes.QueryParamsResponse
-	s.Eventually(
-		func() bool {
-			node.QueryCfedistributorParams(&params)
-			return assert.ObjectsAreEqualValues(subDistributors, params.Params.SubDistributors)
-		},
-		time.Minute,
-		time.Second*5,
-		"C4e node failed to validate params",
-	)
+
+	s.validateParams(func() bool {
+		node.QueryCfedistributorParams(&params)
+		return assert.ObjectsAreEqualValues(subDistributors, params.Params.SubDistributors)
+	})
 }
 
 func (s *ParamsSetupSuite) ValidateProposalStatusFailed(node *chain.NodeConfig, proposalId int) {
 	s.Eventually(
 		func() bool {
 			status, err := node.QueryPropStatus(proposalId)
-			fmt.Println(status)
 			if err != nil || status != "PROPOSAL_STATUS_FAILED" {
 				return false
 			}
@@ -632,5 +604,14 @@ func (s *ParamsSetupSuite) ValidateProposalStatusFailed(node *chain.NodeConfig, 
 		time.Minute,
 		time.Second*5,
 		"C4e node failed to validate proposal status",
+	)
+}
+
+func (s *ParamsSetupSuite) validateParams(validationFunction func() bool) {
+	s.Eventually(
+		validationFunction,
+		time.Minute,
+		time.Second*5,
+		"C4e node failed to validate params",
 	)
 }

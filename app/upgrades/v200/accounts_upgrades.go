@@ -18,7 +18,9 @@ const (
 	NewAirdropVestingPoolOwner  = "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54"
 )
 
-func migrateAirdropModuleAccount(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+func MigrateAirdropModuleAccount(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+	ctx.Logger().Info("migrating airdrop module account")
+
 	accountVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, NewAirdropVestingPoolOwner)
 	if !found {
 		ctx.Logger().Info("account vesting pools not found for NewAirdropVestingPoolOwner", "owner", NewAirdropVestingPoolOwner)
@@ -46,7 +48,7 @@ func migrateAirdropModuleAccount(ctx sdk.Context, appKeepers cfeupgradetypes.App
 	fairdropPool := cfevestingtypes.VestingPool{
 		Name:            "Fairdrop",
 		VestingType:     FairdropTypeName,
-		LockStart:       ctx.BlockTime(),
+		LockStart:       time.Date(2023, 6, 1, 23, 59, 59, 0, time.UTC),
 		LockEnd:         time.Date(2026, 6, 1, 23, 59, 59, 0, time.UTC),
 		InitiallyLocked: coinsAmount,
 		Withdrawn:       math.ZeroInt(),
@@ -59,7 +61,9 @@ func migrateAirdropModuleAccount(ctx sdk.Context, appKeepers cfeupgradetypes.App
 	return nil
 }
 
-func migrateTeamdropVestingAccount(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+func MigrateTeamdropVestingAccount(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+	ctx.Logger().Info("migrating teamdrop module account")
+
 	teamdropAccAddress, err := sdk.AccAddressFromBech32(TeamdropVestingAccount)
 	if err != nil {
 		return err
@@ -80,6 +84,11 @@ func migrateTeamdropVestingAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 	originalVestingAmount := vestingAccount.OriginalVesting
 	vestingAccount.OriginalVesting = sdk.NewCoins()
 	appKeepers.GetAccountKeeper().SetAccount(ctx, vestingAccount)
+	err = bankkeeper.Keeper.SendCoinsFromAccountToModule(*appKeepers.GetBankKeeper(), ctx, teamdropAccAddress, cfevestingtypes.ModuleName, originalVestingAmount)
+	if err != nil {
+		ctx.Logger().Info("migrate teamdrop vesting account error", "err", err)
+		return err
+	}
 
 	accountVestingPools := cfevestingtypes.AccountVestingPools{
 		Owner: TeamdropVestingAccount,
@@ -92,7 +101,7 @@ func migrateTeamdropVestingAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 				InitiallyLocked: originalVestingAmount.AmountOf(vestingDenom),
 				Withdrawn:       sdk.ZeroInt(),
 				Sent:            sdk.ZeroInt(),
-				GenesisPool:     false, // TODO?
+				GenesisPool:     true,
 				Reservations:    nil,
 			},
 		},

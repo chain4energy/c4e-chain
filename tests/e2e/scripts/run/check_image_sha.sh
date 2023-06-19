@@ -2,7 +2,7 @@
 
 source $(dirname $0)/common.sh
 
-# check_if_exists returns 1 if an "osmosis" image exists, 0 otherwise.
+# check_if_exists returns 1 if an "chain4energy" image exists, 0 otherwise.
 check_if_exists() {
     if [[ "$(docker images -q chain4energy 2> /dev/null)" != "" ]]; then
         return 1
@@ -10,9 +10,9 @@ check_if_exists() {
     return 0
 }
 
-# check_if_exists returns 1 if an "osmosis" image is built from the same commit SHA
+# check_if_exists returns 1 if an "chain4energy" image is built from the same commit SHA
 # as the current commit, 0 otherwise.
-# It assummes that the "osmosis" image was specifically tagged with Git SHA at build
+# It assummes that the "chain4energy" image was specifically tagged with Git SHA at build
 # time. Please see "docker-build-debug" Makefile step for details.
 check_if_up_to_date() {
     sha_from_image=$LIST_DOCKER_IMAGE_HASHES

@@ -32,10 +32,4 @@ const (
 	BurnStateKey = "burn_state_key"
 
 	BurnDestination = "burn_destination"
-
-	DenomToTrace = "uc4e" // TODO should be in module params
 )
-
-func KeyPrefix(p string) []byte {
-	return []byte(p)
-}

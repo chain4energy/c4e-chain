@@ -2,13 +2,14 @@ package simulation
 
 import (
 	"cosmossdk.io/math"
+	"github.com/chain4energy/c4e-chain/testutil/simulation"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"math/rand"
 	"strconv"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
-
-	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -17,69 +18,66 @@ import (
 )
 
 func SimulateVestingMultiOperations(
-	_ types.AccountKeeper,
-	_ types.BankKeeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
 	k keeper.Keeper,
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		simAccount1, _ := simtypes.RandomAcc(r, accs)
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		randVestingDuration := time.Duration(utils.RandInt64(r, 3))
 
-		randVestingDuration := time.Duration(helpers.RandomInt(r, 3))
-		randVesingTypeId := helpers.RandomInt(r, 3)
-
-		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-		multiOperationsCount := 4
-
-		poolsNames := []string{}
-
-		for i := 0; i < multiOperationsCount; i++ {
-			randVestingPoolName := helpers.RandStringOfLengthCustomSeed(r, 10)
+		multiOperationsCount := utils.RandInt64(r, 10)
+		var poolsNames []string
+		for i := int64(0); i < multiOperationsCount; i++ {
+			randVesingTypeId := utils.RandInt64(r, 3)
+			randVestingPoolName := simtypes.RandStringOfLength(r, 10)
 			poolsNames = append(poolsNames, randVestingPoolName)
 			randomVestingType := "New vesting" + strconv.Itoa(int(randVesingTypeId))
-			randVestingAmount := math.NewInt(helpers.RandomInt(r, 100000000))
+
+			spendable := bk.SpendableCoins(ctx, simAccount.Address)
+			if !spendable.IsAllPositive() {
+				return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateVestingAccount, "balance is negative"), nil, nil
+			}
+			amount, err := simtypes.RandPositiveInt(r, spendable.AmountOf(sdk.DefaultBondDenom))
+			if err != nil {
+				return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateVestingPool, "unable to generate positive amount"), nil, err
+			}
 			msgCreateVestingPool := &types.MsgCreateVestingPool{
-				Owner:       simAccount1.Address.String(),
+				Owner:       simAccount.Address.String(),
 				Name:        randVestingPoolName,
-				Amount:      randVestingAmount,
+				Amount:      amount,
 				VestingType: randomVestingType,
 				Duration:    randVestingDuration,
 			}
-			_, err := msgServer.CreateVestingPool(msgServerCtx, msgCreateVestingPool)
-			if err != nil {
-				k.Logger(ctx).Error("SIMULATION: Create vesting pool error", err.Error())
+			if err = simulation.SendMessageWithFees(ctx, r, ak.(authkeeper.AccountKeeper), app, simAccount, msgCreateVestingPool, spendable.Sub(sdk.NewCoin(sdk.DefaultBondDenom, amount)), chainID); err != nil {
 				return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting multi operations - create vesting pool", "", false, nil), nil, nil
 			}
 		}
 
-		for i := 0; i < multiOperationsCount; i++ {
-			randMsgSendToVestinAccAmount := math.NewInt(helpers.RandomInt(r, 100))
-			randInt := helpers.RandomInt(r, 10000000)
-			simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(randInt)
+		for i := int64(0); i < multiOperationsCount; i++ {
+			randMsgSendToVestinAccAmount := simtypes.RandomAmount(r, math.NewInt(100))
+
+			simAccount2 := simtypes.RandomAccounts(r, 1)[0]
 			msgSendToVestingAccount := &types.MsgSendToVestingAccount{
-				Owner:           simAccount1.Address.String(),
-				ToAddress:       simAccount2Address,
+				Owner:           simAccount.Address.String(),
+				ToAddress:       simAccount2.Address.String(),
 				VestingPoolName: poolsNames[i],
 				Amount:          randMsgSendToVestinAccAmount,
 				RestartVesting:  true,
 			}
-			_, err := msgServer.SendToVestingAccount(msgServerCtx, msgSendToVestingAccount)
-			if err != nil {
-				k.Logger(ctx).Error("SIMULATION: Send to vesting account error", err.Error())
+			if err := simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgSendToVestingAccount, chainID); err != nil {
 				return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting multi operations - send to vesting account", "", false, nil), nil, nil
 			}
 		}
 
 		msgWithdrawAllAvailable := &types.MsgWithdrawAllAvailable{
-			Owner: simAccount1.Address.String(),
+			Owner: simAccount.Address.String(),
 		}
-		_, err := msgServer.WithdrawAllAvailable(msgServerCtx, msgWithdrawAllAvailable)
-		if err != nil {
-			k.Logger(ctx).Error("SIMULATION: Withdraw all available error", err.Error())
+		if err := simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgWithdrawAllAvailable, chainID); err != nil {
 			return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting multi operations - withdraw all available", "", false, nil), nil, nil
 		}
 
-		k.Logger(ctx).Debug("SIMULATION: Vesting multi operations - FINISHED")
 		return simtypes.NewOperationMsgBasic(types.ModuleName, "Vesting multi operations simulation completed", "", true, nil), nil, nil
 	}
 }

@@ -11,7 +11,9 @@ import (
 )
 
 const (
-	CoinDenom           = "uc4e"
+	C4eUnit             = "c4e"
+	MicroC4eUnit        = "uc4e"
+	c4eExponent         = 6
 	Bech32PrefixAccAddr = "c4e"
 )
 
@@ -30,7 +32,11 @@ func init() {
 }
 
 func RegisterDenoms() {
-	err := sdk.RegisterDenom(CoinDenom, sdk.OneDec())
+	err := sdk.RegisterDenom(C4eUnit, sdk.OneDec())
+	if err != nil {
+		panic(err)
+	}
+	err = sdk.RegisterDenom(MicroC4eUnit, sdk.NewDecWithPrec(1, c4eExponent))
 	if err != nil {
 		panic(err)
 	}

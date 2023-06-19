@@ -105,14 +105,14 @@ var (
 // - If !isIBCEnabled and !isUpgradeEnabled, we only need one chain at the current
 // Git branch version of the C4e code.
 func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, signMode string, upgradeSettings UpgradeSettings) (Configurer, error) {
-	containerManager, err := containers.NewManager(upgradeSettings.IsEnabled, isDebugLogEnabled, signMode)
+	containerManager, err := containers.NewManager(upgradeSettings.IsEnabled, upgradeSettings.MigrationChaining, isDebugLogEnabled, signMode)
 	if err != nil {
 		return nil, err
 	}
 
 	if isIBCEnabled && upgradeSettings.IsEnabled {
 		// skip none - configure two chains via Docker
-		// to utilize the older version of osmosis to upgrade from
+		// to utilize the older version of chain4energy to upgrade from
 		return NewUpgradeConfigurer(t,
 			[]*chain.Config{
 				chain.New(t, containerManager, initialization.ChainAID, validatorConfigsChainA, nil),
@@ -121,6 +121,7 @@ func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, signMode string, up
 			withUpgrade(withIBC(baseSetup)), // base set up with IBC and upgrade
 			containerManager,
 			upgradeSettings.Version,
+			upgradeSettings.MigrationChaining,
 		), nil
 	} else if upgradeSettings.IsEnabled {
 		return NewUpgradeConfigurer(t,
@@ -130,6 +131,7 @@ func New(t *testing.T, isIBCEnabled, isDebugLogEnabled bool, signMode string, up
 			withUpgrade(baseSetup), // base set up with IBC and upgrade
 			containerManager,
 			upgradeSettings.Version,
+			upgradeSettings.MigrationChaining,
 		), nil
 	} else if isIBCEnabled {
 		// configure two chains from current Git branch

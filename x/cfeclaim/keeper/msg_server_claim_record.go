@@ -15,7 +15,7 @@ func (k msgServer) AddClaimRecords(goCtx context.Context, msg *types.MsgAddClaim
 		ctx,
 		msg.Owner,
 		msg.CampaignId,
-		msg.ClaimRecords,
+		msg.ClaimRecordEntries,
 	); err != nil {
 		k.Logger(ctx).Debug("add user entries", "err", err.Error())
 		return nil, err

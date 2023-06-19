@@ -6,8 +6,7 @@ package types
 import (
 	context "context"
 	fmt "fmt"
-	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	types "github.com/cosmos/cosmos-sdk/types"
+	_ "github.com/cosmos/cosmos-sdk/types"
 	query "github.com/cosmos/cosmos-sdk/types/query"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
@@ -32,89 +31,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// QueryParamsRequest is request type for the Query/Params RPC method.
-type QueryParamsRequest struct {
-}
-
-func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
-func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryParamsRequest) ProtoMessage()    {}
-func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{0}
-}
-func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryParamsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryParamsRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryParamsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryParamsRequest.Merge(m, src)
-}
-func (m *QueryParamsRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryParamsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryParamsRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
-
-// QueryParamsResponse is response type for the Query/Params RPC method.
-type QueryParamsResponse struct {
-	// params holds all the parameters of this module.
-	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
-}
-
-func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
-func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryParamsResponse) ProtoMessage()    {}
-func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{1}
-}
-func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryParamsResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryParamsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryParamsResponse.Merge(m, src)
-}
-func (m *QueryParamsResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryParamsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryParamsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryParamsResponse proto.InternalMessageInfo
-
-func (m *QueryParamsResponse) GetParams() Params {
-	if m != nil {
-		return m.Params
-	}
-	return Params{}
-}
-
 type QueryUserEntryRequest struct {
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 }
@@ -123,7 +39,7 @@ func (m *QueryUserEntryRequest) Reset()         { *m = QueryUserEntryRequest{} }
 func (m *QueryUserEntryRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryUserEntryRequest) ProtoMessage()    {}
 func (*QueryUserEntryRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{2}
+	return fileDescriptor_8636b3349bd86ea2, []int{0}
 }
 func (m *QueryUserEntryRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -167,7 +83,7 @@ func (m *QueryUserEntryResponse) Reset()         { *m = QueryUserEntryResponse{}
 func (m *QueryUserEntryResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryUserEntryResponse) ProtoMessage()    {}
 func (*QueryUserEntryResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{3}
+	return fileDescriptor_8636b3349bd86ea2, []int{1}
 }
 func (m *QueryUserEntryResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -203,182 +119,6 @@ func (m *QueryUserEntryResponse) GetUserEntry() UserEntry {
 	return UserEntry{}
 }
 
-type QueryCampaignTotalAmountRequest struct {
-	CampaignId uint64 `protobuf:"varint,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
-}
-
-func (m *QueryCampaignTotalAmountRequest) Reset()         { *m = QueryCampaignTotalAmountRequest{} }
-func (m *QueryCampaignTotalAmountRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryCampaignTotalAmountRequest) ProtoMessage()    {}
-func (*QueryCampaignTotalAmountRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{4}
-}
-func (m *QueryCampaignTotalAmountRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryCampaignTotalAmountRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryCampaignTotalAmountRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryCampaignTotalAmountRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCampaignTotalAmountRequest.Merge(m, src)
-}
-func (m *QueryCampaignTotalAmountRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryCampaignTotalAmountRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCampaignTotalAmountRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryCampaignTotalAmountRequest proto.InternalMessageInfo
-
-func (m *QueryCampaignTotalAmountRequest) GetCampaignId() uint64 {
-	if m != nil {
-		return m.CampaignId
-	}
-	return 0
-}
-
-type QueryCampaignTotalAmountResponse struct {
-	Amount github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=amount,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"amount"`
-}
-
-func (m *QueryCampaignTotalAmountResponse) Reset()         { *m = QueryCampaignTotalAmountResponse{} }
-func (m *QueryCampaignTotalAmountResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryCampaignTotalAmountResponse) ProtoMessage()    {}
-func (*QueryCampaignTotalAmountResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{5}
-}
-func (m *QueryCampaignTotalAmountResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryCampaignTotalAmountResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryCampaignTotalAmountResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryCampaignTotalAmountResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCampaignTotalAmountResponse.Merge(m, src)
-}
-func (m *QueryCampaignTotalAmountResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryCampaignTotalAmountResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCampaignTotalAmountResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryCampaignTotalAmountResponse proto.InternalMessageInfo
-
-func (m *QueryCampaignTotalAmountResponse) GetAmount() github_com_cosmos_cosmos_sdk_types.Coins {
-	if m != nil {
-		return m.Amount
-	}
-	return nil
-}
-
-type QueryCampaignAmountLeftRequest struct {
-	CampaignId uint64 `protobuf:"varint,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
-}
-
-func (m *QueryCampaignAmountLeftRequest) Reset()         { *m = QueryCampaignAmountLeftRequest{} }
-func (m *QueryCampaignAmountLeftRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryCampaignAmountLeftRequest) ProtoMessage()    {}
-func (*QueryCampaignAmountLeftRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{6}
-}
-func (m *QueryCampaignAmountLeftRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryCampaignAmountLeftRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryCampaignAmountLeftRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryCampaignAmountLeftRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCampaignAmountLeftRequest.Merge(m, src)
-}
-func (m *QueryCampaignAmountLeftRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryCampaignAmountLeftRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCampaignAmountLeftRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryCampaignAmountLeftRequest proto.InternalMessageInfo
-
-func (m *QueryCampaignAmountLeftRequest) GetCampaignId() uint64 {
-	if m != nil {
-		return m.CampaignId
-	}
-	return 0
-}
-
-type QueryCampaignAmountLeftResponse struct {
-	Amount github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=amount,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"amount"`
-}
-
-func (m *QueryCampaignAmountLeftResponse) Reset()         { *m = QueryCampaignAmountLeftResponse{} }
-func (m *QueryCampaignAmountLeftResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryCampaignAmountLeftResponse) ProtoMessage()    {}
-func (*QueryCampaignAmountLeftResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{7}
-}
-func (m *QueryCampaignAmountLeftResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryCampaignAmountLeftResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryCampaignAmountLeftResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryCampaignAmountLeftResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCampaignAmountLeftResponse.Merge(m, src)
-}
-func (m *QueryCampaignAmountLeftResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryCampaignAmountLeftResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCampaignAmountLeftResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryCampaignAmountLeftResponse proto.InternalMessageInfo
-
-func (m *QueryCampaignAmountLeftResponse) GetAmount() github_com_cosmos_cosmos_sdk_types.Coins {
-	if m != nil {
-		return m.Amount
-	}
-	return nil
-}
-
 type QueryUsersEntriesRequest struct {
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -387,7 +127,7 @@ func (m *QueryUsersEntriesRequest) Reset()         { *m = QueryUsersEntriesReque
 func (m *QueryUsersEntriesRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryUsersEntriesRequest) ProtoMessage()    {}
 func (*QueryUsersEntriesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{8}
+	return fileDescriptor_8636b3349bd86ea2, []int{2}
 }
 func (m *QueryUsersEntriesRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -432,7 +172,7 @@ func (m *QueryUsersEntriesResponse) Reset()         { *m = QueryUsersEntriesResp
 func (m *QueryUsersEntriesResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryUsersEntriesResponse) ProtoMessage()    {}
 func (*QueryUsersEntriesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{9}
+	return fileDescriptor_8636b3349bd86ea2, []int{3}
 }
 func (m *QueryUsersEntriesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -484,7 +224,7 @@ func (m *QueryMissionRequest) Reset()         { *m = QueryMissionRequest{} }
 func (m *QueryMissionRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryMissionRequest) ProtoMessage()    {}
 func (*QueryMissionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{10}
+	return fileDescriptor_8636b3349bd86ea2, []int{4}
 }
 func (m *QueryMissionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -535,7 +275,7 @@ func (m *QueryMissionResponse) Reset()         { *m = QueryMissionResponse{} }
 func (m *QueryMissionResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryMissionResponse) ProtoMessage()    {}
 func (*QueryMissionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{11}
+	return fileDescriptor_8636b3349bd86ea2, []int{5}
 }
 func (m *QueryMissionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -579,7 +319,7 @@ func (m *QueryMissionsRequest) Reset()         { *m = QueryMissionsRequest{} }
 func (m *QueryMissionsRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryMissionsRequest) ProtoMessage()    {}
 func (*QueryMissionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{12}
+	return fileDescriptor_8636b3349bd86ea2, []int{6}
 }
 func (m *QueryMissionsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -616,7 +356,7 @@ func (m *QueryMissionsRequest) GetPagination() *query.PageRequest {
 }
 
 type QueryMissionsResponse struct {
-	Mission    []Mission           `protobuf:"bytes,1,rep,name=mission,proto3" json:"mission"`
+	Missions   []Mission           `protobuf:"bytes,1,rep,name=missions,proto3" json:"missions"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -624,7 +364,7 @@ func (m *QueryMissionsResponse) Reset()         { *m = QueryMissionsResponse{} }
 func (m *QueryMissionsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryMissionsResponse) ProtoMessage()    {}
 func (*QueryMissionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{13}
+	return fileDescriptor_8636b3349bd86ea2, []int{7}
 }
 func (m *QueryMissionsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -653,14 +393,118 @@ func (m *QueryMissionsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryMissionsResponse proto.InternalMessageInfo
 
-func (m *QueryMissionsResponse) GetMission() []Mission {
+func (m *QueryMissionsResponse) GetMissions() []Mission {
 	if m != nil {
-		return m.Mission
+		return m.Missions
 	}
 	return nil
 }
 
 func (m *QueryMissionsResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryCampaignMissionsRequest struct {
+	CampaignId uint64             `protobuf:"varint,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryCampaignMissionsRequest) Reset()         { *m = QueryCampaignMissionsRequest{} }
+func (m *QueryCampaignMissionsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCampaignMissionsRequest) ProtoMessage()    {}
+func (*QueryCampaignMissionsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8636b3349bd86ea2, []int{8}
+}
+func (m *QueryCampaignMissionsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCampaignMissionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCampaignMissionsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCampaignMissionsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCampaignMissionsRequest.Merge(m, src)
+}
+func (m *QueryCampaignMissionsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCampaignMissionsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCampaignMissionsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCampaignMissionsRequest proto.InternalMessageInfo
+
+func (m *QueryCampaignMissionsRequest) GetCampaignId() uint64 {
+	if m != nil {
+		return m.CampaignId
+	}
+	return 0
+}
+
+func (m *QueryCampaignMissionsRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryCampaignMissionsResponse struct {
+	Missions   []Mission           `protobuf:"bytes,1,rep,name=missions,proto3" json:"missions"`
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryCampaignMissionsResponse) Reset()         { *m = QueryCampaignMissionsResponse{} }
+func (m *QueryCampaignMissionsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCampaignMissionsResponse) ProtoMessage()    {}
+func (*QueryCampaignMissionsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8636b3349bd86ea2, []int{9}
+}
+func (m *QueryCampaignMissionsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryCampaignMissionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryCampaignMissionsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryCampaignMissionsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCampaignMissionsResponse.Merge(m, src)
+}
+func (m *QueryCampaignMissionsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryCampaignMissionsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCampaignMissionsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryCampaignMissionsResponse proto.InternalMessageInfo
+
+func (m *QueryCampaignMissionsResponse) GetMissions() []Mission {
+	if m != nil {
+		return m.Missions
+	}
+	return nil
+}
+
+func (m *QueryCampaignMissionsResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
@@ -675,7 +519,7 @@ func (m *QueryCampaignsRequest) Reset()         { *m = QueryCampaignsRequest{} }
 func (m *QueryCampaignsRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryCampaignsRequest) ProtoMessage()    {}
 func (*QueryCampaignsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{14}
+	return fileDescriptor_8636b3349bd86ea2, []int{10}
 }
 func (m *QueryCampaignsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -720,7 +564,7 @@ func (m *QueryCampaignsResponse) Reset()         { *m = QueryCampaignsResponse{}
 func (m *QueryCampaignsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryCampaignsResponse) ProtoMessage()    {}
 func (*QueryCampaignsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{15}
+	return fileDescriptor_8636b3349bd86ea2, []int{11}
 }
 func (m *QueryCampaignsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -771,7 +615,7 @@ func (m *QueryCampaignRequest) Reset()         { *m = QueryCampaignRequest{} }
 func (m *QueryCampaignRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryCampaignRequest) ProtoMessage()    {}
 func (*QueryCampaignRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{16}
+	return fileDescriptor_8636b3349bd86ea2, []int{12}
 }
 func (m *QueryCampaignRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -815,7 +659,7 @@ func (m *QueryCampaignResponse) Reset()         { *m = QueryCampaignResponse{} }
 func (m *QueryCampaignResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryCampaignResponse) ProtoMessage()    {}
 func (*QueryCampaignResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8636b3349bd86ea2, []int{17}
+	return fileDescriptor_8636b3349bd86ea2, []int{13}
 }
 func (m *QueryCampaignResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -852,20 +696,16 @@ func (m *QueryCampaignResponse) GetCampaign() Campaign {
 }
 
 func init() {
-	proto.RegisterType((*QueryParamsRequest)(nil), "chain4energy.c4echain.cfeclaim.QueryParamsRequest")
-	proto.RegisterType((*QueryParamsResponse)(nil), "chain4energy.c4echain.cfeclaim.QueryParamsResponse")
 	proto.RegisterType((*QueryUserEntryRequest)(nil), "chain4energy.c4echain.cfeclaim.QueryUserEntryRequest")
 	proto.RegisterType((*QueryUserEntryResponse)(nil), "chain4energy.c4echain.cfeclaim.QueryUserEntryResponse")
-	proto.RegisterType((*QueryCampaignTotalAmountRequest)(nil), "chain4energy.c4echain.cfeclaim.QueryCampaignTotalAmountRequest")
-	proto.RegisterType((*QueryCampaignTotalAmountResponse)(nil), "chain4energy.c4echain.cfeclaim.QueryCampaignTotalAmountResponse")
-	proto.RegisterType((*QueryCampaignAmountLeftRequest)(nil), "chain4energy.c4echain.cfeclaim.QueryCampaignAmountLeftRequest")
-	proto.RegisterType((*QueryCampaignAmountLeftResponse)(nil), "chain4energy.c4echain.cfeclaim.QueryCampaignAmountLeftResponse")
 	proto.RegisterType((*QueryUsersEntriesRequest)(nil), "chain4energy.c4echain.cfeclaim.QueryUsersEntriesRequest")
 	proto.RegisterType((*QueryUsersEntriesResponse)(nil), "chain4energy.c4echain.cfeclaim.QueryUsersEntriesResponse")
 	proto.RegisterType((*QueryMissionRequest)(nil), "chain4energy.c4echain.cfeclaim.QueryMissionRequest")
 	proto.RegisterType((*QueryMissionResponse)(nil), "chain4energy.c4echain.cfeclaim.QueryMissionResponse")
 	proto.RegisterType((*QueryMissionsRequest)(nil), "chain4energy.c4echain.cfeclaim.QueryMissionsRequest")
 	proto.RegisterType((*QueryMissionsResponse)(nil), "chain4energy.c4echain.cfeclaim.QueryMissionsResponse")
+	proto.RegisterType((*QueryCampaignMissionsRequest)(nil), "chain4energy.c4echain.cfeclaim.QueryCampaignMissionsRequest")
+	proto.RegisterType((*QueryCampaignMissionsResponse)(nil), "chain4energy.c4echain.cfeclaim.QueryCampaignMissionsResponse")
 	proto.RegisterType((*QueryCampaignsRequest)(nil), "chain4energy.c4echain.cfeclaim.QueryCampaignsRequest")
 	proto.RegisterType((*QueryCampaignsResponse)(nil), "chain4energy.c4echain.cfeclaim.QueryCampaignsResponse")
 	proto.RegisterType((*QueryCampaignRequest)(nil), "chain4energy.c4echain.cfeclaim.QueryCampaignRequest")
@@ -875,71 +715,60 @@ func init() {
 func init() { proto.RegisterFile("c4echain/cfeclaim/query.proto", fileDescriptor_8636b3349bd86ea2) }
 
 var fileDescriptor_8636b3349bd86ea2 = []byte{
-	// 1017 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x97, 0x4f, 0x6f, 0xdc, 0x44,
-	0x14, 0xc0, 0x33, 0x69, 0x49, 0xba, 0x2f, 0xe1, 0x32, 0x0d, 0x28, 0x31, 0xa9, 0x77, 0xb1, 0x2a,
-	0xb2, 0x01, 0xd5, 0x26, 0xdb, 0xa4, 0x2d, 0x07, 0x5a, 0x92, 0x02, 0x55, 0x51, 0x40, 0x65, 0xd5,
-	0x5e, 0x40, 0x62, 0xe5, 0xf5, 0x4e, 0x1c, 0x8b, 0x5d, 0x7b, 0xeb, 0xf1, 0x22, 0xa2, 0x28, 0x17,
-	0x0e, 0x70, 0x45, 0x82, 0x2b, 0x12, 0x57, 0x8a, 0x10, 0x07, 0x6e, 0x7c, 0x82, 0x1e, 0x2b, 0xd1,
-	0x43, 0x4e, 0x80, 0x12, 0x3e, 0x08, 0xf2, 0xcc, 0x1b, 0xdb, 0xeb, 0xdd, 0x64, 0xed, 0x28, 0xea,
-	0x25, 0x7f, 0x66, 0xde, 0x9f, 0xdf, 0x7b, 0xf3, 0xe6, 0xcd, 0x33, 0x5c, 0x71, 0xd6, 0x99, 0xb3,
-	0x6b, 0x7b, 0xbe, 0xe5, 0xec, 0x30, 0xa7, 0x6b, 0x7b, 0x3d, 0xeb, 0xf1, 0x80, 0x85, 0x7b, 0x66,
-	0x3f, 0x0c, 0xa2, 0x80, 0xea, 0x62, 0x6f, 0x9d, 0xf9, 0x2c, 0x74, 0xf7, 0x4c, 0x25, 0x6b, 0x2a,
-	0x59, 0x6d, 0xc1, 0x0d, 0xdc, 0x40, 0x88, 0x5a, 0xf1, 0x5f, 0x52, 0x4b, 0x5b, 0x76, 0x83, 0xc0,
-	0xed, 0x32, 0xcb, 0xee, 0x7b, 0x96, 0xed, 0xfb, 0x41, 0x64, 0x47, 0x5e, 0xe0, 0x73, 0xdc, 0x7d,
-	0xd3, 0x09, 0x78, 0x2f, 0xe0, 0x56, 0xdb, 0xe6, 0x4c, 0x3a, 0xb3, 0xbe, 0x5a, 0x6b, 0xb3, 0xc8,
-	0x5e, 0xb3, 0xfa, 0xb6, 0xeb, 0xf9, 0x42, 0x18, 0x65, 0xf5, 0xac, 0xac, 0x92, 0x72, 0x02, 0x2f,
-	0xdd, 0x1f, 0xc1, 0xef, 0xdb, 0xa1, 0xdd, 0x53, 0xbe, 0x6a, 0xa3, 0xfb, 0x8e, 0xdd, 0xeb, 0xdb,
-	0x9e, 0xab, 0x2c, 0x54, 0x47, 0x25, 0x7a, 0x1e, 0xe7, 0x29, 0xc2, 0xd5, 0x31, 0x26, 0xe2, 0x9f,
-	0xad, 0x90, 0x39, 0x41, 0xd8, 0x91, 0x52, 0xc6, 0x02, 0xd0, 0x4f, 0xe3, 0x50, 0x1e, 0x08, 0xef,
-	0x4d, 0xf6, 0x78, 0xc0, 0x78, 0x64, 0x7c, 0x0e, 0x97, 0x87, 0x56, 0x79, 0x3f, 0xf0, 0x39, 0xa3,
-	0xef, 0xc3, 0x8c, 0xa4, 0x5c, 0x24, 0x35, 0x52, 0x9f, 0x6b, 0xbc, 0x61, 0x9e, 0x9e, 0x66, 0x53,
-	0xea, 0x6f, 0x5d, 0x7c, 0xfa, 0x77, 0x75, 0xaa, 0x89, 0xba, 0xc6, 0x1a, 0xbc, 0x22, 0x8c, 0x3f,
-	0xe2, 0x2c, 0xfc, 0xc0, 0x8f, 0xc2, 0x3d, 0xf4, 0x4a, 0x17, 0x61, 0xd6, 0xee, 0x74, 0x42, 0xc6,
-	0xa5, 0xfd, 0x4a, 0x53, 0xfd, 0x6b, 0xec, 0xc2, 0xab, 0x79, 0x15, 0x44, 0xfa, 0x04, 0x60, 0xc0,
-	0x59, 0xd8, 0x62, 0xf1, 0x2a, 0x62, 0xad, 0x4e, 0xc2, 0x4a, 0xcc, 0x20, 0x59, 0x65, 0xa0, 0x16,
-	0x8c, 0x2d, 0xa8, 0x0a, 0x4f, 0x77, 0x31, 0xdb, 0x0f, 0x83, 0xc8, 0xee, 0x6e, 0xf6, 0x82, 0x81,
-	0x1f, 0x29, 0xcc, 0x2a, 0xcc, 0xa9, 0xb3, 0x68, 0x79, 0x1d, 0xe1, 0xf3, 0x62, 0x13, 0xd4, 0xd2,
-	0xfd, 0x8e, 0xf1, 0x1d, 0x81, 0xda, 0xc9, 0x46, 0x10, 0xdc, 0x81, 0x19, 0x5b, 0xac, 0x2c, 0x92,
-	0xda, 0x85, 0xfa, 0x5c, 0x63, 0xc9, 0x94, 0x25, 0x63, 0xc6, 0x25, 0x63, 0x62, 0xc9, 0x98, 0x77,
-	0x03, 0xcf, 0xdf, 0x7a, 0x3b, 0x86, 0x7c, 0xf2, 0x4f, 0xb5, 0xee, 0x7a, 0xd1, 0xee, 0xa0, 0x6d,
-	0x3a, 0x41, 0xcf, 0xc2, 0xfa, 0x92, 0xbf, 0xae, 0xf1, 0xce, 0x97, 0x56, 0xb4, 0xd7, 0x67, 0x5c,
-	0x28, 0xf0, 0x26, 0x9a, 0x36, 0x36, 0x41, 0x1f, 0x02, 0x91, 0x0c, 0xdb, 0x6c, 0xa7, 0x78, 0x30,
-	0xdf, 0x92, 0x5c, 0x46, 0xb2, 0x36, 0x5e, 0x64, 0x2c, 0x6d, 0x58, 0x4c, 0x6a, 0x80, 0xc7, 0x87,
-	0xe5, 0x31, 0x55, 0xaf, 0xf4, 0x43, 0x80, 0xf4, 0x0a, 0xa6, 0xc5, 0x99, 0x81, 0x90, 0xcd, 0x41,
-	0xa1, 0x3c, 0xb0, 0x5d, 0x86, 0xba, 0xcd, 0x8c, 0xa6, 0xf1, 0x27, 0x81, 0xa5, 0x31, 0x4e, 0x30,
-	0xcc, 0x87, 0xf0, 0x72, 0x5c, 0x28, 0x5c, 0x14, 0x9b, 0xc7, 0x38, 0x46, 0x5b, 0xba, 0xdc, 0xe6,
-	0x07, 0x19, 0xeb, 0xf4, 0xde, 0x10, 0xfb, 0xb4, 0x60, 0x5f, 0x99, 0xc8, 0x2e, 0x91, 0x86, 0xe0,
-	0x1f, 0xe1, 0xa5, 0xfd, 0x58, 0xb6, 0x81, 0xa2, 0x27, 0x4c, 0xaf, 0x00, 0x60, 0xe7, 0x88, 0xf7,
-	0xa7, 0xc5, 0x7e, 0x05, 0x57, 0xee, 0x77, 0x8c, 0x16, 0x2c, 0x0c, 0x9b, 0xc5, 0x6c, 0xdc, 0x83,
-	0x59, 0x14, 0xc2, 0x84, 0xaf, 0x4c, 0xca, 0x03, 0x5a, 0xc0, 0x2c, 0x28, 0x6d, 0xe3, 0x8b, 0x61,
-	0x07, 0xe7, 0x7e, 0xa8, 0xbf, 0x10, 0x6c, 0x38, 0xa9, 0x83, 0x71, 0x21, 0x5c, 0x38, 0x7b, 0x08,
-	0xe7, 0x77, 0x86, 0x2d, 0x44, 0x55, 0x97, 0xed, 0xdc, 0x93, 0xf1, 0x3b, 0xc1, 0x56, 0x9a, 0xf1,
-	0x80, 0xd9, 0xd8, 0x86, 0x8a, 0xaa, 0x0a, 0x55, 0xda, 0xf5, 0x49, 0xf9, 0x50, 0x56, 0x54, 0x23,
-	0x4d, 0x0c, 0x9c, 0x5f, 0x4a, 0x6e, 0x62, 0x79, 0x28, 0x57, 0x85, 0x3b, 0x97, 0x93, 0xcb, 0x65,
-	0x12, 0xe8, 0x47, 0x70, 0x49, 0x89, 0x61, 0x26, 0xcb, 0xc6, 0x99, 0xe8, 0x37, 0x9e, 0xcf, 0xc3,
-	0x4b, 0xc2, 0x0b, 0xfd, 0x91, 0xc0, 0x8c, 0x7c, 0xef, 0x68, 0x63, 0x92, 0xb9, 0xd1, 0x27, 0x57,
-	0xbb, 0x5e, 0x4a, 0x47, 0x46, 0x62, 0xbc, 0xfe, 0xcd, 0x5f, 0xff, 0xfd, 0x30, 0xfd, 0x1a, 0x5d,
-	0xb2, 0x9c, 0x75, 0x26, 0x9f, 0xf7, 0xcc, 0x4c, 0x22, 0x58, 0x7e, 0x25, 0x50, 0x49, 0x1a, 0x10,
-	0xdd, 0x28, 0xe4, 0x25, 0xff, 0x32, 0x6b, 0x37, 0xca, 0xaa, 0x21, 0x9f, 0x25, 0xf8, 0x56, 0xe9,
-	0xca, 0x18, 0xbe, 0xf4, 0xd9, 0xb6, 0xf6, 0xf1, 0x9d, 0x3f, 0xa0, 0xbf, 0x11, 0x98, 0xcf, 0xf6,
-	0x5e, 0x7a, 0xab, 0xb0, 0xe7, 0xdc, 0x9b, 0xa0, 0xbd, 0x73, 0x06, 0x4d, 0xc4, 0xae, 0x0b, 0x6c,
-	0x83, 0xd6, 0x4e, 0xc0, 0x4e, 0x5e, 0x00, 0xfa, 0x07, 0x81, 0x59, 0xec, 0x09, 0xb4, 0xd8, 0x09,
-	0x0e, 0x77, 0x67, 0x6d, 0xbd, 0x9c, 0x12, 0x02, 0xbe, 0x2b, 0x00, 0x6f, 0xd2, 0x8d, 0x31, 0x80,
-	0xd8, 0x93, 0xac, 0xfd, 0xcc, 0xed, 0x38, 0xb0, 0xf6, 0xd3, 0x16, 0x7f, 0x40, 0x7f, 0x22, 0x00,
-	0x68, 0x72, 0xb3, 0xdb, 0xa5, 0xa5, 0x18, 0x92, 0xfc, 0x6e, 0x94, 0xd4, 0x42, 0x74, 0x43, 0xa0,
-	0x2f, 0x53, 0xed, 0x64, 0x74, 0xfa, 0x33, 0x81, 0x4a, 0xd2, 0x9f, 0x0a, 0xd6, 0x6c, 0xbe, 0x63,
-	0x16, 0xac, 0xd9, 0x91, 0x36, 0x68, 0x5c, 0x15, 0x80, 0x3a, 0x5d, 0x1e, 0x03, 0x98, 0xb6, 0xb7,
-	0x27, 0x04, 0x2e, 0x29, 0xdd, 0x82, 0x09, 0xcc, 0x35, 0x30, 0x6d, 0xa3, 0xa4, 0x16, 0xf2, 0xad,
-	0x09, 0xbe, 0xb7, 0xe8, 0xea, 0x29, 0x7c, 0xc3, 0x87, 0x4f, 0x0f, 0x09, 0x5c, 0x1e, 0x33, 0x8b,
-	0xd2, 0x3b, 0xa5, 0x08, 0x46, 0x47, 0x61, 0xed, 0xbd, 0xb3, 0x1b, 0xc0, 0x68, 0x6e, 0x8b, 0x68,
-	0x6e, 0xd1, 0x1b, 0xa7, 0x44, 0xd3, 0x8a, 0x62, 0xc5, 0x96, 0x9c, 0x03, 0x73, 0xa1, 0x3d, 0x27,
-	0x40, 0x47, 0x27, 0x53, 0x7a, 0xbb, 0x14, 0xd8, 0xc8, 0x58, 0xac, 0xdd, 0x39, 0xb3, 0x7e, 0x81,
-	0x1b, 0x9a, 0x04, 0x20, 0x23, 0x6a, 0x75, 0xd9, 0x4e, 0x2e, 0xac, 0xad, 0xed, 0xa7, 0x47, 0x3a,
-	0x79, 0x76, 0xa4, 0x93, 0x7f, 0x8f, 0x74, 0xf2, 0xfd, 0xb1, 0x3e, 0xf5, 0xec, 0x58, 0x9f, 0x3a,
-	0x3c, 0xd6, 0xa7, 0x3e, 0x6b, 0x64, 0x07, 0xe7, 0x0c, 0x63, 0xec, 0xe7, 0x9a, 0xfc, 0xde, 0xfb,
-	0x3a, 0xfd, 0xe2, 0x13, 0x83, 0x74, 0x7b, 0x46, 0x7c, 0xeb, 0x5d, 0xff, 0x3f, 0x00, 0x00, 0xff,
-	0xff, 0xa6, 0x91, 0x5e, 0x11, 0x35, 0x0f, 0x00, 0x00,
+	// 838 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x96, 0xcd, 0x4f, 0x13, 0x4f,
+	0x18, 0xc7, 0x3b, 0xfc, 0xf8, 0x49, 0xfb, 0x80, 0x89, 0x19, 0xd1, 0x60, 0xa5, 0x0b, 0x59, 0x89,
+	0x80, 0xc6, 0xdd, 0x14, 0x8a, 0x68, 0x22, 0x17, 0x8c, 0x10, 0x0c, 0x1a, 0x6d, 0xe4, 0xe2, 0xc1,
+	0x66, 0xbb, 0x1d, 0x97, 0x4d, 0xe8, 0x4e, 0xd9, 0xd9, 0x1a, 0x1b, 0xc2, 0xc5, 0x8b, 0x57, 0x13,
+	0xaf, 0x1e, 0x3c, 0x4b, 0x8c, 0x07, 0x6e, 0x1e, 0x3d, 0x71, 0x93, 0xc4, 0x8b, 0x27, 0x63, 0xc0,
+	0x3f, 0xc4, 0xec, 0xec, 0xcc, 0xb6, 0x5d, 0xfa, 0xb6, 0x4d, 0x0f, 0x5e, 0x08, 0xdd, 0x79, 0x5e,
+	0x3e, 0xcf, 0xf7, 0x99, 0x7d, 0x9e, 0x85, 0x8c, 0x99, 0x23, 0xe6, 0xb6, 0x61, 0x3b, 0xba, 0xf9,
+	0x92, 0x98, 0x3b, 0x86, 0x5d, 0xd6, 0x77, 0xab, 0xc4, 0xad, 0x69, 0x15, 0x97, 0x7a, 0x14, 0x2b,
+	0xfc, 0x2c, 0x47, 0x1c, 0xe2, 0x5a, 0x35, 0x4d, 0xda, 0x6a, 0xd2, 0x36, 0x3d, 0x6e, 0x51, 0x8b,
+	0x72, 0x53, 0xdd, 0xff, 0x2f, 0xf0, 0x4a, 0x4f, 0x5a, 0x94, 0x5a, 0x3b, 0x44, 0x37, 0x2a, 0xb6,
+	0x6e, 0x38, 0x0e, 0xf5, 0x0c, 0xcf, 0xa6, 0x0e, 0x13, 0xa7, 0x37, 0x4c, 0xca, 0xca, 0x94, 0xe9,
+	0x45, 0x83, 0x91, 0x20, 0x99, 0xfe, 0x2a, 0x5b, 0x24, 0x9e, 0x91, 0xd5, 0x2b, 0x86, 0x65, 0x3b,
+	0xdc, 0x58, 0xd8, 0x2a, 0x8d, 0xb6, 0xd2, 0xca, 0xa4, 0xb6, 0x3c, 0x9f, 0x3e, 0x8b, 0x6f, 0x1a,
+	0xe5, 0x8a, 0x61, 0x5b, 0xd2, 0x62, 0xea, 0xac, 0x45, 0xd9, 0x66, 0xac, 0x9e, 0x62, 0xa6, 0x45,
+	0x08, 0xff, 0x6f, 0xc1, 0x25, 0x26, 0x75, 0x4b, 0x81, 0x95, 0x9a, 0x85, 0x4b, 0x4f, 0x7d, 0xd4,
+	0x2d, 0x46, 0xdc, 0x07, 0x8e, 0xe7, 0xd6, 0xf2, 0x64, 0xb7, 0x4a, 0x98, 0x87, 0x27, 0x60, 0xc4,
+	0x28, 0x95, 0x5c, 0xc2, 0xd8, 0x04, 0x9a, 0x46, 0x73, 0xa9, 0xbc, 0xfc, 0xa9, 0x6e, 0xc3, 0xe5,
+	0xa8, 0x0b, 0xab, 0x50, 0x87, 0x11, 0xfc, 0x18, 0xa0, 0xca, 0x88, 0x5b, 0x20, 0xfe, 0x53, 0xee,
+	0x36, 0xba, 0x30, 0xaf, 0x75, 0x96, 0x5a, 0x0b, 0xc3, 0xac, 0x0e, 0x1f, 0xfd, 0x9a, 0x4a, 0xe4,
+	0x53, 0x55, 0xf9, 0x40, 0x2d, 0xc2, 0x44, 0x98, 0x89, 0xf9, 0x8f, 0x6c, 0xc2, 0x24, 0xdf, 0x1a,
+	0x40, 0x5d, 0x55, 0x91, 0xeb, 0xba, 0x16, 0xc8, 0xaa, 0xf9, 0xb2, 0x6a, 0x41, 0xbf, 0x85, 0xb8,
+	0xda, 0x13, 0xc3, 0x22, 0xc2, 0x37, 0xdf, 0xe0, 0xa9, 0x7e, 0x45, 0x70, 0xa5, 0x45, 0x12, 0x51,
+	0xd1, 0x33, 0x38, 0xef, 0xe3, 0x30, 0x5e, 0x92, 0x4d, 0x7c, 0x2d, 0xfe, 0xeb, 0xa7, 0xa8, 0xb1,
+	0x6a, 0x43, 0x74, 0xbc, 0xde, 0xc4, 0x3e, 0xc4, 0xd9, 0x67, 0xbb, 0xb2, 0x07, 0x48, 0x4d, 0xf0,
+	0x5b, 0x70, 0x91, 0xb3, 0x3f, 0x0a, 0x3a, 0x2f, 0xb5, 0x99, 0x82, 0x51, 0x79, 0x5b, 0x0a, 0x76,
+	0x89, 0x8b, 0x33, 0x9c, 0x07, 0xf9, 0x68, 0xa3, 0x84, 0x33, 0x00, 0xe2, 0xb2, 0xf8, 0xe7, 0x43,
+	0xfc, 0x3c, 0x25, 0x9e, 0x6c, 0x94, 0xd4, 0x02, 0x8c, 0x37, 0x87, 0x15, 0x6a, 0xac, 0xc3, 0x88,
+	0x30, 0x12, 0x82, 0xcf, 0x76, 0xd3, 0x41, 0x44, 0x10, 0x2a, 0x48, 0x6f, 0xf5, 0x45, 0x73, 0x82,
+	0x81, 0x37, 0xf5, 0x00, 0x89, 0x6b, 0x5d, 0x4f, 0x20, 0x4a, 0xd8, 0x80, 0xa4, 0x80, 0x90, 0xbd,
+	0x8c, 0x59, 0x43, 0xe8, 0x3e, 0xb8, 0x2e, 0xbe, 0x45, 0x30, 0xc9, 0x69, 0xef, 0x8b, 0x0e, 0x45,
+	0x65, 0xe9, 0xda, 0xcf, 0xb5, 0x16, 0x28, 0xfd, 0xe8, 0x76, 0x88, 0x20, 0xd3, 0x86, 0xe4, 0x1f,
+	0xd6, 0xaf, 0x20, 0x9a, 0x2d, 0xa1, 0x07, 0x7e, 0x9d, 0xbe, 0x20, 0x31, 0xf2, 0x1a, 0x32, 0x08,
+	0x3d, 0x36, 0x21, 0x25, 0xfb, 0x20, 0x05, 0x99, 0xeb, 0x26, 0x88, 0x8c, 0x22, 0x07, 0x5e, 0x18,
+	0x60, 0x70, 0x92, 0x2c, 0x8b, 0x17, 0x4c, 0xa6, 0xea, 0xf5, 0x26, 0xa9, 0x66, 0x44, 0xcb, 0xb0,
+	0xd0, 0x87, 0x90, 0x94, 0x66, 0x42, 0xc9, 0xb8, 0x75, 0x86, 0xfe, 0x0b, 0xdf, 0x53, 0xf0, 0x3f,
+	0xcf, 0x82, 0x0f, 0x10, 0xa4, 0xc2, 0x59, 0x89, 0x97, 0xba, 0x45, 0x6c, 0xb9, 0xaa, 0xd2, 0xb7,
+	0xe3, 0xba, 0x05, 0x25, 0xa9, 0xfa, 0x9b, 0x1f, 0x7f, 0xde, 0x0f, 0xcd, 0xe3, 0x59, 0xdd, 0xcc,
+	0x91, 0x60, 0x39, 0x86, 0xbb, 0xb8, 0xbe, 0xc7, 0xf4, 0x3d, 0xb1, 0xf8, 0xf6, 0xf1, 0x67, 0x04,
+	0x63, 0x8d, 0x6b, 0x02, 0xdf, 0xe9, 0x39, 0x73, 0x64, 0x7d, 0xa5, 0xef, 0xf6, 0xe1, 0x29, 0xb0,
+	0xe7, 0x38, 0xb6, 0x8a, 0xa7, 0xdb, 0x60, 0x87, 0xcb, 0x0a, 0x1f, 0x22, 0x18, 0x11, 0x6f, 0x1f,
+	0x5e, 0xec, 0x29, 0x61, 0xf3, 0x22, 0x49, 0xe7, 0xe2, 0x39, 0x09, 0xc0, 0x15, 0x0e, 0xb8, 0x8c,
+	0x97, 0x5a, 0x00, 0x8a, 0xb7, 0x5f, 0xdf, 0x6b, 0xb8, 0x86, 0xfb, 0xfa, 0x5e, 0x7d, 0x1b, 0xed,
+	0xe3, 0x6f, 0x08, 0x2e, 0x44, 0xe7, 0x0f, 0xbe, 0xd7, 0x13, 0x49, 0x9b, 0x01, 0x9a, 0x5e, 0xe9,
+	0xd3, 0x5b, 0x14, 0x94, 0xe5, 0x05, 0xdd, 0xc4, 0xf3, 0xed, 0x0b, 0x62, 0xcd, 0x15, 0xe1, 0x0f,
+	0x08, 0x92, 0x21, 0x7c, 0x2c, 0x19, 0x43, 0xe8, 0xa5, 0x98, 0x5e, 0x02, 0xf6, 0x1a, 0x87, 0xcd,
+	0xe0, 0xab, 0x1d, 0x60, 0xf1, 0x27, 0x04, 0x49, 0x59, 0x6e, 0x8f, 0x78, 0x91, 0x51, 0xd2, 0x23,
+	0x5e, 0x74, 0x8e, 0x74, 0xd4, 0x52, 0x2a, 0x18, 0xd1, 0xf2, 0x23, 0x82, 0x54, 0x38, 0x79, 0x71,
+	0xbc, 0xbc, 0x2c, 0xde, 0x90, 0x38, 0x33, 0xe0, 0xd5, 0x19, 0xce, 0xab, 0xe0, 0xc9, 0x0e, 0xbc,
+	0x6c, 0x75, 0xf3, 0xe8, 0x44, 0x41, 0xc7, 0x27, 0x0a, 0xfa, 0x7d, 0xa2, 0xa0, 0x77, 0xa7, 0x4a,
+	0xe2, 0xf8, 0x54, 0x49, 0xfc, 0x3c, 0x55, 0x12, 0xcf, 0x17, 0x2c, 0xdb, 0xdb, 0xae, 0x16, 0x35,
+	0x93, 0x96, 0xf5, 0x46, 0x02, 0x3f, 0xdc, 0xad, 0xe0, 0xfb, 0xfc, 0x75, 0xfd, 0x0b, 0xdd, 0xab,
+	0x55, 0x08, 0x2b, 0x9e, 0xe3, 0xdf, 0xe6, 0x8b, 0x7f, 0x03, 0x00, 0x00, 0xff, 0xff, 0xda, 0x19,
+	0xa4, 0x8e, 0xc5, 0x0c, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -954,24 +783,20 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// Parameters queries the parameters of the module.
-	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// Queries a UserEntry by index.
 	UserEntry(ctx context.Context, in *QueryUserEntryRequest, opts ...grpc.CallOption) (*QueryUserEntryResponse, error)
-	// Queries a list of UserEntry items.
+	// Queries a list of all UserEntry items.
 	UsersEntries(ctx context.Context, in *QueryUsersEntriesRequest, opts ...grpc.CallOption) (*QueryUsersEntriesResponse, error)
-	// Queries a Mission by index.
+	// Queries a Mission by campaign id and mission id.
 	Mission(ctx context.Context, in *QueryMissionRequest, opts ...grpc.CallOption) (*QueryMissionResponse, error)
-	// Queries a list of Mission items.
-	MissionAll(ctx context.Context, in *QueryMissionsRequest, opts ...grpc.CallOption) (*QueryMissionsResponse, error)
-	// Queries a list of Campaigns items.
-	Campaigns(ctx context.Context, in *QueryCampaignsRequest, opts ...grpc.CallOption) (*QueryCampaignsResponse, error)
-	// Queries a list of Campaigns items.
+	// Queries a list of Mission items for a given campaign.
+	CampaignMissions(ctx context.Context, in *QueryCampaignMissionsRequest, opts ...grpc.CallOption) (*QueryCampaignMissionsResponse, error)
+	// Queries a list of all Missions items.
+	Missions(ctx context.Context, in *QueryMissionsRequest, opts ...grpc.CallOption) (*QueryMissionsResponse, error)
+	// Queries a Campaign by id.
 	Campaign(ctx context.Context, in *QueryCampaignRequest, opts ...grpc.CallOption) (*QueryCampaignResponse, error)
-	// Queries a CampaignTotalAmount by campaignId.
-	CampaignTotalAmount(ctx context.Context, in *QueryCampaignTotalAmountRequest, opts ...grpc.CallOption) (*QueryCampaignTotalAmountResponse, error)
-	// Queries a CampaignTotalAmount by campaignId.
-	CampaignAmountLeft(ctx context.Context, in *QueryCampaignAmountLeftRequest, opts ...grpc.CallOption) (*QueryCampaignAmountLeftResponse, error)
+	// Queries a list of all Campaigns items.
+	Campaigns(ctx context.Context, in *QueryCampaignsRequest, opts ...grpc.CallOption) (*QueryCampaignsResponse, error)
 }
 
 type queryClient struct {
@@ -980,15 +805,6 @@ type queryClient struct {
 
 func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
-}
-
-func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
-	out := new(QueryParamsResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeclaim.Query/Params", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *queryClient) UserEntry(ctx context.Context, in *QueryUserEntryRequest, opts ...grpc.CallOption) (*QueryUserEntryResponse, error) {
@@ -1018,18 +834,18 @@ func (c *queryClient) Mission(ctx context.Context, in *QueryMissionRequest, opts
 	return out, nil
 }
 
-func (c *queryClient) MissionAll(ctx context.Context, in *QueryMissionsRequest, opts ...grpc.CallOption) (*QueryMissionsResponse, error) {
-	out := new(QueryMissionsResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeclaim.Query/MissionAll", in, out, opts...)
+func (c *queryClient) CampaignMissions(ctx context.Context, in *QueryCampaignMissionsRequest, opts ...grpc.CallOption) (*QueryCampaignMissionsResponse, error) {
+	out := new(QueryCampaignMissionsResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeclaim.Query/CampaignMissions", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) Campaigns(ctx context.Context, in *QueryCampaignsRequest, opts ...grpc.CallOption) (*QueryCampaignsResponse, error) {
-	out := new(QueryCampaignsResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeclaim.Query/Campaigns", in, out, opts...)
+func (c *queryClient) Missions(ctx context.Context, in *QueryMissionsRequest, opts ...grpc.CallOption) (*QueryMissionsResponse, error) {
+	out := new(QueryMissionsResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeclaim.Query/Missions", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1045,18 +861,9 @@ func (c *queryClient) Campaign(ctx context.Context, in *QueryCampaignRequest, op
 	return out, nil
 }
 
-func (c *queryClient) CampaignTotalAmount(ctx context.Context, in *QueryCampaignTotalAmountRequest, opts ...grpc.CallOption) (*QueryCampaignTotalAmountResponse, error) {
-	out := new(QueryCampaignTotalAmountResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeclaim.Query/CampaignTotalAmount", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) CampaignAmountLeft(ctx context.Context, in *QueryCampaignAmountLeftRequest, opts ...grpc.CallOption) (*QueryCampaignAmountLeftResponse, error) {
-	out := new(QueryCampaignAmountLeftResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeclaim.Query/CampaignAmountLeft", in, out, opts...)
+func (c *queryClient) Campaigns(ctx context.Context, in *QueryCampaignsRequest, opts ...grpc.CallOption) (*QueryCampaignsResponse, error) {
+	out := new(QueryCampaignsResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfeclaim.Query/Campaigns", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1065,33 +872,26 @@ func (c *queryClient) CampaignAmountLeft(ctx context.Context, in *QueryCampaignA
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// Parameters queries the parameters of the module.
-	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// Queries a UserEntry by index.
 	UserEntry(context.Context, *QueryUserEntryRequest) (*QueryUserEntryResponse, error)
-	// Queries a list of UserEntry items.
+	// Queries a list of all UserEntry items.
 	UsersEntries(context.Context, *QueryUsersEntriesRequest) (*QueryUsersEntriesResponse, error)
-	// Queries a Mission by index.
+	// Queries a Mission by campaign id and mission id.
 	Mission(context.Context, *QueryMissionRequest) (*QueryMissionResponse, error)
-	// Queries a list of Mission items.
-	MissionAll(context.Context, *QueryMissionsRequest) (*QueryMissionsResponse, error)
-	// Queries a list of Campaigns items.
-	Campaigns(context.Context, *QueryCampaignsRequest) (*QueryCampaignsResponse, error)
-	// Queries a list of Campaigns items.
+	// Queries a list of Mission items for a given campaign.
+	CampaignMissions(context.Context, *QueryCampaignMissionsRequest) (*QueryCampaignMissionsResponse, error)
+	// Queries a list of all Missions items.
+	Missions(context.Context, *QueryMissionsRequest) (*QueryMissionsResponse, error)
+	// Queries a Campaign by id.
 	Campaign(context.Context, *QueryCampaignRequest) (*QueryCampaignResponse, error)
-	// Queries a CampaignTotalAmount by campaignId.
-	CampaignTotalAmount(context.Context, *QueryCampaignTotalAmountRequest) (*QueryCampaignTotalAmountResponse, error)
-	// Queries a CampaignTotalAmount by campaignId.
-	CampaignAmountLeft(context.Context, *QueryCampaignAmountLeftRequest) (*QueryCampaignAmountLeftResponse, error)
+	// Queries a list of all Campaigns items.
+	Campaigns(context.Context, *QueryCampaignsRequest) (*QueryCampaignsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
 type UnimplementedQueryServer struct {
 }
 
-func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
-}
 func (*UnimplementedQueryServer) UserEntry(ctx context.Context, req *QueryUserEntryRequest) (*QueryUserEntryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserEntry not implemented")
 }
@@ -1101,42 +901,21 @@ func (*UnimplementedQueryServer) UsersEntries(ctx context.Context, req *QueryUse
 func (*UnimplementedQueryServer) Mission(ctx context.Context, req *QueryMissionRequest) (*QueryMissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Mission not implemented")
 }
-func (*UnimplementedQueryServer) MissionAll(ctx context.Context, req *QueryMissionsRequest) (*QueryMissionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MissionAll not implemented")
+func (*UnimplementedQueryServer) CampaignMissions(ctx context.Context, req *QueryCampaignMissionsRequest) (*QueryCampaignMissionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CampaignMissions not implemented")
 }
-func (*UnimplementedQueryServer) Campaigns(ctx context.Context, req *QueryCampaignsRequest) (*QueryCampaignsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Campaigns not implemented")
+func (*UnimplementedQueryServer) Missions(ctx context.Context, req *QueryMissionsRequest) (*QueryMissionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Missions not implemented")
 }
 func (*UnimplementedQueryServer) Campaign(ctx context.Context, req *QueryCampaignRequest) (*QueryCampaignResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Campaign not implemented")
 }
-func (*UnimplementedQueryServer) CampaignTotalAmount(ctx context.Context, req *QueryCampaignTotalAmountRequest) (*QueryCampaignTotalAmountResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CampaignTotalAmount not implemented")
-}
-func (*UnimplementedQueryServer) CampaignAmountLeft(ctx context.Context, req *QueryCampaignAmountLeftRequest) (*QueryCampaignAmountLeftResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CampaignAmountLeft not implemented")
+func (*UnimplementedQueryServer) Campaigns(ctx context.Context, req *QueryCampaignsRequest) (*QueryCampaignsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Campaigns not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 	s.RegisterService(&_Query_serviceDesc, srv)
-}
-
-func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryParamsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).Params(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeclaim.Query/Params",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Params(ctx, req.(*QueryParamsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _Query_UserEntry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -1193,38 +972,38 @@ func _Query_Mission_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_MissionAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Query_CampaignMissions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCampaignMissionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).CampaignMissions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfeclaim.Query/CampaignMissions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).CampaignMissions(ctx, req.(*QueryCampaignMissionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Missions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryMissionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).MissionAll(ctx, in)
+		return srv.(QueryServer).Missions(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeclaim.Query/MissionAll",
+		FullMethod: "/chain4energy.c4echain.cfeclaim.Query/Missions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).MissionAll(ctx, req.(*QueryMissionsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_Campaigns_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryCampaignsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).Campaigns(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeclaim.Query/Campaigns",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Campaigns(ctx, req.(*QueryCampaignsRequest))
+		return srv.(QueryServer).Missions(ctx, req.(*QueryMissionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1247,38 +1026,20 @@ func _Query_Campaign_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_CampaignTotalAmount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryCampaignTotalAmountRequest)
+func _Query_Campaigns_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCampaignsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).CampaignTotalAmount(ctx, in)
+		return srv.(QueryServer).Campaigns(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeclaim.Query/CampaignTotalAmount",
+		FullMethod: "/chain4energy.c4echain.cfeclaim.Query/Campaigns",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).CampaignTotalAmount(ctx, req.(*QueryCampaignTotalAmountRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_CampaignAmountLeft_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryCampaignAmountLeftRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).CampaignAmountLeft(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfeclaim.Query/CampaignAmountLeft",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).CampaignAmountLeft(ctx, req.(*QueryCampaignAmountLeftRequest))
+		return srv.(QueryServer).Campaigns(ctx, req.(*QueryCampaignsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1287,10 +1048,6 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "chain4energy.c4echain.cfeclaim.Query",
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Params",
-			Handler:    _Query_Params_Handler,
-		},
 		{
 			MethodName: "UserEntry",
 			Handler:    _Query_UserEntry_Handler,
@@ -1304,84 +1061,24 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Mission_Handler,
 		},
 		{
-			MethodName: "MissionAll",
-			Handler:    _Query_MissionAll_Handler,
+			MethodName: "CampaignMissions",
+			Handler:    _Query_CampaignMissions_Handler,
 		},
 		{
-			MethodName: "Campaigns",
-			Handler:    _Query_Campaigns_Handler,
+			MethodName: "Missions",
+			Handler:    _Query_Missions_Handler,
 		},
 		{
 			MethodName: "Campaign",
 			Handler:    _Query_Campaign_Handler,
 		},
 		{
-			MethodName: "CampaignTotalAmount",
-			Handler:    _Query_CampaignTotalAmount_Handler,
-		},
-		{
-			MethodName: "CampaignAmountLeft",
-			Handler:    _Query_CampaignAmountLeft_Handler,
+			MethodName: "Campaigns",
+			Handler:    _Query_Campaigns_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "c4echain/cfeclaim/query.proto",
-}
-
-func (m *QueryParamsRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryParamsRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryParamsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryParamsResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryParamsResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	{
-		size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintQuery(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
 }
 
 func (m *QueryUserEntryRequest) Marshal() (dAtA []byte, err error) {
@@ -1444,136 +1141,6 @@ func (m *QueryUserEntryResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	}
 	i--
 	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryCampaignTotalAmountRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryCampaignTotalAmountRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryCampaignTotalAmountRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.CampaignId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.CampaignId))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryCampaignTotalAmountResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryCampaignTotalAmountResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryCampaignTotalAmountResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Amount) > 0 {
-		for iNdEx := len(m.Amount) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Amount[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryCampaignAmountLeftRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryCampaignAmountLeftRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryCampaignAmountLeftRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.CampaignId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.CampaignId))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryCampaignAmountLeftResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryCampaignAmountLeftResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryCampaignAmountLeftResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Amount) > 0 {
-		for iNdEx := len(m.Amount) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Amount[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
-	}
 	return len(dAtA) - i, nil
 }
 
@@ -1794,10 +1361,99 @@ func (m *QueryMissionsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Mission) > 0 {
-		for iNdEx := len(m.Mission) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.Missions) > 0 {
+		for iNdEx := len(m.Missions) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.Mission[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.Missions[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryCampaignMissionsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCampaignMissionsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCampaignMissionsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.CampaignId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.CampaignId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryCampaignMissionsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryCampaignMissionsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryCampaignMissionsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Missions) > 0 {
+		for iNdEx := len(m.Missions) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Missions[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -1967,26 +1623,6 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *QueryParamsRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *QueryParamsResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = m.Params.Size()
-	n += 1 + l + sovQuery(uint64(l))
-	return n
-}
-
 func (m *QueryUserEntryRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -2008,60 +1644,6 @@ func (m *QueryUserEntryResponse) Size() (n int) {
 	_ = l
 	l = m.UserEntry.Size()
 	n += 1 + l + sovQuery(uint64(l))
-	return n
-}
-
-func (m *QueryCampaignTotalAmountRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.CampaignId != 0 {
-		n += 1 + sovQuery(uint64(m.CampaignId))
-	}
-	return n
-}
-
-func (m *QueryCampaignTotalAmountResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.Amount) > 0 {
-		for _, e := range m.Amount {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *QueryCampaignAmountLeftRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.CampaignId != 0 {
-		n += 1 + sovQuery(uint64(m.CampaignId))
-	}
-	return n
-}
-
-func (m *QueryCampaignAmountLeftResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.Amount) > 0 {
-		for _, e := range m.Amount {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
 	return n
 }
 
@@ -2142,8 +1724,43 @@ func (m *QueryMissionsResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if len(m.Mission) > 0 {
-		for _, e := range m.Mission {
+	if len(m.Missions) > 0 {
+		for _, e := range m.Missions {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryCampaignMissionsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.CampaignId != 0 {
+		n += 1 + sovQuery(uint64(m.CampaignId))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryCampaignMissionsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Missions) > 0 {
+		for _, e := range m.Missions {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -2215,139 +1832,6 @@ func sovQuery(x uint64) (n int) {
 }
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (m *QueryParamsRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryParamsRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryParamsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryParamsResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
 }
 func (m *QueryUserEntryRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -2490,312 +1974,6 @@ func (m *QueryUserEntryResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.UserEntry.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryCampaignTotalAmountRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCampaignTotalAmountRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCampaignTotalAmountRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CampaignId", wireType)
-			}
-			m.CampaignId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.CampaignId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryCampaignTotalAmountResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCampaignTotalAmountResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCampaignTotalAmountResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Amount = append(m.Amount, types.Coin{})
-			if err := m.Amount[len(m.Amount)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryCampaignAmountLeftRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCampaignAmountLeftRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCampaignAmountLeftRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CampaignId", wireType)
-			}
-			m.CampaignId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.CampaignId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryCampaignAmountLeftResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCampaignAmountLeftResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCampaignAmountLeftResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Amount = append(m.Amount, types.Coin{})
-			if err := m.Amount[len(m.Amount)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3314,7 +2492,7 @@ func (m *QueryMissionsResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Mission", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Missions", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -3341,8 +2519,233 @@ func (m *QueryMissionsResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Mission = append(m.Mission, Mission{})
-			if err := m.Mission[len(m.Mission)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Missions = append(m.Missions, Mission{})
+			if err := m.Missions[len(m.Missions)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCampaignMissionsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCampaignMissionsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCampaignMissionsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CampaignId", wireType)
+			}
+			m.CampaignId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CampaignId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryCampaignMissionsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryCampaignMissionsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryCampaignMissionsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Missions", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Missions = append(m.Missions, Mission{})
+			if err := m.Missions[len(m.Missions)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

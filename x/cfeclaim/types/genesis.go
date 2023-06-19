@@ -10,13 +10,9 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		Campaigns:            []Campaign{},
-		UsersEntries:         []UserEntry{},
-		Missions:             []Mission{},
-		CampaignsAmountLeft:  []CampaignAmountLeft{},
-		CampaignsTotalAmount: []CampaignTotalAmount{},
-		// this line is used by starport scaffolding # genesis/types/default
-		Params: DefaultParams(),
+		Campaigns:    []Campaign{},
+		UsersEntries: []UserEntry{},
+		Missions:     []Mission{},
 	}
 }
 
@@ -27,7 +23,7 @@ func (gs GenesisState) Validate() error {
 	claimRecordIndexMap := make(map[string]struct{})
 
 	for _, elem := range gs.UsersEntries {
-		index := string(UserEntryKey(elem.Address))
+		index := elem.Address
 		if _, ok := claimRecordIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for claimRecordXX")
 		}
@@ -37,7 +33,7 @@ func (gs GenesisState) Validate() error {
 	campaignIndexMap := make(map[string]struct{})
 
 	for _, elem := range gs.Campaigns {
-		index := string(CampaignKey(elem.Id))
+		index := string(GetUint64Key(elem.Id))
 		if _, ok := campaignIndexMap[index]; ok {
 			return fmt.Errorf("duplicated index for initialClaim")
 		}
@@ -56,5 +52,5 @@ func (gs GenesisState) Validate() error {
 
 	// this line is used by starport scaffolding # genesis/types/validate
 
-	return gs.Params.Validate()
+	return nil
 }

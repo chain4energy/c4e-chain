@@ -25,13 +25,16 @@ var _ stakingtypes.StakingHooks = MissionDelegationHooks{}
 func (h MissionDelegationHooks) BeforeDelegationCreated(ctx sdk.Context, delAddr sdk.AccAddress, _ sdk.ValAddress) error {
 	missions := h.k.GetAllMission(ctx)
 	for _, mission := range missions {
-		// TODO error handling
 		if mission.MissionType == types.MissionDelegate {
-			_ = h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, delAddr.String())
+			if err := h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, delAddr.String()); err != nil {
+				h.k.Logger(ctx).Debug("mission delegation hook unsuccessful", "info", err)
+			}
 		}
 	}
 	return nil
 }
+
+// Below are the other hooks used by StakingHooks interface, they are not used by this module
 
 // AfterValidatorCreated implements StakingHooks
 func (h MissionDelegationHooks) AfterValidatorCreated(ctx sdk.Context, valAddr sdk.ValAddress) error {

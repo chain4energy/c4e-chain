@@ -20,7 +20,7 @@ func (k Keeper) Campaigns(goCtx context.Context, req *types.QueryCampaignsReques
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	store := ctx.KVStore(k.storeKey)
-	missionStore := prefix.NewStore(store, types.KeyPrefix(types.CampaignKeyPrefix))
+	missionStore := prefix.NewStore(store, types.CampaignKeyPrefix)
 
 	pageRes, err := query.Paginate(missionStore, req.Pagination, func(key []byte, value []byte) error {
 		var campaign types.Campaign

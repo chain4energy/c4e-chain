@@ -65,7 +65,7 @@ func ModifyVestingPoolsState(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeep
 		return nil
 	}
 
-	if validatorsVestingPools.GetCurrentlyLockedWithoutReservations().LT(sum) {
+	if validatorsVestingPools.GetCurrentlyLocked().LT(sum) {
 		ctx.Logger().Info("validators vesting pool not enough locked to split", "owner", poolsOwnerAddress.String())
 		return nil
 	}
@@ -77,14 +77,14 @@ func ModifyVestingPoolsState(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeep
 }
 
 func modifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) bool {
-	vestingType, err := appKeepers.GetC4eVestingKeeper().GetVestingType(ctx, oldValidatorTypeName)
+	vestingType, err := appKeepers.GetC4eVestingKeeper().MustGetVestingType(ctx, oldValidatorTypeName)
 	if err != nil {
 		ctx.Logger().Info("vesting type not found", "vestingType", oldValidatorTypeName)
 		return false
 	}
 	appKeepers.GetC4eVestingKeeper().RemoveVestingType(ctx, oldValidatorTypeName)
 	vestingType.Name = validatorRoundTypeName
-	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, vestingType)
+	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, *vestingType)
 
 	vcRoundType := cfevestingtypes.VestingType{
 		Name:          vcRoundTypeName,
@@ -151,8 +151,8 @@ func modifyAndAddVestingPools(ctx sdk.Context, appKeepers cfeupgradetypes.AppKee
 }
 
 func splitVestingPool(vestingPools *cfevestingtypes.AccountVestingPools, validatorsVestingPools *cfevestingtypes.VestingPool, poolName string, vestingType string, locked math.Int, addYears int, addMonths int) (*cfevestingtypes.AccountVestingPools, error) {
-	if validatorsVestingPools.GetCurrentlyLockedWithoutReservations().Sub(locked).IsNegative() {
-		return nil, fmt.Errorf("not enough coins to send, pool name: %s, currently locked: %s, pool amount: %s", poolName, validatorsVestingPools.GetCurrentlyLockedWithoutReservations(), locked)
+	if validatorsVestingPools.GetLockedNotReserved().Sub(locked).IsNegative() {
+		return nil, fmt.Errorf("not enough coins to send, pool name: %s, currently locked: %s, pool amount: %s", poolName, validatorsVestingPools.GetLockedNotReserved(), locked)
 	}
 	validatorsVestingPools.InitiallyLocked = validatorsVestingPools.InitiallyLocked.Sub(locked)
 

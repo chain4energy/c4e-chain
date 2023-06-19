@@ -1,8 +1,6 @@
 package types
 
-var (
-	ParamsKey = []byte{0x00}
-)
+import "encoding/binary"
 
 const (
 	// ModuleName defines the module name
@@ -21,6 +19,22 @@ const (
 	MemStoreKey = "mem_cfeclaim"
 )
 
-func KeyPrefix(p string) []byte {
-	return []byte(p)
+var (
+	CampaignKeyPrefix      = []byte{0x00}
+	CampaignCountKeyPrefix = []byte{0x01}
+	MissionKeyPrefix       = []byte{0x02}
+	MissionCountKeyPrefix  = []byte{0x03}
+	UserEntryKeyPrefix     = []byte{0x04}
+)
+
+func MissionKey(campaignId uint64, missionId uint64) []byte {
+	bz := GetUint64Key(campaignId)
+	return append(bz, GetUint64Key(missionId)...)
+}
+
+func GetUint64Key(campaignId uint64) []byte {
+	key := make([]byte, 8)
+	binary.BigEndian.PutUint64(key, campaignId)
+
+	return key
 }

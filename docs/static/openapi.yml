@@ -6,7 +6,7 @@ info:
 paths:
   /c4e/claim/v1beta1/campaign/{campaign_id}:
     get:
-      summary: Queries a list of Campaigns items.
+      summary: Queries a Campaign by id.
       operationId: Chain4EnergyC4EchainCfeclaimCampaign
       responses:
         '200':
@@ -61,112 +61,40 @@ paths:
                     title: period of vesting coins after lockup period
                   vestingPoolName:
                     type: string
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: campaign_id
-          in: path
-          required: true
-          type: string
-          format: uint64
-      tags:
-        - Query
-  /c4e/claim/v1beta1/campaign_amount_left/{campaign_id}:
-    get:
-      summary: Queries a CampaignTotalAmount by campaignId.
-      operationId: Chain4EnergyC4EchainCfeclaimCampaignAmountLeft
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              amount:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    Coin defines a token with a denomination and an amount.
+                  campaign_total_amount:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
 
 
-                    NOTE: The amount field is an Int which implements the custom
-                    method
+                        NOTE: The amount field is an Int which implements the
+                        custom method
 
-                    signatures required by gogoproto.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: campaign_id
-          in: path
-          required: true
-          type: string
-          format: uint64
-      tags:
-        - Query
-  /c4e/claim/v1beta1/campaign_total_amount/{campaign_id}:
-    get:
-      summary: Queries a CampaignTotalAmount by campaignId.
-      operationId: Chain4EnergyC4EchainCfeclaimCampaignTotalAmount
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              amount:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    Coin defines a token with a denomination and an amount.
+                        signatures required by gogoproto.
+                  campaign_current_amount:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
 
 
-                    NOTE: The amount field is an Int which implements the custom
-                    method
+                        NOTE: The amount field is an Int which implements the
+                        custom method
 
-                    signatures required by gogoproto.
+                        signatures required by gogoproto.
         default:
           description: An unexpected error response.
           schema:
@@ -195,7 +123,7 @@ paths:
         - Query
   /c4e/claim/v1beta1/campaigns:
     get:
-      summary: Queries a list of Campaigns items.
+      summary: Queries a list of all Campaigns items.
       operationId: Chain4EnergyC4EchainCfeclaimCampaigns
       responses:
         '200':
@@ -252,6 +180,42 @@ paths:
                       title: period of vesting coins after lockup period
                     vestingPoolName:
                       type: string
+                    campaign_total_amount:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          denom:
+                            type: string
+                          amount:
+                            type: string
+                        description: >-
+                          Coin defines a token with a denomination and an
+                          amount.
+
+
+                          NOTE: The amount field is an Int which implements the
+                          custom method
+
+                          signatures required by gogoproto.
+                    campaign_current_amount:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          denom:
+                            type: string
+                          amount:
+                            type: string
+                        description: >-
+                          Coin defines a token with a denomination and an
+                          amount.
+
+
+                          NOTE: The amount field is an Int which implements the
+                          custom method
+
+                          signatures required by gogoproto.
               pagination:
                 type: object
                 properties:
@@ -357,10 +321,10 @@ paths:
           type: boolean
       tags:
         - Query
-  /c4e/claim/v1beta1/mission:
+  /c4e/claim/v1beta1/mission/{campaign_id}/{mission_id}:
     get:
-      summary: Queries a list of Mission items.
-      operationId: Chain4EnergyC4EchainCfeclaimMissionAll
+      summary: Queries a Mission by campaign id and mission id.
+      operationId: Chain4EnergyC4EchainCfeclaimMission
       responses:
         '200':
           description: A successful response.
@@ -368,6 +332,74 @@ paths:
             type: object
             properties:
               mission:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  campaign_id:
+                    type: string
+                    format: uint64
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  missionType:
+                    type: string
+                    enum:
+                      - MISSION_TYPE_UNSPECIFIED
+                      - INITIAL_CLAIM
+                      - DELEGATE
+                      - VOTE
+                      - CLAIM
+                    default: MISSION_TYPE_UNSPECIFIED
+                  weight:
+                    type: string
+                  claim_start_date:
+                    type: string
+                    format: date-time
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: campaign_id
+          in: path
+          required: true
+          type: string
+          format: uint64
+        - name: mission_id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /c4e/claim/v1beta1/missions:
+    get:
+      summary: Queries a list of all Missions items.
+      operationId: Chain4EnergyC4EchainCfeclaimMissions
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              missions:
                 type: array
                 items:
                   type: object
@@ -501,43 +533,73 @@ paths:
           type: boolean
       tags:
         - Query
-  /c4e/claim/v1beta1/mission/{campaign_id}/{mission_id}:
+  /c4e/claim/v1beta1/missions/{campaign_id}:
     get:
-      summary: Queries a Mission by index.
-      operationId: Chain4EnergyC4EchainCfeclaimMission
+      summary: Queries a list of Mission items for a given campaign.
+      operationId: Chain4EnergyC4EchainCfeclaimCampaignMissions
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              mission:
+              missions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    campaign_id:
+                      type: string
+                      format: uint64
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    missionType:
+                      type: string
+                      enum:
+                        - MISSION_TYPE_UNSPECIFIED
+                        - INITIAL_CLAIM
+                        - DELEGATE
+                        - VOTE
+                        - CLAIM
+                      default: MISSION_TYPE_UNSPECIFIED
+                    weight:
+                      type: string
+                    claim_start_date:
+                      type: string
+                      format: date-time
+              pagination:
                 type: object
                 properties:
-                  id:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
                     type: string
                     format: uint64
-                  campaign_id:
-                    type: string
-                    format: uint64
-                  name:
-                    type: string
-                  description:
-                    type: string
-                  missionType:
-                    type: string
-                    enum:
-                      - MISSION_TYPE_UNSPECIFIED
-                      - INITIAL_CLAIM
-                      - DELEGATE
-                      - VOTE
-                      - CLAIM
-                    default: MISSION_TYPE_UNSPECIFIED
-                  weight:
-                    type: string
-                  claim_start_date:
-                    type: string
-                    format: date-time
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
         default:
           description: An unexpected error response.
           schema:
@@ -562,47 +624,62 @@ paths:
           required: true
           type: string
           format: uint64
-        - name: mission_id
-          in: path
-          required: true
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
           type: string
           format: uint64
-      tags:
-        - Query
-  /c4e/claim/v1beta1/params:
-    get:
-      summary: Parameters queries the parameters of the module.
-      operationId: Chain4EnergyC4EchainCfeclaimParams
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params holds all the parameters of this module.
-                type: object
-            description: >-
-              QueryParamsResponse is response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
       tags:
         - Query
   /c4e/claim/v1beta1/user_entry/{address}:
@@ -619,8 +696,6 @@ paths:
                 type: object
                 properties:
                   address:
-                    type: string
-                  claim_address:
                     type: string
                   claim_records:
                     type: array
@@ -687,7 +762,7 @@ paths:
         - Query
   /c4e/claim/v1beta1/users_entries:
     get:
-      summary: Queries a list of UserEntry items.
+      summary: Queries a list of all UserEntry items.
       operationId: Chain4EnergyC4EchainCfeclaimUsersEntries
       responses:
         '200':
@@ -701,8 +776,6 @@ paths:
                   type: object
                   properties:
                     address:
-                      type: string
-                    claim_address:
                       type: string
                     claim_records:
                       type: array
@@ -21344,6 +21417,9 @@ paths:
 
                         would create a different result on a running proposal.
                     decision_policy:
+                      description: >-
+                        decision_policy specifies the group policy's decision
+                        policy.
                       type: object
                       properties:
                         '@type':
@@ -21405,119 +21481,6 @@ paths:
 
                             used with implementation specific semantics.
                       additionalProperties: {}
-                      description: >-
-                        `Any` contains an arbitrary serialized protocol buffer
-                        message along with a
-
-                        URL that describes the type of the serialized message.
-
-
-                        Protobuf library provides support to pack/unpack Any
-                        values in the form
-
-                        of utility functions or additional generated methods of
-                        the Any type.
-
-
-                        Example 1: Pack and unpack a message in C++.
-
-                            Foo foo = ...;
-                            Any any;
-                            any.PackFrom(foo);
-                            ...
-                            if (any.UnpackTo(&foo)) {
-                              ...
-                            }
-
-                        Example 2: Pack and unpack a message in Java.
-
-                            Foo foo = ...;
-                            Any any = Any.pack(foo);
-                            ...
-                            if (any.is(Foo.class)) {
-                              foo = any.unpack(Foo.class);
-                            }
-
-                         Example 3: Pack and unpack a message in Python.
-
-                            foo = Foo(...)
-                            any = Any()
-                            any.Pack(foo)
-                            ...
-                            if any.Is(Foo.DESCRIPTOR):
-                              any.Unpack(foo)
-                              ...
-
-                         Example 4: Pack and unpack a message in Go
-
-                             foo := &pb.Foo{...}
-                             any, err := anypb.New(foo)
-                             if err != nil {
-                               ...
-                             }
-                             ...
-                             foo := &pb.Foo{}
-                             if err := any.UnmarshalTo(foo); err != nil {
-                               ...
-                             }
-
-                        The pack methods provided by protobuf library will by
-                        default use
-
-                        'type.googleapis.com/full.type.name' as the type URL and
-                        the unpack
-
-                        methods only use the fully qualified type name after the
-                        last '/'
-
-                        in the type URL, for example "foo.bar.com/x/y.z" will
-                        yield type
-
-                        name "y.z".
-
-
-
-                        JSON
-
-                        ====
-
-                        The JSON representation of an `Any` value uses the
-                        regular
-
-                        representation of the deserialized, embedded message,
-                        with an
-
-                        additional field `@type` which contains the type URL.
-                        Example:
-
-                            package google.profile;
-                            message Person {
-                              string first_name = 1;
-                              string last_name = 2;
-                            }
-
-                            {
-                              "@type": "type.googleapis.com/google.profile.Person",
-                              "firstName": <string>,
-                              "lastName": <string>
-                            }
-
-                        If the embedded message type is well-known and has a
-                        custom JSON
-
-                        representation, that representation will be embedded
-                        adding a field
-
-                        `value` which holds the custom JSON in addition to the
-                        `@type`
-
-                        field. Example (for message
-                        [google.protobuf.Duration][]):
-
-                            {
-                              "@type": "type.googleapis.com/google.protobuf.Duration",
-                              "value": "1.212s"
-                            }
                     created_at:
                       type: string
                       format: date-time
@@ -21840,6 +21803,9 @@ paths:
 
                         would create a different result on a running proposal.
                     decision_policy:
+                      description: >-
+                        decision_policy specifies the group policy's decision
+                        policy.
                       type: object
                       properties:
                         '@type':
@@ -21901,119 +21867,6 @@ paths:
 
                             used with implementation specific semantics.
                       additionalProperties: {}
-                      description: >-
-                        `Any` contains an arbitrary serialized protocol buffer
-                        message along with a
-
-                        URL that describes the type of the serialized message.
-
-
-                        Protobuf library provides support to pack/unpack Any
-                        values in the form
-
-                        of utility functions or additional generated methods of
-                        the Any type.
-
-
-                        Example 1: Pack and unpack a message in C++.
-
-                            Foo foo = ...;
-                            Any any;
-                            any.PackFrom(foo);
-                            ...
-                            if (any.UnpackTo(&foo)) {
-                              ...
-                            }
-
-                        Example 2: Pack and unpack a message in Java.
-
-                            Foo foo = ...;
-                            Any any = Any.pack(foo);
-                            ...
-                            if (any.is(Foo.class)) {
-                              foo = any.unpack(Foo.class);
-                            }
-
-                         Example 3: Pack and unpack a message in Python.
-
-                            foo = Foo(...)
-                            any = Any()
-                            any.Pack(foo)
-                            ...
-                            if any.Is(Foo.DESCRIPTOR):
-                              any.Unpack(foo)
-                              ...
-
-                         Example 4: Pack and unpack a message in Go
-
-                             foo := &pb.Foo{...}
-                             any, err := anypb.New(foo)
-                             if err != nil {
-                               ...
-                             }
-                             ...
-                             foo := &pb.Foo{}
-                             if err := any.UnmarshalTo(foo); err != nil {
-                               ...
-                             }
-
-                        The pack methods provided by protobuf library will by
-                        default use
-
-                        'type.googleapis.com/full.type.name' as the type URL and
-                        the unpack
-
-                        methods only use the fully qualified type name after the
-                        last '/'
-
-                        in the type URL, for example "foo.bar.com/x/y.z" will
-                        yield type
-
-                        name "y.z".
-
-
-
-                        JSON
-
-                        ====
-
-                        The JSON representation of an `Any` value uses the
-                        regular
-
-                        representation of the deserialized, embedded message,
-                        with an
-
-                        additional field `@type` which contains the type URL.
-                        Example:
-
-                            package google.profile;
-                            message Person {
-                              string first_name = 1;
-                              string last_name = 2;
-                            }
-
-                            {
-                              "@type": "type.googleapis.com/google.profile.Person",
-                              "firstName": <string>,
-                              "lastName": <string>
-                            }
-
-                        If the embedded message type is well-known and has a
-                        custom JSON
-
-                        representation, that representation will be embedded
-                        adding a field
-
-                        `value` which holds the custom JSON in addition to the
-                        `@type`
-
-                        field. Example (for message
-                        [google.protobuf.Duration][]):
-
-                            {
-                              "@type": "type.googleapis.com/google.protobuf.Duration",
-                              "value": "1.212s"
-                            }
                     created_at:
                       type: string
                       format: date-time
@@ -22311,6 +22164,7 @@ paths:
             type: object
             properties:
               info:
+                description: info is the GroupPolicyInfo for the group policy.
                 type: object
                 properties:
                   address:
@@ -22337,6 +22191,9 @@ paths:
 
                       would create a different result on a running proposal.
                   decision_policy:
+                    description: >-
+                      decision_policy specifies the group policy's decision
+                      policy.
                     type: object
                     properties:
                       '@type':
@@ -22398,126 +22255,12 @@ paths:
 
                           used with implementation specific semantics.
                     additionalProperties: {}
-                    description: >-
-                      `Any` contains an arbitrary serialized protocol buffer
-                      message along with a
-
-                      URL that describes the type of the serialized message.
-
-
-                      Protobuf library provides support to pack/unpack Any
-                      values in the form
-
-                      of utility functions or additional generated methods of
-                      the Any type.
-
-
-                      Example 1: Pack and unpack a message in C++.
-
-                          Foo foo = ...;
-                          Any any;
-                          any.PackFrom(foo);
-                          ...
-                          if (any.UnpackTo(&foo)) {
-                            ...
-                          }
-
-                      Example 2: Pack and unpack a message in Java.
-
-                          Foo foo = ...;
-                          Any any = Any.pack(foo);
-                          ...
-                          if (any.is(Foo.class)) {
-                            foo = any.unpack(Foo.class);
-                          }
-
-                       Example 3: Pack and unpack a message in Python.
-
-                          foo = Foo(...)
-                          any = Any()
-                          any.Pack(foo)
-                          ...
-                          if any.Is(Foo.DESCRIPTOR):
-                            any.Unpack(foo)
-                            ...
-
-                       Example 4: Pack and unpack a message in Go
-
-                           foo := &pb.Foo{...}
-                           any, err := anypb.New(foo)
-                           if err != nil {
-                             ...
-                           }
-                           ...
-                           foo := &pb.Foo{}
-                           if err := any.UnmarshalTo(foo); err != nil {
-                             ...
-                           }
-
-                      The pack methods provided by protobuf library will by
-                      default use
-
-                      'type.googleapis.com/full.type.name' as the type URL and
-                      the unpack
-
-                      methods only use the fully qualified type name after the
-                      last '/'
-
-                      in the type URL, for example "foo.bar.com/x/y.z" will
-                      yield type
-
-                      name "y.z".
-
-
-
-                      JSON
-
-                      ====
-
-                      The JSON representation of an `Any` value uses the regular
-
-                      representation of the deserialized, embedded message, with
-                      an
-
-                      additional field `@type` which contains the type URL.
-                      Example:
-
-                          package google.profile;
-                          message Person {
-                            string first_name = 1;
-                            string last_name = 2;
-                          }
-
-                          {
-                            "@type": "type.googleapis.com/google.profile.Person",
-                            "firstName": <string>,
-                            "lastName": <string>
-                          }
-
-                      If the embedded message type is well-known and has a
-                      custom JSON
-
-                      representation, that representation will be embedded
-                      adding a field
-
-                      `value` which holds the custom JSON in addition to the
-                      `@type`
-
-                      field. Example (for message [google.protobuf.Duration][]):
-
-                          {
-                            "@type": "type.googleapis.com/google.protobuf.Duration",
-                            "value": "1.212s"
-                          }
                   created_at:
                     type: string
                     format: date-time
                     description: >-
                       created_at is a timestamp specifying when a group policy
                       was created.
-                description: >-
-                  GroupPolicyInfo represents the high-level on-chain information
-                  for a group policy.
             description: >-
               QueryGroupPolicyInfoResponse is the Query/GroupPolicyInfo response
               type.
@@ -22712,6 +22455,329 @@ paths:
           in: path
           required: true
           type: string
+      tags:
+        - Query
+  /cosmos/group/v1/groups:
+    get:
+      summary: Groups queries all groups in state.
+      description: 'Since: cosmos-sdk 0.47.1'
+      operationId: CosmosGroupV1Groups
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              groups:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                      description: id is the unique ID of the group.
+                    admin:
+                      type: string
+                      description: admin is the account address of the group's admin.
+                    metadata:
+                      type: string
+                      description: >-
+                        metadata is any arbitrary metadata to attached to the
+                        group.
+                    version:
+                      type: string
+                      format: uint64
+                      title: >-
+                        version is used to track changes to a group's membership
+                        structure that
+
+                        would break existing proposals. Whenever any members
+                        weight is changed,
+
+                        or any member is added or removed this version is
+                        incremented and will
+
+                        cause proposals based on older versions of this group to
+                        fail
+                    total_weight:
+                      type: string
+                      description: total_weight is the sum of the group members' weights.
+                    created_at:
+                      type: string
+                      format: date-time
+                      description: >-
+                        created_at is a timestamp specifying when a group was
+                        created.
+                  description: >-
+                    GroupInfo represents the high-level on-chain information for
+                    a group.
+                description: '`groups` is all the groups present in state.'
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: |-
+              QueryGroupsResponse is the Query/Groups response type.
+
+              Since: cosmos-sdk 0.47.1
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                      description: >-
+                        A URL/resource name that uniquely identifies the type of
+                        the serialized
+
+                        protocol buffer message. This string must contain at
+                        least
+
+                        one "/" character. The last segment of the URL's path
+                        must represent
+
+                        the fully qualified name of the type (as in
+
+                        `path/google.protobuf.Duration`). The name should be in
+                        a canonical form
+
+                        (e.g., leading "." is not accepted).
+
+
+                        In practice, teams usually precompile into the binary
+                        all types that they
+
+                        expect it to use in the context of Any. However, for
+                        URLs which use the
+
+                        scheme `http`, `https`, or no scheme, one can optionally
+                        set up a type
+
+                        server that maps type URLs to message definitions as
+                        follows:
+
+
+                        * If no scheme is provided, `https` is assumed.
+
+                        * An HTTP GET on the URL must yield a
+                        [google.protobuf.Type][]
+                          value in binary format, or produce an error.
+                        * Applications are allowed to cache lookup results based
+                        on the
+                          URL, or have them precompiled into a binary to avoid any
+                          lookup. Therefore, binary compatibility needs to be preserved
+                          on changes to types. (Use versioned type names to manage
+                          breaking changes.)
+
+                        Note: this functionality is not currently available in
+                        the official
+
+                        protobuf release, and it is not used for type URLs
+                        beginning with
+
+                        type.googleapis.com.
+
+
+                        Schemes other than `http`, `https` (or the empty scheme)
+                        might be
+
+                        used with implementation specific semantics.
+                  additionalProperties: {}
+                  description: >-
+                    `Any` contains an arbitrary serialized protocol buffer
+                    message along with a
+
+                    URL that describes the type of the serialized message.
+
+
+                    Protobuf library provides support to pack/unpack Any values
+                    in the form
+
+                    of utility functions or additional generated methods of the
+                    Any type.
+
+
+                    Example 1: Pack and unpack a message in C++.
+
+                        Foo foo = ...;
+                        Any any;
+                        any.PackFrom(foo);
+                        ...
+                        if (any.UnpackTo(&foo)) {
+                          ...
+                        }
+
+                    Example 2: Pack and unpack a message in Java.
+
+                        Foo foo = ...;
+                        Any any = Any.pack(foo);
+                        ...
+                        if (any.is(Foo.class)) {
+                          foo = any.unpack(Foo.class);
+                        }
+
+                     Example 3: Pack and unpack a message in Python.
+
+                        foo = Foo(...)
+                        any = Any()
+                        any.Pack(foo)
+                        ...
+                        if any.Is(Foo.DESCRIPTOR):
+                          any.Unpack(foo)
+                          ...
+
+                     Example 4: Pack and unpack a message in Go
+
+                         foo := &pb.Foo{...}
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
+                         ...
+                         foo := &pb.Foo{}
+                         if err := any.UnmarshalTo(foo); err != nil {
+                           ...
+                         }
+
+                    The pack methods provided by protobuf library will by
+                    default use
+
+                    'type.googleapis.com/full.type.name' as the type URL and the
+                    unpack
+
+                    methods only use the fully qualified type name after the
+                    last '/'
+
+                    in the type URL, for example "foo.bar.com/x/y.z" will yield
+                    type
+
+                    name "y.z".
+
+
+
+                    JSON
+
+                    ====
+
+                    The JSON representation of an `Any` value uses the regular
+
+                    representation of the deserialized, embedded message, with
+                    an
+
+                    additional field `@type` which contains the type URL.
+                    Example:
+
+                        package google.profile;
+                        message Person {
+                          string first_name = 1;
+                          string last_name = 2;
+                        }
+
+                        {
+                          "@type": "type.googleapis.com/google.profile.Person",
+                          "firstName": <string>,
+                          "lastName": <string>
+                        }
+
+                    If the embedded message type is well-known and has a custom
+                    JSON
+
+                    representation, that representation will be embedded adding
+                    a field
+
+                    `value` which holds the custom JSON in addition to the
+                    `@type`
+
+                    field. Example (for message [google.protobuf.Duration][]):
+
+                        {
+                          "@type": "type.googleapis.com/google.protobuf.Duration",
+                          "value": "1.212s"
+                        }
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
       tags:
         - Query
   /cosmos/group/v1/groups_by_admin/{admin}:
@@ -34776,6 +34842,7 @@ paths:
             type: object
             properties:
               tx_response:
+                description: tx_response is the queried TxResponses.
                 type: object
                 properties:
                   height:
@@ -34862,6 +34929,7 @@ paths:
                     format: int64
                     description: Amount of gas consumed by transaction.
                   tx:
+                    description: The request transaction bytes.
                     type: object
                     properties:
                       '@type':
@@ -34923,117 +34991,6 @@ paths:
 
                           used with implementation specific semantics.
                     additionalProperties: {}
-                    description: >-
-                      `Any` contains an arbitrary serialized protocol buffer
-                      message along with a
-
-                      URL that describes the type of the serialized message.
-
-
-                      Protobuf library provides support to pack/unpack Any
-                      values in the form
-
-                      of utility functions or additional generated methods of
-                      the Any type.
-
-
-                      Example 1: Pack and unpack a message in C++.
-
-                          Foo foo = ...;
-                          Any any;
-                          any.PackFrom(foo);
-                          ...
-                          if (any.UnpackTo(&foo)) {
-                            ...
-                          }
-
-                      Example 2: Pack and unpack a message in Java.
-
-                          Foo foo = ...;
-                          Any any = Any.pack(foo);
-                          ...
-                          if (any.is(Foo.class)) {
-                            foo = any.unpack(Foo.class);
-                          }
-
-                       Example 3: Pack and unpack a message in Python.
-
-                          foo = Foo(...)
-                          any = Any()
-                          any.Pack(foo)
-                          ...
-                          if any.Is(Foo.DESCRIPTOR):
-                            any.Unpack(foo)
-                            ...
-
-                       Example 4: Pack and unpack a message in Go
-
-                           foo := &pb.Foo{...}
-                           any, err := anypb.New(foo)
-                           if err != nil {
-                             ...
-                           }
-                           ...
-                           foo := &pb.Foo{}
-                           if err := any.UnmarshalTo(foo); err != nil {
-                             ...
-                           }
-
-                      The pack methods provided by protobuf library will by
-                      default use
-
-                      'type.googleapis.com/full.type.name' as the type URL and
-                      the unpack
-
-                      methods only use the fully qualified type name after the
-                      last '/'
-
-                      in the type URL, for example "foo.bar.com/x/y.z" will
-                      yield type
-
-                      name "y.z".
-
-
-
-                      JSON
-
-                      ====
-
-                      The JSON representation of an `Any` value uses the regular
-
-                      representation of the deserialized, embedded message, with
-                      an
-
-                      additional field `@type` which contains the type URL.
-                      Example:
-
-                          package google.profile;
-                          message Person {
-                            string first_name = 1;
-                            string last_name = 2;
-                          }
-
-                          {
-                            "@type": "type.googleapis.com/google.profile.Person",
-                            "firstName": <string>,
-                            "lastName": <string>
-                          }
-
-                      If the embedded message type is well-known and has a
-                      custom JSON
-
-                      representation, that representation will be embedded
-                      adding a field
-
-                      `value` which holds the custom JSON in addition to the
-                      `@type`
-
-                      field. Example (for message [google.protobuf.Duration][]):
-
-                          {
-                            "@type": "type.googleapis.com/google.protobuf.Duration",
-                            "value": "1.212s"
-                          }
                   timestamp:
                     type: string
                     description: >-
@@ -35091,11 +35048,6 @@ paths:
 
 
                       Since: cosmos-sdk 0.42.11, 0.44.5, 0.45
-                description: >-
-                  TxResponse defines a structure containing relevant tx data and
-                  metadata. The
-
-                  tags are stringified and the log is JSON decoded.
             description: |-
               BroadcastTxResponse is the response type for the
               Service.BroadcastTx method.
@@ -47875,6 +47827,34 @@ definitions:
         title: period of vesting coins after lockup period
       vestingPoolName:
         type: string
+      campaign_total_amount:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
+      campaign_current_amount:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
   chain4energy.c4echain.cfeclaim.CampaignType:
     type: string
     enum:
@@ -47917,6 +47897,28 @@ definitions:
         items:
           type: string
           format: uint64
+  chain4energy.c4echain.cfeclaim.ClaimRecordEntry:
+    type: object
+    properties:
+      campaign_id:
+        type: string
+        format: uint64
+      user_entry_address:
+        type: string
+      amount:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
   chain4energy.c4echain.cfeclaim.Mission:
     type: object
     properties:
@@ -47955,26 +47957,13 @@ definitions:
     default: MISSION_TYPE_UNSPECIFIED
   chain4energy.c4echain.cfeclaim.MsgAddClaimRecordsResponse:
     type: object
-  chain4energy.c4echain.cfeclaim.MsgAddMissionToCampaignResponse:
+  chain4energy.c4echain.cfeclaim.MsgAddMissionResponse:
     type: object
+    properties:
+      mission_id:
+        type: string
+        format: uint64
   chain4energy.c4echain.cfeclaim.MsgClaimResponse:
-    type: object
-  chain4energy.c4echain.cfeclaim.MsgCloseCampaignResponse:
-    type: object
-  chain4energy.c4echain.cfeclaim.MsgCreateCampaignResponse:
-    type: object
-  chain4energy.c4echain.cfeclaim.MsgDeleteClaimRecordResponse:
-    type: object
-  chain4energy.c4echain.cfeclaim.MsgEnableCampaignResponse:
-    type: object
-  chain4energy.c4echain.cfeclaim.MsgInitialClaimResponse:
-    type: object
-  chain4energy.c4echain.cfeclaim.MsgRemoveCampaignResponse:
-    type: object
-  chain4energy.c4echain.cfeclaim.Params:
-    type: object
-    description: Params defines the parameters for the module.
-  chain4energy.c4echain.cfeclaim.QueryCampaignAmountLeftResponse:
     type: object
     properties:
       amount:
@@ -47991,6 +47980,95 @@ definitions:
 
             NOTE: The amount field is an Int which implements the custom method
             signatures required by gogoproto.
+  chain4energy.c4echain.cfeclaim.MsgCloseCampaignResponse:
+    type: object
+  chain4energy.c4echain.cfeclaim.MsgCreateCampaignResponse:
+    type: object
+    properties:
+      campaign_id:
+        type: string
+        format: uint64
+  chain4energy.c4echain.cfeclaim.MsgDeleteClaimRecordResponse:
+    type: object
+  chain4energy.c4echain.cfeclaim.MsgEnableCampaignResponse:
+    type: object
+  chain4energy.c4echain.cfeclaim.MsgInitialClaimResponse:
+    type: object
+    properties:
+      amount:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
+  chain4energy.c4echain.cfeclaim.MsgRemoveCampaignResponse:
+    type: object
+  chain4energy.c4echain.cfeclaim.QueryCampaignMissionsResponse:
+    type: object
+    properties:
+      missions:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            campaign_id:
+              type: string
+              format: uint64
+            name:
+              type: string
+            description:
+              type: string
+            missionType:
+              type: string
+              enum:
+                - MISSION_TYPE_UNSPECIFIED
+                - INITIAL_CLAIM
+                - DELEGATE
+                - VOTE
+                - CLAIM
+              default: MISSION_TYPE_UNSPECIFIED
+            weight:
+              type: string
+            claim_start_date:
+              type: string
+              format: date-time
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
   chain4energy.c4echain.cfeclaim.QueryCampaignResponse:
     type: object
     properties:
@@ -48040,23 +48118,40 @@ definitions:
             title: period of vesting coins after lockup period
           vestingPoolName:
             type: string
-  chain4energy.c4echain.cfeclaim.QueryCampaignTotalAmountResponse:
-    type: object
-    properties:
-      amount:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            Coin defines a token with a denomination and an amount.
+          campaign_total_amount:
+            type: array
+            items:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
 
-            NOTE: The amount field is an Int which implements the custom method
-            signatures required by gogoproto.
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
+          campaign_current_amount:
+            type: array
+            items:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
   chain4energy.c4echain.cfeclaim.QueryCampaignsResponse:
     type: object
     properties:
@@ -48108,6 +48203,40 @@ definitions:
               title: period of vesting coins after lockup period
             vestingPoolName:
               type: string
+            campaign_total_amount:
+              type: array
+              items:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
+            campaign_current_amount:
+              type: array
+              items:
+                type: object
+                properties:
+                  denom:
+                    type: string
+                  amount:
+                    type: string
+                description: >-
+                  Coin defines a token with a denomination and an amount.
+
+
+                  NOTE: The amount field is an Int which implements the custom
+                  method
+
+                  signatures required by gogoproto.
       pagination:
         type: object
         properties:
@@ -48167,7 +48296,7 @@ definitions:
   chain4energy.c4echain.cfeclaim.QueryMissionsResponse:
     type: object
     properties:
-      mission:
+      missions:
         type: array
         items:
           type: object
@@ -48222,13 +48351,6 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  chain4energy.c4echain.cfeclaim.QueryParamsResponse:
-    type: object
-    properties:
-      params:
-        description: params holds all the parameters of this module.
-        type: object
-    description: QueryParamsResponse is response type for the Query/Params RPC method.
   chain4energy.c4echain.cfeclaim.QueryUserEntryResponse:
     type: object
     properties:
@@ -48236,8 +48358,6 @@ definitions:
         type: object
         properties:
           address:
-            type: string
-          claim_address:
             type: string
           claim_records:
             type: array
@@ -48285,8 +48405,6 @@ definitions:
           type: object
           properties:
             address:
-              type: string
-            claim_address:
               type: string
             claim_records:
               type: array
@@ -48355,8 +48473,6 @@ definitions:
     type: object
     properties:
       address:
-        type: string
-      claim_address:
         type: string
       claim_records:
         type: array
@@ -62486,6 +62602,7 @@ definitions:
 
           would create a different result on a running proposal.
       decision_policy:
+        description: decision_policy specifies the group policy's decision policy.
         type: object
         properties:
           '@type':
@@ -62541,107 +62658,6 @@ definitions:
 
               used with implementation specific semantics.
         additionalProperties: {}
-        description: >-
-          `Any` contains an arbitrary serialized protocol buffer message along
-          with a
-
-          URL that describes the type of the serialized message.
-
-
-          Protobuf library provides support to pack/unpack Any values in the
-          form
-
-          of utility functions or additional generated methods of the Any type.
-
-
-          Example 1: Pack and unpack a message in C++.
-
-              Foo foo = ...;
-              Any any;
-              any.PackFrom(foo);
-              ...
-              if (any.UnpackTo(&foo)) {
-                ...
-              }
-
-          Example 2: Pack and unpack a message in Java.
-
-              Foo foo = ...;
-              Any any = Any.pack(foo);
-              ...
-              if (any.is(Foo.class)) {
-                foo = any.unpack(Foo.class);
-              }
-
-           Example 3: Pack and unpack a message in Python.
-
-              foo = Foo(...)
-              any = Any()
-              any.Pack(foo)
-              ...
-              if any.Is(Foo.DESCRIPTOR):
-                any.Unpack(foo)
-                ...
-
-           Example 4: Pack and unpack a message in Go
-
-               foo := &pb.Foo{...}
-               any, err := anypb.New(foo)
-               if err != nil {
-                 ...
-               }
-               ...
-               foo := &pb.Foo{}
-               if err := any.UnmarshalTo(foo); err != nil {
-                 ...
-               }
-
-          The pack methods provided by protobuf library will by default use
-
-          'type.googleapis.com/full.type.name' as the type URL and the unpack
-
-          methods only use the fully qualified type name after the last '/'
-
-          in the type URL, for example "foo.bar.com/x/y.z" will yield type
-
-          name "y.z".
-
-
-
-          JSON
-
-          ====
-
-          The JSON representation of an `Any` value uses the regular
-
-          representation of the deserialized, embedded message, with an
-
-          additional field `@type` which contains the type URL. Example:
-
-              package google.profile;
-              message Person {
-                string first_name = 1;
-                string last_name = 2;
-              }
-
-              {
-                "@type": "type.googleapis.com/google.profile.Person",
-                "firstName": <string>,
-                "lastName": <string>
-              }
-
-          If the embedded message type is well-known and has a custom JSON
-
-          representation, that representation will be embedded adding a field
-
-          `value` which holds the custom JSON in addition to the `@type`
-
-          field. Example (for message [google.protobuf.Duration][]):
-
-              {
-                "@type": "type.googleapis.com/google.protobuf.Duration",
-                "value": "1.212s"
-              }
       created_at:
         type: string
         format: date-time
@@ -63213,6 +63229,7 @@ definitions:
 
                 would create a different result on a running proposal.
             decision_policy:
+              description: decision_policy specifies the group policy's decision policy.
               type: object
               properties:
                 '@type':
@@ -63273,112 +63290,6 @@ definitions:
 
                     used with implementation specific semantics.
               additionalProperties: {}
-              description: >-
-                `Any` contains an arbitrary serialized protocol buffer message
-                along with a
-
-                URL that describes the type of the serialized message.
-
-
-                Protobuf library provides support to pack/unpack Any values in
-                the form
-
-                of utility functions or additional generated methods of the Any
-                type.
-
-
-                Example 1: Pack and unpack a message in C++.
-
-                    Foo foo = ...;
-                    Any any;
-                    any.PackFrom(foo);
-                    ...
-                    if (any.UnpackTo(&foo)) {
-                      ...
-                    }
-
-                Example 2: Pack and unpack a message in Java.
-
-                    Foo foo = ...;
-                    Any any = Any.pack(foo);
-                    ...
-                    if (any.is(Foo.class)) {
-                      foo = any.unpack(Foo.class);
-                    }
-
-                 Example 3: Pack and unpack a message in Python.
-
-                    foo = Foo(...)
-                    any = Any()
-                    any.Pack(foo)
-                    ...
-                    if any.Is(Foo.DESCRIPTOR):
-                      any.Unpack(foo)
-                      ...
-
-                 Example 4: Pack and unpack a message in Go
-
-                     foo := &pb.Foo{...}
-                     any, err := anypb.New(foo)
-                     if err != nil {
-                       ...
-                     }
-                     ...
-                     foo := &pb.Foo{}
-                     if err := any.UnmarshalTo(foo); err != nil {
-                       ...
-                     }
-
-                The pack methods provided by protobuf library will by default
-                use
-
-                'type.googleapis.com/full.type.name' as the type URL and the
-                unpack
-
-                methods only use the fully qualified type name after the last
-                '/'
-
-                in the type URL, for example "foo.bar.com/x/y.z" will yield type
-
-                name "y.z".
-
-
-
-                JSON
-
-                ====
-
-                The JSON representation of an `Any` value uses the regular
-
-                representation of the deserialized, embedded message, with an
-
-                additional field `@type` which contains the type URL. Example:
-
-                    package google.profile;
-                    message Person {
-                      string first_name = 1;
-                      string last_name = 2;
-                    }
-
-                    {
-                      "@type": "type.googleapis.com/google.profile.Person",
-                      "firstName": <string>,
-                      "lastName": <string>
-                    }
-
-                If the embedded message type is well-known and has a custom JSON
-
-                representation, that representation will be embedded adding a
-                field
-
-                `value` which holds the custom JSON in addition to the `@type`
-
-                field. Example (for message [google.protobuf.Duration][]):
-
-                    {
-                      "@type": "type.googleapis.com/google.protobuf.Duration",
-                      "value": "1.212s"
-                    }
             created_at:
               type: string
               format: date-time
@@ -63443,6 +63354,7 @@ definitions:
 
                 would create a different result on a running proposal.
             decision_policy:
+              description: decision_policy specifies the group policy's decision policy.
               type: object
               properties:
                 '@type':
@@ -63503,112 +63415,6 @@ definitions:
 
                     used with implementation specific semantics.
               additionalProperties: {}
-              description: >-
-                `Any` contains an arbitrary serialized protocol buffer message
-                along with a
-
-                URL that describes the type of the serialized message.
-
-
-                Protobuf library provides support to pack/unpack Any values in
-                the form
-
-                of utility functions or additional generated methods of the Any
-                type.
-
-
-                Example 1: Pack and unpack a message in C++.
-
-                    Foo foo = ...;
-                    Any any;
-                    any.PackFrom(foo);
-                    ...
-                    if (any.UnpackTo(&foo)) {
-                      ...
-                    }
-
-                Example 2: Pack and unpack a message in Java.
-
-                    Foo foo = ...;
-                    Any any = Any.pack(foo);
-                    ...
-                    if (any.is(Foo.class)) {
-                      foo = any.unpack(Foo.class);
-                    }
-
-                 Example 3: Pack and unpack a message in Python.
-
-                    foo = Foo(...)
-                    any = Any()
-                    any.Pack(foo)
-                    ...
-                    if any.Is(Foo.DESCRIPTOR):
-                      any.Unpack(foo)
-                      ...
-
-                 Example 4: Pack and unpack a message in Go
-
-                     foo := &pb.Foo{...}
-                     any, err := anypb.New(foo)
-                     if err != nil {
-                       ...
-                     }
-                     ...
-                     foo := &pb.Foo{}
-                     if err := any.UnmarshalTo(foo); err != nil {
-                       ...
-                     }
-
-                The pack methods provided by protobuf library will by default
-                use
-
-                'type.googleapis.com/full.type.name' as the type URL and the
-                unpack
-
-                methods only use the fully qualified type name after the last
-                '/'
-
-                in the type URL, for example "foo.bar.com/x/y.z" will yield type
-
-                name "y.z".
-
-
-
-                JSON
-
-                ====
-
-                The JSON representation of an `Any` value uses the regular
-
-                representation of the deserialized, embedded message, with an
-
-                additional field `@type` which contains the type URL. Example:
-
-                    package google.profile;
-                    message Person {
-                      string first_name = 1;
-                      string last_name = 2;
-                    }
-
-                    {
-                      "@type": "type.googleapis.com/google.profile.Person",
-                      "firstName": <string>,
-                      "lastName": <string>
-                    }
-
-                If the embedded message type is well-known and has a custom JSON
-
-                representation, that representation will be embedded adding a
-                field
-
-                `value` which holds the custom JSON in addition to the `@type`
-
-                field. Example (for message [google.protobuf.Duration][]):
-
-                    {
-                      "@type": "type.googleapis.com/google.protobuf.Duration",
-                      "value": "1.212s"
-                    }
             created_at:
               type: string
               format: date-time
@@ -63647,6 +63453,7 @@ definitions:
     type: object
     properties:
       info:
+        description: info is the GroupPolicyInfo for the group policy.
         type: object
         properties:
           address:
@@ -63673,6 +63480,7 @@ definitions:
 
               would create a different result on a running proposal.
           decision_policy:
+            description: decision_policy specifies the group policy's decision policy.
             type: object
             properties:
               '@type':
@@ -63731,119 +63539,12 @@ definitions:
 
                   used with implementation specific semantics.
             additionalProperties: {}
-            description: >-
-              `Any` contains an arbitrary serialized protocol buffer message
-              along with a
-
-              URL that describes the type of the serialized message.
-
-
-              Protobuf library provides support to pack/unpack Any values in the
-              form
-
-              of utility functions or additional generated methods of the Any
-              type.
-
-
-              Example 1: Pack and unpack a message in C++.
-
-                  Foo foo = ...;
-                  Any any;
-                  any.PackFrom(foo);
-                  ...
-                  if (any.UnpackTo(&foo)) {
-                    ...
-                  }
-
-              Example 2: Pack and unpack a message in Java.
-
-                  Foo foo = ...;
-                  Any any = Any.pack(foo);
-                  ...
-                  if (any.is(Foo.class)) {
-                    foo = any.unpack(Foo.class);
-                  }
-
-               Example 3: Pack and unpack a message in Python.
-
-                  foo = Foo(...)
-                  any = Any()
-                  any.Pack(foo)
-                  ...
-                  if any.Is(Foo.DESCRIPTOR):
-                    any.Unpack(foo)
-                    ...
-
-               Example 4: Pack and unpack a message in Go
-
-                   foo := &pb.Foo{...}
-                   any, err := anypb.New(foo)
-                   if err != nil {
-                     ...
-                   }
-                   ...
-                   foo := &pb.Foo{}
-                   if err := any.UnmarshalTo(foo); err != nil {
-                     ...
-                   }
-
-              The pack methods provided by protobuf library will by default use
-
-              'type.googleapis.com/full.type.name' as the type URL and the
-              unpack
-
-              methods only use the fully qualified type name after the last '/'
-
-              in the type URL, for example "foo.bar.com/x/y.z" will yield type
-
-              name "y.z".
-
-
-
-              JSON
-
-              ====
-
-              The JSON representation of an `Any` value uses the regular
-
-              representation of the deserialized, embedded message, with an
-
-              additional field `@type` which contains the type URL. Example:
-
-                  package google.profile;
-                  message Person {
-                    string first_name = 1;
-                    string last_name = 2;
-                  }
-
-                  {
-                    "@type": "type.googleapis.com/google.profile.Person",
-                    "firstName": <string>,
-                    "lastName": <string>
-                  }
-
-              If the embedded message type is well-known and has a custom JSON
-
-              representation, that representation will be embedded adding a
-              field
-
-              `value` which holds the custom JSON in addition to the `@type`
-
-              field. Example (for message [google.protobuf.Duration][]):
-
-                  {
-                    "@type": "type.googleapis.com/google.protobuf.Duration",
-                    "value": "1.212s"
-                  }
           created_at:
             type: string
             format: date-time
             description: >-
               created_at is a timestamp specifying when a group policy was
               created.
-        description: >-
-          GroupPolicyInfo represents the high-level on-chain information for a
-          group policy.
     description: QueryGroupPolicyInfoResponse is the Query/GroupPolicyInfo response type.
   cosmos.group.v1.QueryGroupsByAdminResponse:
     type: object
@@ -63973,6 +63674,72 @@ definitions:
 
               was set, its value is undefined otherwise
     description: QueryGroupsByMemberResponse is the Query/GroupsByMember response type.
+  cosmos.group.v1.QueryGroupsResponse:
+    type: object
+    properties:
+      groups:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+              description: id is the unique ID of the group.
+            admin:
+              type: string
+              description: admin is the account address of the group's admin.
+            metadata:
+              type: string
+              description: metadata is any arbitrary metadata to attached to the group.
+            version:
+              type: string
+              format: uint64
+              title: >-
+                version is used to track changes to a group's membership
+                structure that
+
+                would break existing proposals. Whenever any members weight is
+                changed,
+
+                or any member is added or removed this version is incremented
+                and will
+
+                cause proposals based on older versions of this group to fail
+            total_weight:
+              type: string
+              description: total_weight is the sum of the group members' weights.
+            created_at:
+              type: string
+              format: date-time
+              description: created_at is a timestamp specifying when a group was created.
+          description: >-
+            GroupInfo represents the high-level on-chain information for a
+            group.
+        description: '`groups` is all the groups present in state.'
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    description: |-
+      QueryGroupsResponse is the Query/Groups response type.
+
+      Since: cosmos-sdk 0.47.1
   cosmos.group.v1.QueryProposalResponse:
     type: object
     properties:
@@ -70075,6 +69842,7 @@ definitions:
         format: int64
         description: Amount of gas consumed by transaction.
       tx:
+        description: The request transaction bytes.
         type: object
         properties:
           '@type':
@@ -70130,107 +69898,6 @@ definitions:
 
               used with implementation specific semantics.
         additionalProperties: {}
-        description: >-
-          `Any` contains an arbitrary serialized protocol buffer message along
-          with a
-
-          URL that describes the type of the serialized message.
-
-
-          Protobuf library provides support to pack/unpack Any values in the
-          form
-
-          of utility functions or additional generated methods of the Any type.
-
-
-          Example 1: Pack and unpack a message in C++.
-
-              Foo foo = ...;
-              Any any;
-              any.PackFrom(foo);
-              ...
-              if (any.UnpackTo(&foo)) {
-                ...
-              }
-
-          Example 2: Pack and unpack a message in Java.
-
-              Foo foo = ...;
-              Any any = Any.pack(foo);
-              ...
-              if (any.is(Foo.class)) {
-                foo = any.unpack(Foo.class);
-              }
-
-           Example 3: Pack and unpack a message in Python.
-
-              foo = Foo(...)
-              any = Any()
-              any.Pack(foo)
-              ...
-              if any.Is(Foo.DESCRIPTOR):
-                any.Unpack(foo)
-                ...
-
-           Example 4: Pack and unpack a message in Go
-
-               foo := &pb.Foo{...}
-               any, err := anypb.New(foo)
-               if err != nil {
-                 ...
-               }
-               ...
-               foo := &pb.Foo{}
-               if err := any.UnmarshalTo(foo); err != nil {
-                 ...
-               }
-
-          The pack methods provided by protobuf library will by default use
-
-          'type.googleapis.com/full.type.name' as the type URL and the unpack
-
-          methods only use the fully qualified type name after the last '/'
-
-          in the type URL, for example "foo.bar.com/x/y.z" will yield type
-
-          name "y.z".
-
-
-
-          JSON
-
-          ====
-
-          The JSON representation of an `Any` value uses the regular
-
-          representation of the deserialized, embedded message, with an
-
-          additional field `@type` which contains the type URL. Example:
-
-              package google.profile;
-              message Person {
-                string first_name = 1;
-                string last_name = 2;
-              }
-
-              {
-                "@type": "type.googleapis.com/google.profile.Person",
-                "firstName": <string>,
-                "lastName": <string>
-              }
-
-          If the embedded message type is well-known and has a custom JSON
-
-          representation, that representation will be embedded adding a field
-
-          `value` which holds the custom JSON in addition to the `@type`
-
-          field. Example (for message [google.protobuf.Duration][]):
-
-              {
-                "@type": "type.googleapis.com/google.protobuf.Duration",
-                "value": "1.212s"
-              }
       timestamp:
         type: string
         description: >-
@@ -70356,6 +70023,7 @@ definitions:
       signer_infos:
         type: array
         items:
+          type: object
           $ref: '#/definitions/cosmos.tx.v1beta1.SignerInfo'
         description: >-
           signer_infos defines the signing modes for the required signers. The
@@ -70519,6 +70187,7 @@ definitions:
     type: object
     properties:
       tx_response:
+        description: tx_response is the queried TxResponses.
         type: object
         properties:
           height:
@@ -70603,6 +70272,7 @@ definitions:
             format: int64
             description: Amount of gas consumed by transaction.
           tx:
+            description: The request transaction bytes.
             type: object
             properties:
               '@type':
@@ -70661,110 +70331,6 @@ definitions:
 
                   used with implementation specific semantics.
             additionalProperties: {}
-            description: >-
-              `Any` contains an arbitrary serialized protocol buffer message
-              along with a
-
-              URL that describes the type of the serialized message.
-
-
-              Protobuf library provides support to pack/unpack Any values in the
-              form
-
-              of utility functions or additional generated methods of the Any
-              type.
-
-
-              Example 1: Pack and unpack a message in C++.
-
-                  Foo foo = ...;
-                  Any any;
-                  any.PackFrom(foo);
-                  ...
-                  if (any.UnpackTo(&foo)) {
-                    ...
-                  }
-
-              Example 2: Pack and unpack a message in Java.
-
-                  Foo foo = ...;
-                  Any any = Any.pack(foo);
-                  ...
-                  if (any.is(Foo.class)) {
-                    foo = any.unpack(Foo.class);
-                  }
-
-               Example 3: Pack and unpack a message in Python.
-
-                  foo = Foo(...)
-                  any = Any()
-                  any.Pack(foo)
-                  ...
-                  if any.Is(Foo.DESCRIPTOR):
-                    any.Unpack(foo)
-                    ...
-
-               Example 4: Pack and unpack a message in Go
-
-                   foo := &pb.Foo{...}
-                   any, err := anypb.New(foo)
-                   if err != nil {
-                     ...
-                   }
-                   ...
-                   foo := &pb.Foo{}
-                   if err := any.UnmarshalTo(foo); err != nil {
-                     ...
-                   }
-
-              The pack methods provided by protobuf library will by default use
-
-              'type.googleapis.com/full.type.name' as the type URL and the
-              unpack
-
-              methods only use the fully qualified type name after the last '/'
-
-              in the type URL, for example "foo.bar.com/x/y.z" will yield type
-
-              name "y.z".
-
-
-
-              JSON
-
-              ====
-
-              The JSON representation of an `Any` value uses the regular
-
-              representation of the deserialized, embedded message, with an
-
-              additional field `@type` which contains the type URL. Example:
-
-                  package google.profile;
-                  message Person {
-                    string first_name = 1;
-                    string last_name = 2;
-                  }
-
-                  {
-                    "@type": "type.googleapis.com/google.profile.Person",
-                    "firstName": <string>,
-                    "lastName": <string>
-                  }
-
-              If the embedded message type is well-known and has a custom JSON
-
-              representation, that representation will be embedded adding a
-              field
-
-              `value` which holds the custom JSON in addition to the `@type`
-
-              field. Example (for message [google.protobuf.Duration][]):
-
-                  {
-                    "@type": "type.googleapis.com/google.protobuf.Duration",
-                    "value": "1.212s"
-                  }
           timestamp:
             type: string
             description: >-
@@ -70820,11 +70386,6 @@ definitions:
 
 
               Since: cosmos-sdk 0.42.11, 0.44.5, 0.45
-        description: >-
-          TxResponse defines a structure containing relevant tx data and
-          metadata. The
-
-          tags are stringified and the log is JSON decoded.
     description: |-
       BroadcastTxResponse is the response type for the
       Service.BroadcastTx method.
@@ -70888,6 +70449,7 @@ definitions:
       txs:
         type: array
         items:
+          type: object
           $ref: '#/definitions/cosmos.tx.v1beta1.Tx'
         description: txs are the transactions in the block.
       block_id:
@@ -70995,7 +70557,7 @@ definitions:
                 type: string
                 format: byte
                 title: original proposer of the block
-            description: Header defines the structure of a Tendermint block header.
+            description: Header defines the structure of a block header.
           data:
             type: object
             properties:
@@ -71253,8 +70815,8 @@ definitions:
                                       format: byte
                                       title: original proposer of the block
                                   description: >-
-                                    Header defines the structure of a Tendermint
-                                    block header.
+                                    Header defines the structure of a block
+                                    header.
                                 commit:
                                   type: object
                                   properties:
@@ -71334,7 +70896,7 @@ definitions:
                                             format: byte
                                         title: >-
                                           PublicKey defines the keys available for
-                                          use with Tendermint Validators
+                                          use with Validators
                                       voting_power:
                                         type: string
                                         format: int64
@@ -71358,7 +70920,7 @@ definitions:
                                           format: byte
                                       title: >-
                                         PublicKey defines the keys available for
-                                        use with Tendermint Validators
+                                        use with Validators
                                     voting_power:
                                       type: string
                                       format: int64
@@ -71390,7 +70952,7 @@ definitions:
                                     format: byte
                                 title: >-
                                   PublicKey defines the keys available for use
-                                  with Tendermint Validators
+                                  with Validators
                               voting_power:
                                 type: string
                                 format: int64
@@ -71491,6 +71053,7 @@ definitions:
         $ref: '#/definitions/cosmos.tx.v1beta1.Tx'
         description: tx is the queried transaction.
       tx_response:
+        description: tx_response is the queried TxResponses.
         type: object
         properties:
           height:
@@ -71575,6 +71138,7 @@ definitions:
             format: int64
             description: Amount of gas consumed by transaction.
           tx:
+            description: The request transaction bytes.
             type: object
             properties:
               '@type':
@@ -71633,110 +71197,6 @@ definitions:
 
                   used with implementation specific semantics.
             additionalProperties: {}
-            description: >-
-              `Any` contains an arbitrary serialized protocol buffer message
-              along with a
-
-              URL that describes the type of the serialized message.
-
-
-              Protobuf library provides support to pack/unpack Any values in the
-              form
-
-              of utility functions or additional generated methods of the Any
-              type.
-
-
-              Example 1: Pack and unpack a message in C++.
-
-                  Foo foo = ...;
-                  Any any;
-                  any.PackFrom(foo);
-                  ...
-                  if (any.UnpackTo(&foo)) {
-                    ...
-                  }
-
-              Example 2: Pack and unpack a message in Java.
-
-                  Foo foo = ...;
-                  Any any = Any.pack(foo);
-                  ...
-                  if (any.is(Foo.class)) {
-                    foo = any.unpack(Foo.class);
-                  }
-
-               Example 3: Pack and unpack a message in Python.
-
-                  foo = Foo(...)
-                  any = Any()
-                  any.Pack(foo)
-                  ...
-                  if any.Is(Foo.DESCRIPTOR):
-                    any.Unpack(foo)
-                    ...
-
-               Example 4: Pack and unpack a message in Go
-
-                   foo := &pb.Foo{...}
-                   any, err := anypb.New(foo)
-                   if err != nil {
-                     ...
-                   }
-                   ...
-                   foo := &pb.Foo{}
-                   if err := any.UnmarshalTo(foo); err != nil {
-                     ...
-                   }
-
-              The pack methods provided by protobuf library will by default use
-
-              'type.googleapis.com/full.type.name' as the type URL and the
-              unpack
-
-              methods only use the fully qualified type name after the last '/'
-
-              in the type URL, for example "foo.bar.com/x/y.z" will yield type
-
-              name "y.z".
-
-
-
-              JSON
-
-              ====
-
-              The JSON representation of an `Any` value uses the regular
-
-              representation of the deserialized, embedded message, with an
-
-              additional field `@type` which contains the type URL. Example:
-
-                  package google.profile;
-                  message Person {
-                    string first_name = 1;
-                    string last_name = 2;
-                  }
-
-                  {
-                    "@type": "type.googleapis.com/google.profile.Person",
-                    "firstName": <string>,
-                    "lastName": <string>
-                  }
-
-              If the embedded message type is well-known and has a custom JSON
-
-              representation, that representation will be embedded adding a
-              field
-
-              `value` which holds the custom JSON in addition to the `@type`
-
-              field. Example (for message [google.protobuf.Duration][]):
-
-                  {
-                    "@type": "type.googleapis.com/google.protobuf.Duration",
-                    "value": "1.212s"
-                  }
           timestamp:
             type: string
             description: >-
@@ -71792,11 +71252,6 @@ definitions:
 
 
               Since: cosmos-sdk 0.42.11, 0.44.5, 0.45
-        description: >-
-          TxResponse defines a structure containing relevant tx data and
-          metadata. The
-
-          tags are stringified and the log is JSON decoded.
     description: GetTxResponse is the response type for the Service.GetTx method.
   cosmos.tx.v1beta1.GetTxsEventResponse:
     type: object
@@ -71804,6 +71259,7 @@ definitions:
       txs:
         type: array
         items:
+          type: object
           $ref: '#/definitions/cosmos.tx.v1beta1.Tx'
         description: txs is the list of queried transactions.
       tx_responses:
@@ -71893,6 +71349,7 @@ definitions:
               format: int64
               description: Amount of gas consumed by transaction.
             tx:
+              description: The request transaction bytes.
               type: object
               properties:
                 '@type':
@@ -71953,112 +71410,6 @@ definitions:
 
                     used with implementation specific semantics.
               additionalProperties: {}
-              description: >-
-                `Any` contains an arbitrary serialized protocol buffer message
-                along with a
-
-                URL that describes the type of the serialized message.
-
-
-                Protobuf library provides support to pack/unpack Any values in
-                the form
-
-                of utility functions or additional generated methods of the Any
-                type.
-
-
-                Example 1: Pack and unpack a message in C++.
-
-                    Foo foo = ...;
-                    Any any;
-                    any.PackFrom(foo);
-                    ...
-                    if (any.UnpackTo(&foo)) {
-                      ...
-                    }
-
-                Example 2: Pack and unpack a message in Java.
-
-                    Foo foo = ...;
-                    Any any = Any.pack(foo);
-                    ...
-                    if (any.is(Foo.class)) {
-                      foo = any.unpack(Foo.class);
-                    }
-
-                 Example 3: Pack and unpack a message in Python.
-
-                    foo = Foo(...)
-                    any = Any()
-                    any.Pack(foo)
-                    ...
-                    if any.Is(Foo.DESCRIPTOR):
-                      any.Unpack(foo)
-                      ...
-
-                 Example 4: Pack and unpack a message in Go
-
-                     foo := &pb.Foo{...}
-                     any, err := anypb.New(foo)
-                     if err != nil {
-                       ...
-                     }
-                     ...
-                     foo := &pb.Foo{}
-                     if err := any.UnmarshalTo(foo); err != nil {
-                       ...
-                     }
-
-                The pack methods provided by protobuf library will by default
-                use
-
-                'type.googleapis.com/full.type.name' as the type URL and the
-                unpack
-
-                methods only use the fully qualified type name after the last
-                '/'
-
-                in the type URL, for example "foo.bar.com/x/y.z" will yield type
-
-                name "y.z".
-
-
-
-                JSON
-
-                ====
-
-                The JSON representation of an `Any` value uses the regular
-
-                representation of the deserialized, embedded message, with an
-
-                additional field `@type` which contains the type URL. Example:
-
-                    package google.profile;
-                    message Person {
-                      string first_name = 1;
-                      string last_name = 2;
-                    }
-
-                    {
-                      "@type": "type.googleapis.com/google.profile.Person",
-                      "firstName": <string>,
-                      "lastName": <string>
-                    }
-
-                If the embedded message type is well-known and has a custom JSON
-
-                representation, that representation will be embedded adding a
-                field
-
-                `value` which holds the custom JSON in addition to the `@type`
-
-                field. Example (for message [google.protobuf.Duration][]):
-
-                    {
-                      "@type": "type.googleapis.com/google.protobuf.Duration",
-                      "value": "1.212s"
-                    }
             timestamp:
               type: string
               description: >-
@@ -72253,6 +71604,7 @@ definitions:
       mode_infos:
         type: array
         items:
+          type: object
           $ref: '#/definitions/cosmos.tx.v1beta1.ModeInfo'
         title: |-
           mode_infos is the corresponding modes of the signers of the multisig
@@ -72348,6 +71700,14 @@ definitions:
     type: object
     properties:
       public_key:
+        description: >-
+          public_key is the public key of the signer. It is optional for
+          accounts
+
+          that already exist in state. If unset, the verifier can use the
+          required \
+
+          signer address for this position and lookup the public key.
         type: object
         properties:
           '@type':
@@ -72403,107 +71763,6 @@ definitions:
 
               used with implementation specific semantics.
         additionalProperties: {}
-        description: >-
-          `Any` contains an arbitrary serialized protocol buffer message along
-          with a
-
-          URL that describes the type of the serialized message.
-
-
-          Protobuf library provides support to pack/unpack Any values in the
-          form
-
-          of utility functions or additional generated methods of the Any type.
-
-
-          Example 1: Pack and unpack a message in C++.
-
-              Foo foo = ...;
-              Any any;
-              any.PackFrom(foo);
-              ...
-              if (any.UnpackTo(&foo)) {
-                ...
-              }
-
-          Example 2: Pack and unpack a message in Java.
-
-              Foo foo = ...;
-              Any any = Any.pack(foo);
-              ...
-              if (any.is(Foo.class)) {
-                foo = any.unpack(Foo.class);
-              }
-
-           Example 3: Pack and unpack a message in Python.
-
-              foo = Foo(...)
-              any = Any()
-              any.Pack(foo)
-              ...
-              if any.Is(Foo.DESCRIPTOR):
-                any.Unpack(foo)
-                ...
-
-           Example 4: Pack and unpack a message in Go
-
-               foo := &pb.Foo{...}
-               any, err := anypb.New(foo)
-               if err != nil {
-                 ...
-               }
-               ...
-               foo := &pb.Foo{}
-               if err := any.UnmarshalTo(foo); err != nil {
-                 ...
-               }
-
-          The pack methods provided by protobuf library will by default use
-
-          'type.googleapis.com/full.type.name' as the type URL and the unpack
-
-          methods only use the fully qualified type name after the last '/'
-
-          in the type URL, for example "foo.bar.com/x/y.z" will yield type
-
-          name "y.z".
-
-
-
-          JSON
-
-          ====
-
-          The JSON representation of an `Any` value uses the regular
-
-          representation of the deserialized, embedded message, with an
-
-          additional field `@type` which contains the type URL. Example:
-
-              package google.profile;
-              message Person {
-                string first_name = 1;
-                string last_name = 2;
-              }
-
-              {
-                "@type": "type.googleapis.com/google.profile.Person",
-                "firstName": <string>,
-                "lastName": <string>
-              }
-
-          If the embedded message type is well-known and has a custom JSON
-
-          representation, that representation will be embedded adding a field
-
-          `value` which holds the custom JSON in addition to the `@type`
-
-          field. Example (for message [google.protobuf.Duration][]):
-
-              {
-                "@type": "type.googleapis.com/google.protobuf.Duration",
-                "value": "1.212s"
-              }
       mode_info:
         $ref: '#/definitions/cosmos.tx.v1beta1.ModeInfo'
         title: |-
@@ -74521,6 +73780,7 @@ definitions:
       length:
         type: string
         format: int64
+        description: Period duration in seconds.
       amount:
         type: array
         items:

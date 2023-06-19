@@ -27,11 +27,11 @@ type BaseSetupSuite struct {
 	forkHeight int
 }
 
-func (s *BaseSetupSuite) SetupSuite(startUpgrade, startIBC bool) {
-	s.SetupSuiteWithUpgradeAppState(startUpgrade, startIBC, nil)
+func (s *BaseSetupSuite) SetupSuite(startUpgrade, migrationChaining, startIBC bool) {
+	s.SetupSuiteWithUpgradeAppState(startUpgrade, migrationChaining, startIBC, nil)
 }
 
-func (s *BaseSetupSuite) SetupSuiteWithUpgradeAppState(startUpgrade, startIBC bool, beforeUpgradeAppStateBytes []byte) {
+func (s *BaseSetupSuite) SetupSuiteWithUpgradeAppState(startUpgrade, migrationChaining, startIBC bool, beforeUpgradeAppStateBytes []byte) {
 	s.T().Log("setting up e2e integration test suite...")
 	var (
 		err             error
@@ -41,6 +41,7 @@ func (s *BaseSetupSuite) SetupSuiteWithUpgradeAppState(startUpgrade, startIBC bo
 	if startUpgrade {
 		s.T().Log("start upgrade was true, starting upgrade setup")
 		upgradeSettings.IsEnabled = startUpgrade
+		upgradeSettings.MigrationChaining = migrationChaining
 		upgradeSettings.OldInitialAppStateBytes = beforeUpgradeAppStateBytes
 		if str := os.Getenv(upgradeVersionEnv); len(str) > 0 {
 			upgradeSettings.Version = str

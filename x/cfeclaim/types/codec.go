@@ -14,7 +14,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	legacy.RegisterAminoMsg(cdc, &MsgClaim{}, "cfeclaim/Claim")
 	legacy.RegisterAminoMsg(cdc, &MsgInitialClaim{}, "cfeclaim/InitialClaim")
 	legacy.RegisterAminoMsg(cdc, &MsgCreateCampaign{}, "cfeclaim/CreateCampaign")
-	legacy.RegisterAminoMsg(cdc, &MsgAddMissionToCampaign{}, "cfeclaim/AddMissionToCampaign")
+	legacy.RegisterAminoMsg(cdc, &MsgAddMission{}, "cfeclaim/AddMission")
 	legacy.RegisterAminoMsg(cdc, &MsgAddClaimRecords{}, "cfeclaim/AddClaimRecords")
 	legacy.RegisterAminoMsg(cdc, &MsgDeleteClaimRecord{}, "cfeclaim/DeleteClaimRecord")
 	legacy.RegisterAminoMsg(cdc, &MsgCloseCampaign{}, "cfeclaim/CloseCampaign")
@@ -27,7 +27,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgClaim{},
 		&MsgInitialClaim{},
 		&MsgCreateCampaign{},
-		&MsgAddMissionToCampaign{},
+		&MsgAddMission{},
 		&MsgAddClaimRecords{},
 		&MsgDeleteClaimRecord{},
 		&MsgCloseCampaign{},

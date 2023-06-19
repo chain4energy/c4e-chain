@@ -3,11 +3,11 @@ package chain4energy.c4echain.cfevesting;
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 
-message NewVestingAccount {
+message EventNewVestingAccount {
   string address = 1;
 }
 
-message NewVestingPool {
+message EventNewVestingPool {
   string owner = 1;
   string name = 2;
   string amount = 3;
@@ -15,21 +15,22 @@ message NewVestingPool {
   string vestingType = 5;
 }
 
-message NewVestingAccountFromVestingPool {
+message EventNewVestingPeriodFromVestingPool {
   string owner = 1;
   string address = 2;
   string vesting_pool_name = 3;
   string amount = 4;
   string restart_vesting = 5;
+  uint64 period_id = 6;
 }
 
-message WithdrawAvailable{
+message EventWithdrawAvailable{
   string owner = 1;
   string vesting_pool_name = 2;
   string amount = 3;
 }
 
-message VestingSplit {
+message EventVestingSplit {
   string source = 1;
   string destination = 2;
 }

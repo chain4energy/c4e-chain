@@ -75,7 +75,8 @@ func cfeclaimKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, block
 	)
 
 	accountKeeper := authkeeper.NewAccountKeeper(
-		cdc, authStoreKey, accParamsSubspace, authtypes.ProtoBaseAccount, commontestutils.AddHelperModuleAccountPermissions(map[string][]string{types.ModuleName: nil}), testenv.DefaultBechPrefix,
+		cdc, authStoreKey, accParamsSubspace, authtypes.ProtoBaseAccount,
+		commontestutils.AddHelperModuleAccountPermissions(map[string][]string{types.ModuleName: nil}), appparams.Bech32PrefixAccAddr,
 	)
 
 	bankKeeper := bankkeeper.NewBaseKeeper(
@@ -95,8 +96,6 @@ func cfeclaimKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, block
 		feegrantKeeper,
 		nil,
 		nil,
-		nil,
-		appparams.GetAuthority(),
 	)
 
 	header := tmproto.Header{}
@@ -104,7 +103,6 @@ func cfeclaimKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, block
 	header.Time = blockTime
 	ctx := sdk.NewContext(stateStore, header, false, log.NewNopLogger())
 	// Initialize params
-	k.SetParams(ctx, types.DefaultParams())
 
 	accountKeeper.GetModuleAccount(ctx, types.ModuleName)
 

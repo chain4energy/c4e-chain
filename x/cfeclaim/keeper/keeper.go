@@ -17,13 +17,11 @@ type (
 		storeKey storetypes.StoreKey
 		memKey   storetypes.StoreKey
 
-		accountKeeper      types.AccountKeeper
-		bankKeeper         types.BankKeeper
-		feeGrantKeeper     types.FeeGrantKeeper
-		stakingKeeper      types.StakingKeeper
-		distributionKeeper types.DistributionKeeper
-		vestingKeeper      types.CfeVestingKeeper
-		authority          string
+		accountKeeper  types.AccountKeeper
+		bankKeeper     types.BankKeeper
+		feeGrantKeeper types.FeeGrantKeeper
+		stakingKeeper  types.StakingKeeper
+		vestingKeeper  types.CfeVestingKeeper
 	}
 )
 
@@ -36,21 +34,17 @@ func NewKeeper(
 	bankKeeper types.BankKeeper,
 	feeGrantKeeper types.FeeGrantKeeper,
 	stakingKeeper types.StakingKeeper,
-	distributionKeeper types.DistributionKeeper,
 	vestingKeeper types.CfeVestingKeeper,
-	authority string,
 ) *Keeper {
 	return &Keeper{
-		cdc:                cdc,
-		storeKey:           storeKey,
-		memKey:             memKey,
-		accountKeeper:      accountKeeper,
-		bankKeeper:         bankKeeper,
-		feeGrantKeeper:     feeGrantKeeper,
-		stakingKeeper:      stakingKeeper,
-		distributionKeeper: distributionKeeper,
-		vestingKeeper:      vestingKeeper,
-		authority:          authority,
+		cdc:            cdc,
+		storeKey:       storeKey,
+		memKey:         memKey,
+		accountKeeper:  accountKeeper,
+		bankKeeper:     bankKeeper,
+		feeGrantKeeper: feeGrantKeeper,
+		stakingKeeper:  stakingKeeper,
+		vestingKeeper:  vestingKeeper,
 	}
 }
 

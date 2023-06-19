@@ -1,10 +1,12 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
 	"encoding/binary"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // AppendNewCampaign appends a campaign in the store with a new id and update the count
@@ -18,9 +20,9 @@ func (k Keeper) AppendNewCampaign(
 	// Set the ID of the appended value
 	campaign.Id = count
 
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignKeyPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CampaignKeyPrefix)
 	appendedValue := k.cdc.MustMarshal(&campaign)
-	store.Set(types.CampaignKey(
+	store.Set(types.GetUint64Key(
 		campaign.Id,
 	), appendedValue)
 
@@ -32,10 +34,10 @@ func (k Keeper) AppendNewCampaign(
 
 // SetCampaign set a specific campaignO in the store from its index
 func (k Keeper) SetCampaign(ctx sdk.Context, campaign types.Campaign) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignKeyPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CampaignKeyPrefix)
 
 	b := k.cdc.MustMarshal(&campaign)
-	store.Set(types.CampaignKey(
+	store.Set(types.GetUint64Key(
 		campaign.Id,
 	), b)
 }
@@ -45,9 +47,9 @@ func (k Keeper) GetCampaign(
 	ctx sdk.Context,
 	campaignId uint64,
 ) (val types.Campaign, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignKeyPrefix))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CampaignKeyPrefix)
 
-	b := store.Get(types.CampaignKey(
+	b := store.Get(types.GetUint64Key(
 		campaignId,
 	))
 	if b == nil {
@@ -63,15 +65,15 @@ func (k Keeper) removeCampaign(
 	ctx sdk.Context,
 	campaignId uint64,
 ) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignKeyPrefix))
-	store.Delete(types.CampaignKey(
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CampaignKeyPrefix)
+	store.Delete(types.GetUint64Key(
 		campaignId,
 	))
 }
 
-// GetCampaigns returns all campaignO
-func (k Keeper) GetCampaigns(ctx sdk.Context) (list []types.Campaign) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignKeyPrefix))
+// GetAllCampaigns returns all campaignO
+func (k Keeper) GetAllCampaigns(ctx sdk.Context) (list []types.Campaign) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.CampaignKeyPrefix)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
@@ -87,7 +89,7 @@ func (k Keeper) GetCampaigns(ctx sdk.Context) (list []types.Campaign) {
 
 func (k Keeper) GetCampaignCount(ctx sdk.Context) uint64 {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
-	byteKey := types.KeyPrefix(types.CampaignCountKey)
+	byteKey := types.CampaignCountKeyPrefix
 	bz := store.Get(byteKey)
 
 	// Count doesn't exist: no element
@@ -101,176 +103,17 @@ func (k Keeper) GetCampaignCount(ctx sdk.Context) uint64 {
 
 func (k Keeper) SetCampaignCount(ctx sdk.Context, count uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
-	byteKey := types.KeyPrefix(types.CampaignCountKey)
+	byteKey := types.CampaignCountKeyPrefix
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
 	store.Set(byteKey, bz)
 }
 
-// GetCampaign returns a campaignO from its index
-func (k Keeper) GetCampaignTotalAmount(
-	ctx sdk.Context,
-	campaignId uint64,
-) (val types.CampaignTotalAmount, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignTotalAmountKeyPrefix))
-
-	b := store.Get(types.CampaignTotalAmountKey(
-		campaignId,
-	))
-	if b == nil {
-		return val, false
+func (k Keeper) MustGetCampaign(ctx sdk.Context, campaignId uint64) (*types.Campaign, error) {
+	campaign, found := k.GetCampaign(ctx, campaignId)
+	if !found {
+		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "campaign with id %d not found", campaignId)
 	}
 
-	k.cdc.MustUnmarshal(b, &val)
-	return val, true
-}
-
-// GetCampaigns returns all campaignO
-func (k Keeper) GetAllCampaignTotalAmount(ctx sdk.Context) (list []types.CampaignTotalAmount) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignTotalAmountKeyPrefix))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
-
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var val types.CampaignTotalAmount
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		list = append(list, val)
-	}
-
-	return
-}
-
-// GetCampaign returns a campaignO from its index
-func (k Keeper) IncrementCampaignTotalAmount(
-	ctx sdk.Context,
-	claimDistrubitions types.CampaignTotalAmount,
-) (val types.CampaignTotalAmount) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignTotalAmountKeyPrefix))
-
-	b := store.Get(types.CampaignTotalAmountKey(
-		claimDistrubitions.CampaignId,
-	))
-
-	if b != nil {
-		k.cdc.MustUnmarshal(b, &val)
-		val.Amount = val.Amount.Add(claimDistrubitions.Amount...)
-	} else {
-		val = claimDistrubitions
-	}
-
-	appendedValue := k.cdc.MustMarshal(&val)
-	store.Set(types.CampaignTotalAmountKey(
-		val.CampaignId,
-	), appendedValue)
-	return val
-}
-
-// GetCampaign returns a campaignO from its index
-func (k Keeper) DecrementCampaignTotalAmount(
-	ctx sdk.Context,
-	campaignId uint64,
-	amount sdk.Coins,
-) (val types.CampaignTotalAmount) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignTotalAmountKeyPrefix))
-
-	b := store.Get(types.CampaignTotalAmountKey(
-		campaignId,
-	))
-
-	if b == nil {
-		return val
-	}
-	k.cdc.MustUnmarshal(b, &val)
-	val.Amount = val.Amount.Sub(amount...)
-
-	appendedValue := k.cdc.MustMarshal(&val)
-	store.Set(types.CampaignTotalAmountKey(
-		campaignId,
-	), appendedValue)
-	return val
-}
-
-// GetCampaign returns a campaignO from its index
-func (k Keeper) GetCampaignAmountLeft(
-	ctx sdk.Context,
-	campaignId uint64,
-) (val types.CampaignAmountLeft, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignAmountLeftPrefix))
-
-	b := store.Get(types.CampaignAmountLeftKey(
-		campaignId,
-	))
-	if b == nil {
-		return val, false
-	}
-
-	k.cdc.MustUnmarshal(b, &val)
-	return val, true
-}
-
-// GetCampaigns returns all campaignO
-func (k Keeper) GetAllCampaignAmountLeft(ctx sdk.Context) (list []types.CampaignAmountLeft) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignAmountLeftPrefix))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
-
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var val types.CampaignAmountLeft
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		list = append(list, val)
-	}
-
-	return
-}
-
-// GetCampaign returns a campaignO from its index
-func (k Keeper) IncrementCampaignAmountLeft(
-	ctx sdk.Context,
-	claimClaimsLeft types.CampaignAmountLeft,
-) (val types.CampaignAmountLeft) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignAmountLeftPrefix))
-
-	b := store.Get(types.CampaignAmountLeftKey(
-		claimClaimsLeft.CampaignId,
-	))
-
-	if b != nil {
-		k.cdc.MustUnmarshal(b, &val)
-		val.Amount = val.Amount.Add(claimClaimsLeft.Amount...)
-	} else {
-		val = claimClaimsLeft
-	}
-
-	appendedValue := k.cdc.MustMarshal(&val)
-	store.Set(types.CampaignAmountLeftKey(
-		val.CampaignId,
-	), appendedValue)
-	return val
-}
-
-// GetCampaign returns a campaignO from its index
-func (k Keeper) DecrementCampaignAmountLeft(
-	ctx sdk.Context,
-	campaignId uint64,
-	amount sdk.Coins,
-) (val types.CampaignAmountLeft) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.CampaignAmountLeftPrefix))
-
-	b := store.Get(types.CampaignAmountLeftKey(
-		campaignId,
-	))
-
-	if b == nil {
-		return val
-	}
-	k.cdc.MustUnmarshal(b, &val)
-	val.Amount = val.Amount.Sub(amount...)
-
-	appendedValue := k.cdc.MustMarshal(&val)
-	store.Set(types.CampaignAmountLeftKey(
-		campaignId,
-	), appendedValue)
-	return val
+	return &campaign, nil
 }

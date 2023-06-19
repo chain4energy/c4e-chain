@@ -4,13 +4,11 @@ import (
 	"cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"os"
 	"testing"
 	"time"
-
-	"github.com/chain4energy/c4e-chain/app/params"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/chain"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
@@ -22,16 +20,18 @@ type UpgradeSettings struct {
 	IsEnabled               bool
 	Version                 string
 	OldInitialAppStateBytes []byte
+	MigrationChaining       bool
 }
 
 type UpgradeConfigurer struct {
 	baseConfigurer
-	upgradeVersion string
+	upgradeVersion        string
+	upgradeLegacyProposal bool
 }
 
 var _ Configurer = (*UpgradeConfigurer)(nil)
 
-func NewUpgradeConfigurer(t *testing.T, chainConfigs []*chain.Config, setupTests setupFn, containerManager *containers.Manager, upgradeVersion string) Configurer {
+func NewUpgradeConfigurer(t *testing.T, chainConfigs []*chain.Config, setupTests setupFn, containerManager *containers.Manager, upgradeVersion string, upgradeLegacyProposal bool) Configurer {
 	return &UpgradeConfigurer{
 		baseConfigurer: baseConfigurer{
 			chainConfigs:     chainConfigs,
@@ -40,7 +40,8 @@ func NewUpgradeConfigurer(t *testing.T, chainConfigs []*chain.Config, setupTests
 			syncUntilHeight:  defaultSyncUntilHeight,
 			t:                t,
 		},
-		upgradeVersion: upgradeVersion,
+		upgradeVersion:        upgradeVersion,
+		upgradeLegacyProposal: upgradeLegacyProposal,
 	}
 }
 
@@ -117,7 +118,11 @@ func (uc *UpgradeConfigurer) runProposalUpgrade() error {
 					return err
 				}
 				chainConfig.UpgradePropHeight = currentHeight + int64(chainConfig.VotingPeriod) + int64(config.PropSubmitBlocks) + int64(config.PropBufferBlocks)
-				node.SubmitUpgradeProposal(uc.upgradeVersion, chainConfig.UpgradePropHeight, sdk.NewCoin(params.CoinDenom, math.NewInt(config.InitialMinDeposit)))
+				if uc.upgradeLegacyProposal { // TODO: fix after new upgrade
+					node.SubmitLegacyUpgradeProposal(uc.upgradeVersion, chainConfig.UpgradePropHeight, sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(config.InitialMinDeposit)))
+				} else {
+					node.SubmitUpgradeProposal(uc.upgradeVersion, chainConfig.UpgradePropHeight, sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(config.InitialMinDeposit)))
+				}
 				chainConfig.LatestProposalNumber += 1
 				node.DepositProposal(chainConfig.LatestProposalNumber)
 			}
@@ -166,7 +171,7 @@ func (uc *UpgradeConfigurer) upgradeContainers(chainConfig *chain.Config, propHe
 	uc.t.Logf("waiting to upgrade containers on chain %s", chainConfig.Id)
 	chainConfig.WaitUntilHeight(propHeight)
 	uc.t.Logf("upgrade height reached successful on chain %s", chainConfig.Id)
-	//chainConfig.WaitUntilHeight(propHeight + 30) // TODO: to speed up tests comment this line
+	chainConfig.WaitUntilHeight(propHeight + config.UpgradeBufferBlocks)
 	uc.t.Logf("upgrade successful on chain %s", chainConfig.Id)
 	return nil
 }

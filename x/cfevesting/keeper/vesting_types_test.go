@@ -58,15 +58,15 @@ func TestGetVestingTypeByName(t *testing.T) {
 
 	k.SetVestingTypes(ctx, vestingTypes)
 
-	vt, err := k.GetVestingType(ctx, "test1")
+	vt, err := k.MustGetVestingType(ctx, "test1")
 	require.EqualValues(t, nil, err)
-	require.EqualValues(t, vestingType1, vt)
+	require.EqualValues(t, &vestingType1, vt)
 
-	vt, err = k.GetVestingType(ctx, "test2")
+	vt, err = k.MustGetVestingType(ctx, "test2")
 	require.EqualValues(t, nil, err)
-	require.EqualValues(t, vestingType2, vt)
+	require.EqualValues(t, &vestingType2, vt)
 
-	vt, err = k.GetVestingType(ctx, "not_exist")
+	vt, err = k.MustGetVestingType(ctx, "not_exist")
 	require.EqualValues(t, fmt.Errorf("vesting type not found: not_exist"), err)
-	require.EqualValues(t, types.VestingType{}, vt)
+	require.EqualValues(t, (*types.VestingType)(nil), vt)
 }

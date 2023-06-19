@@ -7,118 +7,119 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant"
-	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
-	"strconv"
-	"time"
 )
 
-func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64, claimRecords []*types.ClaimRecord) error {
-	k.Logger(ctx).Debug("add user entries", "owner", owner, "campaignId", campaignId, "claimRecordsLength", len(claimRecords))
+func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64, claimRecordEntries []*types.ClaimRecordEntry) error {
+	k.Logger(ctx).Debug("add user entries", "owner", owner, "campaignId", campaignId, "claimRecordsLength", len(claimRecordEntries))
 	feegrantDenom := k.stakingKeeper.BondDenom(ctx)
-	vestingDenom := k.vestingKeeper.Denom(ctx)
 
-	campaign, err := k.ValidateAddClaimRecords(ctx, owner, campaignId, claimRecords)
+	campaign, err := k.ValidateAddClaimRecords(ctx, owner, campaignId, claimRecordEntries)
 	if err != nil {
 		return err
 	}
 
-	usersEntries, amountSum, err := k.validateClaimRecords(ctx, campaign, claimRecords)
+	usersEntries, amountSum, err := k.validateClaimRecordEntries(ctx, campaign, claimRecordEntries)
 	if err != nil {
 		return err
 	}
 
-	feegrantFeesSum := calculateFeegrantFeesSum(campaign.FeegrantAmount, int64(len(claimRecords)), feegrantDenom)
-	feesAndClaimRecordsAmountSum := amountSum.Add(feegrantFeesSum...)
+	feegrantSum := calculateFeegrantFeesSum(campaign.FeegrantAmount, int64(len(claimRecordEntries)), feegrantDenom)
 	ownerAddress, _ := sdk.AccAddressFromBech32(owner)
 
 	if campaign.CampaignType == types.VestingPoolCampaign {
-		if err = k.vestingKeeper.AddVestingPoolReservation(ctx, owner, campaign.VestingPoolName, campaignId, amountSum.AmountOf(vestingDenom)); err != nil {
-			return err
-		}
+		err = k.addClaimRecordsToVestingPoolCampaign(ctx, campaign, ownerAddress, feegrantSum, amountSum)
 	} else {
-		if err = k.addClaimRecordsToDefaultCampaign(ctx, ownerAddress, campaign, amountSum, feesAndClaimRecordsAmountSum); err != nil {
-			return err
-		}
+		err = k.addClaimRecordsToDefaultCampaign(ctx, ownerAddress, feegrantSum, amountSum)
 	}
-
-	err = k.setupAndSendFeegrant(ctx, ownerAddress, campaign, feegrantFeesSum, claimRecords, feegrantDenom)
 	if err != nil {
 		return err
 	}
 
-	k.IncrementCampaignTotalAmount(ctx, types.CampaignTotalAmount{
-		CampaignId: campaignId,
-		Amount:     amountSum,
-	})
-	k.IncrementCampaignAmountLeft(ctx, types.CampaignAmountLeft{
-		CampaignId: campaignId,
-		Amount:     amountSum,
-	})
+	campaign.IncrementCampaignCurrentAmount(amountSum)
+	campaign.IncrementCampaignTotalAmount(amountSum)
+	k.SetCampaign(ctx, *campaign)
+	k.Logger(ctx).Debug("increment campaign amounts", "campaignId", campaignId, "amount", amountSum.String())
+	err = k.setupAndSendFeegrant(ctx, ownerAddress, campaign, feegrantSum, claimRecordEntries, feegrantDenom)
+	if err != nil {
+		return err
+	}
+
 	for _, userEntry := range usersEntries {
 		k.SetUserEntry(ctx, *userEntry)
 	}
 
-	event := &types.AddClaimRecords{
+	event := &types.EventAddClaimRecords{
 		Owner:                   owner,
-		CampaignId:              strconv.FormatUint(campaignId, 10),
+		CampaignId:              campaignId,
 		ClaimRecordsTotalAmount: amountSum.String(),
-		ClaimRecordsNumber:      strconv.FormatInt(int64(len(claimRecords)), 10),
+		ClaimRecordsNumber:      int64(len(claimRecordEntries)),
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(event)
-	if err != nil {
+	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
 		k.Logger(ctx).Debug("add claim records emit event error", "event", event, "error", err.Error())
 	}
 
 	return nil
 }
 
-func (k Keeper) addClaimRecordsToDefaultCampaign(ctx sdk.Context, ownerAddress sdk.AccAddress, campaign *types.Campaign, amountSum sdk.Coins, feesAndClaimRecordsAmountSum sdk.Coins) error {
-	allBalances := k.bankKeeper.GetAllBalances(ctx, ownerAddress)
-	if !allBalances.IsAllGTE(feesAndClaimRecordsAmountSum) {
-		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", allBalances, feesAndClaimRecordsAmountSum)
-	}
+func (k Keeper) addClaimRecordsToVestingPoolCampaign(ctx sdk.Context, campaign *types.Campaign, ownerAddress sdk.AccAddress,
+	feegrantFeesSum sdk.Coins, amount sdk.Coins) error {
 
-	return k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, amountSum)
+	vestingDenom := k.vestingKeeper.Denom(ctx)
+	spendableCoins := k.bankKeeper.SpendableCoins(ctx, ownerAddress)
+	if !feegrantFeesSum.IsAllLTE(spendableCoins) {
+		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", spendableCoins, feegrantFeesSum)
+	}
+	return k.vestingKeeper.AddVestingPoolReservation(ctx, ownerAddress.String(), campaign.VestingPoolName, campaign.Id, amount.AmountOf(vestingDenom))
+}
+
+func (k Keeper) addClaimRecordsToDefaultCampaign(ctx sdk.Context, ownerAddress sdk.AccAddress, feegrantFeesSum sdk.Coins, amount sdk.Coins) error {
+	feesAndClaimRecordsAmountSum := amount.Add(feegrantFeesSum...)
+	spendableCoins := k.bankKeeper.SpendableCoins(ctx, ownerAddress)
+	if !feesAndClaimRecordsAmountSum.IsAllLTE(spendableCoins) {
+		return errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", spendableCoins, feesAndClaimRecordsAmountSum)
+	}
+	return k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, amount)
 }
 
 func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint64, userAddress string) error {
 	k.Logger(ctx).Debug("delete claim record", "owner", owner, "campaignId", campaignId, "userAddress", userAddress)
-	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
+	campaign, err := k.MustGetCampaign(ctx, campaignId)
 	if err != nil {
 		return err
 	}
 
-	userEntry, claimRecordAmount, err := k.validateDeleteClaimRecord(ctx, owner, campaign, userAddress)
+	userEntry, claimRecord, err := k.validateDeleteClaimRecord(ctx, owner, campaign, userAddress)
 	if err != nil {
 		return err
 	}
 
-	if err = k.sendCampaignAmountLeftToOwner(ctx, &campaign, claimRecordAmount); err != nil {
+	amount, err := k.calculateDeleteClaimRecordAmount(ctx, campaign, claimRecord)
+	if err != nil {
+		return err
+	}
+	if err = k.sendCampaignCurrentAmountToOwner(ctx, campaign, amount); err != nil {
 		return err
 	}
 
-	err = k.deleteClaimRecordSendFeegrant(ctx, &campaign, userAddress)
+	err = k.deleteClaimRecordSendFeegrant(ctx, campaign, userAddress)
 	if err != nil {
 		k.Logger(ctx).Debug("delete claim record send feegrant err", "err", err.Error())
 	}
 
-	for i, claimRecord := range userEntry.ClaimRecords {
-		if claimRecord.CampaignId == campaignId {
-			userEntry.ClaimRecords = append(userEntry.ClaimRecords[:i], userEntry.ClaimRecords[i+1:]...)
-		}
-	}
+	userEntry.DeleteClaimRecord(campaignId)
+	k.SetUserEntry(ctx, *userEntry)
 
-	k.SetUserEntry(ctx, userEntry)
-	k.DecrementCampaignTotalAmount(ctx, campaignId, claimRecordAmount)
-	k.DecrementCampaignAmountLeft(ctx, campaignId, claimRecordAmount)
+	campaign.DecrementCampaignCurrentAmount(amount)
+	campaign.DecrementCampaignTotalAmount(amount)
+	k.SetCampaign(ctx, *campaign)
+	k.Logger(ctx).Debug("delete claim record decrement campaign amounts", "campaignId", campaignId, "amount", amount)
 
-	event := &types.DeleteClaimRecord{
+	event := &types.EventDeleteClaimRecord{
 		Owner:             owner,
-		CampaignId:        strconv.FormatUint(campaignId, 10),
+		CampaignId:        campaignId,
 		UserAddress:       userAddress,
-		ClaimRecordAmount: claimRecordAmount.String(),
+		ClaimRecordAmount: amount.String(),
 	}
 	err = ctx.EventManager().EmitTypedEvent(event)
 	if err != nil {
@@ -128,55 +129,30 @@ func (k Keeper) DeleteClaimRecord(ctx sdk.Context, owner string, campaignId uint
 	return nil
 }
 
-func (k Keeper) ValidateAddClaimRecords(ctx sdk.Context, owner string, campaignId uint64, claimRecords []*types.ClaimRecord) (*types.Campaign, error) {
-	campaign, err := k.ValidateCampaignExists(ctx, campaignId)
+func (k Keeper) ValidateAddClaimRecords(ctx sdk.Context, owner string, campaignId uint64, claimRecordEntries []*types.ClaimRecordEntry) (*types.Campaign, error) {
+	campaign, err := k.MustGetCampaign(ctx, campaignId)
 	if err != nil {
 		return nil, err
 	}
-
-	if err = ValidateOwner(campaign, owner); err != nil {
+	if err = campaign.ValidateOwner(owner); err != nil {
 		return nil, err
 	}
-	if err = types.ValidateClaimRecords(claimRecords); err != nil {
+	if err = campaign.ValidateNotEnded(ctx.BlockTime()); err != nil {
 		return nil, err
 	}
-	if err = ValidateCampaignNotEnded(ctx, campaign); err != nil {
+	if err = types.ValidateClaimRecordEntries(claimRecordEntries); err != nil {
 		return nil, err
 	}
-	return &campaign, nil
+	return campaign, nil
 }
 
-func (k Keeper) ValidateCampaignWhenAddedFromVestingPool(ctx sdk.Context, owner string, vestingPoolName string,
-	lockupPeriod *time.Duration, vestingPeriod *time.Duration, free sdk.Dec) error {
-	_, vestingPool, found := k.vestingKeeper.GetAccountVestingPool(ctx, owner, vestingPoolName)
+func (k Keeper) validateClaimRecordEntries(ctx sdk.Context, campaign *types.Campaign, claimRecordEntries []*types.ClaimRecordEntry) (usersEntries []*types.UserEntry, amountSum sdk.Coins, err error) {
+	for i, claimRecord := range claimRecordEntries {
+		amountSum = amountSum.Add(claimRecord.Amount...)
 
-	if !found {
-		return errors.Wrapf(c4eerrors.ErrNotExists, "vesting pool %s not found for address %s", vestingPoolName, owner)
-	}
-
-	vestingType, err := k.vestingKeeper.GetVestingType(ctx, vestingPool.VestingType)
-	if err != nil {
-		return err
-	}
-	if lockupPeriod == nil {
-		return errors.Wrap(c4eerrors.ErrParam, "lockup period cannot be nil for vesting pool campaign")
-	}
-	if vestingPeriod == nil {
-		return errors.Wrap(c4eerrors.ErrParam, "lockup period cannot be nil for vesting pool campaign")
-	}
-	if err := vestingType.ValidateVestingPeriods(*lockupPeriod, *vestingPeriod); err != nil {
-		return err
-	}
-	return vestingType.ValidateVestingFree(free)
-}
-
-func (k Keeper) validateClaimRecords(ctx sdk.Context, campaign *types.Campaign, claimRecords []*types.ClaimRecord) (usersEntries []*types.UserEntry, entriesAmountSum sdk.Coins, err error) {
-	for i, claimRecord := range claimRecords {
-		entriesAmountSum = entriesAmountSum.Add(claimRecord.Amount...)
-
-		userEntry, err := k.addClaimRecordToUserEntry(ctx, campaign.Id, claimRecord.Address, claimRecord.Amount)
+		userEntry, err := k.addClaimRecordToUserEntry(ctx, campaign.Id, claimRecord.UserEntryAddress, claimRecord.Amount)
 		if err != nil {
-			return nil, nil, types.WrapClaimRecordIndex(err, i)
+			return nil, nil, errors.Wrapf(err, "claim record entry index %d", i)
 		}
 		usersEntries = append(usersEntries, userEntry)
 	}
@@ -195,91 +171,58 @@ func (k Keeper) addClaimRecordToUserEntry(ctx sdk.Context, campaignId uint64, ad
 	return &userEntry, nil
 }
 
-func (k Keeper) revokeFeeAllowance(ctx sdk.Context, granter sdk.Address, grantee sdk.AccAddress) error {
-	keeper, _ := (k.feeGrantKeeper).(feegrantkeeper.Keeper)
-	feegrantMsgServer := feegrantkeeper.NewMsgServerImpl(keeper)
-	msg := feegranttypes.MsgRevokeAllowance{
-		Granter: granter.String(),
-		Grantee: grantee.String(),
+func (k Keeper) SetupNewFeegrantAccount(ctx sdk.Context, campaignId uint64) sdk.AccAddress {
+	moduleName, accAddress := CreateFeegrantAccountAddress(campaignId)
+	account := k.accountKeeper.GetAccount(ctx, accAddress)
+	if account != nil {
+		return accAddress
 	}
-	_, err := feegrantMsgServer.RevokeAllowance(sdk.WrapSDKContext(ctx), &msg)
-	if err != nil {
-		return err
-	}
-	return nil
+	baseAccount := authtypes.NewBaseAccountWithAddress(accAddress)
+	moduleAccount := authtypes.NewModuleAccount(baseAccount, moduleName)
+	k.accountKeeper.SetAccount(ctx, k.accountKeeper.NewAccount(ctx, moduleAccount))
+	return accAddress
 }
 
-func (k Keeper) NewModuleAccountSet(ctx sdk.Context, campaignId uint64) *authtypes.ModuleAccount {
-	moduleAddressName, accountAddr := CreateFeegrantAccountAddress(campaignId)
-	macc := &authtypes.ModuleAccount{
-		BaseAccount: &authtypes.BaseAccount{
-			Address: accountAddr.String(),
-		},
-		Name: moduleAddressName,
+func (k Keeper) validateDeleteClaimRecord(ctx sdk.Context, owner string, campaign *types.Campaign, userAddress string) (*types.UserEntry, *types.ClaimRecord, error) {
+	if err := campaign.ValidateRemovableClaimRecords(); err != nil {
+		return nil, nil, err
 	}
-	k.accountKeeper.SetAccount(ctx, k.accountKeeper.NewAccount(ctx, macc))
-	return macc
+
+	if err := campaign.ValidateOwner(owner); err != nil {
+		return nil, nil, err
+	}
+
+	userEntry, err := k.MustGetUserEntry(ctx, userAddress)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	claimRecord, err := userEntry.MustGetClaimRecord(campaign.Id)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return &userEntry, claimRecord, nil
 }
 
-func (k Keeper) validateDeleteClaimRecord(ctx sdk.Context, owner string, campaign types.Campaign, userAddress string) (types.UserEntry, sdk.Coins, error) {
-	if campaign.Enabled == true {
-		if !campaign.RemovableClaimRecords {
-			return types.UserEntry{}, nil, errors.Wrap(sdkerrors.ErrInvalidType, "campaign must have RemovableClaimRecords flag set to true to be able to delete its entries")
-		}
-	}
-
-	if err := ValidateOwner(campaign, owner); err != nil {
-		return types.UserEntry{}, nil, err
-	}
-
-	userEntry, err := k.ValidateUserEntry(ctx, userAddress)
-	if err != nil {
-		return types.UserEntry{}, nil, err
-	}
-
-	claimRecord, err := ValidateClaimRecordExists(userEntry, campaign.Id)
-	if err != nil {
-		return types.UserEntry{}, nil, err
-	}
-
-	amount := userEntry.GetClaimRecord(campaign.Id).Amount
-
+func (k Keeper) calculateDeleteClaimRecordAmount(ctx sdk.Context, campaign *types.Campaign, claimRecord *types.ClaimRecord) (sdk.Coins, error) {
+	amount := claimRecord.Amount
 	for _, claimedMissionId := range claimRecord.ClaimedMissions {
-		mission, found := k.GetMission(ctx, campaign.Id, claimedMissionId)
-		if !found {
-			return types.UserEntry{}, nil, errors.Wrapf(sdkerrors.ErrNotFound, "mission with id %d not found", claimedMissionId)
+		mission, err := k.MustGetMission(ctx, campaign.Id, claimedMissionId)
+		if err != nil {
+			return nil, err
 		}
 		if mission.MissionType == types.MissionInitialClaim {
-			initiialClaimClaimableAmount := k.calculateInitialClaimClaimableAmount(ctx, campaign.Id, &userEntry)
+			initiialClaimClaimableAmount, _ := k.calculateInitialClaimClaimableAmount(ctx, campaign, claimRecord)
 			amount = amount.Sub(initiialClaimClaimableAmount...)
 			continue
 		}
-		for _, coin := range claimRecord.Amount {
-			weightedAmount := sdk.NewDecFromInt(coin.Amount).Mul(mission.Weight).TruncateInt()
-			amount = amount.Sub(sdk.NewCoin(coin.Denom, weightedAmount))
+		claimableFromMission, err := claimRecord.ClaimableFromMission(mission)
+		if err != nil {
+			return nil, err
 		}
+		amount = amount.Sub(claimableFromMission...)
 	}
 
-	return userEntry, amount, nil
-}
-
-func (k Keeper) ValidateUserEntry(ctx sdk.Context, userAddress string) (types.UserEntry, error) {
-	userEntry, found := k.GetUserEntry(
-		ctx,
-		userAddress,
-	)
-	if !found {
-		return types.UserEntry{}, errors.Wrapf(c4eerrors.ErrNotExists, "userEntry %s doesn't exist", userAddress)
-	}
-
-	return userEntry, nil
-}
-
-func ValidateClaimRecordExists(userEntry types.UserEntry, campaignId uint64) (claimRecordAmount *types.ClaimRecord, err error) {
-	claimRecord := userEntry.GetClaimRecord(campaignId)
-	if claimRecord == nil {
-		return nil, errors.Wrapf(c4eerrors.ErrParsing, "campaign id %d claim entry doesn't exist", campaignId)
-	}
-
-	return claimRecord, nil
+	return amount, nil
 }

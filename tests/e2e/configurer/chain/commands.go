@@ -1,50 +1,16 @@
 package chain
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
-	"github.com/chain4energy/c4e-chain/tests/e2e/util"
-	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
-	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
-	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
 	"os"
 	"regexp"
 	"strings"
-	"time"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 )
-
-func (n *NodeConfig) QueryCfevestingParams(moduleParams *cfevestingmoduletypes.QueryParamsResponse) {
-	cmd := []string{"c4ed", "query", "cfevesting", "params", "--output=json"}
-
-	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
-	require.NoError(n.t, err)
-	err = json.Unmarshal(out.Bytes(), &moduleParams)
-	require.NoError(n.t, err)
-}
-
-func (n *NodeConfig) QueryCfeminterParams(moduleParams *cfemintermoduletypes.QueryParamsResponse) {
-	cmd := []string{"c4ed", "query", "cfeminter", "params", "--output=json"}
-
-	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
-	require.NoError(n.t, err)
-	err = util.Cdc.UnmarshalJSON(out.Bytes(), moduleParams)
-	require.NoError(n.t, err)
-}
-
-func (n *NodeConfig) QueryCfedistributorParams(moduleParams *cfedistributormoduletypes.QueryParamsResponse) {
-	cmd := []string{"c4ed", "query", "cfedistributor", "params", "--output=json"}
-
-	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
-	require.NoError(n.t, err)
-	err = json.Unmarshal(out.Bytes(), &moduleParams)
-	require.NoError(n.t, err)
-}
 
 func (n *NodeConfig) SubmitDepositAndVoteOnProposal(proposalJson, from string, chainConfig *Config) {
 	n.SubmitParamChangeProposal(proposalJson, from)
@@ -65,7 +31,7 @@ func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
 	err = f.Close()
 	require.NoError(n.t, err)
 
-	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", ".c4e-chain/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", ".c4e-chain/param_change_proposal.json", formatFromFlag(from)}
 
 	_, _, err = n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
@@ -73,26 +39,6 @@ func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
 	require.NoError(n.t, err)
 
 	n.LogActionF("successfully submitted param change proposal")
-}
-
-func (n *NodeConfig) AddClaimRecords(campaignId, proposalJson, from string) {
-	n.LogActionF("add user entries %s", proposalJson)
-	localProposalFile := n.ConfigDir + "/user_entries.json"
-	f, err := os.Create(localProposalFile)
-	require.NoError(n.t, err)
-	_, err = f.WriteString(proposalJson)
-	require.NoError(n.t, err)
-	err = f.Close()
-	require.NoError(n.t, err)
-
-	cmd := []string{"c4ed", "tx", "cfeclaim", "add-claim-records", campaignId, ".c4e-chain/user_entries.json", fmt.Sprintf("--from=%s", from)}
-
-	_, _, err = n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
-	require.NoError(n.t, err)
-	err = os.Remove(localProposalFile)
-	require.NoError(n.t, err)
-
-	n.LogActionF("successfully addedclaim records")
 }
 
 func (n *NodeConfig) SubmitParamChangeNotValidProposal(proposalJson, from, errorMessage string) {
@@ -105,7 +51,7 @@ func (n *NodeConfig) SubmitParamChangeNotValidProposal(proposalJson, from, error
 	err = f.Close()
 	require.NoError(n.t, err)
 
-	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", ".c4e-chain/param_change_proposal.json", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", ".c4e-chain/param_change_proposal.json", formatFromFlag(from)}
 
 	_, _, err = n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorMessage)
 	require.NoError(n.t, err)
@@ -116,7 +62,7 @@ func (n *NodeConfig) SubmitParamChangeNotValidProposal(proposalJson, from, error
 func (n *NodeConfig) FailIBCTransfer(from, recipient, amount string) {
 	n.LogActionF("IBC sending %s from %s to %s", amount, from, recipient)
 
-	cmd := []string{"c4ed", "tx", "ibc-transfer", "transfer", "transfer", "channel-0", recipient, amount, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "ibc-transfer", "transfer", "transfer", "channel-0", recipient, amount, formatFromFlag(from)}
 
 	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, "rate limit exceeded")
 	require.NoError(n.t, err)
@@ -126,15 +72,23 @@ func (n *NodeConfig) FailIBCTransfer(from, recipient, amount string) {
 
 func (n *NodeConfig) SubmitUpgradeProposal(upgradeVersion string, upgradeHeight int64, initialDeposit sdk.Coin) {
 	n.LogActionF("submitting upgrade proposal %s for height %d", upgradeVersion, upgradeHeight)
-	cmd := []string{"c4ed", "tx", "gov", "submit-legacy-proposal", "software-upgrade", upgradeVersion, fmt.Sprintf("--title=\"%s upgrade\"", upgradeVersion), "--description=\"upgrade proposal submission\"", fmt.Sprintf("--upgrade-height=%d", upgradeHeight), "--upgrade-info=\"\"", "--from=val", fmt.Sprintf("--deposit=%s", initialDeposit), "--no-validate"}
-	fmt.Println(cmd)
+	cmd := []string{"c4ed", "tx", "gov", "submit-legacy-proposal", "software-upgrade", upgradeVersion, fmt.Sprintf("--title=\"%s upgrade\"", upgradeVersion), "--description=\"upgrade proposal submission\"", fmt.Sprintf("--upgrade-height=%d", upgradeHeight), "--upgrade-info=\"\"", formatFromFlag("val"), formatDepositFlag(initialDeposit), "--no-validate"}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully submitted upgrade proposal")
 }
+
+func (n *NodeConfig) SubmitLegacyUpgradeProposal(upgradeVersion string, upgradeHeight int64, initialDeposit sdk.Coin) {
+	n.LogActionF("submitting upgrade proposal %s for height %d", upgradeVersion, upgradeHeight)
+	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "software-upgrade", upgradeVersion, fmt.Sprintf("--title=\"%s upgrade\"", upgradeVersion), "--description=\"upgrade proposal submission\"", fmt.Sprintf("--upgrade-height=%d", upgradeHeight), "--upgrade-info=\"\"", formatFromFlag("val"), formatDepositFlag(initialDeposit)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	n.LogActionF("successfully submitted upgrade proposal")
+}
+
 func (n *NodeConfig) SubmitTextProposal(text string, initialDeposit sdk.Coin, isExpedited bool) {
 	n.LogActionF("submitting text gov proposal")
-	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "--type=text", fmt.Sprintf("--title=\"%s\"", text), "--description=\"test text proposal\"", "--from=val", fmt.Sprintf("--deposit=%s", initialDeposit)}
+	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "--type=text", fmt.Sprintf("--title=\"%s\"", text), "--description=\"test text proposal\"", formatFromFlag("val"), formatDepositFlag(initialDeposit)}
 	if isExpedited {
 		cmd = append(cmd, "--is-expedited=true")
 	}
@@ -145,8 +99,8 @@ func (n *NodeConfig) SubmitTextProposal(text string, initialDeposit sdk.Coin, is
 
 func (n *NodeConfig) DepositProposal(proposalNumber int) {
 	n.LogActionF("depositing on proposal: %d", proposalNumber)
-	deposit := sdk.NewCoin(params.CoinDenom, config.MinDepositValue)
-	cmd := []string{"c4ed", "tx", "gov", "deposit", fmt.Sprintf("%d", proposalNumber), deposit.String(), "--from=val"}
+	deposit := sdk.NewCoin(params.MicroC4eUnit, config.MinDepositValue)
+	cmd := []string{"c4ed", "tx", "gov", "deposit", fmt.Sprintf("%d", proposalNumber), deposit.String(), formatFromFlag("val")}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully deposited on proposal %d", proposalNumber)
@@ -154,7 +108,7 @@ func (n *NodeConfig) DepositProposal(proposalNumber int) {
 
 func (n *NodeConfig) VoteYesProposal(from string, proposalNumber int) {
 	n.LogActionF("voting yes on proposal: %d", proposalNumber)
-	cmd := []string{"c4ed", "tx", "gov", "vote", fmt.Sprintf("%d", proposalNumber), "yes", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gov", "vote", fmt.Sprintf("%d", proposalNumber), "yes", formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully voted yes on proposal %d", proposalNumber)
@@ -162,7 +116,7 @@ func (n *NodeConfig) VoteYesProposal(from string, proposalNumber int) {
 
 func (n *NodeConfig) VoteNoProposal(from string, proposalNumber int) {
 	n.LogActionF("voting no on proposal: %d", proposalNumber)
-	cmd := []string{"c4ed", "tx", "gov", "vote", fmt.Sprintf("%d", proposalNumber), "no", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "gov", "vote", fmt.Sprintf("%d", proposalNumber), "no", formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully voted no on proposal: %d", proposalNumber)
@@ -170,10 +124,18 @@ func (n *NodeConfig) VoteNoProposal(from string, proposalNumber int) {
 
 func (n *NodeConfig) BankSend(amount string, sendAddress string, receiveAddress string) {
 	n.LogActionF("bank sending %s from address %s to %s", amount, sendAddress, receiveAddress)
-	cmd := []string{"c4ed", "tx", "bank", "send", sendAddress, receiveAddress, amount, "--from=val"}
+	cmd := []string{"c4ed", "tx", "bank", "send", sendAddress, receiveAddress, amount, formatFromFlag("val")}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully sent bank sent %s from address %s to %s", amount, sendAddress, receiveAddress)
+}
+
+func (n *NodeConfig) BankSendBaseBalanceFromNode(receiveAddress string) {
+	n.LogActionF("bank sending %s from address %s to %s", config.BaseBalance, n.PublicAddress, receiveAddress)
+	cmd := []string{"c4ed", "tx", "bank", "send", n.PublicAddress, receiveAddress, config.BaseBalance.String(), formatFromFlag("val")}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	n.LogActionF("successfully sent bank sent %s from address %s to %s", config.BaseBalance, n.PublicAddress, receiveAddress)
 }
 
 func (n *NodeConfig) CreateWallet(walletName string) string {
@@ -200,29 +162,9 @@ func (n *NodeConfig) GetWallet(walletName string) string {
 	return walletAddr
 }
 
-func (n *NodeConfig) QueryPropStatusTimed(proposalNumber int, desiredStatus string, totalTime chan time.Duration) {
-	start := time.Now()
-	require.Eventually(
-		n.t,
-		func() bool {
-			status, err := n.QueryPropStatus(proposalNumber)
-			if err != nil {
-				return false
-			}
-
-			return status == desiredStatus
-		},
-		1*time.Minute,
-		10*time.Millisecond,
-		"C4e node failed to retrieve prop tally",
-	)
-	elapsed := time.Since(start)
-	totalTime <- elapsed
-}
-
 func (n *NodeConfig) CreateVestingPool(vestingPoolName, amount, duration, vestinType, from string) {
 	n.LogActionF("creating vesting pool")
-	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-pool", vestingPoolName, amount, duration, vestinType, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-pool", vestingPoolName, amount, duration, vestinType, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
@@ -240,7 +182,7 @@ func (n *NodeConfig) SendToVestingAccount(fromAddress, toAddress, vestingPoolNam
 
 func (n *NodeConfig) WithdrawAllAvailable(from string) {
 	n.LogActionF("withdraw all avaliable")
-	cmd := []string{"c4ed", "tx", "cfevesting", "withdraw-all-available", fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfevesting", "withdraw-all-available", formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
@@ -249,7 +191,7 @@ func (n *NodeConfig) WithdrawAllAvailable(from string) {
 
 func (n *NodeConfig) CreateVestingAccount(toAddress string, amount string, startTime, endTime, from string) {
 	n.LogActionF("creating vesting account")
-	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-account", toAddress, amount, startTime, endTime, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfevesting", "create-vesting-account", toAddress, amount, startTime, endTime, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
@@ -258,7 +200,7 @@ func (n *NodeConfig) CreateVestingAccount(toAddress string, amount string, start
 
 func (n *NodeConfig) SplitVesting(toAddress string, amount string, from string) {
 	n.LogActionF("split vesting")
-	cmd := []string{"c4ed", "tx", "cfevesting", "split-vesting", toAddress, amount, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfevesting", "split-vesting", toAddress, amount, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
@@ -267,16 +209,14 @@ func (n *NodeConfig) SplitVesting(toAddress string, amount string, from string) 
 
 func (n *NodeConfig) SplitVestingError(toAddress string, amount string, from, errorString string) {
 	n.LogActionF("split vesting")
-	cmd := []string{"c4ed", "tx", "cfevesting", "split-vesting", toAddress, amount, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfevesting", "split-vesting", toAddress, amount, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
 	require.NoError(n.t, err)
-
-	n.LogActionF("successfully splitted vesting to account %s", toAddress)
 }
 
 func (n *NodeConfig) MoveAvailableVesting(toAddress string, from string) {
-	n.LogActionF("creating vesting account")
-	cmd := []string{"c4ed", "tx", "cfevesting", "move-available-vesting", toAddress, fmt.Sprintf("--from=%s", from)}
+	n.LogActionF("move available vesting")
+	cmd := []string{"c4ed", "tx", "cfevesting", "move-available-vesting", toAddress, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
@@ -284,17 +224,15 @@ func (n *NodeConfig) MoveAvailableVesting(toAddress string, from string) {
 }
 
 func (n *NodeConfig) MoveAvailableVestingError(toAddress, from, errorString string) {
-	n.LogActionF("creating vesting account")
-	cmd := []string{"c4ed", "tx", "cfevesting", "move-available-vesting", toAddress, fmt.Sprintf("--from=%s", from)}
+	n.LogActionF("move available vesting error")
+	cmd := []string{"c4ed", "tx", "cfevesting", "move-available-vesting", toAddress, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
 	require.NoError(n.t, err)
-
-	n.LogActionF("successfully moved all available vesting to account %s", toAddress)
 }
 
 func (n *NodeConfig) MoveAvailableVestingByDenoms(toAddress string, denoms string, from string) {
 	n.LogActionF("move available vesting by denoms")
-	cmd := []string{"c4ed", "tx", "cfevesting", "move-available-vesting-by-denoms", toAddress, denoms, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfevesting", "move-available-vesting-by-denoms", toAddress, denoms, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
@@ -303,81 +241,190 @@ func (n *NodeConfig) MoveAvailableVestingByDenoms(toAddress string, denoms strin
 
 func (n *NodeConfig) MoveAvailableVestingByDenomsError(toAddress string, denoms string, from, errorString string) {
 	n.LogActionF("move available vesting by denoms")
-	cmd := []string{"c4ed", "tx", "cfevesting", "move-available-vesting-by-denoms", toAddress, denoms, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfevesting", "move-available-vesting-by-denoms", toAddress, denoms, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
 	require.NoError(n.t, err)
-
-	n.LogActionF("successfully moved all available vesting by denoms to account %s", toAddress)
 }
 
-func (n *NodeConfig) CreateCampaign(name, description, campaignType, feegrantAmount, initialClaimFreeAmount, startTime, endtime, lockupPeriod, vestingPeriod, vestingPoolName, from string) {
+func (n *NodeConfig) CreateCampaign(name, description, campaignType, removableClaimRecords, feegrantAmount, initialClaimFreeAmount, free, startTime, endtime, lockupPeriod, vestingPeriod, vestingPoolName, from string) (campaignId uint64) {
 	n.LogActionF("creating campaign")
-	cmd := []string{"c4ed", "tx", "cfeclaim", "create-campaign", name, description, campaignType, feegrantAmount, initialClaimFreeAmount, startTime, endtime, lockupPeriod, vestingPeriod, vestingPoolName, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfeclaim", "create-campaign", name, description, campaignType, removableClaimRecords, feegrantAmount, initialClaimFreeAmount, free, startTime, endtime, lockupPeriod, vestingPeriod, vestingPoolName, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
-
 	n.LogActionF("successfully created campaign %s", name)
+	return n.QueryLastCampaignsId()
 }
 
-func (n *NodeConfig) AddUserEntriesToCampaign(campaignId, claimRecordsJsonFile, from string) {
-	n.LogActionF("add claim records")
-	cmd := []string{"c4ed", "tx", "cfeclaim", "add-claim-records", campaignId, claimRecordsJsonFile, fmt.Sprintf("--from=%s", from)}
-	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+func (n *NodeConfig) CreateCampaignError(name, description, campaignType, removableClaimRecords, feegrantAmount, initialClaimFreeAmount, free, startTime, endtime, lockupPeriod, vestingPeriod, vestingPoolName, from, errorString string) {
+	n.LogActionF("creating campaign")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "create-campaign", name, description, campaignType, removableClaimRecords, feegrantAmount, initialClaimFreeAmount, free, startTime, endtime, lockupPeriod, vestingPeriod, vestingPoolName, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) AddClaimRecords(campaignId, claimRecordsJsonFile, from string) {
+	n.LogActionF("add user entries %s", claimRecordsJsonFile)
+	localProposalFile := n.ConfigDir + "/user_entries.json"
+	f, err := os.Create(localProposalFile)
+	require.NoError(n.t, err)
+	_, err = f.WriteString(claimRecordsJsonFile)
+	require.NoError(n.t, err)
+	err = f.Close()
 	require.NoError(n.t, err)
 
-	n.LogActionF("successfully added user entries to campaign %s", campaignId)
+	cmd := []string{"c4ed", "tx", "cfeclaim", "add-claim-records", campaignId, ".c4e-chain/user_entries.json", formatFromFlag(from)}
+
+	_, _, err = n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	err = os.Remove(localProposalFile)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully addedclaim records")
 }
 
-func (n *NodeConfig) AddMissionToCampaign(campaignId, name, description, missionType, weight, claimStartDate, from string) {
+func (n *NodeConfig) AddClaimRecordsError(campaignId, claimRecordsJsonFile, from, errorString string) {
+	n.LogActionF("add user entries %s", claimRecordsJsonFile)
+	localProposalFile := n.ConfigDir + "/user_entries.json"
+	f, err := os.Create(localProposalFile)
+	require.NoError(n.t, err)
+	_, err = f.WriteString(claimRecordsJsonFile)
+	require.NoError(n.t, err)
+	err = f.Close()
+	require.NoError(n.t, err)
+
+	cmd := []string{"c4ed", "tx", "cfeclaim", "add-claim-records", campaignId, ".c4e-chain/user_entries.json", formatFromFlag(from)}
+
+	_, _, err = n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+	err = os.Remove(localProposalFile)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) AddMission(campaignId, name, description, missionType, weight, claimStartDate, from string) {
 	n.LogActionF("add mission to campaign")
-	cmd := []string{"c4ed", "tx", "cfeclaim", "add-mission-to-campaign", campaignId, name, description, missionType, weight, claimStartDate, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfeclaim", "add-mission", campaignId, name, description, missionType, weight, claimStartDate, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
 	n.LogActionF("successfully add new mission %s to campaign %s", name, campaignId)
 }
 
+func (n *NodeConfig) AddMissionError(campaignId, name, description, missionType, weight, claimStartDate, from, errorString string) {
+	n.LogActionF("add mission to campaign")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "add-mission", campaignId, name, description, missionType, weight, claimStartDate, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
 func (n *NodeConfig) EnableCampaign(campaignId, optionalStartTime, optionalEndTime, from string) {
 	n.LogActionF("start campaign")
-	cmd := []string{"c4ed", "tx", "cfeclaim", "start-campaign", campaignId, optionalStartTime, optionalEndTime, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfeclaim", "enable-campaign", campaignId, optionalStartTime, optionalEndTime, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
 	n.LogActionF("successfully started campaign %s", campaignId)
 }
 
+func (n *NodeConfig) EnableCampaignError(campaignId, optionalStartTime, optionalEndTime, from, errorString string) {
+	n.LogActionF("start campaign")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "enable-campaign", campaignId, optionalStartTime, optionalEndTime, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
 func (n *NodeConfig) CloseCampaign(campaignId, from string) {
 	n.LogActionF("close campaign")
-	cmd := []string{"c4ed", "tx", "cfeclaim", "close-campaign", campaignId, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfeclaim", "close-campaign", campaignId, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
 	n.LogActionF("successfully closed campaign %s", campaignId)
 }
 
+func (n *NodeConfig) CloseCampaignError(campaignId, from, errorString string) {
+	n.LogActionF("close campaign")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "close-campaign", campaignId, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
 func (n *NodeConfig) ClaimMission(campaignId, missionId, from string) {
 	n.LogActionF("claim mission")
-	cmd := []string{"c4ed", "tx", "cfeclaim", "claim", campaignId, missionId, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfeclaim", "claim", campaignId, missionId, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
 	n.LogActionF("successfully claimed mission %s from campaign %s", missionId, campaignId)
 }
 
-func (n *NodeConfig) ClaimInitialMission(campaignId, optionalAddressToClaim, from string) {
+func (n *NodeConfig) ClaimMissionError(campaignId, missionId, from, errorString string) {
+	n.LogActionF("claim mission")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "claim", campaignId, missionId, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) ClaimInitialMission(campaignId, destinationAddress, from string) {
 	n.LogActionF("claim initial mission")
-	cmd := []string{"c4ed", "tx", "cfeclaim", "initial-claim", campaignId, optionalAddressToClaim, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "cfeclaim", "initial-claim", campaignId, destinationAddress, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
-	n.LogActionF("successfully claimed initial mission from campaign %s with optional address %s", campaignId, optionalAddressToClaim)
+	n.LogActionF("successfully claimed initial mission from campaign %s with optional address %s", campaignId, destinationAddress)
+}
+
+func (n *NodeConfig) ClaimInitialMissionError(campaignId, destinationAddress, from, errorString string) {
+	n.LogActionF("claim initial mission error")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "initial-claim", campaignId, destinationAddress, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) DeleteClaimRecord(campaignId, userAddress, from string) {
+	n.LogActionF("delete claim record")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "delete-claim-record", campaignId, userAddress, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully deleted claim %s record from campaign with id %d", userAddress, campaignId)
+}
+
+func (n *NodeConfig) DeleteClaimRecordError(campaignId, userEntryAddress, from, errorString string) {
+	n.LogActionF("delete claim record error")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "delete-claim-record", campaignId, userEntryAddress, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) RemoveCampaign(campaignId, from string) {
+	n.LogActionF("remove campaign")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "remove-campaign", campaignId, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully removed campaign with id %d", campaignId)
+}
+
+func (n *NodeConfig) RemoveCampaignError(campaignId, from, errorString string) {
+	n.LogActionF("remove campaign error")
+	cmd := []string{"c4ed", "tx", "cfeclaim", "remove-campaign", campaignId, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
 }
 
 func (n *NodeConfig) DelegateToValidator(validatorAddress, amount, from string) {
 	n.LogActionF("delegate to validator")
-	cmd := []string{"c4ed", "tx", "staking", "delegate", validatorAddress, amount, fmt.Sprintf("--from=%s", from)}
+	cmd := []string{"c4ed", "tx", "staking", "delegate", validatorAddress, amount, formatFromFlag(from)}
 	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 
 	n.LogActionF("successfully delegated %s to validator %s", amount, validatorAddress)
+}
+
+func formatFromFlag(from string) string {
+	return fmt.Sprintf("--from=%s", from)
+}
+
+func formatDepositFlag(desposit sdk.Coin) string {
+	return fmt.Sprintf("--deposit=%s", desposit)
 }

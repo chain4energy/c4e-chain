@@ -21,12 +21,15 @@ var _ govtypes.GovHooks = MissionVoteHooks{}
 func (h MissionVoteHooks) AfterProposalVote(ctx sdk.Context, _ uint64, voterAddr sdk.AccAddress) {
 	missions := h.k.GetAllMission(ctx)
 	for _, mission := range missions {
-		// TODO error handling
 		if mission.MissionType == types.MissionVote {
-			_ = h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, voterAddr.String())
+			if err := h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, voterAddr.String()); err != nil {
+				h.k.Logger(ctx).Debug("mission vote hook unsuccessful", "info", err)
+			}
 		}
 	}
 }
+
+// Below are the other hooks used by GovHooks interface, they are not used by this module
 
 // AfterProposalSubmission implements GovHooks
 func (h MissionVoteHooks) AfterProposalSubmission(_ sdk.Context, _ uint64) {

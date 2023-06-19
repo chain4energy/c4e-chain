@@ -34,7 +34,7 @@ func (k msgServer) CreateVestingPool(goCtx context.Context, msg *types.MsgCreate
 		}()
 	}
 
-	event := &types.NewVestingPool{
+	event := &types.EventNewVestingPool{
 		Owner:       msg.Owner,
 		Name:        msg.Name,
 		Amount:      msg.Amount.String() + denom,

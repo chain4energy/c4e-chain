@@ -5,7 +5,6 @@ import (
 	"fmt"
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
@@ -17,127 +16,50 @@ const (
 	vPool2 = "v-pool-2"
 )
 
-func TestCampaigns(t *testing.T) {
+func TestCreateCampaign(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+}
 
-	correctName := "Name"
-	correctDescription := "Description"
-	startTime := testenv.TestEnvTime
-	endTime := startTime.Add(time.Hour)
-	lockupPeriod := time.Hour
-	vestingPeriod := time.Hour
+func TestCreateCampaignEmptyName(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-	for _, tc := range []struct {
-		desc                   string
-		Name                   string
-		Description            string
-		InitialClaimFreeAmount math.Int
-		FeegrantAmount         math.Int
-		StartTime              time.Time
-		EndTime                time.Time
-		LockupPeriod           time.Duration
-		VestingPeriod          time.Duration
-		CampaignType           types.CampaignType
-		vestingPoolName        string
-		blockTime              time.Time
-		error                  bool
-		expectedError          string
-	}{
-		{
-			desc:            "create campaign",
-			Name:            correctName,
-			Description:     correctDescription,
-			StartTime:       startTime,
-			EndTime:         endTime,
-			LockupPeriod:    lockupPeriod,
-			VestingPeriod:   vestingPeriod,
-			CampaignType:    types.DefaultCampaign,
-			vestingPoolName: "",
-			blockTime:       startTime,
-			error:           false,
-			expectedError:   "",
-		},
-		{
-			desc:            "create campaign - empty name",
-			Name:            "",
-			Description:     correctDescription,
-			StartTime:       startTime,
-			EndTime:         endTime,
-			LockupPeriod:    lockupPeriod,
-			VestingPeriod:   vestingPeriod,
-			CampaignType:    types.DefaultCampaign,
-			vestingPoolName: "",
-			blockTime:       startTime,
-			error:           true,
-			expectedError:   "campaign name is empty: wrong param value",
-		},
-		{
-			desc:            "create campaign - start time equal end time",
-			Name:            correctName,
-			Description:     correctDescription,
-			StartTime:       startTime,
-			EndTime:         startTime,
-			LockupPeriod:    lockupPeriod,
-			VestingPeriod:   vestingPeriod,
-			CampaignType:    types.DefaultCampaign,
-			vestingPoolName: "",
-			blockTime:       startTime,
-			error:           true,
-			expectedError:   fmt.Sprintf("start time is equal to end time (%s = %s): wrong param value", startTime, startTime),
-		},
-		{
-			desc:            "create campaign - start time after end time",
-			Name:            correctName,
-			Description:     correctDescription,
-			StartTime:       startTime.Add(time.Hour),
-			EndTime:         startTime,
-			LockupPeriod:    lockupPeriod,
-			VestingPeriod:   vestingPeriod,
-			CampaignType:    types.DefaultCampaign,
-			vestingPoolName: "",
-			blockTime:       startTime,
-			error:           true,
-			expectedError:   fmt.Sprintf("start time is after end time (%s > %s): wrong param value", startTime.Add(time.Hour), startTime),
-		},
-		{
-			desc:            "create campaign - start time in the past",
-			Name:            correctName,
-			Description:     correctDescription,
-			StartTime:       startTime.Add(-time.Hour),
-			EndTime:         startTime,
-			LockupPeriod:    lockupPeriod,
-			VestingPeriod:   vestingPeriod,
-			CampaignType:    types.DefaultCampaign,
-			vestingPoolName: "",
-			blockTime:       startTime,
-			error:           true,
-			expectedError:   fmt.Sprintf("start time in the past error (%s < %s): wrong param value", startTime.Add(-time.Hour), startTime.UTC()),
-		},
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
-			testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-			testHelper.SetContextBlockTime(tc.blockTime)
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.Name = ""
+	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, "campaign name is empty: wrong param value")
+}
 
-			campaign := types.Campaign{
-				Name:                   tc.Name,
-				Description:            tc.Description,
-				StartTime:              tc.StartTime,
-				EndTime:                tc.EndTime,
-				LockupPeriod:           tc.LockupPeriod,
-				VestingPeriod:          tc.VestingPeriod,
-				CampaignType:           tc.CampaignType,
-				VestingPoolName:        tc.vestingPoolName,
-				InitialClaimFreeAmount: tc.InitialClaimFreeAmount,
-				FeegrantAmount:         tc.FeegrantAmount,
-			}
+func TestCreateCampaignEmptyDescription(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
-			if tc.error {
-				testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, tc.expectedError)
-			} else {
-				testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-			}
-		})
-	}
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.Description = ""
+	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, "description is empty: wrong param value")
+}
+
+func TestCreateCampaignStartTimeAfterEndTime(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	startTimeAfterEndTime := campaign.EndTime.Add(time.Hour)
+	campaign.StartTime = startTimeAfterEndTime
+	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("start time is after end time (%s > %s): wrong param value", campaign.StartTime, campaign.EndTime))
+}
+
+func TestCreateCampaignStartTimeInThePast(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	blockTime := campaign.EndTime.Add(time.Minute)
+	testHelper.SetContextBlockTime(blockTime)
+	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("end time in the past error (%s < %s): wrong param value", campaign.EndTime, blockTime))
 }
 
 func TestCreateManyClaimCampaigns(t *testing.T) {
@@ -168,7 +90,7 @@ func TestCreateCampaignNegativeFeegrantAmount(t *testing.T) {
 	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, fmt.Sprintf("feegrant amount (%s) cannot be negative: wrong param value", campaign.FeegrantAmount))
 }
 
-func TestCreateCampaignAndStart(t *testing.T) {
+func TestCreateCampaignAndEnable(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -177,7 +99,39 @@ func TestCreateCampaignAndStart(t *testing.T) {
 	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
 }
 
-func TestCreateManyCampaignsAndStart(t *testing.T) {
+func TestCreateCampaignAndEnableUpdatedTimes(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	startTime := campaign.StartTime.Add(time.Hour)
+	endTime := startTime.Add(time.Hour)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, &startTime, &endTime)
+}
+
+func TestCreateCampaignAndEnableStartTimeAfterEndTime(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	startTime := campaign.StartTime.Add(time.Hour)
+	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[0].String(), 0, &startTime, nil, fmt.Sprintf("start time is after end time (%s > %s): wrong param value", startTime, campaign.EndTime))
+}
+
+func TestCreateCampaignAndEnableEndTimeBeforeBlockTime(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+
+	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
+	campaign := prepareTestCampaign(testHelper.Context)
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	startTime := testHelper.Context.BlockTime().Add(-time.Hour * 10)
+	endTime := startTime.Add(time.Hour)
+	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[0].String(), 0, &startTime, &endTime, fmt.Sprintf("end time in the past error (%s < %s): wrong param value", endTime, testHelper.Context.BlockTime()))
+}
+
+func TestCreateManyCampaignsAndEnable(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
@@ -188,24 +142,24 @@ func TestCreateManyCampaignsAndStart(t *testing.T) {
 	}
 }
 
-func TestCreateCampaignAndStartTimeAfterTimeNowError(t *testing.T) {
+func TestCreateCampaignAndEnableTimeAfterTimeNowError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	blockTime := campaign.StartTime.Add(time.Minute)
+	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[0].String(), 0, nil, nil, fmt.Sprintf("start time in the past error (%s < %s): wrong param value", campaign.StartTime, blockTime))
+	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[0].String(), 0, nil, nil, fmt.Sprintf("end time in the past error (%s < %s): wrong param value", campaign.EndTime, blockTime))
 }
 
-func TestCreateCampaignAndStartOwnerNotValidError(t *testing.T) {
+func TestCreateCampaignAndEnableOwnerNotValidError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[1].String(), 0, nil, nil, "you are not the campaign owner: wrong transaction signer")
+	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[1].String(), 0, nil, nil, fmt.Sprintf("address %s is not owner of campaign with id %d: tx intended signer does not match the given signer", acountsAddresses[1], 0))
 }
 
 func TestCreateCampaignCampaignDoesntExistError(t *testing.T) {
@@ -214,7 +168,7 @@ func TestCreateCampaignCampaignDoesntExistError(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[0].String(), 1, nil, nil, "campaign with id 1 not found: entity does not exist")
+	testHelper.C4eClaimUtils.EnableCampaignError(acountsAddresses[0].String(), 1, nil, nil, "campaign with id 1 not found: not found")
 }
 
 func TestCreateCampaignCampaignEnabledError(t *testing.T) {
@@ -250,7 +204,7 @@ func TestCreateVestingPoolCampaignWrongPoolName(t *testing.T) {
 	campaign.CampaignType = types.VestingPoolCampaign
 	campaign.VestingPoolName = vPool2
 
-	testHelper.C4eClaimUtils.CreateCampaignError(ownerAddress.String(), campaign, fmt.Sprintf("vesting pool %s not found for address %s: entity does not exist", vPool2, acountsAddresses[0]))
+	testHelper.C4eClaimUtils.CreateCampaignError(ownerAddress.String(), campaign, fmt.Sprintf("vesting pool %s not found for address %s: not found", vPool2, acountsAddresses[0]))
 }
 
 func TestCreateVestingPoolCampaignWrongVestingPeriod(t *testing.T) {
@@ -290,7 +244,7 @@ func TestCreateVestingPoolCampaignWrongOwner(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.CampaignType = types.VestingPoolCampaign
 	campaign.VestingPoolName = vPool1
-	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[1].String(), campaign, fmt.Sprintf("vesting pool %s not found for address %s: entity does not exist", vPool1, acountsAddresses[1]))
+	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[1].String(), campaign, fmt.Sprintf("vesting pool %s not found for address %s: not found", vPool1, acountsAddresses[1]))
 }
 
 func TestCreateVestingPoolCampaignWrongType(t *testing.T) {
@@ -311,9 +265,9 @@ func TestCloseCampaign(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimRecordEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0)
@@ -330,9 +284,9 @@ func TestCloseVestingPoolCampaign(t *testing.T) {
 
 	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 300)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 300)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
+	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.CloseCampaign(ownerAddress.String(), 0)
@@ -345,9 +299,9 @@ func TestCloseCampaignAndFeegrant(t *testing.T) {
 	campaign.FeegrantAmount = math.NewInt(1000)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
-	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(claimEntries)))))
-	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(claimRecordEntries)))))
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimRecordEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.CloseCampaign(acountsAddresses[0].String(), 0)
@@ -387,7 +341,7 @@ func TestCloseCampaignCampaignDoesntExistError(t *testing.T) {
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[0].String(), 1, "campaign with id 1 not found: entity does not exist")
+	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[0].String(), 1, "campaign with id 1 not found: not found")
 }
 
 func TestCloseCampaignYouAreNotTheOwnerError(t *testing.T) {
@@ -399,7 +353,7 @@ func TestCloseCampaignYouAreNotTheOwnerError(t *testing.T) {
 	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[1].String(), 0, "you are not the campaign owner: wrong transaction signer")
+	testHelper.C4eClaimUtils.CloseCampaignError(acountsAddresses[1].String(), 0, fmt.Sprintf("address %s is not owner of campaign with id %d: tx intended signer does not match the given signer", acountsAddresses[1], 0))
 }
 
 func TestRemoveCampaignCampaignEnabled(t *testing.T) {
@@ -408,9 +362,9 @@ func TestRemoveCampaignCampaignEnabled(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimRecordEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.RemoveCampaignError(acountsAddresses[0].String(), 0, "campaign is enabled")
@@ -421,9 +375,9 @@ func TestRemoveCampaign(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimRecordEntries)
 	testHelper.C4eClaimUtils.RemoveCampaign(acountsAddresses[0].String(), 0)
 }
 
@@ -432,9 +386,9 @@ func TestRemoveCampaignBlockTimeAfterEndTime(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimRecordEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.RemoveCampaign(acountsAddresses[0].String(), 0)
@@ -446,11 +400,11 @@ func TestRemoveCampaignWithMissions(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	mission := prepareTestMission()
-	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	testHelper.C4eClaimUtils.AddMissionToCampaign(acountsAddresses[0].String(), 0, mission)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimRecordEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.RemoveCampaign(acountsAddresses[0].String(), 0)
@@ -461,12 +415,12 @@ func TestRemoveCampaignCampaignDoesntExist(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimRecordEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
-	testHelper.C4eClaimUtils.RemoveCampaignError(acountsAddresses[0].String(), 3, "campaign with id 3 not found: entity does not exist")
+	testHelper.C4eClaimUtils.RemoveCampaignError(acountsAddresses[0].String(), 3, "campaign with id 3 not found: not found")
 }
 
 func TestRemoveCampaignWithNoClaimRecords(t *testing.T) {
@@ -485,9 +439,9 @@ func TestRemoveCampaignWithFeegrant(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.FeegrantAmount = math.NewInt(10000)
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 100000000)
-	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(claimEntries)))))
-	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(claimRecordEntries)))))
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimRecordEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.RemoveCampaign(acountsAddresses[0].String(), 0)
@@ -503,9 +457,9 @@ func TestRemoveVestingPoolCampaignWithFeegrant(t *testing.T) {
 	campaign.VestingPoolName = vPool1
 	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
 	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 300)
-	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(claimEntries)))))
-	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 300)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(claimRecordEntries)))))
+	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.RemoveCampaign(ownerAddress.String(), 0)
@@ -520,9 +474,9 @@ func TestRemoveVestingPoolCampaign(t *testing.T) {
 	campaign.VestingPoolName = vPool1
 	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
 	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
-	claimEntries, amountSum := createTestClaimRecords(acountsAddresses, 300)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 300)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
+	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries)
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.RemoveCampaign(ownerAddress.String(), 0)
@@ -542,13 +496,19 @@ func prepareTestCampaign(ctx sdk.Context) types.Campaign {
 	lockupPeriod := time.Hour * 10000
 	vestingPeriod := 3 * time.Hour * 10000
 	return types.Campaign{
-		Id:            0,
-		Name:          "Name",
-		Description:   "test-campaign",
-		StartTime:     start,
-		EndTime:       end,
-		LockupPeriod:  lockupPeriod,
-		VestingPeriod: vestingPeriod,
-		CampaignType:  types.DefaultCampaign,
+		Id:                     0,
+		Name:                   "Name",
+		Description:            "test-campaign",
+		CampaignType:           types.DefaultCampaign,
+		RemovableClaimRecords:  false,
+		FeegrantAmount:         math.ZeroInt(),
+		InitialClaimFreeAmount: math.ZeroInt(),
+		Free:                   sdk.ZeroDec(),
+		Enabled:                false,
+		StartTime:              start,
+		EndTime:                end,
+		LockupPeriod:           lockupPeriod,
+		VestingPeriod:          vestingPeriod,
+		VestingPoolName:        "",
 	}
 }

@@ -1,9 +1,18 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal";
+import { Coin } from "../../cosmos/base/v1beta1/coin";
 import { Timestamp } from "../../google/protobuf/timestamp";
 import { Minter } from "./minter";
 
 export const protobufPackage = "chain4energy.c4echain.cfeminter";
+
+export interface MsgBurn {
+  address: string;
+  amount: Coin[];
+}
+
+export interface MsgBurnResponse {
+}
 
 export interface MsgUpdateParams {
   authority: string;
@@ -23,6 +32,107 @@ export interface MsgUpdateMintersParams {
 
 export interface MsgUpdateMintersParamsResponse {
 }
+
+function createBaseMsgBurn(): MsgBurn {
+  return { address: "", amount: [] };
+}
+
+export const MsgBurn = {
+  encode(message: MsgBurn, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
+    }
+    for (const v of message.amount) {
+      Coin.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurn {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgBurn();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.address = reader.string();
+          break;
+        case 2:
+          message.amount.push(Coin.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgBurn {
+    return {
+      address: isSet(object.address) ? String(object.address) : "",
+      amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: MsgBurn): unknown {
+    const obj: any = {};
+    message.address !== undefined && (obj.address = message.address);
+    if (message.amount) {
+      obj.amount = message.amount.map((e) => e ? Coin.toJSON(e) : undefined);
+    } else {
+      obj.amount = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgBurn>, I>>(object: I): MsgBurn {
+    const message = createBaseMsgBurn();
+    message.address = object.address ?? "";
+    message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseMsgBurnResponse(): MsgBurnResponse {
+  return {};
+}
+
+export const MsgBurnResponse = {
+  encode(_: MsgBurnResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurnResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgBurnResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgBurnResponse {
+    return {};
+  },
+
+  toJSON(_: MsgBurnResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgBurnResponse>, I>>(_: I): MsgBurnResponse {
+    const message = createBaseMsgBurnResponse();
+    return message;
+  },
+};
 
 function createBaseMsgUpdateParams(): MsgUpdateParams {
   return { authority: "", mintDenom: "", startTime: undefined, minters: [] };
@@ -256,6 +366,7 @@ export const MsgUpdateMintersParamsResponse = {
 /** Msg defines the Msg service. */
 export interface Msg {
   /** this line is used by starport scaffolding # proto/tx/rpc */
+  Burn(request: MsgBurn): Promise<MsgBurnResponse>;
   UpdateMintersParams(request: MsgUpdateMintersParams): Promise<MsgUpdateMintersParamsResponse>;
   UpdateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse>;
 }
@@ -264,9 +375,16 @@ export class MsgClientImpl implements Msg {
   private readonly rpc: Rpc;
   constructor(rpc: Rpc) {
     this.rpc = rpc;
+    this.Burn = this.Burn.bind(this);
     this.UpdateMintersParams = this.UpdateMintersParams.bind(this);
     this.UpdateParams = this.UpdateParams.bind(this);
   }
+  Burn(request: MsgBurn): Promise<MsgBurnResponse> {
+    const data = MsgBurn.encode(request).finish();
+    const promise = this.rpc.request("chain4energy.c4echain.cfeminter.Msg", "Burn", data);
+    return promise.then((data) => MsgBurnResponse.decode(new _m0.Reader(data)));
+  }
+
   UpdateMintersParams(request: MsgUpdateMintersParams): Promise<MsgUpdateMintersParamsResponse> {
     const data = MsgUpdateMintersParams.encode(request).finish();
     const promise = this.rpc.request("chain4energy.c4echain.cfeminter.Msg", "UpdateMintersParams", data);

@@ -44,7 +44,7 @@ func (k Keeper) CreateReferenceId(goCtx context.Context, req *types.QueryCreateR
 
 	data, err1 := k.GetSignature(ctx, storageKey.StorageKey)
 	if err != nil {
-		if !sdkerrors.IsOf(err1, sdkerrors.ErrKeyNotFound) {
+		if !errors.IsOf(err1, sdkerrors.ErrKeyNotFound) {
 			return nil, err1
 		}
 	}

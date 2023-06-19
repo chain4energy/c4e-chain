@@ -14,6 +14,29 @@ import { MsgBeginRedelegate } from "./types/cosmos/staking/v1beta1/tx";
 import { MsgCreateValidator } from "./types/cosmos/staking/v1beta1/tx";
 import { MsgEditValidator } from "./types/cosmos/staking/v1beta1/tx";
 
+import { StakeAuthorization as typeStakeAuthorization} from "./types"
+import { StakeAuthorization_Validators as typeStakeAuthorization_Validators} from "./types"
+import { LastValidatorPower as typeLastValidatorPower} from "./types"
+import { HistoricalInfo as typeHistoricalInfo} from "./types"
+import { CommissionRates as typeCommissionRates} from "./types"
+import { Commission as typeCommission} from "./types"
+import { Description as typeDescription} from "./types"
+import { Validator as typeValidator} from "./types"
+import { ValAddresses as typeValAddresses} from "./types"
+import { DVPair as typeDVPair} from "./types"
+import { DVPairs as typeDVPairs} from "./types"
+import { DVVTriplet as typeDVVTriplet} from "./types"
+import { DVVTriplets as typeDVVTriplets} from "./types"
+import { Delegation as typeDelegation} from "./types"
+import { UnbondingDelegation as typeUnbondingDelegation} from "./types"
+import { UnbondingDelegationEntry as typeUnbondingDelegationEntry} from "./types"
+import { RedelegationEntry as typeRedelegationEntry} from "./types"
+import { Redelegation as typeRedelegation} from "./types"
+import { Params as typeParams} from "./types"
+import { DelegationResponse as typeDelegationResponse} from "./types"
+import { RedelegationEntryResponse as typeRedelegationEntryResponse} from "./types"
+import { RedelegationResponse as typeRedelegationResponse} from "./types"
+import { Pool as typePool} from "./types"
 
 export { MsgDelegate, MsgCancelUnbondingDelegation, MsgUndelegate, MsgBeginRedelegate, MsgCreateValidator, MsgEditValidator };
 
@@ -81,6 +104,18 @@ type msgEditValidatorParams = {
 
 export const registry = new Registry(msgTypes);
 
+type Field = {
+	name: string;
+	type: unknown;
+}
+function getStructure(template) {
+	const structure: {fields: Field[]} = { fields: [] }
+	for (let [key, value] of Object.entries(template)) {
+		let field = { name: key, type: typeof value }
+		structure.fields.push(field)
+	}
+	return structure
+}
 const defaultFee = {
   amount: [],
   gas: "200000",
@@ -243,13 +278,39 @@ export const queryClient = ({ addr: addr }: QueryClientOptions = { addr: "http:/
 class SDKModule {
 	public query: ReturnType<typeof queryClient>;
 	public tx: ReturnType<typeof txClient>;
-	
+	public structure: Record<string,unknown>;
 	public registry: Array<[string, GeneratedType]> = [];
 
 	constructor(client: IgniteClient) {		
 	
 		this.query = queryClient({ addr: client.env.apiURL });		
 		this.updateTX(client);
+		this.structure =  {
+						StakeAuthorization: getStructure(typeStakeAuthorization.fromPartial({})),
+						StakeAuthorization_Validators: getStructure(typeStakeAuthorization_Validators.fromPartial({})),
+						LastValidatorPower: getStructure(typeLastValidatorPower.fromPartial({})),
+						HistoricalInfo: getStructure(typeHistoricalInfo.fromPartial({})),
+						CommissionRates: getStructure(typeCommissionRates.fromPartial({})),
+						Commission: getStructure(typeCommission.fromPartial({})),
+						Description: getStructure(typeDescription.fromPartial({})),
+						Validator: getStructure(typeValidator.fromPartial({})),
+						ValAddresses: getStructure(typeValAddresses.fromPartial({})),
+						DVPair: getStructure(typeDVPair.fromPartial({})),
+						DVPairs: getStructure(typeDVPairs.fromPartial({})),
+						DVVTriplet: getStructure(typeDVVTriplet.fromPartial({})),
+						DVVTriplets: getStructure(typeDVVTriplets.fromPartial({})),
+						Delegation: getStructure(typeDelegation.fromPartial({})),
+						UnbondingDelegation: getStructure(typeUnbondingDelegation.fromPartial({})),
+						UnbondingDelegationEntry: getStructure(typeUnbondingDelegationEntry.fromPartial({})),
+						RedelegationEntry: getStructure(typeRedelegationEntry.fromPartial({})),
+						Redelegation: getStructure(typeRedelegation.fromPartial({})),
+						Params: getStructure(typeParams.fromPartial({})),
+						DelegationResponse: getStructure(typeDelegationResponse.fromPartial({})),
+						RedelegationEntryResponse: getStructure(typeRedelegationEntryResponse.fromPartial({})),
+						RedelegationResponse: getStructure(typeRedelegationResponse.fromPartial({})),
+						Pool: getStructure(typePool.fromPartial({})),
+						
+		};
 		client.on('signer-changed',(signer) => {			
 		 this.updateTX(client);
 		})

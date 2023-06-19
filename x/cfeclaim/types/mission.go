@@ -44,8 +44,8 @@ func (c *Mission) IsEnabled(blockTime time.Time) error {
 	if c.ClaimStartDate == nil {
 		return nil
 	}
-	if c.ClaimStartDate.Before(blockTime) {
-		return errors.Wrapf(ErrMissionDisabled, "mission %d not started yet (%s < startTime %s) error", c.Id, blockTime, c.ClaimStartDate)
+	if c.ClaimStartDate.After(blockTime) {
+		return errors.Wrapf(ErrMissionDisabled, "mission %d not started yet (blocktime %s < mission start time %s)", c.Id, blockTime, c.ClaimStartDate)
 	}
 	return nil
 }

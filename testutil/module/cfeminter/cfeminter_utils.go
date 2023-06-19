@@ -138,10 +138,7 @@ func (m *C4eMinterUtils) MessageBurnError(ctx sdk.Context, address string, amoun
 	}
 	_, err := msgServer.Burn(msgServerCtx, &msg)
 	require.EqualError(m.t, err, errorMessage)
-	balanceAfter := m.bankUtils.GetAccountAllBalances(ctx, accAddress)
-	_ = balanceAfter
-	_ = balanceBefore
-	//m.bankUtils.VerifyAccountAllBalances(ctx, accAddress, balanceBefore)
+	m.bankUtils.VerifyAccountAllBalances(ctx, accAddress, balanceBefore)
 	m.bankUtils.VerifyModuleAccountAllBalances(ctx, cfemintertypes.ModuleName, moduleBalanceBefore)
 	m.bankUtils.VerifyTotalSupply(ctx, totalSupplyBefore)
 }

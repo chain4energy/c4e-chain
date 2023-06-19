@@ -1,7 +1,7 @@
 version: 1
 build:
-  binary: "c4ed"
-  main: "./cmd/c4ed"
+  main: ./cmd/c4ed
+  binary: c4ed
   proto:
     path: proto
     third_party_paths:
@@ -11,25 +11,32 @@ accounts:
 - name: alice
   coins:
   - 120000000000uc4e
-  mnemonic: cabin gun luggage green fever either engage nest arrow sure record physical palace dutch clap vocal north snack birth exhibit either ancient sniff settle
+  mnemonic: cabin gun luggage green fever either engage nest arrow sure record physical
+    palace dutch clap vocal north snack birth exhibit either ancient sniff settle
 - name: bob
   coins:
   - 4000000000uc4e
-  mnemonic: genuine author egg good melt obey omit antique flight fade midnight funny security budget inquiry animal unfold film soft midnight company rack kitchen monitor
+  mnemonic: genuine author egg good melt obey omit antique flight fade midnight funny
+    security budget inquiry animal unfold film soft midnight company rack kitchen
+    monitor
 - name: vesting_pools_owner
   coins:
   - 15000000000000uc4e
-  mnemonic: radar there legend edge jar across night figure dog oval clump endorse garage office upon square worth harvest twelve trust menu mother gossip simple
+  mnemonic: radar there legend edge jar across night figure dog oval clump endorse
+    garage office upon square worth harvest twelve trust menu mother gossip simple
 - name: validators_pool_owner
   coins:
   - 15000000uc4e
-  mnemonic: forget mesh pet uphold prison daughter surround drop fire surface nurse swing long black hockey hover bulb reform female prefer aim ten category rhythm
+  mnemonic: forget mesh pet uphold prison daughter surround drop fire surface nurse
+    swing long black hockey hover bulb reform female prefer aim ten category rhythm
 faucet:
   name: bob
   coins:
   - 100000uc4e
   host: 0.0.0.0:4500
 client:
+  typescript:
+    path: ts-client
   vuex:
     path: vue/src/store
   openapi:
@@ -143,15 +150,14 @@ genesis:
         sequence_id: 1
       params:
         mint_denom: uc4e
-        start_time: "2022-07-05T00:00:00.00000000Z"
         minters:
-        - sequence_id: 1
-          config:
-            '@type': "/chain4energy.c4echain.cfeminter.ExponentialStepMinting"
+        - config:
+            '@type': /chain4energy.c4echain.cfeminter.ExponentialStepMinting
             amount: "160000000000000"
             amount_multiplier: "0.5"
             step_duration: 126144000s
-
+          sequence_id: 1
+        start_time: "2022-07-05T00:00:00.00000000Z"
     cfevesting:
       account_vesting_pools:
       - owner: c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm
@@ -215,6 +221,10 @@ genesis:
         name: Validators pool
         vesting_period: 10
         vesting_period_unit: day
+    crisis:
+      constant_fee:
+        amount: "1000"
+        denom: uc4e
     gov:
       deposit_params:
         max_deposit_period: 50s
