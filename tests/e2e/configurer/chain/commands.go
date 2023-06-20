@@ -412,6 +412,22 @@ func (n *NodeConfig) RemoveCampaignError(campaignId, from, errorString string) {
 	require.NoError(n.t, err)
 }
 
+func (n *NodeConfig) CreatePayloadLink(payloadHash, from string) {
+	n.LogActionF("remove campaign")
+	cmd := []string{"c4ed", "tx", "cfefingerprint", "create-reference-payload-link", payloadHash, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("created payload link from payload hash %s", payloadHash)
+}
+
+func (n *NodeConfig) CreatePayloadLinkError(payloadHash, from, errorString string) {
+	n.LogActionF("remove campaign error")
+	cmd := []string{"c4ed", "tx", "cfefingerprint", "create-reference-payload-link", payloadHash, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
 func (n *NodeConfig) DelegateToValidator(validatorAddress, amount, from string) {
 	n.LogActionF("delegate to validator")
 	cmd := []string{"c4ed", "tx", "staking", "delegate", validatorAddress, amount, formatFromFlag(from)}
