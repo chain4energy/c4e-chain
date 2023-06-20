@@ -194,3 +194,16 @@ func ValidateClaimRecordEntries(claimRecordEntries []*ClaimRecordEntry) error {
 	}
 	return nil
 }
+
+func ValidateVestingPoolCampaignClaimRecordEntries(claimRecordEntries []*ClaimRecordEntry, vestingDenom string) error {
+	for i, claimRecordEntry := range claimRecordEntries {
+		if err := claimRecordEntry.Validate(); err != nil {
+			return errors.Wrapf(err, "claim record entry index %d", i)
+		}
+		if claimRecordEntry.Amount.Len() > 1 || claimRecordEntry.Amount.AmountOf(vestingDenom).IsZero() {
+			return errors.Wrapf(c4eerrors.ErrParam, "claim record entry index %d: for vesting pool campaigns,"+
+				" the claim record entry must have only one coin with the denomination currently used by the cfevesting module (%s)", i, vestingDenom)
+		}
+	}
+	return nil
+}

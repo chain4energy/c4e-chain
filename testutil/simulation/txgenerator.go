@@ -26,7 +26,7 @@ func SendMessageWithRandomFees(ctx sdk.Context, r *rand.Rand, ak authkeeper.Acco
 	return err
 }
 
-func SendMessageWithRandomFeesWithResult(ctx sdk.Context, r *rand.Rand, ak authkeeper.AccountKeeper, bk bankkeeper.Keeper, app *baseapp.BaseApp,
+func SendMessageWithRandomFeesAndResult(ctx sdk.Context, r *rand.Rand, ak authkeeper.AccountKeeper, bk bankkeeper.Keeper, app *baseapp.BaseApp,
 	simAccount simtypes.Account, msg sdk.Msg, chainID string) (*sdk.Result, error) {
 	spendable := bk.SpendableCoins(ctx, simAccount.Address)
 	_, result, err := sendMessage(ctx, r, ak, app, simAccount, msg, spendable, chainID)
