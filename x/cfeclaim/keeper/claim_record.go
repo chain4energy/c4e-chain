@@ -140,9 +140,16 @@ func (k Keeper) ValidateAddClaimRecords(ctx sdk.Context, owner string, campaignI
 	if err = campaign.ValidateNotEnded(ctx.BlockTime()); err != nil {
 		return nil, err
 	}
-	if err = types.ValidateClaimRecordEntries(claimRecordEntries); err != nil {
-		return nil, err
+	if campaign.CampaignType == types.VestingPoolCampaign {
+		if err = types.ValidateVestingPoolCampaignClaimRecordEntries(claimRecordEntries, k.vestingKeeper.Denom(ctx)); err != nil {
+			return nil, err
+		}
+	} else {
+		if err = types.ValidateClaimRecordEntries(claimRecordEntries); err != nil {
+			return nil, err
+		}
 	}
+
 	return campaign, nil
 }
 

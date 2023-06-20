@@ -243,17 +243,29 @@ func (m *C4eClaimUtils) ValidateInvariants(ctx sdk.Context) {
 	testcosmos.ValidateManyInvariants(m.t, ctx, invariants)
 }
 
-func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress, expectedAmount int64) {
+func (m *C4eClaimUtils) GetAllCampaignMissions(ctx sdk.Context, campaignId uint64) []cfeclaimtypes.Mission {
+	res, err := m.helpeCfeclaimkeeper.CampaignMissions(ctx, &cfeclaimtypes.QueryCampaignMissionsRequest{CampaignId: campaignId})
+	require.NoError(m.t, err)
+	return res.Missions
+
+}
+
+func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer sdk.AccAddress) {
 	acc := h.helperAccountKeeper.GetAccount(ctx, claimer)
 	claimerAccountBefore, _ := acc.(*cfevestingtypes.PeriodicContinuousVestingAccount)
 	accExisted := acc != nil
 	if !accExisted {
 		claimerAccountBefore = nil
 	}
-	moduleBalanceBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, cfeclaimtypes.ModuleName)
+
 	claimerBalanceBefore := h.BankUtils.GetAccountAllBalances(ctx, claimer)
 	campaignBefore, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
-
+	_, weightSum := h.helpeCfeclaimkeeper.AllMissionForCampaign(ctx, campaignId)
+	moduleName := cfeclaimtypes.ModuleName
+	if campaignBefore.CampaignType == cfeclaimtypes.VestingPoolCampaign {
+		moduleName = cfevestingtypes.ModuleName
+	}
+	moduleBalanceBefore := h.BankUtils.GetModuleAccountAllBalances(ctx, moduleName)
 	userEntry, _ := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimer.String())
 	_, granterAddr := cfeclaimmodulekeeper.CreateFeegrantAccountAddress(campaignId)
 	if campaignBefore.FeegrantAmount.IsPositive() {
@@ -261,6 +273,13 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 		require.NoError(h.t, err)
 		require.NotNil(h.t, allowance)
 	}
+	userEntryAmount := userEntry.GetClaimRecord(campaignId).Amount
+
+	allMissionsAmountSum := sdk.NewCoins()
+	for _, amount := range userEntryAmount {
+		allMissionsAmountSum = allMissionsAmountSum.Add(sdk.NewCoin(amount.Denom, weightSum.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()))
+	}
+	expectedAmount := userEntryAmount.Sub(allMissionsAmountSum...)
 	_, err := h.helpeCfeclaimkeeper.InitialClaim(ctx, claimer.String(), campaignId, claimer.String())
 	require.NoError(h.t, err)
 	campaignAfter, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
@@ -268,32 +287,33 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 	require.Error(h.t, err)
 	require.Nil(h.t, allowance)
 
-	campaignBefore.CampaignCurrentAmount = campaignBefore.CampaignCurrentAmount.Sub(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(expectedAmount)))...)
+	campaignBefore.CampaignCurrentAmount = campaignBefore.CampaignCurrentAmount.Sub(expectedAmount...)
 	require.EqualValues(h.t, campaignBefore, campaignAfter)
 
-	for _, coin := range claimerBalanceBefore {
-		h.BankUtils.VerifyAccountBalanceByDenom(ctx, claimer, coin.Denom, coin.Amount.AddRaw(expectedAmount))
-	}
-	for _, coin := range moduleBalanceBefore {
-		h.BankUtils.VerifyModuleAccountBalanceByDenom(ctx, cfeclaimtypes.ModuleName, coin.Denom, coin.Amount.SubRaw(expectedAmount))
-	}
+	h.BankUtils.VerifyAccountAllBalances(ctx, claimer, claimerBalanceBefore.Add(expectedAmount...))
+	h.BankUtils.VerifyModuleAccountAllBalances(ctx, moduleName, moduleBalanceBefore.Sub(expectedAmount...))
 
 	if claimerAccountBefore == nil {
 		baseAccount := h.helperAccountKeeper.NewAccountWithAddress(ctx, claimer)
 		claimerAccountBefore = cfevestingtypes.NewPeriodicContinuousVestingAccount(baseAccount.(*authtypes.BaseAccount), sdk.NewCoins(), 100000000, 100000000, nil)
 	}
 
-	vestingAmount := math.NewInt(expectedAmount)
+	vestingAmount := expectedAmount
 	if campaignBefore.InitialClaimFreeAmount.IsPositive() {
-		initialClaimDec := sdk.NewDecFromInt(campaignBefore.InitialClaimFreeAmount).Quo(sdk.NewDec(expectedAmount))
-		if initialClaimDec.GT(sdk.NewDec(1)) {
-			initialClaimDec = sdk.NewDec(1)
+		vestingAmount = sdk.NewCoins()
+		for _, amount := range expectedAmount {
+			expectedAmountDec := sdk.NewDecFromInt(amount.Amount)
+			initialClaimDec := sdk.NewDecFromInt(campaignBefore.InitialClaimFreeAmount).Quo(expectedAmountDec)
+			if initialClaimDec.GT(sdk.NewDec(1)) {
+				initialClaimDec = sdk.NewDec(1)
+			}
+			vestingPeriodAmount := expectedAmountDec.Sub(expectedAmountDec.Mul(initialClaimDec)).TruncateInt()
+			vestingAmount = vestingAmount.Add(sdk.NewCoin(amount.Denom, vestingPeriodAmount))
 		}
-		vestingAmount = sdk.NewDec(expectedAmount).Sub(sdk.NewDec(expectedAmount).Mul(initialClaimDec)).TruncateInt()
 
 	}
-	vestingCoins := sdk.NewCoins(sdk.NewCoin(h.helperCfevestingKeeper.GetParams(ctx).Denom, vestingAmount))
-	claimerAccountBefore = h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, vestingCoins)
+
+	claimerAccountBefore = h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, vestingAmount)
 
 	claimerAccount, ok := h.helperAccountKeeper.GetAccount(ctx, claimer).(*cfevestingtypes.PeriodicContinuousVestingAccount)
 
@@ -501,8 +521,6 @@ func (h *C4eClaimUtils) addExpectedDataToAccount(ctx sdk.Context, campaignId uin
 	campaign, _ := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	expectedStartTime := ctx.BlockTime().Add(campaign.LockupPeriod)
 	expectedEndTime := expectedStartTime.Add(campaign.VestingPeriod)
-
-	expectedOriginalVesting := sdk.NewCoins(expectedAmount...)
 	if len(claimerAccountBefore.VestingPeriods) == 0 {
 		claimerAccountBefore.StartTime = expectedStartTime.Unix()
 		claimerAccountBefore.EndTime = expectedEndTime.Unix()
@@ -519,8 +537,9 @@ func (h *C4eClaimUtils) addExpectedDataToAccount(ctx sdk.Context, campaignId uin
 		claimerAccountBefore.OriginalVesting = nil
 		return claimerAccountBefore
 	}
-	claimerAccountBefore.OriginalVesting = claimerAccountBefore.OriginalVesting.Add(expectedOriginalVesting...)
-	claimerAccountBefore.VestingPeriods = append(claimerAccountBefore.VestingPeriods, cfevestingtypes.ContinuousVestingPeriod{StartTime: expectedStartTime.Unix(), EndTime: expectedEndTime.Unix(), Amount: expectedOriginalVesting})
+	originalVestingSorted := expectedAmount.Sort()
+	claimerAccountBefore.OriginalVesting = claimerAccountBefore.OriginalVesting.Add(originalVestingSorted...)
+	claimerAccountBefore.VestingPeriods = append(claimerAccountBefore.VestingPeriods, cfevestingtypes.ContinuousVestingPeriod{StartTime: expectedStartTime.Unix(), EndTime: expectedEndTime.Unix(), Amount: expectedAmount})
 	return claimerAccountBefore
 }
 
