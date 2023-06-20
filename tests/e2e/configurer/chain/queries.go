@@ -374,3 +374,16 @@ func (n *NodeConfig) QueryPropStatusTimed(proposalNumber int, desiredStatus stri
 	elapsed := time.Since(start)
 	totalTime <- elapsed
 }
+
+func (n *NodeConfig) QueryTx(txHash string) sdk.TxResponse {
+	path := "cosmos/tx/v1beta1/txs/" + txHash
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+	fmt.Println(bz)
+	fmt.Println(string(bz))
+	var response sdk.TxResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response
+}
