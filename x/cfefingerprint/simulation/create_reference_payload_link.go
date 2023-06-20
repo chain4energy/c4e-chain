@@ -23,7 +23,7 @@ func SimulateMsgCreateReferencePayloadLink(
 		randonPayloadHash := simtypes.RandStringOfLength(r, 32)
 		msg := types.NewMsgCreateReferencePayloadLink(simAccount.Address.String(), randonPayloadHash)
 
-		result, err := simulation.SendMessageWithRandomFeesWithResult(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msg, chainID)
+		result, err := simulation.SendMessageWithRandomFeesAndResult(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msg, chainID)
 		if err != nil {
 			return simtypes.NewOperationMsg(msg, false, "", nil), nil, nil
 		}
