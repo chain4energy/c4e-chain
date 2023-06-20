@@ -112,12 +112,13 @@ func TestAddManyUsersEntriesVestingPoolCampaign(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 	ownerAddress := acountsAddresses[0]
-	claimRecordEntries1, amountSum1 := createTestClaimRecordEntries(acountsAddresses[0:5], 30)
-	claimRecordEntries2, amountSum2 := createTestClaimRecordEntries(acountsAddresses[5:10], 30)
+	claimRecordEntries1, amountSum1 := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses[0:5], 30)
+	claimRecordEntries2, amountSum2 := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses[5:10], 30)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.CampaignType = types.VestingPoolCampaign
 	campaign.VestingPoolName = vPool1
-	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, amountSum1.Add(amountSum2), 100, 100)
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, amountSum1.AmountOf(testHelper.C4eVestingUtils.GetVestingDenom()).
+		Add(amountSum2.AmountOf(testHelper.C4eVestingUtils.GetVestingDenom())), 100, 100)
 	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries1)
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries2)
@@ -130,8 +131,8 @@ func TestAddClaimRecordsBalanceToSmall(t *testing.T) {
 
 	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
 	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
-	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Sub(math.NewInt(2)))
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimRecordEntries, "owner balance is too small (1000000043uc4e < 1000000045uc4e): insufficient funds")
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum.Sub(sdk.NewCoin(amountSum[1].Denom, math.NewInt(2))))
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimRecordEntries, "owner balance is too small (1000000045uc4e,1000000043uc4e2 < 1000000045uc4e,1000000045uc4e2): insufficient funds")
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -228,7 +229,7 @@ func TestAddClaimRecordsclaimRecordExist(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
-	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 1113321)
 	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimRecordEntries)
@@ -240,7 +241,7 @@ func TestAddClaimRecordsInitialClaimAmount(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 
-	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 12412512)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.InitialClaimFreeAmount = math.NewInt(50000000)
 	mission := prepareTestMission()
@@ -257,7 +258,7 @@ func TestAddClaimRecordsCorrectFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 	feegrantAmount := math.NewInt(2500000)
-	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 512451234)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.FeegrantAmount = feegrantAmount
 	mission := prepareTestMission()
@@ -266,7 +267,8 @@ func TestAddClaimRecordsCorrectFeegrant(t *testing.T) {
 	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], feegrantAmount.MulRaw(int64(len(acountsAddresses))))
+	feegrantCoins := sdk.NewCoins(sdk.NewCoin(testHelper.StakingUtils.GetStakingDenom(), campaign.FeegrantAmount.MulRaw(int64(len(acountsAddresses)))))
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], feegrantCoins)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimRecordEntries)
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
@@ -275,7 +277,7 @@ func TestAddClaimRecordsWrongSrcAccountBalanceFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 	feegrantAmount := math.NewInt(2500000)
-	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 1234123)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.FeegrantAmount = feegrantAmount
 	mission := prepareTestMission()
@@ -284,7 +286,7 @@ func TestAddClaimRecordsWrongSrcAccountBalanceFeegrant(t *testing.T) {
 	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimRecordEntries, "owner balance is too small (1000000045uc4e < 1025000045uc4e): insufficient funds")
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimRecordEntries, "owner balance is too small (12341275uc4e,12341275uc4e2 < 37341275uc4e,12341275uc4e2): insufficient funds")
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -295,7 +297,7 @@ func TestAddClaimRecordsCampaignVestingPoolCampaignNotStarted(t *testing.T) {
 	ownerAddress := acountsAddresses[0]
 	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
 
-	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 30)
+	claimRecordEntries, amountSum := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses, 30)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.CampaignType = types.VestingPoolCampaign
 	campaign.VestingPoolName = vPool1
@@ -315,7 +317,7 @@ func TestAddClaimRecordsCampaignVestingInPoolAmountTooSmall(t *testing.T) {
 	ownerAddress := acountsAddresses[0]
 	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
 
-	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 3000)
+	claimRecordEntries, amountSum := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses, 3000)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.CampaignType = types.VestingPoolCampaign
 	campaign.VestingPoolName = vPool1
@@ -324,7 +326,7 @@ func TestAddClaimRecordsCampaignVestingInPoolAmountTooSmall(t *testing.T) {
 	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
 	testHelper.C4eClaimUtils.AddMission(ownerAddress.String(), 0, mission)
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(ownerAddress, 0, claimRecordEntries, fmt.Sprintf("%s is smaller than %s: insufficient funds", sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(10000)), sdk.NewCoin(testenv.DefaultTestDenom, amountSum)))
+	testHelper.C4eClaimUtils.AddClaimRecordsError(ownerAddress, 0, claimRecordEntries, fmt.Sprintf("%s is smaller than %s: insufficient funds", sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(10000)), amountSum))
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -332,7 +334,7 @@ func TestDeleteClaimRecord(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
-	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 30)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 12354123)
 	ownerAddress := acountsAddresses[0]
 	campaign := prepareTestCampaign(testHelper.Context)
 	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
@@ -346,7 +348,7 @@ func TestDeleteClaimRecordEnabledError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
-	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 30)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 1231451)
 	ownerAddress := acountsAddresses[0]
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
@@ -355,7 +357,7 @@ func TestDeleteClaimRecordEnabledError(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries)
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 25)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 	testHelper.C4eClaimUtils.DeleteClaimRecordError(ownerAddress, 0, claimRecordEntries[1].UserEntryAddress, "campaign must have RemovableClaimRecords flag set to true to be able to delete its entries: invalid type")
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
@@ -364,7 +366,7 @@ func TestDeleteClaimRecordInititalMissionClaimed(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
-	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 30)
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 998765)
 	ownerAddress := acountsAddresses[0]
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.RemovableClaimRecords = true
@@ -374,8 +376,34 @@ func TestDeleteClaimRecordInititalMissionClaimed(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries)
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 25)
-	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimRecordEntries[1].UserEntryAddress, claimRecordEntries[1].Amount.Sub(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(25))))
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+	var amountDiff sdk.Coins
+	for _, coin := range claimRecordEntries[1].Amount {
+		amountDiff = amountDiff.Add(sdk.NewCoin(coin.Denom, sdk.NewInt(199753)))
+	}
+	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimRecordEntries[1].UserEntryAddress, amountDiff)
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
+func TestDeleteClaimRecordEverythingClaimed(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
+
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 123451)
+	ownerAddress := acountsAddresses[0]
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.RemovableClaimRecords = true
+	mission := prepareTestMission()
+	mission.MissionType = types.MissionClaim
+	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(ownerAddress.String(), 0, mission)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries)
+	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	var amountDiff sdk.Coins
+	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimRecordEntries[1].UserEntryAddress, amountDiff)
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -394,8 +422,13 @@ func TestDeleteClaimRecordAndInititalClaimInititalMissionClaimed(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries)
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 25)
-	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimRecordEntries[1].UserEntryAddress, claimRecordEntries[1].Amount.Sub(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(25))))
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+	var amountDiff sdk.Coins
+	for _, coin := range claimRecordEntries[1].Amount {
+		amountDiff = amountDiff.Add(sdk.NewCoin(coin.Denom, sdk.NewInt(6)))
+	}
+
+	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimRecordEntries[1].UserEntryAddress, amountDiff)
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -412,11 +445,16 @@ func TestDeleteClaimRecordAndInititalClaimAndFeegrantInititalMissionClaimed(t *t
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
 	testHelper.C4eClaimUtils.AddMission(ownerAddress.String(), 0, mission)
-	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(claimRecordEntries)))))
+	feegrantCoin := sdk.NewCoin(testHelper.StakingUtils.GetStakingDenom(), campaign.FeegrantAmount.MulRaw(int64(len(acountsAddresses))))
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum.Add(feegrantCoin))
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries)
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 25)
-	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimRecordEntries[1].UserEntryAddress, claimRecordEntries[1].Amount.Sub(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(25))))
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+	var amountDiff sdk.Coins
+	for _, coin := range claimRecordEntries[1].Amount {
+		amountDiff = amountDiff.Add(sdk.NewCoin(coin.Denom, sdk.NewInt(6)))
+	}
+	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimRecordEntries[1].UserEntryAddress, amountDiff)
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -436,9 +474,13 @@ func TestDeleteClaimRecordTwoMissionsClaimed(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries)
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 19)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
-	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimRecordEntries[1].UserEntryAddress, claimRecordEntries[1].Amount.Sub(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(25))))
+	var amountDiff sdk.Coins
+	for _, coin := range claimRecordEntries[1].Amount {
+		amountDiff = amountDiff.Add(sdk.NewCoin(coin.Denom, sdk.NewInt(6)))
+	}
+	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimRecordEntries[1].UserEntryAddress, amountDiff)
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -446,7 +488,7 @@ func TestVestingPoolCampaignDeleteClaimRecordInititalMissionClaimed(t *testing.T
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
-	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 30)
+	claimRecordEntries, amountSum := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses, 30)
 	ownerAddress := acountsAddresses[0]
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.CampaignType = types.VestingPoolCampaign
@@ -459,16 +501,53 @@ func TestVestingPoolCampaignDeleteClaimRecordInititalMissionClaimed(t *testing.T
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries)
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 25)
-	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimRecordEntries[1].UserEntryAddress, claimRecordEntries[1].Amount.Sub(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(25))))
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+	var amountDiff sdk.Coins
+	for _, coin := range claimRecordEntries[1].Amount {
+		amountDiff = amountDiff.Add(sdk.NewCoin(coin.Denom, sdk.NewInt(6)))
+	}
+	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimRecordEntries[1].UserEntryAddress, amountDiff)
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
+func TestVestingPoolCampaignManyDenoms(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
+
+	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 30)
+	ownerAddress := acountsAddresses[0]
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.CampaignType = types.VestingPoolCampaign
+	campaign.VestingPoolName = vPool1
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
+	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecordsError(ownerAddress, 0, claimRecordEntries, "claim record entry index 0: for vesting pool campaigns, the claim record entry"+
+		" must have only one coin with the denomination currently used by the cfevesting module (uc4e): wrong param value")
+}
+
+func TestVestingPoolCampaignWrongDenom(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
+
+	claimRecordEntries, amountSum := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses, 30)
+	claimRecordEntries[0].Amount = sdk.NewCoins(sdk.NewCoin("wrongDenom", sdk.NewInt(100)))
+	ownerAddress := acountsAddresses[0]
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.CampaignType = types.VestingPoolCampaign
+	campaign.VestingPoolName = vPool1
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
+	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecordsError(ownerAddress, 0, claimRecordEntries, "claim record entry index 0: for vesting pool campaigns, the claim record entry"+
+		" must have only one coin with the denomination currently used by the cfevesting module (uc4e): wrong param value")
 }
 
 func TestVestingPoolCampaignDeleteClaimRecordTwoMissionsClaimed(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
-	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 30)
+	claimRecordEntries, amountSum := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses, 30)
 	ownerAddress := acountsAddresses[0]
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.CampaignType = types.VestingPoolCampaign
@@ -483,7 +562,7 @@ func TestVestingPoolCampaignDeleteClaimRecordTwoMissionsClaimed(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries)
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 19)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
 	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimRecordEntries[1].UserEntryAddress, claimRecordEntries[1].Amount.Sub(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(25))))
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
@@ -493,7 +572,7 @@ func TestVestingPoolCampaignDeleteClaimWithFeegrant(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
-	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 30)
+	claimRecordEntries, amountSum := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses, 30)
 	ownerAddress := acountsAddresses[0]
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.CampaignType = types.VestingPoolCampaign
@@ -506,7 +585,8 @@ func TestVestingPoolCampaignDeleteClaimWithFeegrant(t *testing.T) {
 	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
 	testHelper.C4eClaimUtils.AddMission(ownerAddress.String(), 0, mission)
 	testHelper.C4eClaimUtils.AddMission(ownerAddress.String(), 0, mission)
-	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum.Add(campaign.FeegrantAmount.MulRaw(int64(len(claimRecordEntries)))))
+	feegrantCoin := sdk.NewCoin(testHelper.StakingUtils.GetStakingDenom(), campaign.FeegrantAmount.MulRaw(int64(len(acountsAddresses))))
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(ownerAddress, amountSum.Add(feegrantCoin))
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries)
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
 	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimRecordEntries[1].UserEntryAddress, claimRecordEntries[1].Amount)
@@ -517,12 +597,12 @@ func TestDeleteClaimRecordVestingPoolCampaign(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(10, 0)
 
-	claimRecordEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 30)
+	claimRecordEntries, amountSum := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses, 30)
 	ownerAddress := acountsAddresses[0]
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.CampaignType = types.VestingPoolCampaign
 	campaign.VestingPoolName = vPool1
-	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, amountSum, 100, 100)
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, amountSum.AmountOf(testHelper.C4eVestingUtils.GetVestingDenom()), 100, 100)
 	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimRecordEntries)
 	testHelper.C4eClaimUtils.DeleteClaimRecord(ownerAddress, 0, claimRecordEntries[2].UserEntryAddress, claimRecordEntries[2].Amount)
@@ -571,15 +651,32 @@ func TestDeleteClaimRecordWrongOwner(t *testing.T) {
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
-func createTestClaimRecordEntries(addresses []sdk.AccAddress, startAmount int) (claimRecordEntries []*types.ClaimRecordEntry, amountSum math.Int) {
-	amountSum = math.ZeroInt()
+func createTestClaimRecordEntries(addresses []sdk.AccAddress, startAmount int) (claimRecordEntries []*types.ClaimRecordEntry, amountSum sdk.Coins) {
 	for i, addr := range addresses {
 		coinsAmount := math.NewInt(int64(startAmount + i))
 		newclaimRecord := types.ClaimRecordEntry{
 			UserEntryAddress: addr.String(),
-			Amount:           sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, coinsAmount)),
+			Amount: sdk.NewCoins(
+				sdk.NewCoin(testenv.DefaultTestDenom, coinsAmount),
+				sdk.NewCoin(testenv.DefaultTestDenom2, coinsAmount),
+			),
 		}
-		amountSum = amountSum.Add(coinsAmount)
+		amountSum = amountSum.Add(newclaimRecord.Amount...)
+		claimRecordEntries = append(claimRecordEntries, &newclaimRecord)
+	}
+	return
+}
+
+func createVestingPoolCampaignTestClaimRecordEntries(addresses []sdk.AccAddress, startAmount int) (claimRecordEntries []*types.ClaimRecordEntry, amountSum sdk.Coins) {
+	for i, addr := range addresses {
+		coinsAmount := math.NewInt(int64(startAmount + i))
+		newclaimRecord := types.ClaimRecordEntry{
+			UserEntryAddress: addr.String(),
+			Amount: sdk.NewCoins(
+				sdk.NewCoin(testenv.DefaultTestDenom, coinsAmount),
+			),
+		}
+		amountSum = amountSum.Add(newclaimRecord.Amount...)
 		claimRecordEntries = append(claimRecordEntries, &newclaimRecord)
 	}
 	return

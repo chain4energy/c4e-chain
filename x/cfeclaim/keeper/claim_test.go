@@ -26,7 +26,7 @@ func TestCompleteDelegationMission(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
@@ -49,7 +49,7 @@ func TestCompleteVoteMission(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 
 	testHelper.C4eClaimUtils.CompleteVoteMission(0, 1, acountsAddresses[1])
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
@@ -69,7 +69,7 @@ func TestClaimMissionDoesntExist(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 
 	testHelper.C4eClaimUtils.ClaimMissionError(0, 2, acountsAddresses[1], "mission not found - campaignId 0, missionId 2: not found")
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
@@ -88,7 +88,7 @@ func TestClaimCampaignDoesntExist(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 
 	testHelper.C4eClaimUtils.ClaimMissionError(1, 0, acountsAddresses[1], "campaign with id 1 not found: not found")
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
@@ -126,7 +126,7 @@ func TestClaimMissionCampaignHasEnded(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
@@ -152,7 +152,7 @@ func TestInitialClaimMissionInititalClaimAmountBiggerThanInititalClaimAMount(t *
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 81)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
@@ -176,7 +176,7 @@ func TestInitialClaimMissionInititalClaimAmountBiggerThanInititalClaimAmountAndF
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 81)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
@@ -198,7 +198,7 @@ func TestClaimMissionWithTypeClaim(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
@@ -220,7 +220,7 @@ func TestClaimMissionAlreadyClaimed(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 80000001)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
@@ -245,7 +245,7 @@ func TestFullCampaign(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 60000001)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 
 	delagationAmount := math.NewInt(1000000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
@@ -281,7 +281,7 @@ func TestClaimMissionWithTypeClaimRecordNotFound(t *testing.T) {
 func TestVestingPoolCampaignClaimMissionClaim(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, _ := createTestClaimRecordEntries(acountsAddresses, 30)
+	claimEntries, _ := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses, 30)
 	campaign := prepareTestCampaign(testHelper.Context)
 	ownerAddress := acountsAddresses[0]
 
@@ -296,7 +296,7 @@ func TestVestingPoolCampaignClaimMissionClaim(t *testing.T) {
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 25)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
@@ -304,7 +304,7 @@ func TestVestingPoolCampaignClaimMissionClaim(t *testing.T) {
 func TestVestingPoolCampaignClaimMissionClaimOptionalClaimStartDate(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, _ := createTestClaimRecordEntries(acountsAddresses, 30)
+	claimEntries, _ := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses, 30)
 	campaign := prepareTestCampaign(testHelper.Context)
 	ownerAddress := acountsAddresses[0]
 
@@ -322,7 +322,7 @@ func TestVestingPoolCampaignClaimMissionClaimOptionalClaimStartDate(t *testing.T
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 25)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 	testHelper.C4eClaimUtils.ClaimMissionError(0, 1, acountsAddresses[1],
 		fmt.Sprintf("mission 1 not started yet (blocktime %s < mission start time %s): mission is disabled", testHelper.Context.BlockTime(), claimStartDate))
 	testHelper.SetContextBlockTime(claimStartDate)
@@ -333,7 +333,7 @@ func TestVestingPoolCampaignClaimMissionClaimOptionalClaimStartDate(t *testing.T
 func TestVestingPoolCampaignClaimMissionVote(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, _ := createTestClaimRecordEntries(acountsAddresses, 30)
+	claimEntries, _ := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses, 30)
 	campaign := prepareTestCampaign(testHelper.Context)
 	ownerAddress := acountsAddresses[0]
 
@@ -348,7 +348,31 @@ func TestVestingPoolCampaignClaimMissionVote(t *testing.T) {
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 25)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+	testHelper.C4eClaimUtils.CompleteVoteMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
+func TestVestingPoolCampaignManyCoins(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
+	claimEntries, _ := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses, 30)
+	campaign := prepareTestCampaign(testHelper.Context)
+	ownerAddress := acountsAddresses[0]
+
+	testHelper.C4eVestingUtils.AddTestVestingPool(ownerAddress, vPool1, math.NewInt(10000), 100, 100)
+
+	campaign.CampaignType = cfeclaimtypes.VestingPoolCampaign
+	campaign.VestingPoolName = vPool1
+	mission := prepareTestMission()
+	mission.MissionType = cfeclaimtypes.MissionVote
+	testHelper.C4eClaimUtils.CreateCampaign(ownerAddress.String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(ownerAddress.String(), 0, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
+
+	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 	testHelper.C4eClaimUtils.CompleteVoteMission(0, 1, acountsAddresses[1])
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
@@ -357,7 +381,7 @@ func TestVestingPoolCampaignClaimMissionVote(t *testing.T) {
 func TestVestingPoolCampaignEverythingClaimed(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
-	claimEntries, _ := createTestClaimRecordEntries(acountsAddresses, 30)
+	claimEntries, _ := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses, 30)
 	campaign := prepareTestCampaign(testHelper.Context)
 	ownerAddress := acountsAddresses[0]
 
@@ -371,8 +395,8 @@ func TestVestingPoolCampaignEverythingClaimed(t *testing.T) {
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 31)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[0], 0, 30)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[0], 0)
 	testHelper.SetContextBlockTime(campaign.EndTime.Add(time.Minute))
 	testHelper.C4eClaimUtils.CloseCampaign(ownerAddress.String(), 0)
 
@@ -382,7 +406,7 @@ func TestVestingPoolCampaignEverythingClaimed(t *testing.T) {
 func TestVestingPoolCampaignClaimMissionDelegate(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, validatorAddresses := testcosmos.CreateAccounts(11, 1)
-	claimEntries, _ := createTestClaimRecordEntries(acountsAddresses, 30)
+	claimEntries, _ := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses, 30)
 	campaign := prepareTestCampaign(testHelper.Context)
 	ownerAddress := acountsAddresses[0]
 
@@ -397,7 +421,7 @@ func TestVestingPoolCampaignClaimMissionDelegate(t *testing.T) {
 	testHelper.C4eClaimUtils.EnableCampaign(ownerAddress.String(), 0, nil, nil)
 
 	testHelper.C4eClaimUtils.AddClaimRecords(ownerAddress, 0, claimEntries)
-	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0, 25)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
@@ -409,7 +433,7 @@ func TestVestingPoolCampaignClaimMissionDelegate(t *testing.T) {
 func TestVestingPoolCampaignClaimWrongAccountType(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
-	claimEntries, _ := createTestClaimRecordEntries(acountsAddresses, 30)
+	claimEntries, _ := createVestingPoolCampaignTestClaimRecordEntries(acountsAddresses, 30)
 	campaign := prepareTestCampaign(testHelper.Context)
 	ownerAddress := acountsAddresses[0]
 

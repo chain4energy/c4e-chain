@@ -614,6 +614,10 @@ func (h *C4eVestingUtils) SendToVestingAccountError(ctx sdk.Context, fromAddress
 	require.Equal(h.t, vestingAccountCount, h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx))
 }
 
+func (h *C4eVestingUtils) GetVestingDenom(ctx sdk.Context) string {
+	return h.helperCfevestingKeeper.Denom(ctx)
+}
+
 func (h *C4eVestingUtils) MessageSendToVestingAccountError(ctx sdk.Context, fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount math.Int, restartVesting bool, errorMessage string) {
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
@@ -676,6 +680,10 @@ func NewContextC4eVestingUtils(t require.TestingT, testContext testenv.TestConte
 	authUtils *testcosmos.AuthUtils) *ContextC4eVestingUtils {
 	c4eVestingUtils := NewC4eVestingUtils(t, helperCfevestingKeeper, helperAccountKeeper, helperBankKeeper, helperStakingKeeper, bankUtils, authUtils)
 	return &ContextC4eVestingUtils{C4eVestingUtils: c4eVestingUtils, testContext: testContext}
+}
+
+func (h *ContextC4eVestingUtils) GetVestingDenom() string {
+	return h.C4eVestingUtils.GetVestingDenom(h.testContext.GetContext())
 }
 
 func (h *ContextC4eVestingUtils) SetupAccountVestingPools(address string, numberOfVestingPools int, vestingAmount math.Int, withdrawnAmount math.Int) cfevestingtypes.AccountVestingPools {
