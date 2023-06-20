@@ -27,5 +27,9 @@ func (s *FingerprintSetupSuite) TestCreatePayloadLink() {
 	creatorAddress := node.CreateWallet(creatorWalletName)
 	node.BankSendBaseBalanceFromNode(creatorAddress)
 	randPayloadHash := utils.RandStringOfLength(32)
-	node.CreatePayloadLink(randPayloadHash, creatorWalletName)
+	referenceId := node.CreatePayloadLink(randPayloadHash, creatorWalletName)
+	node.VerifyPayloadLink(referenceId, randPayloadHash)
+	node.VerifyInvalidPayloadLink(referenceId, "invalid hash")
+	node.VerifyInvalidPayloadLink("invalid referenceid", randPayloadHash)
+	node.CreatePayloadLinkError("", creatorWalletName, "payload hash cannot be empty: wrong param value")
 }

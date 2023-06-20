@@ -7,6 +7,7 @@ import (
 	"fmt"
 	cfeclaimmoduletypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	cfefingerprintmoduletypes "github.com/chain4energy/c4e-chain/x/cfefingerprint/types"
 	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"io"
@@ -343,16 +344,22 @@ func (n *NodeConfig) QueryFeegrant(granter, grantee string, feegrantResponse *fe
 	require.NoError(n.t, err)
 }
 
-func (n *NodeConfig) VerifyPayloadLink() []cfeclaimmoduletypes.Campaign {
-	path := "/c4e/claim/v1beta1/campaigns"
-
+func (n *NodeConfig) VerifyPayloadLink(referenceId, payloadHash string) {
+	path := "/c4e/fingerprint/verify_reference_payload_link/" + referenceId + "/" + payloadHash
 	bz, err := n.QueryGRPCGateway(path)
 	require.NoError(n.t, err)
-
-	var response cfeclaimmoduletypes.QueryCampaignsResponse
+	var response cfefingerprintmoduletypes.QueryVerifyReferencePayloadLinkResponse
 	err = util.Cdc.UnmarshalJSON(bz, &response)
-	require.NoError(n.t, err)
-	return response.Campaigns
+	require.True(n.t, response.IsValid)
+}
+
+func (n *NodeConfig) VerifyInvalidPayloadLink(referenceId, payloadHash string) {
+	path := "/c4e/fingerprint/verify_reference_payload_link/" + referenceId + "/" + payloadHash
+	bz, err := n.QueryGRPCGateway(path)
+	require.Error(n.t, err)
+	var response cfefingerprintmoduletypes.QueryVerifyReferencePayloadLinkResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.False(n.t, response.IsValid)
 }
 
 func (n *NodeConfig) QueryPropStatusTimed(proposalNumber int, desiredStatus string, totalTime chan time.Duration) {

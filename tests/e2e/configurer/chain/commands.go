@@ -2,13 +2,15 @@ package chain
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
+	cfefingerprintmoduletypes "github.com/chain4energy/c4e-chain/x/cfefingerprint/types"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/require"
 	"os"
 	"regexp"
@@ -415,15 +417,15 @@ func (n *NodeConfig) RemoveCampaignError(campaignId, from, errorString string) {
 	require.NoError(n.t, err)
 }
 
-func (n *NodeConfig) CreatePayloadLink(payloadHash, from string) {
+func (n *NodeConfig) CreatePayloadLink(payloadHash, from string) string {
 	n.LogActionF("create payload link")
 	cmd := []string{"c4ed", "tx", "cfefingerprint", "create-reference-payload-link", payloadHash, formatFromFlag(from), outputJsonFlag}
 	outBuffer, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, "code\":0")
 	require.NoError(n.t, err)
-	txHash := n.getTxHashFromTxBytes(outBuffer.Bytes())
-	result := n.QueryTx(txHash)
-	fmt.Println(result)
+	var res cfefingerprintmoduletypes.MsgCreateReferencePayloadLinkResponse
+	n.getTxResponse(outBuffer.Bytes(), &res)
 	n.LogActionF("created payload link from payload hash %s", payloadHash)
+	return res.ReferenceId
 }
 
 func (n *NodeConfig) CreatePayloadLinkError(payloadHash, from, errorString string) {
@@ -450,33 +452,16 @@ func formatDepositFlag(desposit sdk.Coin) string {
 	return fmt.Sprintf("--deposit=%s", desposit)
 }
 
-func (n *NodeConfig) getTxHashFromTxBytes(bytes []byte) string {
-	fmt.Println(string(bytes))
-	var respType proto.Message
-	err := util.Cdc.UnmarshalJSON(bytes, respType)
+func (n *NodeConfig) getTxResponse(bytes []byte, v codec.ProtoMarshaler) {
+	var txResponse map[string]interface{}
+	err := json.Unmarshal(bytes, &txResponse)
 	require.NoError(n.t, err)
-
-	txResp := respType.(*sdk.TxResponse)
-	data, err := hex.DecodeString(txResp.Data)
+	dataString, ok := txResponse["data"]
+	require.True(n.t, ok)
+	data, err := hex.DecodeString(fmt.Sprintf("%v", dataString))
 	require.NoError(n.t, err)
-
-	txMsgData := sdk.TxMsgData{}
+	var txMsgData = sdk.TxMsgData{}
 	err = util.Cdc.Unmarshal(data, &txMsgData)
+	err = util.Cdc.Unmarshal(txMsgData.MsgResponses[0].Value, v)
 	require.NoError(n.t, err)
-	fmt.Println(txMsgData)
-	//var txResponse map[string]interface{}
-	//err := json.Unmarshal(bytes, &txResponse)
-	//require.NoError(n.t, err)
-	//hash, err := getTxHash(txResponse)
-	//require.NoError(n.t, err)
-	return "hash"
-}
-
-func getTxHash(responseJson map[string]interface{}) (string, error) {
-	txHash, ok := responseJson["data"]
-	if !ok {
-		return "", fmt.Errorf("tx hash not found in response")
-	}
-	str := fmt.Sprintf("%v", txHash)
-	return str, nil
 }
