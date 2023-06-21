@@ -38,13 +38,13 @@ message MsgPublishEnergyTransferOfferResponse {
 message MsgStartEnergyTransfer {
   string creator = 1;
   uint64 energy_transfer_offer_id = 2;
-  string charger_id = 3;
-  string owner_account_address = 4;
+//  string charger_id = 3;
+//  string owner_account_address = 4;
   uint64 offered_tariff = 5;
-  string collateral = 6 [
-    (gogoproto.nullable) = true,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
-  ];
+//  string collateral = 6 [
+//    (gogoproto.nullable) = true,
+//    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+//  ];
   uint64 energy_to_transfer = 7; // Wh
 }
 
