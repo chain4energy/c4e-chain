@@ -24,9 +24,9 @@ service Msg {
 
 message MsgPublishEnergyTransferOffer {
   string creator = 1;
-  string charger_id = 2;
-  uint64 tariff = 3;
-  Location location = 4;
+  string charger_id = 2; // eq EVGC011221122GK0122
+  uint64 tariff = 3; // tariff per Wh in uc4e
+  Location location = 4; // location of the charger eq '{"latitude": "34.4", "longitude": "5.2"}'
   string name = 5;
   PlugType plug_type = 6;
 }
@@ -45,7 +45,7 @@ message MsgStartEnergyTransfer {
     (gogoproto.nullable) = true,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
-  uint64 energy_to_transfer = 7;
+  uint64 energy_to_transfer = 7; // Wh
 }
 
 message MsgStartEnergyTransferResponse {
