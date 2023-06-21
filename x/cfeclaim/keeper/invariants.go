@@ -23,9 +23,9 @@ func CampaignCurrentAmountSumCheckInvariant(k Keeper) sdk.Invariant {
 			return sdk.FormatInvariant(types.ModuleName, campaignCurrentAmountSumInvariant, "campaigns list is empty"), false
 		}
 
-		var vestingCampaignsCurrentAmount = sdk.NewCoins()
+		var vestingCampaignsCurrentAmount sdk.Coins
 		var lockedInReservations = math.ZeroInt()
-		var defaultCampaignsCurrentAmount = sdk.NewCoins()
+		var defaultCampaignsCurrentAmount sdk.Coins
 
 		for _, campaign := range campaigns {
 			if campaign.CampaignType == types.VestingPoolCampaign {
@@ -44,7 +44,7 @@ func CampaignCurrentAmountSumCheckInvariant(k Keeper) sdk.Invariant {
 				fmt.Sprintf("campaigns current amount sum is not equal to cfeclaim module account balance (%v != %v)", defaultCampaignsCurrentAmount, cfeaidropAccountCoins)), true
 		}
 
-		if !vestingCampaignsCurrentAmount.AmountOf(k.vestingKeeper.Denom(ctx)).Equal(lockedInReservations) {
+		if !vestingCampaignsCurrentAmount.IsEqual(sdk.NewCoins(sdk.NewCoin(k.vestingKeeper.Denom(ctx), lockedInReservations))) {
 			return sdk.FormatInvariant(types.ModuleName, campaignCurrentAmountSumInvariant,
 				fmt.Sprintf("campaigns current amount sum is not equal to lock tokens in vesting pools reservations (%v != %v)", vestingCampaignsCurrentAmount, lockedInReservations)), true
 		}

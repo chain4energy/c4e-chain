@@ -94,16 +94,16 @@ func (h *ContextC4eClaimUtils) DeleteClaimRecordError(ownerAddress sdk.AccAddres
 	h.C4eClaimUtils.DeleteClaimRecordError(h.testContext.GetContext(), ownerAddress, campaignId, userAddress, errorMessage)
 }
 
-func (h *ContextC4eClaimUtils) AddCoinsToCampaignOwnerAcc(srcAddress sdk.AccAddress, amountOfCoins math.Int) {
-	h.BankUtils.AddDefaultDenomCoinsToAccount(h.testContext.GetContext(), amountOfCoins, srcAddress)
+func (h *ContextC4eClaimUtils) AddCoinsToCampaignOwnerAcc(srcAddress sdk.AccAddress, coins sdk.Coins) {
+	h.BankUtils.AddCoinsToAccount(h.testContext.GetContext(), coins, srcAddress)
 }
 
 func (h *ContextC4eClaimUtils) AddClaimRecordsError(srcAddress sdk.AccAddress, campaignId uint64, claimRecordEntries []*cfeclaimtypes.ClaimRecordEntry, errorMessage string) {
 	h.C4eClaimUtils.AddClaimRecordsError(h.testContext.GetContext(), srcAddress, campaignId, claimRecordEntries, errorMessage)
 }
 
-func (h *ContextC4eClaimUtils) ClaimInitial(claimer sdk.AccAddress, campaignId uint64, expectedAmount int64) {
-	h.C4eClaimUtils.ClaimInitial(h.testContext.GetContext(), campaignId, claimer, expectedAmount)
+func (h *ContextC4eClaimUtils) ClaimInitial(claimer sdk.AccAddress, campaignId uint64) {
+	h.C4eClaimUtils.ClaimInitial(h.testContext.GetContext(), campaignId, claimer)
 }
 
 func (m *ContextC4eClaimUtils) ValidateGenesisAndInvariants() {

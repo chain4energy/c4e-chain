@@ -39,9 +39,8 @@ func TestCampaignCurrentAmountSumCheckInvariantError(t *testing.T) {
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	coinsToAddToModule := sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(1000))
-	amountSumCoins := sdk.NewCoin(testenv.DefaultTestDenom, amountSum)
 	testHelper.BankUtils.BankUtils.AddCoinsToModule(testHelper.Context, coinsToAddToModule, cfeclaimtypes.ModuleName)
 	testHelper.C4eClaimUtils.CheckNonNegativeCoinStateInvariant(testHelper.Context, true,
 		fmt.Sprintf("cfeclaim: campaigns current amount sum invariant\ncampaigns current amount sum is not equal to cfeclaim module account balance (%s != %s)\n",
-			amountSumCoins, amountSumCoins.Add(coinsToAddToModule)))
+			amountSum, amountSum.Add(coinsToAddToModule)))
 }

@@ -125,3 +125,7 @@ func (su *ContextStakingUtils) GetValidators() []stakingtypes.Validator {
 func (su *StakingUtils) GetValidators(ctx sdk.Context) []stakingtypes.Validator {
 	return su.helperStakingkeeper.GetValidators(ctx, 100)
 }
+
+func (su *ContextStakingUtils) GetStakingDenom() string {
+	return su.StakingUtils.GetStakingDenom(su.testContext.GetContext())
+}
