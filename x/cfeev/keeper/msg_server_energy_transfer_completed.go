@@ -14,7 +14,7 @@ func (k msgServer) EnergyTransferCompleted(goCtx context.Context, msg *types.Msg
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	if err := k.Keeper.EnergyTransferCompleted(ctx, msg.EnergyTransferId, msg.GetUsedServiceUnits()); err != nil {
-		k.Logger(ctx).Error("complete energy transfer error", "error", err)
+		k.Logger(ctx).Debug("complete energy transfer error", "error", err)
 		return nil, err
 	}
 

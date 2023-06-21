@@ -37,14 +37,8 @@ message MsgPublishEnergyTransferOfferResponse {
 message MsgStartEnergyTransfer {
   string creator = 1;
   uint64 energy_transfer_offer_id = 2;
-  string charger_id = 3;
-  string owner_account_address = 4;
-  uint64 offered_tariff = 5;
-  string collateral = 6 [
-    (gogoproto.nullable) = true,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
-  ];
-  uint64 energy_to_transfer = 7; // Wh
+  uint64 offered_tariff = 3;
+  uint64 energy_to_transfer = 4;
 }
 
 message MsgStartEnergyTransferResponse {
@@ -52,19 +46,17 @@ message MsgStartEnergyTransferResponse {
 }
 
 message MsgEnergyTransferStarted {
-  string creator = 1;
+  string creator = 1; // TODO: add authorization that only verified actors can send this message
   uint64 energy_transfer_id = 2;
-  string charger_id = 3;
-  string info = 4;
+  string info = 3;
 }
 
 message MsgEnergyTransferStartedResponse {
 }
 
 message MsgEnergyTransferCompleted {
-  string creator = 1;
+  string creator = 1;  // TODO: add authorization that only verified actors can send this message
   uint64 energy_transfer_id = 2;
-  string charger_id = 3;
   uint64 used_service_units = 4;
   string info = 5;
 }
@@ -73,9 +65,8 @@ message MsgEnergyTransferCompletedResponse {
 }
 
 message MsgCancelEnergyTransfer {
-  string creator = 1;
+  string creator = 1;  // TODO: add authorization that only verified actors can send this message
   uint64 energy_transfer_id = 2;
-  string charger_id = 3;
   string error_info = 4;
   string error_code = 5;
 }

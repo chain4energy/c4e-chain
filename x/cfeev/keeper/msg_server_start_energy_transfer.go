@@ -13,16 +13,13 @@ func (k msgServer) StartEnergyTransfer(goCtx context.Context, msg *types.MsgStar
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	energyTransferId, err := k.Keeper.StartEnergyTransfer(ctx,
-		msg.OwnerAccountAddress,
 		msg.Creator,
 		msg.EnergyTransferOfferId,
-		msg.ChargerId,
 		msg.GetOfferedTariff(),
 		msg.GetEnergyToTransfer(),
-		*msg.Collateral,
 	)
 	if err != nil {
-		k.Logger(ctx).Error("start energy transfer failed", "error", err)
+		k.Logger(ctx).Debug("start energy transfer failed", "error", err)
 		return nil, err
 	}
 

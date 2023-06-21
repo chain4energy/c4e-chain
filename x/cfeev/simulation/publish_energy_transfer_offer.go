@@ -36,7 +36,7 @@ func publishEnergyTransferOffer(ak types.AccountKeeper, bk types.BankKeeper, cfe
 	msgPublishEnergyTransferOffer := &types.MsgPublishEnergyTransferOffer{
 		Creator:   simAccount.Address.String(),
 		ChargerId: simtypes.RandStringOfLength(r, 10),
-		Tariff:    utils.RandUint64(r, 1000),
+		Tariff:    utils.RandUint64(r, 50),
 		Location:  randomLocation(r),
 		Name:      simtypes.RandStringOfLength(r, 10),
 		PlugType:  types.PlugType(utils.RandInt64(r, 4)),

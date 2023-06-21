@@ -22,7 +22,7 @@ func (k msgServer) PublishEnergyTransferOffer(goCtx context.Context, msg *types.
 		msg.GetPlugType(),
 	)
 	if err != nil {
-		k.Logger(ctx).Error("publish energy transfer offer error", "error", err)
+		k.Logger(ctx).Debug("publish energy transfer offer error", "error", err)
 		return nil, err
 	}
 

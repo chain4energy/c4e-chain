@@ -118,7 +118,7 @@ release:
 
 # blockchain simulation tests
 
-SIM_NUM_BLOCKS = 150
+SIM_NUM_BLOCKS = 1000
 SIM_BLOCK_SIZE = 25
 SIM_COMMIT = true
 SIM_SEED = 50

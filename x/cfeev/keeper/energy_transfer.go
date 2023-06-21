@@ -6,20 +6,18 @@ import (
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k Keeper) StartEnergyTransfer(
 	ctx sdk.Context,
-	owner string,
 	driver string,
 	energyTransferOfferId uint64,
-	chargerId string,
 	offeredTariff uint64,
 	energyToTransfer uint64,
-	collateral math.Int,
 ) (*uint64, error) {
-	k.Logger(ctx).Debug("start energy transfer", "owner", owner, "driver", driver, "energyTransferOfferId",
-		energyTransferOfferId, "chargerId", chargerId, "offeredTariff", offeredTariff, "energyToTransfer", energyToTransfer, "collateral", collateral)
+	k.Logger(ctx).Debug("start energy transfer", "driver", driver, "energyTransferOfferId",
+		energyTransferOfferId, "offeredTariff", offeredTariff, "energyToTransfer", energyToTransfer)
 
 	offer, err := k.MustGetEnergyTransferOffer(ctx, energyTransferOfferId)
 	if err != nil {
@@ -42,7 +40,14 @@ func (k Keeper) StartEnergyTransfer(
 	if err != nil {
 		return nil, err
 	}
+
+	collateral := math.NewIntFromUint64(offeredTariff * energyToTransfer)
 	coinsToSend := sdk.NewCoins(sdk.NewCoin(k.Denom(ctx), collateral))
+	spendableCoins := k.bankKeeper.SpendableCoins(ctx, driverAccAddress)
+	if !coinsToSend.IsAllLTE(spendableCoins) {
+		return nil, errors.Wrapf(sdkerrors.ErrInsufficientFunds, "owner balance is too small (%s < %s)", spendableCoins, coinsToSend)
+	}
+
 	if err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, driverAccAddress, types.ModuleName, coinsToSend); err != nil {
 		return nil, err
 	}
@@ -63,7 +68,7 @@ func (k Keeper) StartEnergyTransfer(
 	k.EmitChangeOfferStatusEvent(ctx, energyTransferObj.GetEnergyTransferOfferId(), types.ChargerStatus_ACTIVE, types.ChargerStatus_BUSY)
 	event := &types.EventEnergyTransferCreated{
 		EnergyTransferId:       energyTransferId,
-		ChargerId:              chargerId,
+		ChargerId:              offer.GetChargerId(),
 		EnergyAmountToTransfer: energyTransferObj.GetEnergyToTransfer(),
 	}
 	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
@@ -103,53 +108,61 @@ func (k Keeper) EnergyTransferStarted(ctx sdk.Context, energyTransferId uint64) 
 
 func (k Keeper) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64, usedServiceUnits uint64) error {
 	k.Logger(ctx).Debug("energy transfer completed", "energyTransferId", energyTransferId, "usedServiceUnits", usedServiceUnits)
-	energyTransferObj, err := k.MustGetEnergyTransfer(ctx, energyTransferId)
+	energyTransfer, err := k.MustGetEnergyTransfer(ctx, energyTransferId)
 	if err != nil {
 		return err
 	}
 
-	if energyTransferObj.EnergyToTransfer == usedServiceUnits {
-		if err = k.sendEntireCallateralToCPOwner(ctx, energyTransferObj); err != nil {
+	if energyTransfer.Status != types.TransferStatus_REQUESTED && energyTransfer.Status != types.TransferStatus_ONGOING {
+		return errors.Wrapf(types.ErrWrongEnergyTransferStatus,
+			"energy transfer status must be %s or %s not %s",
+			types.TransferStatus_name[int32(types.TransferStatus_REQUESTED)],
+			types.TransferStatus_name[int32(types.TransferStatus_ONGOING)],
+			energyTransfer.Status.String())
+	}
+
+	if energyTransfer.EnergyToTransfer == usedServiceUnits {
+		if err = k.sendEntireCallateralToCPOwner(ctx, energyTransfer); err != nil {
 			return err
 		}
-	} else if energyTransferObj.EnergyToTransfer > usedServiceUnits {
-		if err = k.sendUnusedCallateral(ctx, energyTransferObj, usedServiceUnits); err != nil {
+	} else if energyTransfer.EnergyToTransfer > usedServiceUnits {
+		if err = k.sendUnusedCallateral(ctx, energyTransfer, usedServiceUnits); err != nil {
 			return err
 		}
-	} else if usedServiceUnits > energyTransferObj.EnergyToTransfer {
+	} else if usedServiceUnits > energyTransfer.EnergyToTransfer {
 		// TODO: In some cases, the charger may charge more watt-hours than intended, please handle these cases accordingly.
 		// Proposal - if the number of watt-hours that has been sent exceeds the number set earlier by less than 4, do not return
 		// an error, otherwise inform the user about it
-		if (usedServiceUnits - energyTransferObj.EnergyToTransfer) < types.SAFE_AMOUNT_TO_EXCEED_BY_CHARGER {
-			if err = k.sendEntireCallateralToCPOwner(ctx, energyTransferObj); err != nil {
+		if (usedServiceUnits - energyTransfer.EnergyToTransfer) < types.SAFE_AMOUNT_TO_EXCEED_BY_CHARGER {
+			if err = k.sendEntireCallateralToCPOwner(ctx, energyTransfer); err != nil {
 				return err
 			}
 		}
 		// TODO: for now we don't inform the user about the exceeded amount of energy, but we should do it in the future
-		if err = k.sendEntireCallateralToCPOwner(ctx, energyTransferObj); err != nil {
+		if err = k.sendEntireCallateralToCPOwner(ctx, energyTransfer); err != nil {
 			return err
 		}
 		k.Logger(ctx).Error("used service units exeed energy to transfer", "energyToTransfer",
-			energyTransferObj.EnergyToTransfer, "usedServiceUnits", usedServiceUnits)
+			energyTransfer.EnergyToTransfer, "usedServiceUnits", usedServiceUnits)
 	}
 
-	energyTransferObj.Status = types.TransferStatus_PAID
-	energyTransferObj.PaidDate = ctx.BlockTime()
-	energyTransferObj.EnergyTransferred = usedServiceUnits
-	k.SetEnergyTransfer(ctx, *energyTransferObj)
+	energyTransfer.Status = types.TransferStatus_PAID
+	energyTransfer.PaidDate = ctx.BlockTime()
+	energyTransfer.EnergyTransferred = usedServiceUnits
+	k.SetEnergyTransfer(ctx, *energyTransfer)
 
-	offer, err := k.MustGetEnergyTransferOffer(ctx, energyTransferObj.EnergyTransferOfferId)
+	offer, err := k.MustGetEnergyTransferOffer(ctx, energyTransfer.EnergyTransferOfferId)
 	if err != nil {
 		return err
 	}
 	offer.ChargerStatus = types.ChargerStatus_ACTIVE
 	k.SetEnergyTransferOffer(ctx, *offer)
 
-	k.EmitChangeOfferStatusEvent(ctx, energyTransferObj.GetEnergyTransferOfferId(), types.ChargerStatus_BUSY, types.ChargerStatus_ACTIVE)
+	k.EmitChangeOfferStatusEvent(ctx, energyTransfer.GetEnergyTransferOfferId(), types.ChargerStatus_BUSY, types.ChargerStatus_ACTIVE)
 
 	event := &types.EventCompleteEnergyTransfer{
 		EnergyTransferId:      energyTransferId,
-		EnergyTransferOfferId: energyTransferObj.GetEnergyTransferOfferId(),
+		EnergyTransferOfferId: energyTransfer.GetEnergyTransferOfferId(),
 		EnergyTransferred:     usedServiceUnits,
 	}
 	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
@@ -186,9 +199,9 @@ func (k Keeper) CancelEnergyTransfer(ctx sdk.Context, energyTransferId uint64) e
 	}
 
 	// TODO: there were some problems with this (sometimes status was ongoing), leave commented out for now
-	// if energyTransferObj.GetStatus() != types.TransferStatus_REQUESTED {
-	// 	return nil, errors.Wrap(types.ErrWrongEnergyTransferStatus, energyTransferObj.GetStatus().String())
-	// }
+	if energyTransferObj.GetStatus() != types.TransferStatus_REQUESTED {
+		return errors.Wrap(types.ErrWrongEnergyTransferStatus, energyTransferObj.GetStatus().String())
+	}
 
 	energyTransferObj.Status = types.TransferStatus_CANCELLED
 
@@ -238,4 +251,18 @@ func (k Keeper) parseAddressAndSendTokensFromModule(ctx sdk.Context, targetAccou
 		return err
 	}
 	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, target, collateralCoins)
+}
+
+func (k Keeper) RemoveTransfer(ctx sdk.Context, id uint64) error {
+	transfer, err := k.MustGetEnergyTransfer(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if transfer.Status != types.TransferStatus_PAID && transfer.Status != types.TransferStatus_CANCELLED {
+		return errors.Wrap(types.ErrWrongEnergyTransferStatus, "energy transfer status is not PAID or CANCELLED")
+	}
+
+	k.RemoveEnergyTransfer(ctx, id)
+	return nil
 }

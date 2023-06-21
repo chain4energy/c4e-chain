@@ -121,11 +121,8 @@ func (h *C4eEvUtils) StartEnergyTransfer(ctx sdk.Context, transfer types.EnergyT
 	msgStartTransfer := &types.MsgStartEnergyTransfer{
 		Creator:               transfer.DriverAccountAddress,
 		EnergyTransferOfferId: newOfferId,
-		ChargerId:             transfer.ChargerId,
-		OwnerAccountAddress:   transfer.OwnerAccountAddress,
 		OfferedTariff:         transfer.OfferedTariff,
 		EnergyToTransfer:      transfer.EnergyToTransfer,
-		Collateral:            &transfer.Collateral,
 	}
 
 	msgServer := keeper.NewMsgServerImpl(*h.helperCfeevKeeper)

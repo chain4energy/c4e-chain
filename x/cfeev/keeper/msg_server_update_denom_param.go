@@ -19,6 +19,7 @@ func (k msgServer) UpdateDenomParam(goCtx context.Context, msg *types.MsgUpdateD
 	}
 
 	if err := k.SetParams(ctx, types.Params{Denom: msg.Denom}); err != nil {
+		k.Logger(ctx).Debug("update denom param error", "error", err)
 		return nil, errors.Wrap(govtypes.ErrInvalidProposalMsg, err.Error())
 	}
 

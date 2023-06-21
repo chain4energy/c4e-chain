@@ -8,10 +8,10 @@ import (
 )
 
 var (
-	MAX_LATITUDE  = sdk.NewDec(90)
-	MIN_LATITUDE  = sdk.NewDec(-90)
-	MAX_LONGITUDE = sdk.NewDec(180)
-	MIN_LONGITUDE = sdk.NewDec(-180)
+	MaxLatitude  = sdk.NewDec(90)
+	MinLatitude  = sdk.NewDec(-90)
+	MaxLongitude = sdk.NewDec(180)
+	MinLongitude = sdk.NewDec(-180)
 )
 
 // Campaign types
@@ -56,11 +56,11 @@ func (l Location) Validate() error {
 	if l.Longitude == nil {
 		return errors.Wrapf(c4eerrors.ErrParam, "longitude cannot be nil")
 	}
-	if l.Latitude.GT(MAX_LATITUDE) || l.Latitude.LT(MIN_LATITUDE) {
-		return errors.Wrapf(c4eerrors.ErrParam, "latitude must be between %s and %s", MAX_LATITUDE, MIN_LATITUDE)
+	if l.Latitude.GT(MaxLatitude) || l.Latitude.LT(MinLatitude) {
+		return errors.Wrapf(c4eerrors.ErrParam, "latitude must be between %s and %s", MaxLatitude, MinLatitude)
 	}
-	if l.Longitude.GT(MAX_LONGITUDE) || l.Longitude.LT(MIN_LONGITUDE) {
-		return errors.Wrapf(c4eerrors.ErrParam, "longitude must be between %s and %s", MAX_LONGITUDE, MIN_LONGITUDE)
+	if l.Longitude.GT(MaxLongitude) || l.Longitude.LT(MinLongitude) {
+		return errors.Wrapf(c4eerrors.ErrParam, "longitude must be between %s and %s", MaxLongitude, MinLongitude)
 	}
 	return nil
 }

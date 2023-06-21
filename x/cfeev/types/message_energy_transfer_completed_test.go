@@ -1,7 +1,6 @@
 package types_test
 
 import (
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 	"testing"
 
@@ -24,7 +23,6 @@ func TestMsgEnergyTransferCompleted_ValidateBasic(t *testing.T) {
 			msg: types.MsgEnergyTransferCompleted{
 				Creator:          "invalid_address",
 				EnergyTransferId: 0,
-				ChargerId:        validChargerId,
 				UsedServiceUnits: 0,
 				Info:             "",
 			},
@@ -36,22 +34,9 @@ func TestMsgEnergyTransferCompleted_ValidateBasic(t *testing.T) {
 			msg: types.MsgEnergyTransferCompleted{
 				Creator:          sample.AccAddress(),
 				EnergyTransferId: 0,
-				ChargerId:        validChargerId,
 				UsedServiceUnits: 0,
 				Info:             "",
 			},
-		},
-		{
-			name: "empty charger id",
-			msg: types.MsgEnergyTransferCompleted{
-				Creator:          sample.AccAddress(),
-				EnergyTransferId: 0,
-				ChargerId:        "",
-				UsedServiceUnits: 0,
-				Info:             "",
-			},
-			err:    c4eerrors.ErrParam,
-			errMsg: "charger id cannot be empty: wrong param value",
 		},
 	}
 	for _, tt := range tests {

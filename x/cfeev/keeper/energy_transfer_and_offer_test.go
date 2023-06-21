@@ -29,7 +29,6 @@ func TestEnergyTransferCancel(t *testing.T) {
 	msgCancelTransfer := &types.MsgCancelEnergyTransfer{
 		Creator:          transfer.OwnerAccountAddress,
 		EnergyTransferId: energyTransferId,
-		ChargerId:        offer.GetChargerId(),
 		ErrorInfo:        "Test_cancel",
 	}
 

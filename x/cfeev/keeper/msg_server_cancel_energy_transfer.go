@@ -14,7 +14,7 @@ func (k msgServer) CancelEnergyTransfer(goCtx context.Context, msg *types.MsgCan
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	if err := k.Keeper.CancelEnergyTransfer(ctx, msg.GetEnergyTransferId()); err != nil {
-		k.Logger(ctx).Error("cancel energy transfer error", "error", err)
+		k.Logger(ctx).Debug("cancel energy transfer error", "error", err)
 		return nil, err
 	}
 

@@ -29,7 +29,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		accs[i] = acc.Address.String()
 	}
 	cfeevGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
+		Params: types.NewParams(sdk.DefaultBondDenom),
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&cfeevGenesis)
@@ -53,43 +53,43 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	var weightMsgPublishEnergyTransferOffer = 20
+	var weightMsgPublishEnergyTransferOffer = 100
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgPublishEnergyTransferOffer,
 		cfeevsimulation.SimulateMsgPublishEnergyTransferOffer(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgStartEnergyTransfer = 20
+	var weightMsgStartEnergyTransfer = 100
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgStartEnergyTransfer,
 		cfeevsimulation.SimulateMsgStartEnergyTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	//var weightMsgEnergyTransferStarted int
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgEnergyTransferStarted,
-	//	cfeevsimulation.SimulateMsgEnergyTransferStarted(am.accountKeeper, am.bankKeeper, am.keeper),
-	//))
-	//
-	//var weightMsgEnergyTransferCompleted int
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgEnergyTransferCompleted,
-	//	cfeevsimulation.SimulateMsgEnergyTransferCompleted(am.accountKeeper, am.bankKeeper, am.keeper),
-	//))
-	//
-	//var weightMsgCancelEnergyTransfer int
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgCancelEnergyTransfer,
-	//	cfeevsimulation.SimulateMsgCancelEnergyTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
-	//))
-	//
+	var weightMsgEnergyTransferStarted = 100
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgEnergyTransferStarted,
+		cfeevsimulation.SimulateMsgEnergyTransferStarted(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgEnergyTransferCompleted = 100
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgEnergyTransferCompleted,
+		cfeevsimulation.SimulateMsgEnergyTransferCompleted(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgCancelEnergyTransfer = 100
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCancelEnergyTransfer,
+		cfeevsimulation.SimulateMsgCancelEnergyTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
 	var weightMsgRemoveEnergyOffer = 10
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgRemoveEnergyOffer,
 		cfeevsimulation.SimulateMsgRemoveEnergyOffer(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgRemoveTransfer = 10
+	var weightMsgRemoveTransfer = 50
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgRemoveTransfer,
 		cfeevsimulation.SimulateMsgRemoveTransfer(am.accountKeeper, am.bankKeeper, am.keeper),

@@ -20,11 +20,15 @@ func SimulateMsgRemoveTransfer(
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		allEnergyTransferOffers := k.GetAllEnergyTransferOffers(ctx)
-		energyTransferOffer := allEnergyTransferOffers[r.Intn(len(allEnergyTransferOffers))]
-		simAccount, found := simtypes.FindAccount(accs, sdk.MustAccAddressFromBech32(energyTransferOffer.Owner))
+		allEnergyTransfers := k.GetAllEnergyTransfers(ctx)
+		energyTransfersLen := len(allEnergyTransfers)
+		if energyTransfersLen == 0 {
+			return simtypes.NewOperationMsg(&types.MsgRemoveTransfer{}, false, "", nil), nil, nil
+		}
+		energyTransferOffer := allEnergyTransfers[r.Intn(energyTransfersLen)]
+		simAccount, found := simtypes.FindAccount(accs, sdk.MustAccAddressFromBech32(energyTransferOffer.DriverAccountAddress))
 		if !found {
-
+			return simtypes.NewOperationMsg(&types.MsgRemoveTransfer{}, false, "", nil), nil, nil
 		}
 		msgRemoveTransfer := &types.MsgRemoveTransfer{
 			Creator: simAccount.Address.String(),

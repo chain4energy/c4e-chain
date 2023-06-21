@@ -5,6 +5,7 @@ import (
 	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k Keeper) PublishEnergyTransferOffer(
@@ -57,4 +58,18 @@ func (k Keeper) PublishEnergyTransferOffer(
 	}
 	k.Logger(ctx).Debug("new publish energy transfer ret", "id", id)
 	return &id, nil
+}
+
+func (k Keeper) RemoveEnergyOffer(ctx sdk.Context, creator string, energyOfferId uint64) error {
+	offer, err := k.MustGetEnergyTransferOffer(ctx, energyOfferId)
+	if err != nil {
+		return err
+	}
+
+	if offer.Owner != creator {
+		return errors.Wrapf(sdkerrors.ErrorInvalidSigner, "address %s is not a creator of energy offer with id %d", creator, offer.Id)
+	}
+
+	k.RemoveEnergyTransferOffer(ctx, energyOfferId)
+	return nil
 }
