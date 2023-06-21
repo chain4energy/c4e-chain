@@ -20,8 +20,7 @@ func SimulateMsgRemoveEnergyOffer(
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		simAccount, _ := simtypes.RandomAcc(r, accs)
-		id, err := publishEnergyTransferOffer(ak, bk, k, app, r, ctx, accs, chainID)
+		simAccount, id, err := publishEnergyTransferOffer(ak, bk, k, app, r, ctx, accs, chainID)
 		if err != nil {
 			return simtypes.NewOperationMsg(&types.MsgRemoveEnergyOffer{}, false, "", nil), nil, nil
 		}
@@ -31,7 +30,7 @@ func SimulateMsgRemoveEnergyOffer(
 			Id:      id,
 		}
 
-		if err := simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgRemoveEnergyOffer, chainID); err != nil {
+		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgRemoveEnergyOffer, chainID); err != nil {
 			return simtypes.NewOperationMsg(msgRemoveEnergyOffer, false, "", nil), nil, nil
 		}
 

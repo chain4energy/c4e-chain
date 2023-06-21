@@ -53,18 +53,18 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	var weightMsgPublishEnergyTransferOffer int = 10
+	var weightMsgPublishEnergyTransferOffer = 20
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgPublishEnergyTransferOffer,
 		cfeevsimulation.SimulateMsgPublishEnergyTransferOffer(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	//var weightMsgStartEnergyTransfer int
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgStartEnergyTransfer,
-	//	cfeevsimulation.SimulateMsgStartEnergyTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
-	//))
-	//
+	var weightMsgStartEnergyTransfer = 20
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgStartEnergyTransfer,
+		cfeevsimulation.SimulateMsgStartEnergyTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
 	//var weightMsgEnergyTransferStarted int
 	//operations = append(operations, simulation.NewWeightedOperation(
 	//	weightMsgEnergyTransferStarted,
@@ -88,12 +88,12 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		weightMsgRemoveEnergyOffer,
 		cfeevsimulation.SimulateMsgRemoveEnergyOffer(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
-	//
-	//var weightMsgRemoveTransfer int
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgRemoveTransfer,
-	//	cfeevsimulation.SimulateMsgRemoveTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
-	//))
+
+	var weightMsgRemoveTransfer = 10
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgRemoveTransfer,
+		cfeevsimulation.SimulateMsgRemoveTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

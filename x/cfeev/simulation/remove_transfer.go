@@ -1,6 +1,9 @@
 package simulation
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/simulation"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"math/rand"
 
 	"github.com/chain4energy/c4e-chain/x/cfeev/keeper"
@@ -17,13 +20,20 @@ func SimulateMsgRemoveTransfer(
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		simAccount, _ := simtypes.RandomAcc(r, accs)
-		msg := &types.MsgRemoveTransfer{
+		allEnergyTransferOffers := k.GetAllEnergyTransferOffers(ctx)
+		energyTransferOffer := allEnergyTransferOffers[r.Intn(len(allEnergyTransferOffers))]
+		simAccount, found := simtypes.FindAccount(accs, sdk.MustAccAddressFromBech32(energyTransferOffer.Owner))
+		if !found {
+
+		}
+		msgRemoveTransfer := &types.MsgRemoveTransfer{
 			Creator: simAccount.Address.String(),
+			Id:      energyTransferOffer.Id,
+		}
+		if err := simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgRemoveTransfer, chainID); err != nil {
+			return simtypes.NewOperationMsg(msgRemoveTransfer, false, "", nil), nil, nil
 		}
 
-		// TODO: Handling the RemoveTransfer simulation
-
-		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "RemoveTransfer simulation not implemented"), nil, nil
+		return simtypes.NewOperationMsg(msgRemoveTransfer, true, "", nil), nil, nil
 	}
 }
