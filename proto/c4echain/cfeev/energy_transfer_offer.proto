@@ -1,8 +1,9 @@
 syntax = "proto3";
 package chain4energy.c4echain.cfeev;
 
+import "gogoproto/gogo.proto";
+
 option go_package = "github.com/chain4energy/c4e-chain/x/cfeev/types";
-import "c4echain/cfeev/location.proto";
 
 message EnergyTransferOffer {
   uint64 id = 1;
@@ -28,4 +29,15 @@ enum PlugType {
     CHAdeMO = 2; 
     CCS = 3;
     PLUG_TYPE_UNSPECIFIED = 4;
+}
+
+message Location {
+  string latitude = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = true
+  ];
+  string longitude = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = true
+  ];
 }

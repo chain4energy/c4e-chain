@@ -19,6 +19,10 @@ func (k Keeper) PublishEnergyTransferOffer(
 	k.Logger(ctx).Debug("publish energy transfer offer", "creator", creator, "chargerId", chargerId, "location",
 		location, "tariff", tariff, "name", name, "plugType", plugType)
 
+	if err := types.ValidatePublishEnergyTransferOffer(chargerId, name, location); err != nil {
+		return nil, err
+	}
+
 	// there is a 1-1 relation between the offer and the charger
 	// check if another offer for this chargerId has been added
 	_, found := k.GetTransferOfferByChargerId(ctx, chargerId)

@@ -3,6 +3,7 @@ package utils
 import (
 	"cosmossdk.io/math"
 	"errors"
+	"fmt"
 	"math/big"
 	"math/rand"
 	"time"
@@ -80,6 +81,11 @@ func RandomDecAmount(r *rand.Rand, max sdk.Dec) sdk.Dec {
 	return sdk.NewDecFromBigIntWithPrec(randInt, sdk.Precision)
 }
 
+func RandomDecBetween(r *rand.Rand, min, max float64) sdk.Dec {
+	randomFloat := min + r.Float64()*(max-min)
+	return sdk.MustNewDecFromStr(fmt.Sprintf("%v", randomFloat))
+}
+
 func RandTimestamp(r *rand.Rand) time.Time {
 	unixTime := r.Int63n(time.Now().Unix())
 	return time.Unix(unixTime, 0)
@@ -109,6 +115,10 @@ func RandInt(n int) int64 {
 
 func RandInt64(r *rand.Rand, max int) int64 {
 	return int64(r.Intn(max))
+}
+
+func RandUint64(r *rand.Rand, max int) uint64 {
+	return uint64(r.Intn(max))
 }
 
 func RandomBool(r *rand.Rand) bool {

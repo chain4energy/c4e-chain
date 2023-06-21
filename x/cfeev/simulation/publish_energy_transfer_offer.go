@@ -1,6 +1,10 @@
 package simulation
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/simulation"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"math/rand"
 
 	"github.com/chain4energy/c4e-chain/x/cfeev/keeper"
@@ -17,13 +21,37 @@ func SimulateMsgPublishEnergyTransferOffer(
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		simAccount, _ := simtypes.RandomAcc(r, accs)
-		msg := &types.MsgPublishEnergyTransferOffer{
-			Creator: simAccount.Address.String(),
+		if err := publishEnergyTransferOffer(ak, bk, k, app, r, ctx, accs, chainID); err != nil {
+			return simtypes.NewOperationMsg(&types.MsgPublishEnergyTransferOffer{}, false, "", nil), nil, nil
 		}
+		return simtypes.NewOperationMsg(&types.MsgPublishEnergyTransferOffer{}, true, "", nil), nil, nil
+	}
+}
 
-		// TODO: Handling the PublishEnergyTransferOffer simulation
+func publishEnergyTransferOffer(ak types.AccountKeeper, bk types.BankKeeper, cfeev keeper.Keeper,
+	app *baseapp.BaseApp, r *rand.Rand, ctx sdk.Context, accs []simtypes.Account, chainID string) error {
 
-		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "PublishEnergyTransferOffer simulation not implemented"), nil, nil
+	simAccount, _ := simtypes.RandomAcc(r, accs)
+	msgPublishEnergyTransferOffer := &types.MsgPublishEnergyTransferOffer{
+		Creator:   simAccount.Address.String(),
+		ChargerId: simtypes.RandStringOfLength(r, 10),
+		Tariff:    utils.RandUint64(r, 1000),
+		Location:  randomLocation(r),
+		Name:      simtypes.RandStringOfLength(r, 10),
+		PlugType:  types.PlugType(utils.RandInt64(r, 4)),
+	}
+
+	if err := simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgPublishEnergyTransferOffer, chainID); err != nil {
+		return err
+	}
+	return nil
+}
+
+func randomLocation(r *rand.Rand) *types.Location {
+	latitude := utils.RandomDecBetween(r, -90, 90)
+	longitude := utils.RandomDecBetween(r, -180, 190)
+	return &types.Location{
+		Latitude:  &latitude,
+		Longitude: &longitude,
 	}
 }

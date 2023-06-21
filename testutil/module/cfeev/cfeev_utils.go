@@ -68,8 +68,9 @@ func (h *C4eEvUtils) VerifyEnergyTransferOfferStatus(ctx sdk.Context, id uint64,
 }
 
 func (h *C4eEvUtils) CreateExampleTestEVObjects() (types.EnergyTransferOffer, types.EnergyTransfer) {
-
-	location := types.Location{Latitude: "34.4", Longitude: "5.2"}
+	latitide := sdk.MustNewDecFromStr("34.4")
+	longitude := sdk.MustNewDecFromStr("5.4")
+	location := types.Location{Latitude: &latitide, Longitude: &longitude}
 
 	var energyTransferOffer = types.EnergyTransferOffer{
 		Owner:         "c4e1k4quu6r2jl0afrn7m5h6ta7707r4lm4cxktxq5",

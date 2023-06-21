@@ -48,10 +48,10 @@ func (k Keeper) StartEnergyTransfer(
 	}
 
 	var energyTransferObj = types.EnergyTransfer{
-		OwnerAccountAddress:   owner,
+		OwnerAccountAddress:   offer.GetOwner(),
 		DriverAccountAddress:  driver,
 		EnergyTransferOfferId: energyTransferOfferId,
-		ChargerId:             chargerId,
+		ChargerId:             offer.GetChargerId(),
 		Status:                types.TransferStatus_REQUESTED,
 		OfferedTariff:         offeredTariff,
 		EnergyToTransfer:      energyToTransfer,

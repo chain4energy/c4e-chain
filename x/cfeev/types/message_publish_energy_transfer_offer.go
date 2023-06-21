@@ -48,14 +48,18 @@ func (msg *MsgPublishEnergyTransferOffer) ValidateBasic() error {
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
-	if msg.GetChargerId() == "" {
-		return errors.Wrapf(c4eerrors.ErrParam, "charger id cannot be empty")
-	}
-	if msg.GetName() == "" {
-		return errors.Wrapf(c4eerrors.ErrParam, "charger name cannot be empty")
-	}
 	if msg.GetLocation() == nil {
 		return errors.Wrapf(c4eerrors.ErrParam, "charger location cannot be nil")
 	}
-	return nil
+	return ValidatePublishEnergyTransferOffer(msg.GetChargerId(), msg.GetName(), *msg.GetLocation())
+}
+
+func ValidatePublishEnergyTransferOffer(chargerId string, name string, location Location) error {
+	if chargerId == "" {
+		return errors.Wrapf(c4eerrors.ErrParam, "charger id cannot be empty")
+	}
+	if name == "" {
+		return errors.Wrapf(c4eerrors.ErrParam, "charger name cannot be empty")
+	}
+	return location.Validate()
 }

@@ -2,7 +2,6 @@ package cfevesting
 
 import (
 	"github.com/chain4energy/c4e-chain/testutil/utils"
-	cfevestingpoolsimulation "github.com/chain4energy/c4e-chain/x/cfevesting/simulation"
 	"math/rand"
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
@@ -85,55 +84,55 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
-	var weightSimulateSendToVestingAccount = 100
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightSimulateSendToVestingAccount,
-		cfevestingpoolsimulation.SimulateSendToVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-	var weightSimulateCreateVestingPool = 30
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightSimulateCreateVestingPool,
-		cfevestingpoolsimulation.SimulateCreateVestingPool(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-	var weightSimulateVestingOperations = 30
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightSimulateVestingOperations,
-		cfevestingpoolsimulation.SimulateVestingOperations(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgCreateVestingAccount = 10
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateVestingAccount,
-		cfevestingpoolsimulation.SimulateMsgCreateVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-	var weightSimulateVestingMultiOperations = 100
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightSimulateVestingMultiOperations,
-		cfevestingpoolsimulation.SimulateVestingMultiOperations(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-	var weightSimulateWithdrawAllAvailable = 50
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightSimulateWithdrawAllAvailable,
-		cfevestingpoolsimulation.SimulateWithdrawAllAvailable(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgSplitVesting = 50
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgSplitVesting,
-		cfevestingpoolsimulation.SimulateMsgSplitVesting(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgMoveAvailableVesting = 50
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgMoveAvailableVesting,
-		cfevestingpoolsimulation.SimulateMsgMoveAvailableVesting(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgMoveAvailableVestingByDenoms = 50
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgMoveAvailableVestingByDenoms,
-		cfevestingpoolsimulation.SimulateMsgMoveAvailableVestingByDenoms(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
+	//var weightSimulateSendToVestingAccount = 100
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightSimulateSendToVestingAccount,
+	//	cfevestingpoolsimulation.SimulateSendToVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//var weightSimulateCreateVestingPool = 30
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightSimulateCreateVestingPool,
+	//	cfevestingpoolsimulation.SimulateCreateVestingPool(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//var weightSimulateVestingOperations = 30
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightSimulateVestingOperations,
+	//	cfevestingpoolsimulation.SimulateVestingOperations(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//
+	//var weightMsgCreateVestingAccount = 10
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgCreateVestingAccount,
+	//	cfevestingpoolsimulation.SimulateMsgCreateVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//var weightSimulateVestingMultiOperations = 100
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightSimulateVestingMultiOperations,
+	//	cfevestingpoolsimulation.SimulateVestingMultiOperations(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//var weightSimulateWithdrawAllAvailable = 50
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightSimulateWithdrawAllAvailable,
+	//	cfevestingpoolsimulation.SimulateWithdrawAllAvailable(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//
+	//var weightMsgSplitVesting = 50
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgSplitVesting,
+	//	cfevestingpoolsimulation.SimulateMsgSplitVesting(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//
+	//var weightMsgMoveAvailableVesting = 50
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgMoveAvailableVesting,
+	//	cfevestingpoolsimulation.SimulateMsgMoveAvailableVesting(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//
+	//var weightMsgMoveAvailableVestingByDenoms = 50
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgMoveAvailableVestingByDenoms,
+	//	cfevestingpoolsimulation.SimulateMsgMoveAvailableVestingByDenoms(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

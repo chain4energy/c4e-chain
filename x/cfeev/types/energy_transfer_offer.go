@@ -1,7 +1,17 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	"fmt"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
+var (
+	MAX_LATITUDE  = sdk.NewDec(90)
+	MIN_LATITUDE  = sdk.NewDec(-90)
+	MAX_LONGITUDE = sdk.NewDec(180)
+	MIN_LONGITUDE = sdk.NewDec(-180)
 )
 
 // Campaign types
@@ -37,4 +47,20 @@ func NormalizePlugType(option string) string {
 	default:
 		return option
 	}
+}
+
+func (l Location) Validate() error {
+	if l.Latitude == nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "latitude cannot be nil")
+	}
+	if l.Longitude == nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "longitude cannot be nil")
+	}
+	if l.Latitude.GT(MAX_LATITUDE) || l.Latitude.LT(MIN_LATITUDE) {
+		return errors.Wrapf(c4eerrors.ErrParam, "latitude must be between %s and %s", MAX_LATITUDE, MIN_LATITUDE)
+	}
+	if l.Longitude.GT(MAX_LONGITUDE) || l.Longitude.LT(MIN_LONGITUDE) {
+		return errors.Wrapf(c4eerrors.ErrParam, "longitude must be between %s and %s", MAX_LONGITUDE, MIN_LONGITUDE)
+	}
+	return nil
 }
