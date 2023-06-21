@@ -133,7 +133,7 @@ func (k Keeper) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64
 		// TODO: In some cases, the charger may charge more watt-hours than intended, please handle these cases accordingly.
 		// Proposal - if the number of watt-hours that has been sent exceeds the number set earlier by less than 4, do not return
 		// an error, otherwise inform the user about it
-		if (usedServiceUnits - energyTransfer.EnergyToTransfer) < types.SAFE_AMOUNT_TO_EXCEED_BY_CHARGER {
+		if (usedServiceUnits - energyTransfer.EnergyToTransfer) < types.SafeAmountToExceedByCharger {
 			if err = k.sendEntireCallateralToCPOwner(ctx, energyTransfer); err != nil {
 				return err
 			}

@@ -1,9 +1,8 @@
 package cfeclaim
 
 import (
-	"math/rand"
-
 	"github.com/chain4energy/c4e-chain/testutil/sample"
+	cfeclaimsimulation "github.com/chain4energy/c4e-chain/x/cfeclaim/simulation"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
@@ -11,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	"math/rand"
 )
 
 // avoid unused import issue
@@ -51,47 +51,47 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	//var weightMsgClaim = 100
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgClaim,
-	//	cfeclaimsimulation.SimulateMsgClaim(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
-	//))
+	var weightMsgClaim = 100
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgClaim,
+		cfeclaimsimulation.SimulateMsgClaim(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
+	))
+
+	var weightMsgCreateCampaign = 10
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateCampaign,
+		cfeclaimsimulation.SimulateMsgCreateCampaign(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
+	))
 	//
-	//var weightMsgCreateCampaign = 10
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgCreateCampaign,
-	//	cfeclaimsimulation.SimulateMsgCreateCampaign(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
-	//))
-	////
-	//var weightMsgAddMission = 20
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgAddMission,
-	//	cfeclaimsimulation.SimulateMsgAddMission(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
-	//))
-	//
-	//var weightMsgAddClaimRecords = 100
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgAddClaimRecords,
-	//	cfeclaimsimulation.SimulateMsgAddClaimRecords(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
-	//))
-	//
-	//var weightMsgDeleteClaimRecord = 20
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgDeleteClaimRecord,
-	//	cfeclaimsimulation.SimulateMsgDeleteClaimRecord(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
-	//))
-	//
-	//var weightMsgCloseCampaign = 20
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgCloseCampaign,
-	//	cfeclaimsimulation.SimulateMsgCloseCampaign(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
-	//))
-	//
-	//var weightMsgEnableCampaign = 20
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgEnableCampaign,
-	//	cfeclaimsimulation.SimulateMsgEnableCampaign(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
-	//))
+	var weightMsgAddMission = 20
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgAddMission,
+		cfeclaimsimulation.SimulateMsgAddMission(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
+	))
+
+	var weightMsgAddClaimRecords = 100
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgAddClaimRecords,
+		cfeclaimsimulation.SimulateMsgAddClaimRecords(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
+	))
+
+	var weightMsgDeleteClaimRecord = 20
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteClaimRecord,
+		cfeclaimsimulation.SimulateMsgDeleteClaimRecord(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
+	))
+
+	var weightMsgCloseCampaign = 20
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCloseCampaign,
+		cfeclaimsimulation.SimulateMsgCloseCampaign(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
+	))
+
+	var weightMsgEnableCampaign = 20
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgEnableCampaign,
+		cfeclaimsimulation.SimulateMsgEnableCampaign(am.keeper, am.accountKeeper, am.bankKeeper, am.cfevestingKeeper),
+	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 
