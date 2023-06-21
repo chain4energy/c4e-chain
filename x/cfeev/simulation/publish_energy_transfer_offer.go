@@ -21,7 +21,8 @@ func SimulateMsgPublishEnergyTransferOffer(
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		if err := publishEnergyTransferOffer(ak, bk, k, app, r, ctx, accs, chainID); err != nil {
+		_, err := publishEnergyTransferOffer(ak, bk, k, app, r, ctx, accs, chainID)
+		if err != nil {
 			return simtypes.NewOperationMsg(&types.MsgPublishEnergyTransferOffer{}, false, "", nil), nil, nil
 		}
 		return simtypes.NewOperationMsg(&types.MsgPublishEnergyTransferOffer{}, true, "", nil), nil, nil
@@ -29,7 +30,7 @@ func SimulateMsgPublishEnergyTransferOffer(
 }
 
 func publishEnergyTransferOffer(ak types.AccountKeeper, bk types.BankKeeper, cfeev keeper.Keeper,
-	app *baseapp.BaseApp, r *rand.Rand, ctx sdk.Context, accs []simtypes.Account, chainID string) error {
+	app *baseapp.BaseApp, r *rand.Rand, ctx sdk.Context, accs []simtypes.Account, chainID string) (uint64, error) {
 
 	simAccount, _ := simtypes.RandomAcc(r, accs)
 	msgPublishEnergyTransferOffer := &types.MsgPublishEnergyTransferOffer{
@@ -41,10 +42,12 @@ func publishEnergyTransferOffer(ak types.AccountKeeper, bk types.BankKeeper, cfe
 		PlugType:  types.PlugType(utils.RandInt64(r, 4)),
 	}
 
-	if err := simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgPublishEnergyTransferOffer, chainID); err != nil {
-		return err
+	result, err := simulation.SendMessageWithRandomFeesAndResult(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgPublishEnergyTransferOffer, chainID)
+	if err != nil {
+		return 0, err
 	}
-	return nil
+	response, _ := result.MsgResponses[0].GetCachedValue().(*types.MsgPublishEnergyTransferOfferResponse)
+	return response.Id, nil
 }
 
 func randomLocation(r *rand.Rand) *types.Location {

@@ -17,7 +17,6 @@ import (
 // avoid unused import issue
 var (
 	_ = sample.AccAddress
-	_ = cfeevsimulation.FindAccount
 	_ = simappparams.StakePerAccount
 	_ = simulation.MsgEntryKind
 	_ = baseapp.Paramspace
@@ -84,11 +83,11 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	//	cfeevsimulation.SimulateMsgCancelEnergyTransfer(am.accountKeeper, am.bankKeeper, am.keeper),
 	//))
 	//
-	//var weightMsgRemoveEnergyOffer int
-	//operations = append(operations, simulation.NewWeightedOperation(
-	//	weightMsgRemoveEnergyOffer,
-	//	cfeevsimulation.SimulateMsgRemoveEnergyOffer(am.accountKeeper, am.bankKeeper, am.keeper),
-	//))
+	var weightMsgRemoveEnergyOffer = 10
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgRemoveEnergyOffer,
+		cfeevsimulation.SimulateMsgRemoveEnergyOffer(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
 	//
 	//var weightMsgRemoveTransfer int
 	//operations = append(operations, simulation.NewWeightedOperation(
