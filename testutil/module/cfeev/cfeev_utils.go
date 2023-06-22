@@ -4,11 +4,13 @@ import (
 	"cosmossdk.io/math"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"github.com/chain4energy/c4e-chain/x/cfeev/keeper"
 	cfeevmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeev/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeev/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	"math/rand"
 )
 
 type C4eEvKeeperUtils struct {
@@ -146,4 +148,13 @@ func (h *C4eEvUtils) EnergyTransferStarted(ctx sdk.Context, energyTransferId uin
 	msgConfirmTransferRequestStarted := &types.MsgEnergyTransferStarted{EnergyTransferId: energyTransferId}
 	_, err := msgServer.EnergyTransferStarted(ctx, msgConfirmTransferRequestStarted)
 	require.NoError(h.t, err)
+}
+
+func RandomLocation(r *rand.Rand) *types.Location {
+	latitude := utils.RandomDecBetween(r, -90, 90)
+	longitude := utils.RandomDecBetween(r, -180, 190)
+	return &types.Location{
+		Latitude:  &latitude,
+		Longitude: &longitude,
+	}
 }

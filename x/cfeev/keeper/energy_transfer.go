@@ -31,7 +31,7 @@ func (k Keeper) StartEnergyTransfer(
 
 	// check if the offered tariff has not been changed
 	if offer.Tariff != offeredTariff {
-		return nil, errors.Wrap(c4eerrors.ErrParam, "wrong tariff")
+		return nil, errors.Wrapf(c4eerrors.ErrParam, "wrong tariff expected %d got %d", offer.Tariff, offeredTariff)
 	}
 
 	k.Logger(ctx).Debug("start energy transfer send collateral", "driver", driver)
@@ -234,6 +234,20 @@ func (k Keeper) CancelEnergyTransfer(ctx sdk.Context, energyTransferId uint64) e
 	return nil
 }
 
+func (k Keeper) RemoveTransfer(ctx sdk.Context, id uint64) error {
+	transfer, err := k.MustGetEnergyTransfer(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if transfer.Status != types.TransferStatus_PAID && transfer.Status != types.TransferStatus_CANCELLED {
+		return errors.Wrap(types.ErrWrongEnergyTransferStatus, "energy transfer status is not PAID or CANCELLED")
+	}
+
+	k.RemoveEnergyTransfer(ctx, id)
+	return nil
+}
+
 func (k Keeper) EmitChangeOfferStatusEvent(ctx sdk.Context, energyTransferOfferId uint64, oldStatus, newStatus types.ChargerStatus) {
 	event := &types.EventChangeOfferStatus{
 		EnergyTransferOfferId: energyTransferOfferId,
@@ -251,18 +265,4 @@ func (k Keeper) parseAddressAndSendTokensFromModule(ctx sdk.Context, targetAccou
 		return err
 	}
 	return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, target, collateralCoins)
-}
-
-func (k Keeper) RemoveTransfer(ctx sdk.Context, id uint64) error {
-	transfer, err := k.MustGetEnergyTransfer(ctx, id)
-	if err != nil {
-		return err
-	}
-
-	if transfer.Status != types.TransferStatus_PAID && transfer.Status != types.TransferStatus_CANCELLED {
-		return errors.Wrap(types.ErrWrongEnergyTransferStatus, "energy transfer status is not PAID or CANCELLED")
-	}
-
-	k.RemoveEnergyTransfer(ctx, id)
-	return nil
 }

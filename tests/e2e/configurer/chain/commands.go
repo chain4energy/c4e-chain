@@ -1,14 +1,20 @@
 package chain
 
 import (
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
+	"github.com/chain4energy/c4e-chain/tests/e2e/util"
+	cfeevtypes "github.com/chain4energy/c4e-chain/x/cfeev/types"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -421,10 +427,154 @@ func (n *NodeConfig) DelegateToValidator(validatorAddress, amount, from string) 
 	n.LogActionF("successfully delegated %s to validator %s", amount, validatorAddress)
 }
 
+func (n *NodeConfig) PublishEnergyTransferOffer(chargerId, tariff, location, name, plugType, from string) uint64 {
+	n.LogActionF("publish energy transfer offer")
+	cmd := []string{"c4ed", "tx", "cfeev", "publish-energy-transfer-offer", chargerId, tariff, location, name, plugType, formatFromFlag(from), outputJsonFlag}
+	outBuffer, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, "code\":0")
+	require.NoError(n.t, err)
+	var res cfeevtypes.MsgPublishEnergyTransferOfferResponse
+	n.getTxResponse(outBuffer.Bytes(), &res)
+	n.LogActionF("published energy transfer offer with id %d", res.Id)
+	transferOffer := n.QueryEnergyTransferOffer(strconv.FormatUint(res.Id, 10))
+	require.Equal(n.t, transferOffer.ChargerStatus, cfeevtypes.ChargerStatus_ACTIVE)
+	return res.Id
+}
+
+func (n *NodeConfig) PublishEnergyTransferOfferError(chargerId, tariff, location, name, plugType, from, errorString string) {
+	n.LogActionF("publish energy transfer offer error")
+	cmd := []string{"c4ed", "tx", "cfeev", "publish-energy-transfer-offer", chargerId, tariff, location, name, plugType, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) StartEnergyTransfer(energyTransferOfferId, offeredTariff, energyToTransfer, from string) uint64 {
+	n.LogActionF("start energy transfer")
+	cmd := []string{"c4ed", "tx", "cfeev", "start-energy-transfer", energyTransferOfferId, offeredTariff, energyToTransfer, formatFromFlag(from), outputJsonFlag}
+	outBuffer, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, "code\":0")
+	require.NoError(n.t, err)
+	var res cfeevtypes.MsgStartEnergyTransferResponse
+	n.getTxResponse(outBuffer.Bytes(), &res)
+	n.LogActionF("started energy transfer with id %d", res.Id)
+	transferOffer := n.QueryEnergyTransferOffer(strconv.FormatUint(res.Id, 10))
+	require.Equal(n.t, transferOffer.ChargerStatus, cfeevtypes.ChargerStatus_BUSY)
+	energyTransfer := n.QueryEnergyTransfer(strconv.FormatUint(res.Id, 10))
+	require.Equal(n.t, energyTransfer.Status, cfeevtypes.TransferStatus_REQUESTED)
+	return res.Id
+}
+
+func (n *NodeConfig) StartEnergyTransferError(energyTransferOfferId, offeredTariff, energyToTransfer, from, errorString string) {
+	n.LogActionF("start energy transfer error")
+	cmd := []string{"c4ed", "tx", "cfeev", "start-energy-transfer", energyTransferOfferId, offeredTariff, energyToTransfer, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) EnergyTransferStarted(energyTransferId, energyTransferOfferId, info, from string) {
+	n.LogActionF("energy transfer started")
+	cmd := []string{"c4ed", "tx", "cfeev", "energy-transfer-started", energyTransferId, info, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	energyTransfer := n.QueryEnergyTransfer(energyTransferId)
+	require.Equal(n.t, energyTransfer.Status, cfeevtypes.TransferStatus_ONGOING)
+	transferOffer := n.QueryEnergyTransferOffer(energyTransferOfferId)
+	require.Equal(n.t, transferOffer.ChargerStatus, cfeevtypes.ChargerStatus_BUSY)
+	n.LogActionF("started energy transfer with id %d", energyTransferId)
+}
+
+func (n *NodeConfig) EnergyTransferStartedError(energyTransferId, info, from, errorString string) {
+	n.LogActionF("energy transfer started error")
+	cmd := []string{"c4ed", "tx", "cfeev", "energy-transfer-started", energyTransferId, info, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) EnergyTransferCompleted(energyTransferId, energyTransferOfferId, usedServiceUnits, info, from string) {
+	n.LogActionF("energy transfer completed")
+	cmd := []string{"c4ed", "tx", "cfeev", "energy-transfer-completed", energyTransferId, usedServiceUnits, info, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	energyTransfer := n.QueryEnergyTransfer(energyTransferId)
+	transferOffer := n.QueryEnergyTransferOffer(energyTransferOfferId)
+	require.Equal(n.t, transferOffer.ChargerStatus, cfeevtypes.ChargerStatus_ACTIVE)
+	require.Equal(n.t, energyTransfer.Status, cfeevtypes.TransferStatus_PAID)
+	require.EqualValues(n.t, energyTransfer.EnergyTransferred, 75)
+	require.EqualValues(n.t, energyTransfer.EnergyToTransfer, 100)
+	n.LogActionF("completed transfer with id %d", energyTransferId)
+}
+
+func (n *NodeConfig) EnergyTransferCompletedError(energyTransferId, usedServiceUnits, info, from, errorString string) {
+	n.LogActionF("energy transfer completed error")
+	cmd := []string{"c4ed", "tx", "cfeev", "energy-transfer-completed", energyTransferId, usedServiceUnits, info, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) CancelEnergyTransfer(energyTransferOfferId, errorInfo, errorCode, from string) {
+	n.LogActionF("energy transfer cancel")
+	cmd := []string{"c4ed", "tx", "cfeev", "cancel-energy-transfer", energyTransferOfferId, errorInfo, errorCode, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+
+	n.LogActionF("cancel energy transfer with id %d", energyTransferOfferId)
+}
+
+func (n *NodeConfig) CancelEnergyTransferdError(energyTransferOfferId, errorInfo, errorCode, from, errorString string) {
+	n.LogActionF("energy transfer cancel error")
+	cmd := []string{"c4ed", "tx", "cfeev", "cancel-energy-transfer", energyTransferOfferId, errorInfo, errorCode, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) RemoveEnergyOffer(id, from string) {
+	n.LogActionF("remove energy offer")
+	cmd := []string{"c4ed", "tx", "cfeev", "remove-energy-offer", id, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	n.QueryEnergyTransferOfferNotFound(id)
+	n.LogActionF("removed energy transfer offer with id %d", id)
+}
+
+func (n *NodeConfig) RemoveEnergyOfferError(id, from, errorString string) {
+	n.LogActionF("remove energy offer error")
+	cmd := []string{"c4ed", "tx", "cfeev", "remove-energy-offer", id, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) RemoveEnergyTransfer(id, from string) {
+	n.LogActionF("remove energy transfer")
+	cmd := []string{"c4ed", "tx", "cfeev", "remove-transfer", id, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	n.QueryEnergyTransferNotFound(id)
+	n.LogActionF("removed energy transfer with id %d", id)
+}
+
+func (n *NodeConfig) RemoveEnergyTransferError(id, from, errorString string) {
+	n.LogActionF("remove energy transfer error")
+	cmd := []string{"c4ed", "tx", "cfeev", "remove-transfer", id, formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorString)
+	require.NoError(n.t, err)
+}
+
 func formatFromFlag(from string) string {
 	return fmt.Sprintf("--from=%s", from)
 }
 
 func formatDepositFlag(desposit sdk.Coin) string {
 	return fmt.Sprintf("--deposit=%s", desposit)
+}
+
+func (n *NodeConfig) getTxResponse(bytes []byte, v codec.ProtoMarshaler) {
+	var txResponse map[string]interface{}
+	err := json.Unmarshal(bytes, &txResponse)
+	require.NoError(n.t, err)
+	dataString, ok := txResponse["data"]
+	require.True(n.t, ok)
+	data, err := hex.DecodeString(fmt.Sprintf("%v", dataString))
+	require.NoError(n.t, err)
+	var txMsgData = sdk.TxMsgData{}
+	err = util.Cdc.Unmarshal(data, &txMsgData)
+	err = util.Cdc.Unmarshal(txMsgData.MsgResponses[0].Value, v)
+	require.NoError(n.t, err)
 }

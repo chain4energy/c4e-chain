@@ -125,10 +125,10 @@ func TestListEnergyTransfer(t *testing.T) {
 			require.NoError(t, err)
 			var resp types.QueryEnergyTransfersResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.EnergyTransfer), step)
+			require.LessOrEqual(t, len(resp.EnergyTransfers), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.EnergyTransfer),
+				nullify.Fill(resp.EnergyTransfers),
 			)
 		}
 	})
@@ -141,10 +141,10 @@ func TestListEnergyTransfer(t *testing.T) {
 			require.NoError(t, err)
 			var resp types.QueryEnergyTransfersResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.EnergyTransfer), step)
+			require.LessOrEqual(t, len(resp.EnergyTransfers), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.EnergyTransfer),
+				nullify.Fill(resp.EnergyTransfers),
 			)
 			next = resp.Pagination.NextKey
 		}
@@ -159,7 +159,7 @@ func TestListEnergyTransfer(t *testing.T) {
 		require.Equal(t, len(objs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(objs),
-			nullify.Fill(resp.EnergyTransfer),
+			nullify.Fill(resp.EnergyTransfers),
 		)
 	})
 }

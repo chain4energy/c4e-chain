@@ -37,7 +37,7 @@ func (k Keeper) AllEnergyTransfers(c context.Context, req *types.QueryAllEnergyT
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllEnergyTransfersResponse{EnergyTransfer: EnergyTransfers, Pagination: pageRes}, nil
+	return &types.QueryAllEnergyTransfersResponse{EnergyTransfers: EnergyTransfers, Pagination: pageRes}, nil
 }
 
 func (k Keeper) EnergyTransfer(c context.Context, req *types.QueryEnergyTransferRequest) (*types.QueryEnergyTransferResponse, error) {
@@ -84,5 +84,5 @@ func (k Keeper) EnergyTransfers(goCtx context.Context, req *types.QueryEnergyTra
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryEnergyTransfersResponse{EnergyTransfer: EnergyTransfers, Pagination: pageRes}, nil
+	return &types.QueryEnergyTransfersResponse{EnergyTransfers: EnergyTransfers, Pagination: pageRes}, nil
 }

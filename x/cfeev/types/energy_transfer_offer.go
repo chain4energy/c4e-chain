@@ -36,14 +36,12 @@ func NormalizePlugType(option string) string {
 	switch option {
 	case "CSS", "css":
 		return PlugCSS.String()
-
 	case "CHAdeMO", "chadem0":
 		return PlugCHAdeMO.String()
-	case "1":
+	case "Type1":
 		return Plug1.String()
-	case "2":
+	case "Type2":
 		return Plug2.String()
-
 	default:
 		return option
 	}

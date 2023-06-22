@@ -1395,7 +1395,7 @@ paths:
           schema:
             type: object
             properties:
-              energy_transfer_offer:
+              energy_transfer_offers:
                 type: array
                 items:
                   type: object
@@ -1555,7 +1555,7 @@ paths:
           schema:
             type: object
             properties:
-              energy_transfer:
+              energy_transfers:
                 type: array
                 items:
                   type: object
@@ -1710,7 +1710,7 @@ paths:
           schema:
             type: object
             properties:
-              energy_transfer:
+              energy_transfers:
                 type: array
                 items:
                   type: object
@@ -1869,7 +1869,7 @@ paths:
           schema:
             type: object
             properties:
-              energy_transfer:
+              energy_transfers:
                 type: array
                 items:
                   type: object
@@ -50351,7 +50351,7 @@ definitions:
   chain4energy.c4echain.cfeev.QueryAllEnergyTransfersResponse:
     type: object
     properties:
-      energy_transfer:
+      energy_transfers:
         type: array
         items:
           type: object
@@ -50462,7 +50462,7 @@ definitions:
   chain4energy.c4echain.cfeev.QueryEnergyTransferOffersResponse:
     type: object
     properties:
-      energy_transfer_offer:
+      energy_transfer_offers:
         type: array
         items:
           type: object
@@ -50573,7 +50573,7 @@ definitions:
   chain4energy.c4echain.cfeev.QueryEnergyTransfersResponse:
     type: object
     properties:
-      energy_transfer:
+      energy_transfers:
         type: array
         items:
           type: object
@@ -50642,7 +50642,7 @@ definitions:
   chain4energy.c4echain.cfeev.QueryOwnEnergyTransfersResponse:
     type: object
     properties:
-      energy_transfer:
+      energy_transfers:
         type: array
         items:
           type: object

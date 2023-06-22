@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	cfeevutils "github.com/chain4energy/c4e-chain/testutil/module/cfeev"
 	"github.com/chain4energy/c4e-chain/testutil/simulation"
 	"github.com/chain4energy/c4e-chain/testutil/utils"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -37,7 +38,7 @@ func publishEnergyTransferOffer(ak types.AccountKeeper, bk types.BankKeeper, cfe
 		Creator:   simAccount.Address.String(),
 		ChargerId: simtypes.RandStringOfLength(r, 10),
 		Tariff:    utils.RandUint64(r, 50),
-		Location:  randomLocation(r),
+		Location:  cfeevutils.RandomLocation(r),
 		Name:      simtypes.RandStringOfLength(r, 10),
 		PlugType:  types.PlugType(utils.RandInt64(r, 4)),
 	}
@@ -48,13 +49,4 @@ func publishEnergyTransferOffer(ak types.AccountKeeper, bk types.BankKeeper, cfe
 	}
 	response, _ := result.MsgResponses[0].GetCachedValue().(*types.MsgPublishEnergyTransferOfferResponse)
 	return simAccount, response.Id, nil
-}
-
-func randomLocation(r *rand.Rand) *types.Location {
-	latitude := utils.RandomDecBetween(r, -90, 90)
-	longitude := utils.RandomDecBetween(r, -180, 190)
-	return &types.Location{
-		Latitude:  &latitude,
-		Longitude: &longitude,
-	}
 }

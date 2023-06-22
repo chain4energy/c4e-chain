@@ -43,5 +43,5 @@ func (k Keeper) OwnEnergyTransfers(goCtx context.Context, req *types.QueryOwnEne
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryOwnEnergyTransfersResponse{EnergyTransfer: EnergyTransfers, Pagination: pageRes}, nil
+	return &types.QueryOwnEnergyTransfersResponse{EnergyTransfers: EnergyTransfers, Pagination: pageRes}, nil
 }

@@ -100,7 +100,7 @@ message QueryAllEnergyTransfersRequest {
 }
 
 message QueryAllEnergyTransfersResponse {
-	repeated EnergyTransfer energy_transfer = 1 [
+	repeated EnergyTransfer energy_transfers = 1 [
 		(gogoproto.nullable) = false
 	];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -112,7 +112,7 @@ message QueryEnergyTransferOffersRequest {
 }
 
 message QueryEnergyTransferOffersResponse {
-  repeated EnergyTransferOffer energy_transfer_offer = 1 [
+  repeated EnergyTransferOffer energy_transfer_offers = 1 [
 		(gogoproto.nullable) = false
 	];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -125,7 +125,7 @@ message QueryEnergyTransfersRequest {
 }
 
 message QueryEnergyTransfersResponse {
-  repeated EnergyTransfer energy_transfer = 1 [
+  repeated EnergyTransfer energy_transfers = 1 [
 		(gogoproto.nullable) = false
 	];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -138,7 +138,7 @@ message QueryOwnEnergyTransfersRequest {
 }
 
 message QueryOwnEnergyTransfersResponse {
-	repeated EnergyTransfer energy_transfer = 1 [
+	repeated EnergyTransfer energy_transfers = 1 [
 		(gogoproto.nullable) = false
 	];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;

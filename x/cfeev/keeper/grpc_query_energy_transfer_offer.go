@@ -86,5 +86,5 @@ func (k Keeper) EnergyTransferOffers(goCtx context.Context, req *types.QueryEner
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryEnergyTransferOffersResponse{EnergyTransferOffer: energyTransferOffers, Pagination: pageRes}, nil
+	return &types.QueryEnergyTransferOffersResponse{EnergyTransferOffers: energyTransferOffers, Pagination: pageRes}, nil
 }

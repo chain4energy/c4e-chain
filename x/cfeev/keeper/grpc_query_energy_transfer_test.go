@@ -81,12 +81,12 @@ func TestEnergyTransferQueryPaginated(t *testing.T) {
 		for i := 0; i < len(msgs); i += step {
 			resp, err := keeper.AllEnergyTransfers(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.EnergyTransfer), step)
-			fmt.Println(resp.EnergyTransfer)
+			require.LessOrEqual(t, len(resp.EnergyTransfers), step)
+			fmt.Println(resp.EnergyTransfers)
 			fmt.Println(msgs)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.EnergyTransfer),
+				nullify.Fill(resp.EnergyTransfers),
 			)
 		}
 	})
@@ -96,10 +96,10 @@ func TestEnergyTransferQueryPaginated(t *testing.T) {
 		for i := 0; i < len(msgs); i += step {
 			resp, err := keeper.AllEnergyTransfers(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.EnergyTransfer), step)
+			require.LessOrEqual(t, len(resp.EnergyTransfers), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.EnergyTransfer),
+				nullify.Fill(resp.EnergyTransfers),
 			)
 			next = resp.Pagination.NextKey
 		}
@@ -110,7 +110,7 @@ func TestEnergyTransferQueryPaginated(t *testing.T) {
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(msgs),
-			nullify.Fill(resp.EnergyTransfer),
+			nullify.Fill(resp.EnergyTransfers),
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {

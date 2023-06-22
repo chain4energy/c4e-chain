@@ -7,6 +7,7 @@ import (
 	"fmt"
 	cfeclaimmoduletypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	cfeevtypes "github.com/chain4energy/c4e-chain/x/cfeev/types"
 	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"io"
@@ -334,6 +335,15 @@ func (n *NodeConfig) QueryCfedistributorParams(moduleParams *cfedistributormodul
 	require.NoError(n.t, err)
 }
 
+func (n *NodeConfig) QueryCfeEvParams(moduleParams *cfeevtypes.QueryParamsResponse) {
+	cmd := []string{"c4ed", "query", "cfeev", "params", outputJsonFlag}
+
+	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
+	require.NoError(n.t, err)
+	err = json.Unmarshal(out.Bytes(), &moduleParams)
+	require.NoError(n.t, err)
+}
+
 func (n *NodeConfig) QueryFeegrant(granter, grantee string, feegrantResponse *feegrant.QueryAllowanceRequest) {
 	cmd := []string{"c4ed", "query", "feegrant", "grant", granter, grantee, outputJsonFlag}
 
@@ -341,6 +351,67 @@ func (n *NodeConfig) QueryFeegrant(granter, grantee string, feegrantResponse *fe
 	require.NoError(n.t, err)
 	err = json.Unmarshal(out.Bytes(), &feegrantResponse)
 	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) QueryEnergyTransferOffers(owner string) []cfeevtypes.EnergyTransferOffer {
+	path := "/c4e/ev/v1beta1/energy_transfer_offers/" + owner
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeevtypes.QueryEnergyTransferOffersResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.EnergyTransferOffers
+}
+
+func (n *NodeConfig) QueryEnergyTransfers(owner string) []cfeevtypes.EnergyTransfer {
+	path := "/c4e/ev/v1beta1/energy_transfers/" + owner
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeevtypes.QueryEnergyTransfersResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.EnergyTransfers
+}
+
+func (n *NodeConfig) QueryEnergyTransferOffer(id string) cfeevtypes.EnergyTransferOffer {
+	path := "/c4e/ev/v1beta1/energy_transfer_offer/" + id
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeevtypes.QueryEnergyTransferOfferResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.EnergyTransferOffer
+}
+
+func (n *NodeConfig) QueryEnergyTransfer(id string) cfeevtypes.EnergyTransfer {
+	path := "/c4e/ev/v1beta1/energy_transfer/" + id
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeevtypes.QueryEnergyTransferResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.EnergyTransfer
+}
+
+func (n *NodeConfig) QueryEnergyTransferOfferNotFound(id string) {
+	path := "/c4e/ev/v1beta1/energy_transfer_offer/" + id
+
+	_, err := n.QueryGRPCGateway(path)
+	require.Error(n.t, err)
+}
+
+func (n *NodeConfig) QueryEnergyTransferNotFound(id string) {
+	path := "/c4e/ev/v1beta1/energy_transfer/" + id
+	_, err := n.QueryGRPCGateway(path)
+	require.Error(n.t, err)
 }
 
 func (n *NodeConfig) QueryPropStatusTimed(proposalNumber int, desiredStatus string, totalTime chan time.Duration) {

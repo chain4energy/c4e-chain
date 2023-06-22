@@ -18,7 +18,7 @@ service Msg {
   rpc RemoveEnergyOffer(MsgRemoveEnergyOffer) returns (MsgRemoveEnergyOfferResponse);
   rpc RemoveTransfer(MsgRemoveTransfer) returns (MsgRemoveTransferResponse);
   rpc UpdateDenomParam(MsgUpdateDenomParam) returns (MsgUpdateDenomParamResponse);
-// this line is used by starport scaffolding # proto/tx/rpc
+  // this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgPublishEnergyTransferOffer {
@@ -96,5 +96,4 @@ message MsgUpdateDenomParam {
   string denom = 2;
 }
 
-message MsgUpdateDenomParamResponse {}
-// this line is used by starport scaffolding # proto/tx/message
+message MsgUpdateDenomParamResponse {}// this line is used by starport scaffolding # proto/tx/message

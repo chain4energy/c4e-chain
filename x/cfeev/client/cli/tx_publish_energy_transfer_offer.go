@@ -45,15 +45,15 @@ $ %s tx %s publish-energy-transfer-offer EVGC011221122GK0122 56 '{"latitude": "3
 				return err
 			}
 
-			var argLocation *types.Location
-			err = json.Unmarshal([]byte(args[2]), argLocation)
+			var argLocation types.Location
+			err = json.Unmarshal([]byte(args[2]), &argLocation)
 			if err != nil {
 				return err
 			}
 
 			argName := args[3]
 
-			argPlugType, err := types.PlugTypeFromString(types.NormalizePlugType(args[2]))
+			argPlugType, err := types.PlugTypeFromString(types.NormalizePlugType(args[4]))
 			if err != nil {
 				return err
 			}
@@ -67,7 +67,7 @@ $ %s tx %s publish-energy-transfer-offer EVGC011221122GK0122 56 '{"latitude": "3
 				clientCtx.GetFromAddress().String(),
 				argChargerId,
 				argTariff,
-				argLocation,
+				&argLocation,
 				argName,
 				argPlugType,
 			)
