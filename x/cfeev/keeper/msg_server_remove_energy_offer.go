@@ -12,7 +12,7 @@ func (k msgServer) RemoveEnergyOffer(goCtx context.Context, msg *types.MsgRemove
 	defer telemetry.IncrCounter(1, types.ModuleName, "remove energy transfer offer")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.Keeper.RemoveEnergyOffer(ctx, msg.Creator, msg.Id); err != nil {
+	if err := k.Keeper.RemoveEnergyOffer(ctx, msg.GetOwner(), msg.Id); err != nil {
 		k.Logger(ctx).Debug("remove energy offer error", "error", err)
 		return nil, err
 	}

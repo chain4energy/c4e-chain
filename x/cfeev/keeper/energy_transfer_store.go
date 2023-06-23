@@ -76,13 +76,13 @@ func (k Keeper) GetEnergyTransfer(ctx sdk.Context, id uint64) (val types.EnergyT
 func (k Keeper) MustGetEnergyTransfer(ctx sdk.Context, id uint64) (*types.EnergyTransfer, error) {
 	energyTransfer, found := k.GetEnergyTransfer(ctx, id)
 	if !found {
-		return nil, errors.Wrap(sdkerrors.ErrNotFound, "energy transfer not found")
+		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "energy transfer with id %d not found", id)
 	}
 	return &energyTransfer, nil
 }
 
 // RemoveEnergyTransfer removes a energyTransfer from the store
-func (k Keeper) RemoveEnergyTransfer(ctx sdk.Context, id uint64) {
+func (k Keeper) DeleteEnergyTransfer(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.EnergyTransferKey)
 	store.Delete(util.GetUint64Key(id))
 }

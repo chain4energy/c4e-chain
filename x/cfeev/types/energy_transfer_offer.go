@@ -62,3 +62,12 @@ func (l Location) Validate() error {
 	}
 	return nil
 }
+
+func (plugType PlugType) Validate() error {
+	switch plugType {
+	case Plug1, Plug2, PlugCHAdeMO, PlugCSS:
+		return nil
+	default:
+		return errors.Wrapf(c4eerrors.ErrParam, "invalid plug type (%s)", plugType)
+	}
+}

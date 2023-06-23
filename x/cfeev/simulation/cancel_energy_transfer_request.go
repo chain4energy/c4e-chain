@@ -26,7 +26,7 @@ func SimulateMsgCancelEnergyTransfer(
 			return simtypes.NewOperationMsg(&types.MsgCancelEnergyTransfer{}, false, "", nil), nil, nil
 		}
 		energyTransferOffer := allEnergyTransfers[r.Intn(energyTransfersLen)]
-		simAccount, found := simtypes.FindAccount(accs, sdk.MustAccAddressFromBech32(energyTransferOffer.DriverAccountAddress))
+		simAccount, found := simtypes.FindAccount(accs, sdk.MustAccAddressFromBech32(energyTransferOffer.Driver))
 		if !found {
 			return simtypes.NewOperationMsg(&types.MsgCancelEnergyTransfer{}, false, "", nil), nil, nil
 		}

@@ -14,9 +14,9 @@ import (
 const validChargerName = "valid_charger_name"
 
 var (
-	validLatitude    = sdk.MustNewDecFromStr("0.123")
+	validLatitude    = sdk.MustNewDecFromStr("90")
 	invalidLatitude  = sdk.MustNewDecFromStr("95")
-	validLongitude   = sdk.MustNewDecFromStr("0.123")
+	validLongitude   = sdk.MustNewDecFromStr("180")
 	invalidLongitude = sdk.MustNewDecFromStr("190")
 )
 var validLocation = types.Location{
@@ -37,7 +37,7 @@ func TestMsgPublishEnergyTransferOffer_ValidateBasic(t *testing.T) {
 				Creator:   "invalid_address",
 				ChargerId: validChargerId,
 				Tariff:    0,
-				Location:  nil,
+				Location:  &validLocation,
 				Name:      "",
 				PlugType:  0,
 			},

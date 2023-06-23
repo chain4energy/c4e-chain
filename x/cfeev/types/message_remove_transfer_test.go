@@ -19,16 +19,16 @@ func TestMsgRemoveTransfer_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid address",
 			msg: types.MsgRemoveTransfer{
-				Creator: "invalid_address",
-				Id:      0,
+				Owner: "invalid_address",
+				Id:    0,
 			},
 			err:    sdkerrors.ErrInvalidAddress,
-			errMsg: "invalid creator address (decoding bech32 failed: invalid separator index -1): invalid address",
+			errMsg: "invalid owner address (decoding bech32 failed: invalid separator index -1): invalid address",
 		}, {
 			name: "valid address",
 			msg: types.MsgRemoveTransfer{
-				Creator: sample.AccAddress(),
-				Id:      0,
+				Owner: sample.AccAddress(),
+				Id:    0,
 			},
 		},
 	}

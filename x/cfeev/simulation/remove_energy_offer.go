@@ -26,8 +26,8 @@ func SimulateMsgRemoveEnergyOffer(
 		}
 
 		msgRemoveEnergyOffer := &types.MsgRemoveEnergyOffer{
-			Creator: simAccount.Address.String(),
-			Id:      id,
+			Owner: simAccount.Address.String(),
+			Id:    id,
 		}
 
 		if err = simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgRemoveEnergyOffer, chainID); err != nil {

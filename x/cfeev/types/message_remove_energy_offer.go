@@ -10,10 +10,10 @@ const TypeMsgRemoveEnergyOffer = "remove_energy_offer"
 
 var _ sdk.Msg = &MsgRemoveEnergyOffer{}
 
-func NewMsgRemoveEnergyOffer(creator string, id uint64) *MsgRemoveEnergyOffer {
+func NewMsgRemoveEnergyOffer(owner string, id uint64) *MsgRemoveEnergyOffer {
 	return &MsgRemoveEnergyOffer{
-		Creator: creator,
-		Id:      id,
+		Owner: owner,
+		Id:    id,
 	}
 }
 
@@ -26,7 +26,7 @@ func (msg *MsgRemoveEnergyOffer) Type() string {
 }
 
 func (msg *MsgRemoveEnergyOffer) GetSigners() []sdk.AccAddress {
-	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	creator, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
 	}
@@ -39,9 +39,9 @@ func (msg *MsgRemoveEnergyOffer) GetSignBytes() []byte {
 }
 
 func (msg *MsgRemoveEnergyOffer) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
 	return nil
 }

@@ -13,22 +13,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createAndAppendNEnergyTransfers1(n int) (EnergyTransfers []types.EnergyTransfer) {
+func createNEnergyTransfers(n int) (energyTransfers []types.EnergyTransfer) {
 	for i := 0; i < n; i++ {
 		energyTransfer := types.EnergyTransfer{
 			Id:                    uint64(i),
 			EnergyTransferOfferId: 0,
 			ChargerId:             "",
-			OwnerAccountAddress:   "",
-			DriverAccountAddress:  "",
+			Owner:                 "",
+			Driver:                "",
 			OfferedTariff:         0,
-			Status:                0,
+			Status:                types.TransferStatus_PAID,
 			Collateral:            math.NewInt(100),
 			EnergyToTransfer:      0,
 			EnergyTransferred:     0,
 			PaidDate:              time.Time{},
 		}
-		EnergyTransfers = append(EnergyTransfers, energyTransfer)
+		energyTransfers = append(energyTransfers, energyTransfer)
 	}
 	return
 }
@@ -37,12 +37,10 @@ func appendEnergyTransfers(k *keeper.Keeper, ctx sdk.Context, EnergyTransfers []
 	for _, energyTransfer := range EnergyTransfers {
 		k.AppendEnergyTransfer(ctx, energyTransfer)
 	}
-
-	return
 }
 
 func createAndAppendNEnergyTransfers(k *keeper.Keeper, ctx sdk.Context, n int) []types.EnergyTransfer {
-	EnergyTransfers := createAndAppendNEnergyTransfers1(n)
+	EnergyTransfers := createNEnergyTransfers(n)
 	appendEnergyTransfers(k, ctx, EnergyTransfers)
 	return EnergyTransfers
 }
@@ -64,7 +62,8 @@ func TestEnergyTransferRemove(t *testing.T) {
 	keeper, ctx, _ := keepertest.CfeevKeeper(t)
 	items := createAndAppendNEnergyTransfers(keeper, ctx, 10)
 	for _, item := range items {
-		keeper.RemoveEnergyTransfer(ctx, item.Id)
+		err := keeper.RemoveEnergyTransfer(ctx, item.Id)
+		require.NoError(t, err)
 		_, found := keeper.GetEnergyTransfer(ctx, item.Id)
 		require.False(t, found)
 	}

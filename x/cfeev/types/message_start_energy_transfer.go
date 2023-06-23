@@ -43,14 +43,18 @@ func (msg *MsgStartEnergyTransfer) GetSignBytes() []byte {
 }
 
 func (msg *MsgStartEnergyTransfer) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	return ValidateStartEnergyTransfer(msg.Creator, msg.OfferedTariff, msg.EnergyToTransfer)
+}
+
+func ValidateStartEnergyTransfer(creator string, offeredTarif uint64, energyToTransfer uint64) error {
+	_, err := sdk.AccAddressFromBech32(creator)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
-	if msg.GetOfferedTariff() == 0 {
+	if offeredTarif == 0 {
 		return errors.Wrapf(c4eerrors.ErrParam, "offered tariff cannot be empty")
 	}
-	if msg.GetEnergyToTransfer() == 0 {
+	if energyToTransfer == 0 {
 		return errors.Wrapf(c4eerrors.ErrParam, "cannot transfer zero [kWh] energy")
 	}
 	return nil

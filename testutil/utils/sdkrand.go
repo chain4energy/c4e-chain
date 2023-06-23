@@ -132,6 +132,11 @@ func RandIntWith0(r *rand.Rand, max int) int {
 	return r.Intn(max)
 }
 
+func RandomSource() *rand.Rand {
+	src := rand.NewSource(time.Now().UnixNano())
+	return rand.New(src)
+}
+
 func RandSubsetCoins(r *rand.Rand, coins sdk.Coins) sdk.Coins {
 	if len(coins) == 0 {
 		return sdk.Coins{}

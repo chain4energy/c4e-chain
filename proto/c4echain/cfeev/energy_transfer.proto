@@ -10,8 +10,8 @@ message EnergyTransfer {
   uint64 id = 1;
   uint64 energy_transfer_offer_id = 2; 
   string charger_id = 3; 
-  string owner_account_address = 4; 
-  string driver_account_address = 5;
+  string owner = 4;
+  string driver = 5;
   uint64 offered_tariff = 6;
   TransferStatus status = 7; 
   string collateral = 8 [

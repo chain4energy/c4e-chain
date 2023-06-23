@@ -32,7 +32,7 @@ func (k Keeper) OwnEnergyTransfers(goCtx context.Context, req *types.QueryOwnEne
 			return err
 		}
 
-		if energyTransfer.GetDriverAccountAddress() == req.GetDriver() && energyTransfer.Status == types.TransferStatus(req.GetTransferStatus()) {
+		if energyTransfer.GetDriver() == req.GetDriver() && energyTransfer.Status == types.TransferStatus(req.GetTransferStatus()) {
 			EnergyTransfers = append(EnergyTransfers, energyTransfer)
 		}
 

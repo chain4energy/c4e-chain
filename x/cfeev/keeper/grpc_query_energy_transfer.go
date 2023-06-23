@@ -73,7 +73,7 @@ func (k Keeper) EnergyTransfers(goCtx context.Context, req *types.QueryEnergyTra
 			return err
 		}
 
-		if energyTransfer.GetOwnerAccountAddress() == req.GetOwner() && energyTransfer.Status == types.TransferStatus_PAID {
+		if energyTransfer.GetOwner() == req.GetOwner() && energyTransfer.Status == types.TransferStatus_PAID {
 			EnergyTransfers = append(EnergyTransfers, energyTransfer)
 		}
 

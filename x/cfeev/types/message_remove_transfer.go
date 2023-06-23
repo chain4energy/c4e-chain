@@ -10,10 +10,10 @@ const TypeMsgRemoveTransfer = "remove_transfer"
 
 var _ sdk.Msg = &MsgRemoveTransfer{}
 
-func NewMsgRemoveTransfer(creator string, id uint64) *MsgRemoveTransfer {
+func NewMsgRemoveTransfer(owner string, id uint64) *MsgRemoveTransfer {
 	return &MsgRemoveTransfer{
-		Creator: creator,
-		Id:      id,
+		Owner: owner,
+		Id:    id,
 	}
 }
 
@@ -26,7 +26,7 @@ func (msg *MsgRemoveTransfer) Type() string {
 }
 
 func (msg *MsgRemoveTransfer) GetSigners() []sdk.AccAddress {
-	creator, err := sdk.AccAddressFromBech32(msg.Creator)
+	creator, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		panic(err)
 	}
@@ -39,9 +39,9 @@ func (msg *MsgRemoveTransfer) GetSignBytes() []byte {
 }
 
 func (msg *MsgRemoveTransfer) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Creator)
+	_, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
 	return nil
 }

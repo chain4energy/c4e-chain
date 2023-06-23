@@ -44,22 +44,25 @@ func (msg *MsgPublishEnergyTransferOffer) GetSignBytes() []byte {
 }
 
 func (msg *MsgPublishEnergyTransferOffer) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Creator)
-	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
-	}
 	if msg.GetLocation() == nil {
 		return errors.Wrapf(c4eerrors.ErrParam, "charger location cannot be nil")
 	}
-	return ValidatePublishEnergyTransferOffer(msg.GetChargerId(), msg.GetName(), *msg.GetLocation())
+	return ValidatePublishEnergyTransferOffer(msg.Creator, msg.GetChargerId(), msg.GetName(), *msg.GetLocation(), msg.GetPlugType())
 }
 
-func ValidatePublishEnergyTransferOffer(chargerId string, name string, location Location) error {
+func ValidatePublishEnergyTransferOffer(creator string, chargerId string, name string, location Location, plugType PlugType) error {
+	_, err := sdk.AccAddressFromBech32(creator)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
 	if chargerId == "" {
 		return errors.Wrapf(c4eerrors.ErrParam, "charger id cannot be empty")
 	}
 	if name == "" {
 		return errors.Wrapf(c4eerrors.ErrParam, "charger name cannot be empty")
+	}
+	if err = plugType.Validate(); err != nil {
+		return err
 	}
 	return location.Validate()
 }

@@ -16,7 +16,7 @@ service Msg {
   rpc EnergyTransferCompleted(MsgEnergyTransferCompleted) returns (MsgEnergyTransferCompletedResponse);
   rpc CancelEnergyTransfer(MsgCancelEnergyTransfer) returns (MsgCancelEnergyTransferResponse);
   rpc RemoveEnergyOffer(MsgRemoveEnergyOffer) returns (MsgRemoveEnergyOfferResponse);
-  rpc RemoveTransfer(MsgRemoveTransfer) returns (MsgRemoveTransferResponse);
+  rpc RemoveEnergyTransfer(MsgRemoveTransfer) returns (MsgRemoveTransferResponse);
   rpc UpdateDenomParam(MsgUpdateDenomParam) returns (MsgUpdateDenomParamResponse);
   // this line is used by starport scaffolding # proto/tx/rpc
 }
@@ -75,7 +75,7 @@ message MsgCancelEnergyTransferResponse {
 }
 
 message MsgRemoveEnergyOffer {
-  string creator = 1;
+  string owner = 1;
   uint64 id = 2;
 }
 
@@ -83,7 +83,7 @@ message MsgRemoveEnergyOfferResponse {
 }
 
 message MsgRemoveTransfer {
-  string creator = 1;
+  string owner = 1;
   uint64 id = 2;
 }
 

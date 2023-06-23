@@ -1101,9 +1101,9 @@ paths:
                     format: uint64
                   charger_id:
                     type: string
-                  owner_account_address:
+                  owner:
                     type: string
-                  driver_account_address:
+                  driver:
                     type: string
                   offered_tariff:
                     type: string
@@ -1568,9 +1568,9 @@ paths:
                       format: uint64
                     charger_id:
                       type: string
-                    owner_account_address:
+                    owner:
                       type: string
-                    driver_account_address:
+                    driver:
                       type: string
                     offered_tariff:
                       type: string
@@ -1723,9 +1723,9 @@ paths:
                       format: uint64
                     charger_id:
                       type: string
-                    owner_account_address:
+                    owner:
                       type: string
-                    driver_account_address:
+                    driver:
                       type: string
                     offered_tariff:
                       type: string
@@ -1882,9 +1882,9 @@ paths:
                       format: uint64
                     charger_id:
                       type: string
-                    owner_account_address:
+                    owner:
                       type: string
-                    driver_account_address:
+                    driver:
                       type: string
                     offered_tariff:
                       type: string
@@ -50166,9 +50166,9 @@ definitions:
         format: uint64
       charger_id:
         type: string
-      owner_account_address:
+      owner:
         type: string
-      driver_account_address:
+      driver:
         type: string
       offered_tariff:
         type: string
@@ -50364,9 +50364,9 @@ definitions:
               format: uint64
             charger_id:
               type: string
-            owner_account_address:
+            owner:
               type: string
-            driver_account_address:
+            driver:
               type: string
             offered_tariff:
               type: string
@@ -50543,9 +50543,9 @@ definitions:
             format: uint64
           charger_id:
             type: string
-          owner_account_address:
+          owner:
             type: string
-          driver_account_address:
+          driver:
             type: string
           offered_tariff:
             type: string
@@ -50586,9 +50586,9 @@ definitions:
               format: uint64
             charger_id:
               type: string
-            owner_account_address:
+            owner:
               type: string
-            driver_account_address:
+            driver:
               type: string
             offered_tariff:
               type: string
@@ -50655,9 +50655,9 @@ definitions:
               format: uint64
             charger_id:
               type: string
-            owner_account_address:
+            owner:
               type: string
-            driver_account_address:
+            driver:
               type: string
             offered_tariff:
               type: string

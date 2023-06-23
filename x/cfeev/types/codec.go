@@ -16,7 +16,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgEnergyTransferCompleted{}, "cfeev/EnergyTransferCompleted", nil)
 	cdc.RegisterConcrete(&MsgCancelEnergyTransfer{}, "cfeev/CancelEnergyTransfer", nil)
 	cdc.RegisterConcrete(&MsgRemoveEnergyOffer{}, "cfeev/RemoveEnergyOffer", nil)
-	cdc.RegisterConcrete(&MsgRemoveTransfer{}, "cfeev/RemoveTransfer", nil)
+	cdc.RegisterConcrete(&MsgRemoveTransfer{}, "cfeev/RemoveEnergyTransfer", nil)
 	// this line is used by starport scaffolding # 2
 }
 

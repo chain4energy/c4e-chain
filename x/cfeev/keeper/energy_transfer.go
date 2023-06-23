@@ -19,6 +19,10 @@ func (k Keeper) StartEnergyTransfer(
 	k.Logger(ctx).Debug("start energy transfer", "driver", driver, "energyTransferOfferId",
 		energyTransferOfferId, "offeredTariff", offeredTariff, "energyToTransfer", energyToTransfer)
 
+	if err := types.ValidateStartEnergyTransfer(driver, offeredTariff, energyToTransfer); err != nil {
+		return nil, err
+	}
+
 	offer, err := k.MustGetEnergyTransferOffer(ctx, energyTransferOfferId)
 	if err != nil {
 		return nil, err
@@ -53,8 +57,8 @@ func (k Keeper) StartEnergyTransfer(
 	}
 
 	var energyTransferObj = types.EnergyTransfer{
-		OwnerAccountAddress:   offer.GetOwner(),
-		DriverAccountAddress:  driver,
+		Owner:                 offer.GetOwner(),
+		Driver:                driver,
 		EnergyTransferOfferId: energyTransferOfferId,
 		ChargerId:             offer.GetChargerId(),
 		Status:                types.TransferStatus_REQUESTED,
@@ -137,13 +141,14 @@ func (k Keeper) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64
 			if err = k.sendEntireCallateralToCPOwner(ctx, energyTransfer); err != nil {
 				return err
 			}
+		} else {
+			// TODO: for now we don't inform the user about the exceeded amount of energy, but we should do it in the future
+			if err = k.sendEntireCallateralToCPOwner(ctx, energyTransfer); err != nil {
+				return err
+			}
+			k.Logger(ctx).Error("used service units exeed energy to transfer", "energyToTransfer",
+				energyTransfer.EnergyToTransfer, "usedServiceUnits", usedServiceUnits)
 		}
-		// TODO: for now we don't inform the user about the exceeded amount of energy, but we should do it in the future
-		if err = k.sendEntireCallateralToCPOwner(ctx, energyTransfer); err != nil {
-			return err
-		}
-		k.Logger(ctx).Error("used service units exeed energy to transfer", "energyToTransfer",
-			energyTransfer.EnergyToTransfer, "usedServiceUnits", usedServiceUnits)
 	}
 
 	energyTransfer.Status = types.TransferStatus_PAID
@@ -175,20 +180,20 @@ func (k Keeper) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64
 func (k Keeper) sendEntireCallateralToCPOwner(ctx sdk.Context, energyTransferObj *types.EnergyTransfer) error {
 	denom := k.Denom(ctx)
 	coinsToTransfer := sdk.NewCoins(sdk.NewCoin(denom, energyTransferObj.GetCollateral()))
-	return k.parseAddressAndSendTokensFromModule(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer)
+	return k.parseAddressAndSendTokensFromModule(ctx, energyTransferObj.GetOwner(), coinsToTransfer)
 }
 
 func (k Keeper) sendUnusedCallateral(ctx sdk.Context, energyTransferObj *types.EnergyTransfer, usedServiceUnits uint64) error {
 	denom := k.Denom(ctx)
 	usedTokens := math.NewIntFromUint64(energyTransferObj.OfferedTariff * usedServiceUnits)
 	coinsToTransfer := sdk.NewCoins(sdk.NewCoin(denom, usedTokens))
-	if err := k.parseAddressAndSendTokensFromModule(ctx, energyTransferObj.OwnerAccountAddress, coinsToTransfer); err != nil {
+	if err := k.parseAddressAndSendTokensFromModule(ctx, energyTransferObj.GetOwner(), coinsToTransfer); err != nil {
 		return err
 	}
 
 	unusedTokens := energyTransferObj.Collateral.Sub(usedTokens)
 	coinsToTransfer = sdk.NewCoins(sdk.NewCoin(denom, unusedTokens))
-	return k.parseAddressAndSendTokensFromModule(ctx, energyTransferObj.DriverAccountAddress, coinsToTransfer)
+	return k.parseAddressAndSendTokensFromModule(ctx, energyTransferObj.GetDriver(), coinsToTransfer)
 }
 
 func (k Keeper) CancelEnergyTransfer(ctx sdk.Context, energyTransferId uint64) error {
@@ -217,7 +222,7 @@ func (k Keeper) CancelEnergyTransfer(ctx sdk.Context, energyTransferId uint64) e
 	// send the collateral back to the EV driver's account
 	denom := k.Denom(ctx)
 	coinsToTransfer := sdk.NewCoins(sdk.NewCoin(denom, energyTransfer.GetCollateral()))
-	if err = k.parseAddressAndSendTokensFromModule(ctx, energyTransfer.GetDriverAccountAddress(), coinsToTransfer); err != nil {
+	if err = k.parseAddressAndSendTokensFromModule(ctx, energyTransfer.GetDriver(), coinsToTransfer); err != nil {
 		return err
 	}
 
@@ -237,7 +242,7 @@ func (k Keeper) CancelEnergyTransfer(ctx sdk.Context, energyTransferId uint64) e
 	return nil
 }
 
-func (k Keeper) RemoveTransfer(ctx sdk.Context, id uint64) error {
+func (k Keeper) RemoveEnergyTransfer(ctx sdk.Context, id uint64) error {
 	energyTransfer, err := k.MustGetEnergyTransfer(ctx, id)
 	if err != nil {
 		return err
@@ -250,7 +255,7 @@ func (k Keeper) RemoveTransfer(ctx sdk.Context, id uint64) error {
 			energyTransfer.Status.String())
 	}
 
-	k.RemoveEnergyTransfer(ctx, id)
+	k.DeleteEnergyTransfer(ctx, id)
 	return nil
 }
 

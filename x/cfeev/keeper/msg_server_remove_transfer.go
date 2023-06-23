@@ -7,11 +7,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) RemoveTransfer(goCtx context.Context, msg *types.MsgRemoveTransfer) (*types.MsgRemoveTransferResponse, error) {
+func (k msgServer) RemoveEnergyTransfer(goCtx context.Context, msg *types.MsgRemoveTransfer) (*types.MsgRemoveTransferResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "remove energy transfer")
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.Keeper.RemoveTransfer(ctx, msg.GetId()); err != nil {
+	if err := k.Keeper.RemoveEnergyTransfer(ctx, msg.GetId()); err != nil {
 		k.Logger(ctx).Debug("remove energy transfer error", "error", err)
 		return nil, err
 	}
