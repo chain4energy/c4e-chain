@@ -74,7 +74,7 @@ func (k Keeper) RemoveEnergyOffer(ctx sdk.Context, creator string, energyOfferId
 		return errors.Wrapf(sdkerrors.ErrInvalidType,
 			"energy transfer offer charger status must be %s or %s not %s",
 			types.ChargerStatus_name[int32(types.ChargerStatus_ACTIVE)],
-			types.TransferStatus_name[int32(types.ChargerStatus_INACTIVE)],
+			types.ChargerStatus_name[int32(types.ChargerStatus_INACTIVE)],
 			offer.ChargerStatus.String())
 	}
 	k.RemoveEnergyTransferOffer(ctx, energyOfferId)
