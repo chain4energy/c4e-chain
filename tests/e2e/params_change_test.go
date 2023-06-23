@@ -10,6 +10,7 @@ import (
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	testhelpers "github.com/chain4energy/c4e-chain/testutil/utils"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	cfeevtypes "github.com/chain4energy/c4e-chain/x/cfeev/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -222,6 +223,45 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenomVestingPoolsExist() {
 		time.Second*5,
 		"C4e node failed to validate params",
 	)
+}
+
+func (s *ParamsSetupSuite) TestCfeevEmptyDenom() {
+	chainA := s.configurer.GetChainConfig(0)
+	node, err := chainA.GetDefaultNode()
+	s.NoError(err)
+
+	proposalMessage := cfeevtypes.MsgUpdateDenomParam{
+		Authority: appparams.GetAuthority(),
+		Denom:     "",
+	}
+	proposalJSON, err := util.NewProposalJSON([]sdk.Msg{&proposalMessage})
+	s.NoError(err)
+
+	node.SubmitParamChangeNotValidProposal(proposalJSON, initialization.ValidatorWalletName, "denom cannot be empty: invalid proposal message")
+	node.QueryFailedProposal(chainA.LatestProposalNumber + 1)
+}
+
+func (s *ParamsSetupSuite) TestCfeevNewDenom() {
+	chainA := s.configurer.GetChainConfig(0)
+	node, err := chainA.GetDefaultNode()
+
+	newCfeevDenom := "newDenom"
+	s.NoError(err)
+
+	proposalMessage := cfeevtypes.MsgUpdateDenomParam{
+		Authority: appparams.GetAuthority(),
+		Denom:     newCfeevDenom,
+	}
+	proposalJSON, err := util.NewProposalJSON([]sdk.Msg{&proposalMessage})
+	s.NoError(err)
+
+	node.SubmitDepositAndVoteOnProposal(proposalJSON, initialization.ValidatorWalletName, chainA)
+
+	s.validateParams(func() bool {
+		var params cfeevtypes.QueryParamsResponse
+		node.QueryCfeEvParams(&params)
+		return s.Equal(params.Params.Denom, newCfeevDenom)
+	})
 }
 
 func (s *ParamsSetupSuite) TestCfeminterParamsProposalNoMinting() {

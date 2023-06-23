@@ -87,7 +87,7 @@ func (k Keeper) EnergyTransferStarted(ctx sdk.Context, energyTransferId uint64) 
 	}
 
 	if energyTransfer.Status != types.TransferStatus_REQUESTED {
-		return errors.Wrapf(types.ErrWrongEnergyTransferStatus,
+		return errors.Wrapf(sdkerrors.ErrInvalidType,
 			"energy transfer status must be %s not %s", types.TransferStatus_name[int32(types.TransferStatus_REQUESTED)], energyTransfer.Status.String())
 	}
 
@@ -114,7 +114,7 @@ func (k Keeper) EnergyTransferCompleted(ctx sdk.Context, energyTransferId uint64
 	}
 
 	if energyTransfer.Status != types.TransferStatus_REQUESTED && energyTransfer.Status != types.TransferStatus_ONGOING {
-		return errors.Wrapf(types.ErrWrongEnergyTransferStatus,
+		return errors.Wrapf(sdkerrors.ErrInvalidType,
 			"energy transfer status must be %s or %s not %s",
 			types.TransferStatus_name[int32(types.TransferStatus_REQUESTED)],
 			types.TransferStatus_name[int32(types.TransferStatus_ONGOING)],
@@ -193,19 +193,22 @@ func (k Keeper) sendUnusedCallateral(ctx sdk.Context, energyTransferObj *types.E
 
 func (k Keeper) CancelEnergyTransfer(ctx sdk.Context, energyTransferId uint64) error {
 	k.Logger(ctx).Debug("cancel energy transfer", "energyTransferId", energyTransferId)
-	energyTransferObj, err := k.MustGetEnergyTransfer(ctx, energyTransferId)
+	energyTransfer, err := k.MustGetEnergyTransfer(ctx, energyTransferId)
 	if err != nil {
 		return err
 	}
 
 	// TODO: there were some problems with this (sometimes status was ongoing), leave commented out for now
-	if energyTransferObj.GetStatus() != types.TransferStatus_REQUESTED {
-		return errors.Wrap(types.ErrWrongEnergyTransferStatus, energyTransferObj.GetStatus().String())
+	if energyTransfer.GetStatus() != types.TransferStatus_REQUESTED {
+		return errors.Wrapf(sdkerrors.ErrInvalidType,
+			"energy transfer status must be %s not %s",
+			types.TransferStatus_name[int32(types.TransferStatus_REQUESTED)],
+			energyTransfer.Status.String())
 	}
 
-	energyTransferObj.Status = types.TransferStatus_CANCELLED
+	energyTransfer.Status = types.TransferStatus_CANCELLED
 
-	offer, err := k.MustGetEnergyTransferOffer(ctx, energyTransferObj.EnergyTransferOfferId)
+	offer, err := k.MustGetEnergyTransferOffer(ctx, energyTransfer.EnergyTransferOfferId)
 	if err != nil {
 		return err
 	}
@@ -213,18 +216,18 @@ func (k Keeper) CancelEnergyTransfer(ctx sdk.Context, energyTransferId uint64) e
 
 	// send the collateral back to the EV driver's account
 	denom := k.Denom(ctx)
-	coinsToTransfer := sdk.NewCoins(sdk.NewCoin(denom, energyTransferObj.GetCollateral()))
-	if err = k.parseAddressAndSendTokensFromModule(ctx, energyTransferObj.GetDriverAccountAddress(), coinsToTransfer); err != nil {
+	coinsToTransfer := sdk.NewCoins(sdk.NewCoin(denom, energyTransfer.GetCollateral()))
+	if err = k.parseAddressAndSendTokensFromModule(ctx, energyTransfer.GetDriverAccountAddress(), coinsToTransfer); err != nil {
 		return err
 	}
 
 	k.SetEnergyTransferOffer(ctx, *offer)
-	k.SetEnergyTransfer(ctx, *energyTransferObj)
+	k.SetEnergyTransfer(ctx, *energyTransfer)
 
-	k.EmitChangeOfferStatusEvent(ctx, energyTransferObj.GetEnergyTransferOfferId(), types.ChargerStatus_BUSY, types.ChargerStatus_ACTIVE)
+	k.EmitChangeOfferStatusEvent(ctx, energyTransfer.GetEnergyTransferOfferId(), types.ChargerStatus_BUSY, types.ChargerStatus_ACTIVE)
 	event := &types.EventCancelEnergyTransfer{
 		EnergyTransferId: energyTransferId,
-		ChargerId:        energyTransferObj.ChargerId,
+		ChargerId:        energyTransfer.ChargerId,
 		CancelReason:     "", // it's empty placeholder for now
 	}
 	if err = ctx.EventManager().EmitTypedEvent(event); err != nil {
@@ -235,13 +238,16 @@ func (k Keeper) CancelEnergyTransfer(ctx sdk.Context, energyTransferId uint64) e
 }
 
 func (k Keeper) RemoveTransfer(ctx sdk.Context, id uint64) error {
-	transfer, err := k.MustGetEnergyTransfer(ctx, id)
+	energyTransfer, err := k.MustGetEnergyTransfer(ctx, id)
 	if err != nil {
 		return err
 	}
 
-	if transfer.Status != types.TransferStatus_PAID && transfer.Status != types.TransferStatus_CANCELLED {
-		return errors.Wrap(types.ErrWrongEnergyTransferStatus, "energy transfer status is not PAID or CANCELLED")
+	if energyTransfer.Status != types.TransferStatus_PAID && energyTransfer.Status != types.TransferStatus_CANCELLED {
+		return errors.Wrapf(sdkerrors.ErrInvalidType, "energy transfer status must be %s or %s not %s",
+			types.TransferStatus_name[int32(types.TransferStatus_PAID)],
+			types.TransferStatus_name[int32(types.TransferStatus_CANCELLED)],
+			energyTransfer.Status.String())
 	}
 
 	k.RemoveEnergyTransfer(ctx, id)

@@ -70,6 +70,13 @@ func (k Keeper) RemoveEnergyOffer(ctx sdk.Context, creator string, energyOfferId
 		return errors.Wrapf(sdkerrors.ErrorInvalidSigner, "address %s is not a creator of energy offer with id %d", creator, offer.Id)
 	}
 
+	if offer.ChargerStatus != types.ChargerStatus_ACTIVE && offer.ChargerStatus != types.ChargerStatus_INACTIVE {
+		return errors.Wrapf(sdkerrors.ErrInvalidType,
+			"energy transfer offer charger status must be %s or %s not %s",
+			types.ChargerStatus_name[int32(types.ChargerStatus_ACTIVE)],
+			types.TransferStatus_name[int32(types.ChargerStatus_INACTIVE)],
+			offer.ChargerStatus.String())
+	}
 	k.RemoveEnergyTransferOffer(ctx, energyOfferId)
 	return nil
 }
