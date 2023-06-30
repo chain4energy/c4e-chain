@@ -3,12 +3,14 @@ package utils
 import (
 	"cosmossdk.io/math"
 	"errors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/crypto"
+	"github.com/tendermint/tendermint/crypto/ed25519"
+	cmtrand "github.com/tendermint/tendermint/libs/rand"
 	"math/big"
 	"math/rand"
 	"time"
 	"unsafe"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 const (
@@ -166,4 +168,10 @@ func (ms multiSource) Int63() (r int64) {
 
 func (ms multiSource) Seed(seed int64) {
 	panic("multiSource Seed should not be called")
+}
+
+func RandPubKey() crypto.PubKey {
+	pubKey := make(ed25519.PubKey, ed25519.PubKeySize)
+	copy(pubKey, cmtrand.Bytes(32))
+	return ed25519.PubKey(cmtrand.Bytes(32))
 }

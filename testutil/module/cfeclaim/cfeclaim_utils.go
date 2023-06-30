@@ -382,10 +382,13 @@ func (h *C4eClaimUtils) SetUsersEntries(
 	h.helpeCfeclaimkeeper.SetUserEntry(ctx, *userEntry)
 }
 
-func (h *C4eClaimUtils) CompleteDelegationMission(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, deleagtionAmount math.Int, valAddress sdk.ValAddress) {
+func (h *C4eClaimUtils) CompleteDelegationMission(ctx sdk.Context, expectedAmountOfDelegations int, campaignId uint64, missionId uint64, claimer sdk.AccAddress, deleagtionAmount math.Int, valAddress sdk.ValAddress) {
 	action := func() error {
-		h.StakingUtils.SetupValidators(ctx, []sdk.ValAddress{valAddress}, math.NewInt(1))
-		h.StakingUtils.MessageDelegate(ctx, 2, 0, valAddress, claimer, deleagtionAmount)
+		if _, found := h.StakingUtils.GetValidator(ctx, valAddress); !found {
+			h.StakingUtils.SetupValidators(ctx, []sdk.ValAddress{valAddress}, math.NewInt(1))
+		}
+
+		h.StakingUtils.MessageDelegate(ctx, expectedAmountOfDelegations, 0, valAddress, claimer, deleagtionAmount)
 		return nil
 	}
 	beforeCheck := func(accBefore authtypes.AccountI, accAfter authtypes.AccountI, claimerAmountBefore sdk.Coins) (authtypes.AccountI, sdk.Coins) {
@@ -698,12 +701,10 @@ func (h *C4eClaimUtils) RemoveCampaign(ctx sdk.Context, owner string, campaignId
 	require.NoError(h.t, h.helpeCfeclaimkeeper.RemoveCampaign(ctx, owner, campaignId))
 	_, found := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	require.False(h.t, found)
-	res, err := h.helpeCfeclaimkeeper.CampaignMissions(ctx, &cfeclaimtypes.QueryCampaignMissionsRequest{
+	_, err := h.helpeCfeclaimkeeper.CampaignMissions(ctx, &cfeclaimtypes.QueryCampaignMissionsRequest{
 		CampaignId: campaignId,
-		Pagination: nil,
 	})
-	require.NoError(h.t, err)
-	require.Equal(h.t, 0, len(res.Missions))
+	require.Error(h.t, err)
 	missionCount := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignId)
 	require.Equal(h.t, uint64(0), missionCount)
 

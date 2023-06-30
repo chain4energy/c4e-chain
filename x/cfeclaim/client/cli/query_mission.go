@@ -83,7 +83,7 @@ func CmdMission() *cobra.Command {
 
 func CmdCampaignMissions() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "missions [campaign-id]",
+		Use:   "campaign-missions [campaign-id]",
 		Short: "Query all existing missions of a campaign",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {

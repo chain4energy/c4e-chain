@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"math/rand"
@@ -21,15 +22,12 @@ import (
 // CreateTestPubKeys returns a total of numPubKeys public keys in ascending order.
 func CreateTestPubKeys(numPubKeys int) []cryptotypes.PubKey {
 	var publicKeys []cryptotypes.PubKey
-	var buffer bytes.Buffer
-
-	// start at 10 to avoid changing 1 to 01, 2 to 02, etc
-	for i := 100; i < (numPubKeys + 100); i++ {
-		numString := strconv.Itoa(i)
-		buffer.WriteString("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AF") // base pubkey string
-		buffer.WriteString(numString)                                                       // adding on final two digits to make pubkeys unique
-		publicKeys = append(publicKeys, NewPubKeyFromHex(buffer.String()))
-		buffer.Reset()
+	src := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(src)
+	for i := 0; i < numPubKeys; i++ {
+		privkeySeed := make([]byte, 15)
+		r.Read(privkeySeed)
+		publicKeys = append(publicKeys, secp256k1.GenPrivKeyFromSecret(privkeySeed).PubKey())
 	}
 
 	return publicKeys

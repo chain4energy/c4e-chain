@@ -22,15 +22,7 @@ func (k Keeper) NewMissionDelegationHooks() MissionDelegationHooks {
 var _ stakingtypes.StakingHooks = MissionDelegationHooks{}
 
 // BeforeDelegationCreated completes mission when a delegation is performed
-func (h MissionDelegationHooks) BeforeDelegationCreated(ctx sdk.Context, delAddr sdk.AccAddress, _ sdk.ValAddress) error {
-	missions := h.k.GetAllMission(ctx)
-	for _, mission := range missions {
-		if mission.MissionType == types.MissionDelegate {
-			if err := h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, delAddr.String()); err != nil {
-				h.k.Logger(ctx).Debug("mission delegation hook unsuccessful", "info", err)
-			}
-		}
-	}
+func (h MissionDelegationHooks) BeforeDelegationCreated(_ sdk.Context, _ sdk.AccAddress, _ sdk.ValAddress) error {
 	return nil
 }
 
@@ -52,7 +44,17 @@ func (h MissionDelegationHooks) BeforeDelegationSharesModified(_ sdk.Context, _ 
 }
 
 // AfterDelegationModified implements StakingHooks
-func (h MissionDelegationHooks) AfterDelegationModified(_ sdk.Context, _ sdk.AccAddress, _ sdk.ValAddress) error {
+func (h MissionDelegationHooks) AfterDelegationModified(ctx sdk.Context, delAddr sdk.AccAddress, _ sdk.ValAddress) error {
+	if _, found := h.k.GetUserEntry(ctx, delAddr.String()); found {
+		missions := h.k.GetAllMission(ctx)
+		for _, mission := range missions {
+			if mission.MissionType == types.MissionDelegate {
+				if err := h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, delAddr.String()); err != nil {
+					h.k.Logger(ctx).Debug("mission delegation hook unsuccessful", "info", err)
+				}
+			}
+		}
+	}
 	return nil
 }
 
