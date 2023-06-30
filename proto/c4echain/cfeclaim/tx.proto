@@ -42,7 +42,7 @@ message MsgClaimResponse {
 message MsgInitialClaim {
   string claimer = 1;
   uint64 campaign_id = 2;
-  string destinationAddress = 3;
+  string destination_address = 3;
 }
 
 message MsgInitialClaimResponse {
@@ -56,7 +56,7 @@ message MsgCreateCampaign {
   string owner = 1;
   string name = 2;
   string description = 3;
-  CampaignType campaignType = 4;
+  CampaignType campaign_type = 4;
   bool removable_claim_records = 5;
   string feegrant_amount = 6 [
     (gogoproto.nullable) = true,
@@ -86,7 +86,7 @@ message MsgCreateCampaign {
     (gogoproto.nullable) = true,
     (gogoproto.stdduration) = true
   ];
-  string vestingPoolName = 13;
+  string vesting_pool_name = 13;
 }
 
 message MsgCreateCampaignResponse {
@@ -95,10 +95,10 @@ message MsgCreateCampaignResponse {
 
 message MsgAddMission {
   string owner = 1;
-  uint64 campaignId = 2;
+  uint64 campaign_id = 2;
   string name = 3;
   string description = 4;
-  MissionType missionType = 5;
+  MissionType mission_type = 5;
   string weight = 6 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = true
@@ -123,8 +123,8 @@ message MsgAddClaimRecordsResponse {}
 
 message MsgDeleteClaimRecord {
   string owner = 1;
-  uint64 campaignId = 2;
-  string userAddress = 3;
+  uint64 campaign_id = 2;
+  string user_address = 3;
 }
 
 message MsgDeleteClaimRecordResponse {}
@@ -138,7 +138,7 @@ message MsgCloseCampaignResponse {}
 
 message MsgEnableCampaign {
   string owner = 1;
-  uint64 campaignId = 2;
+  uint64 campaign_id = 2;
   google.protobuf.Timestamp start_time = 3 [
     (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
@@ -153,7 +153,7 @@ message MsgEnableCampaignResponse {}
 
 message MsgRemoveCampaign {
   string owner = 1;
-  uint64 campaignId = 2;
+  uint64 campaign_id = 2;
 }
 
 message MsgRemoveCampaignResponse {}

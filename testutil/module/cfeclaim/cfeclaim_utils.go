@@ -299,11 +299,16 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 	}
 
 	vestingAmount := expectedAmount
+	initialClaimDec := campaignBefore.Free
 	if campaignBefore.InitialClaimFreeAmount.IsPositive() {
 		vestingAmount = sdk.NewCoins()
 		for _, amount := range expectedAmount {
 			expectedAmountDec := sdk.NewDecFromInt(amount.Amount)
-			initialClaimDec := sdk.NewDecFromInt(campaignBefore.InitialClaimFreeAmount).Quo(expectedAmountDec)
+			free := sdk.NewDecFromInt(campaignBefore.InitialClaimFreeAmount).Quo(expectedAmountDec)
+
+			if initialClaimDec.LT(free) {
+				initialClaimDec = free
+			}
 			if initialClaimDec.GT(sdk.NewDec(1)) {
 				initialClaimDec = sdk.NewDec(1)
 			}
@@ -508,7 +513,9 @@ func (h *C4eClaimUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint64
 		h.BankUtils.VerifyAccountBalanceByDenom(ctx, claimer, coin.Denom, claimerCoinBefore.Add(expectedAmount))
 		moduleCoinBefore := moduleBalanceBefore.AmountOf(coin.Denom)
 		h.BankUtils.VerifyModuleAccountBalanceByDenom(ctx, moduleName, coin.Denom, moduleCoinBefore.Sub(expectedAmount))
-		expectedCoins = expectedCoins.Add(sdk.NewCoin(coin.Denom, expectedAmount.Sub(sdk.NewDecFromInt(expectedAmount).Mul(campaign.Free).TruncateInt())))
+		decimalAmount := sdk.NewDecFromInt(expectedAmount)
+		vestingPeriodAmount := decimalAmount.Sub(decimalAmount.Mul(campaign.Free)).TruncateInt()
+		expectedCoins = expectedCoins.Add(sdk.NewCoin(coin.Denom, vestingPeriodAmount))
 	}
 
 	h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, expectedCoins)

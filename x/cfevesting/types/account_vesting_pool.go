@@ -176,7 +176,7 @@ func (pool *VestingPool) IncrementSent(amount math.Int) error {
 func (vestingType *VestingType) ValidateVestingFree(free sdk.Dec) error {
 	if free.GT(vestingType.Free) {
 		return errors.Wrapf(c4eerrors.ErrParam,
-			fmt.Sprintf("the free decimal must be equal to or greater than the vesting type free (%s > %s)", vestingType.Free.String(), free.String()))
+			fmt.Sprintf("the free decimal must be equal to or lower than the vesting type free (%s < %s)", vestingType.Free.String(), free.String()))
 	}
 
 	return nil
