@@ -274,31 +274,17 @@ export default {
 		},
 		
 		
-		async sendMsgMoveAvailableVesting({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
+		async sendMsgCreateVestingPool({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
 				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
-				const result = await client.Chain4EnergyC4EchainCfevesting.tx.sendMsgMoveAvailableVesting({ value, fee: fullFee, memo })
+				const result = await client.Chain4EnergyC4EchainCfevesting.tx.sendMsgCreateVestingPool({ value, fee: fullFee, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgMoveAvailableVesting:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgCreateVestingPool:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgMoveAvailableVesting:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgUpdateDenomParam({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
-				const result = await client.Chain4EnergyC4EchainCfevesting.tx.sendMsgUpdateDenomParam({ value, fee: fullFee, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgUpdateDenomParam:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgUpdateDenomParam:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgCreateVestingPool:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -316,17 +302,17 @@ export default {
 				}
 			}
 		},
-		async sendMsgMoveAvailableVestingByDenoms({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
+		async sendMsgUpdateDenomParam({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
 				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
-				const result = await client.Chain4EnergyC4EchainCfevesting.tx.sendMsgMoveAvailableVestingByDenoms({ value, fee: fullFee, memo })
+				const result = await client.Chain4EnergyC4EchainCfevesting.tx.sendMsgUpdateDenomParam({ value, fee: fullFee, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgMoveAvailableVestingByDenoms:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgUpdateDenomParam:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgMoveAvailableVestingByDenoms:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgUpdateDenomParam:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -358,6 +344,34 @@ export default {
 				}
 			}
 		},
+		async sendMsgMoveAvailableVesting({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
+				const result = await client.Chain4EnergyC4EchainCfevesting.tx.sendMsgMoveAvailableVesting({ value, fee: fullFee, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgMoveAvailableVesting:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgMoveAvailableVesting:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgMoveAvailableVestingByDenoms({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
+				const result = await client.Chain4EnergyC4EchainCfevesting.tx.sendMsgMoveAvailableVestingByDenoms({ value, fee: fullFee, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgMoveAvailableVestingByDenoms:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgMoveAvailableVestingByDenoms:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		async sendMsgWithdrawAllAvailable({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
@@ -372,44 +386,17 @@ export default {
 				}
 			}
 		},
-		async sendMsgCreateVestingPool({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
+		
+		async MsgCreateVestingPool({ rootGetters }, { value }) {
 			try {
-				const client=await initClient(rootGetters)
-				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
-				const result = await client.Chain4EnergyC4EchainCfevesting.tx.sendMsgCreateVestingPool({ value, fee: fullFee, memo })
-				return result
+				const client=initClient(rootGetters)
+				const msg = await client.Chain4EnergyC4EchainCfevesting.tx.msgCreateVestingPool({value})
+				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
 					throw new Error('TxClient:MsgCreateVestingPool:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgCreateVestingPool:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		
-		async MsgMoveAvailableVesting({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfevesting.tx.msgMoveAvailableVesting({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgMoveAvailableVesting:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgMoveAvailableVesting:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgUpdateDenomParam({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfevesting.tx.msgUpdateDenomParam({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgUpdateDenomParam:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgUpdateDenomParam:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgCreateVestingPool:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -426,16 +413,16 @@ export default {
 				}
 			}
 		},
-		async MsgMoveAvailableVestingByDenoms({ rootGetters }, { value }) {
+		async MsgUpdateDenomParam({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfevesting.tx.msgMoveAvailableVestingByDenoms({value})
+				const msg = await client.Chain4EnergyC4EchainCfevesting.tx.msgUpdateDenomParam({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgMoveAvailableVestingByDenoms:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgUpdateDenomParam:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgMoveAvailableVestingByDenoms:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgUpdateDenomParam:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -465,6 +452,32 @@ export default {
 				}
 			}
 		},
+		async MsgMoveAvailableVesting({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.Chain4EnergyC4EchainCfevesting.tx.msgMoveAvailableVesting({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgMoveAvailableVesting:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgMoveAvailableVesting:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgMoveAvailableVestingByDenoms({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.Chain4EnergyC4EchainCfevesting.tx.msgMoveAvailableVestingByDenoms({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgMoveAvailableVestingByDenoms:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgMoveAvailableVestingByDenoms:Create Could not create message: ' + e.message)
+				}
+			}
+		},
 		async MsgWithdrawAllAvailable({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
@@ -475,19 +488,6 @@ export default {
 					throw new Error('TxClient:MsgWithdrawAllAvailable:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgWithdrawAllAvailable:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgCreateVestingPool({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfevesting.tx.msgCreateVestingPool({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreateVestingPool:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgCreateVestingPool:Create Could not create message: ' + e.message)
 				}
 			}
 		},

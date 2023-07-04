@@ -1,9 +1,10 @@
 import { Client, registry, MissingWalletError } from 'chain4energy-c4e-chain-client-ts'
 
+import { CertificateType } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfetokenization/types"
 import { Params } from "chain4energy-c4e-chain-client-ts/chain4energy.c4echain.cfetokenization/types"
 
 
-export { Params };
+export { CertificateType, Params };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -35,8 +36,11 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
+				CertificateType: {},
+				CertificateTypeAll: {},
 				
 				_Structure: {
+						CertificateType: getStructure(CertificateType.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
 						
 		},
@@ -71,6 +75,18 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
+		},
+				getCertificateType: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.CertificateType[JSON.stringify(params)] ?? {}
+		},
+				getCertificateTypeAll: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.CertificateTypeAll[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -123,6 +139,54 @@ export default {
 				return getters['getParams']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryParams API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryCertificateType({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.Chain4EnergyC4EchainCfetokenization.query.queryCertificateType( key.id)).data
+				
+					
+				commit('QUERY', { query: 'CertificateType', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryCertificateType', payload: { options: { all }, params: {...key},query }})
+				return getters['getCertificateType']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryCertificateType API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryCertificateTypeAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const client = initClient(rootGetters);
+				let value= (await client.Chain4EnergyC4EchainCfetokenization.query.queryCertificateTypeAll(query ?? undefined)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await client.Chain4EnergyC4EchainCfetokenization.query.queryCertificateTypeAll({...query ?? {}, 'pagination.key':(<any> value).pagination.next_key} as any)).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'CertificateTypeAll', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryCertificateTypeAll', payload: { options: { all }, params: {...key},query }})
+				return getters['getCertificateTypeAll']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryCertificateTypeAll API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

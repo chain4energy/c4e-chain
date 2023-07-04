@@ -1,0 +1,10 @@
+syntax = "proto3";
+package chain4energy.c4echain.cfetokenization;
+
+option go_package = "github.com/chain4energy/c4e-chain/x/cfetokenization/types";
+
+message CertificateType {
+  uint64 id = 1;
+  string name = 2; 
+  string description = 3;
+}

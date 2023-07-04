@@ -344,34 +344,6 @@ export default {
 		},
 		
 		
-		async sendMsgDeleteClaimRecord({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
-				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgDeleteClaimRecord({ value, fee: fullFee, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgDeleteClaimRecord:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgDeleteClaimRecord:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgClaim({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
-				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgClaim({ value, fee: fullFee, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgClaim:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgClaim:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
 		async sendMsgInitialClaim({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
@@ -383,34 +355,6 @@ export default {
 					throw new Error('TxClient:MsgInitialClaim:Init Could not initialize signing client. Wallet is required.')
 				}else{
 					throw new Error('TxClient:MsgInitialClaim:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgRemoveCampaign({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
-				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgRemoveCampaign({ value, fee: fullFee, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgRemoveCampaign:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgRemoveCampaign:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		async sendMsgAddClaimRecords({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
-				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgAddClaimRecords({ value, fee: fullFee, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgAddClaimRecords:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgAddClaimRecords:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -428,17 +372,17 @@ export default {
 				}
 			}
 		},
-		async sendMsgCloseCampaign({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
+		async sendMsgDeleteClaimRecord({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
 				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
-				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgCloseCampaign({ value, fee: fullFee, memo })
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgDeleteClaimRecord({ value, fee: fullFee, memo })
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCloseCampaign:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgDeleteClaimRecord:Init Could not initialize signing client. Wallet is required.')
 				}else{
-					throw new Error('TxClient:MsgCloseCampaign:Send Could not broadcast Tx: '+ e.message)
+					throw new Error('TxClient:MsgDeleteClaimRecord:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -470,33 +414,63 @@ export default {
 				}
 			}
 		},
-		
-		async MsgDeleteClaimRecord({ rootGetters }, { value }) {
+		async sendMsgRemoveCampaign({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
 			try {
-				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgDeleteClaimRecord({value})
-				return msg
+				const client=await initClient(rootGetters)
+				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgRemoveCampaign({ value, fee: fullFee, memo })
+				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgDeleteClaimRecord:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgDeleteClaimRecord:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgRemoveCampaign:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgRemoveCampaign:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
-		async MsgClaim({ rootGetters }, { value }) {
+		async sendMsgClaim({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
 			try {
-				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgClaim({value})
-				return msg
+				const client=await initClient(rootGetters)
+				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgClaim({ value, fee: fullFee, memo })
+				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
 					throw new Error('TxClient:MsgClaim:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgClaim:Create Could not create message: ' + e.message)
+				}else{
+					throw new Error('TxClient:MsgClaim:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
+		async sendMsgAddClaimRecords({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgAddClaimRecords({ value, fee: fullFee, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgAddClaimRecords:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgAddClaimRecords:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgCloseCampaign({ rootGetters }, { value, fee = {amount: [], gas: "200000"}, memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const fullFee = Array.isArray(fee)  ? {amount: fee, gas: "200000"} :fee;
+				const result = await client.Chain4EnergyC4EchainCfeclaim.tx.sendMsgCloseCampaign({ value, fee: fullFee, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCloseCampaign:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgCloseCampaign:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		
 		async MsgInitialClaim({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
@@ -507,32 +481,6 @@ export default {
 					throw new Error('TxClient:MsgInitialClaim:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgInitialClaim:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgRemoveCampaign({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgRemoveCampaign({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgRemoveCampaign:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgRemoveCampaign:Create Could not create message: ' + e.message)
-				}
-			}
-		},
-		async MsgAddClaimRecords({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgAddClaimRecords({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgAddClaimRecords:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgAddClaimRecords:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -549,16 +497,16 @@ export default {
 				}
 			}
 		},
-		async MsgCloseCampaign({ rootGetters }, { value }) {
+		async MsgDeleteClaimRecord({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
-				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgCloseCampaign({value})
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgDeleteClaimRecord({value})
 				return msg
 			} catch (e) {
 				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCloseCampaign:Init Could not initialize signing client. Wallet is required.')
+					throw new Error('TxClient:MsgDeleteClaimRecord:Init Could not initialize signing client. Wallet is required.')
 				} else{
-					throw new Error('TxClient:MsgCloseCampaign:Create Could not create message: ' + e.message)
+					throw new Error('TxClient:MsgDeleteClaimRecord:Create Could not create message: ' + e.message)
 				}
 			}
 		},
@@ -585,6 +533,58 @@ export default {
 					throw new Error('TxClient:MsgEnableCampaign:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgEnableCampaign:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgRemoveCampaign({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgRemoveCampaign({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgRemoveCampaign:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgRemoveCampaign:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgClaim({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgClaim({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgClaim:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgClaim:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgAddClaimRecords({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgAddClaimRecords({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgAddClaimRecords:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgAddClaimRecords:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgCloseCampaign({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.Chain4EnergyC4EchainCfeclaim.tx.msgCloseCampaign({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgCloseCampaign:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgCloseCampaign:Create Could not create message: ' + e.message)
 				}
 			}
 		},
