@@ -31,6 +31,15 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				CertificateTypeCount: 2,
+				UserDevicesList: []types.UserDevices{
+					{
+						Id: 0,
+					},
+					{
+						Id: 1,
+					},
+				},
+				UserDevicesCount: 2,
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -58,6 +67,32 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				CertificateTypeCount: 0,
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated userDevices",
+			genState: &types.GenesisState{
+				UserDevicesList: []types.UserDevices{
+					{
+						Id: 0,
+					},
+					{
+						Id: 0,
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "invalid userDevices count",
+			genState: &types.GenesisState{
+				UserDevicesList: []types.UserDevices{
+					{
+						Id: 1,
+					},
+				},
+				UserDevicesCount: 0,
 			},
 			valid: false,
 		},

@@ -15,6 +15,13 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
 	// Set certificateType count
 	k.SetCertificateTypeCount(ctx, genState.CertificateTypeCount)
+	// Set all the userDevices
+	for _, elem := range genState.UserDevicesList {
+		k.SetUserDevices(ctx, elem)
+	}
+
+	// Set userDevices count
+	k.SetUserDevicesCount(ctx, genState.UserDevicesCount)
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetParams(ctx, genState.Params)
 }
@@ -26,6 +33,8 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	genesis.CertificateTypeList = k.GetAllCertificateType(ctx)
 	genesis.CertificateTypeCount = k.GetCertificateTypeCount(ctx)
+	genesis.UserDevicesList = k.GetAllUserDevices(ctx)
+	genesis.UserDevicesCount = k.GetUserDevicesCount(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

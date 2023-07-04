@@ -5,6 +5,7 @@ package chain4energy.c4echain.cfetokenization;
 import "gogoproto/gogo.proto";
 import "c4echain/cfetokenization/params.proto";
 import "c4echain/cfetokenization/certificate_type.proto";
+import "c4echain/cfetokenization/user_devices.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfetokenization/types";
 
@@ -13,5 +14,7 @@ message GenesisState {
            Params          params               = 1 [(gogoproto.nullable) = false];
   repeated CertificateType certificateTypeList  = 2 [(gogoproto.nullable) = false];
            uint64          certificateTypeCount = 3;
+  repeated UserDevices     userDevicesList      = 4 [(gogoproto.nullable) = false];
+           uint64          userDevicesCount     = 5;
 }
 

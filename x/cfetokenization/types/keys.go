@@ -22,3 +22,8 @@ const (
 	CertificateTypeKey      = "CertificateType/value/"
 	CertificateTypeCountKey = "CertificateType/count/"
 )
+
+const (
+	UserDevicesKey      = "UserDevices/value/"
+	UserDevicesCountKey = "UserDevices/count/"
+)

@@ -158,6 +158,15 @@ genesis:
             step_duration: 126144000s
           sequence_id: 1
         start_time: "2022-07-05T00:00:00.00000000Z"
+    cfetokenization:
+      certificateTypeCount: 2
+      certificateTypeList:
+        - id: 0
+          name: "Green Energy Certificate"
+          description: "Green Energy Certificate"
+        - id: 1
+          name: "White Energy Certificate"
+          description: "White Energy Certificate"
     cfevesting:
       account_vesting_pools:
       - owner: c4e1lt5npfrl4fnvkxm387d8fc59x3vwugagm4vnzm
