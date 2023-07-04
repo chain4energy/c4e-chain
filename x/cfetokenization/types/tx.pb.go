@@ -9,7 +9,11 @@ import (
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
+	io "io"
 	math "math"
+	math_bits "math/bits"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -23,21 +27,323 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type MsgCreateUserCertificates struct {
+	Owner        string       `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	Certificates *Certificate `protobuf:"bytes,2,opt,name=certificates,proto3" json:"certificates,omitempty"`
+}
+
+func (m *MsgCreateUserCertificates) Reset()         { *m = MsgCreateUserCertificates{} }
+func (m *MsgCreateUserCertificates) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateUserCertificates) ProtoMessage()    {}
+func (*MsgCreateUserCertificates) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ba357ac3aeb2dd39, []int{0}
+}
+func (m *MsgCreateUserCertificates) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgCreateUserCertificates) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgCreateUserCertificates.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgCreateUserCertificates) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateUserCertificates.Merge(m, src)
+}
+func (m *MsgCreateUserCertificates) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgCreateUserCertificates) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateUserCertificates.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgCreateUserCertificates proto.InternalMessageInfo
+
+func (m *MsgCreateUserCertificates) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
+func (m *MsgCreateUserCertificates) GetCertificates() *Certificate {
+	if m != nil {
+		return m.Certificates
+	}
+	return nil
+}
+
+type MsgCreateUserCertificatesResponse struct {
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+}
+
+func (m *MsgCreateUserCertificatesResponse) Reset()         { *m = MsgCreateUserCertificatesResponse{} }
+func (m *MsgCreateUserCertificatesResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateUserCertificatesResponse) ProtoMessage()    {}
+func (*MsgCreateUserCertificatesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ba357ac3aeb2dd39, []int{1}
+}
+func (m *MsgCreateUserCertificatesResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgCreateUserCertificatesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgCreateUserCertificatesResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgCreateUserCertificatesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateUserCertificatesResponse.Merge(m, src)
+}
+func (m *MsgCreateUserCertificatesResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgCreateUserCertificatesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateUserCertificatesResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgCreateUserCertificatesResponse proto.InternalMessageInfo
+
+func (m *MsgCreateUserCertificatesResponse) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+type MsgUpdateUserCertificates struct {
+	Owner        string       `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	Id           uint64       `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	Certificates *Certificate `protobuf:"bytes,3,opt,name=certificates,proto3" json:"certificates,omitempty"`
+}
+
+func (m *MsgUpdateUserCertificates) Reset()         { *m = MsgUpdateUserCertificates{} }
+func (m *MsgUpdateUserCertificates) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateUserCertificates) ProtoMessage()    {}
+func (*MsgUpdateUserCertificates) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ba357ac3aeb2dd39, []int{2}
+}
+func (m *MsgUpdateUserCertificates) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateUserCertificates) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateUserCertificates.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateUserCertificates) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateUserCertificates.Merge(m, src)
+}
+func (m *MsgUpdateUserCertificates) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateUserCertificates) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateUserCertificates.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateUserCertificates proto.InternalMessageInfo
+
+func (m *MsgUpdateUserCertificates) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
+func (m *MsgUpdateUserCertificates) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+func (m *MsgUpdateUserCertificates) GetCertificates() *Certificate {
+	if m != nil {
+		return m.Certificates
+	}
+	return nil
+}
+
+type MsgUpdateUserCertificatesResponse struct {
+}
+
+func (m *MsgUpdateUserCertificatesResponse) Reset()         { *m = MsgUpdateUserCertificatesResponse{} }
+func (m *MsgUpdateUserCertificatesResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateUserCertificatesResponse) ProtoMessage()    {}
+func (*MsgUpdateUserCertificatesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ba357ac3aeb2dd39, []int{3}
+}
+func (m *MsgUpdateUserCertificatesResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateUserCertificatesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateUserCertificatesResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateUserCertificatesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateUserCertificatesResponse.Merge(m, src)
+}
+func (m *MsgUpdateUserCertificatesResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateUserCertificatesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateUserCertificatesResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateUserCertificatesResponse proto.InternalMessageInfo
+
+type MsgDeleteUserCertificates struct {
+	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	Id    uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+}
+
+func (m *MsgDeleteUserCertificates) Reset()         { *m = MsgDeleteUserCertificates{} }
+func (m *MsgDeleteUserCertificates) String() string { return proto.CompactTextString(m) }
+func (*MsgDeleteUserCertificates) ProtoMessage()    {}
+func (*MsgDeleteUserCertificates) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ba357ac3aeb2dd39, []int{4}
+}
+func (m *MsgDeleteUserCertificates) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgDeleteUserCertificates) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgDeleteUserCertificates.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgDeleteUserCertificates) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDeleteUserCertificates.Merge(m, src)
+}
+func (m *MsgDeleteUserCertificates) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgDeleteUserCertificates) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDeleteUserCertificates.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgDeleteUserCertificates proto.InternalMessageInfo
+
+func (m *MsgDeleteUserCertificates) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
+func (m *MsgDeleteUserCertificates) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+type MsgDeleteUserCertificatesResponse struct {
+}
+
+func (m *MsgDeleteUserCertificatesResponse) Reset()         { *m = MsgDeleteUserCertificatesResponse{} }
+func (m *MsgDeleteUserCertificatesResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgDeleteUserCertificatesResponse) ProtoMessage()    {}
+func (*MsgDeleteUserCertificatesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ba357ac3aeb2dd39, []int{5}
+}
+func (m *MsgDeleteUserCertificatesResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgDeleteUserCertificatesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgDeleteUserCertificatesResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgDeleteUserCertificatesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDeleteUserCertificatesResponse.Merge(m, src)
+}
+func (m *MsgDeleteUserCertificatesResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgDeleteUserCertificatesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDeleteUserCertificatesResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgDeleteUserCertificatesResponse proto.InternalMessageInfo
+
+func init() {
+	proto.RegisterType((*MsgCreateUserCertificates)(nil), "chain4energy.c4echain.cfetokenization.MsgCreateUserCertificates")
+	proto.RegisterType((*MsgCreateUserCertificatesResponse)(nil), "chain4energy.c4echain.cfetokenization.MsgCreateUserCertificatesResponse")
+	proto.RegisterType((*MsgUpdateUserCertificates)(nil), "chain4energy.c4echain.cfetokenization.MsgUpdateUserCertificates")
+	proto.RegisterType((*MsgUpdateUserCertificatesResponse)(nil), "chain4energy.c4echain.cfetokenization.MsgUpdateUserCertificatesResponse")
+	proto.RegisterType((*MsgDeleteUserCertificates)(nil), "chain4energy.c4echain.cfetokenization.MsgDeleteUserCertificates")
+	proto.RegisterType((*MsgDeleteUserCertificatesResponse)(nil), "chain4energy.c4echain.cfetokenization.MsgDeleteUserCertificatesResponse")
+}
+
 func init() { proto.RegisterFile("c4echain/cfetokenization/tx.proto", fileDescriptor_ba357ac3aeb2dd39) }
 
 var fileDescriptor_ba357ac3aeb2dd39 = []byte{
-	// 164 bytes of a gzipped FileDescriptorProto
+	// 372 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x4c, 0x36, 0x49, 0x4d,
 	0xce, 0x48, 0xcc, 0xcc, 0xd3, 0x4f, 0x4e, 0x4b, 0x2d, 0xc9, 0xcf, 0x4e, 0xcd, 0xcb, 0xac, 0x4a,
 	0x2c, 0xc9, 0xcc, 0xcf, 0xd3, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x52, 0x05,
 	0xcb, 0x9b, 0xa4, 0xe6, 0xa5, 0x16, 0xa5, 0x57, 0xea, 0xc1, 0xd4, 0xeb, 0xa1, 0xa9, 0x97, 0xd2,
 	0xc6, 0x69, 0x52, 0x69, 0x71, 0x6a, 0x51, 0x7c, 0x4a, 0x6a, 0x59, 0x66, 0x72, 0x6a, 0x31, 0xc4,
-	0x4c, 0x23, 0x56, 0x2e, 0x66, 0xdf, 0xe2, 0x74, 0xa7, 0xe0, 0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c,
-	0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b, 0x8f, 0xe5, 0x18, 0x6e,
-	0x3c, 0x96, 0x63, 0x88, 0xb2, 0x4c, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5,
-	0x47, 0xb6, 0x5f, 0x3f, 0xd9, 0x24, 0x55, 0x17, 0x62, 0x4d, 0x05, 0xa6, 0x93, 0x2b, 0x0b, 0x52,
-	0x8b, 0x93, 0xd8, 0xc0, 0x56, 0x18, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0xe3, 0x59, 0x13, 0xe7,
-	0xdb, 0x00, 0x00, 0x00,
+	0x4c, 0x29, 0x03, 0xfc, 0x8a, 0x93, 0x53, 0x8b, 0x4a, 0x32, 0xd3, 0x32, 0x93, 0x13, 0x4b, 0x60,
+	0x3a, 0x94, 0x3a, 0x19, 0xb9, 0x24, 0x7d, 0x8b, 0xd3, 0x9d, 0x8b, 0x52, 0x13, 0x4b, 0x52, 0x43,
+	0x8b, 0x53, 0x8b, 0x9c, 0x91, 0xd4, 0x08, 0x89, 0x70, 0xb1, 0xe6, 0x97, 0xe7, 0xa5, 0x16, 0x49,
+	0x30, 0x2a, 0x30, 0x6a, 0x70, 0x06, 0x41, 0x38, 0x42, 0x61, 0x5c, 0x3c, 0xc8, 0x26, 0x49, 0x30,
+	0x29, 0x30, 0x6a, 0x70, 0x1b, 0x19, 0xe9, 0x11, 0xe5, 0x21, 0x3d, 0x24, 0x0b, 0x82, 0x50, 0xcc,
+	0x51, 0x32, 0xe6, 0x52, 0xc4, 0xe9, 0x94, 0xa0, 0xd4, 0xe2, 0x82, 0xfc, 0xbc, 0xe2, 0x54, 0x21,
+	0x3e, 0x2e, 0xa6, 0xcc, 0x14, 0xb0, 0x7b, 0x58, 0x82, 0x98, 0x32, 0x53, 0x94, 0x66, 0x42, 0x3c,
+	0x10, 0x5a, 0x90, 0x42, 0xbc, 0x07, 0x20, 0x66, 0x30, 0xc1, 0xcc, 0xc0, 0xf0, 0x10, 0x33, 0x95,
+	0x3c, 0xa4, 0x0c, 0xf6, 0x10, 0x76, 0xa7, 0xc1, 0x3c, 0xa4, 0xe4, 0x08, 0x76, 0xbf, 0x4b, 0x6a,
+	0x4e, 0x2a, 0xb9, 0xee, 0x87, 0xda, 0x83, 0xdd, 0x08, 0x98, 0x3d, 0x46, 0xbf, 0x98, 0xb9, 0x98,
+	0x7d, 0x8b, 0xd3, 0x85, 0x96, 0x30, 0x72, 0x89, 0xe1, 0x88, 0x6e, 0x07, 0x22, 0x7d, 0x8c, 0x33,
+	0x96, 0xa4, 0x3c, 0x28, 0x35, 0x01, 0x1e, 0xcf, 0x20, 0x67, 0xe2, 0x88, 0x54, 0x12, 0x9c, 0x89,
+	0xdd, 0x04, 0x52, 0x9c, 0x89, 0x3f, 0xf6, 0xc0, 0xce, 0xc4, 0x11, 0x77, 0x24, 0x38, 0x13, 0xbb,
+	0x09, 0xa4, 0x38, 0x13, 0x7f, 0xe4, 0x3b, 0x05, 0x9f, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c,
+	0xe3, 0x83, 0x47, 0x72, 0x8c, 0x13, 0x1e, 0xcb, 0x31, 0x5c, 0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1,
+	0x1c, 0x43, 0x94, 0x65, 0x7a, 0x66, 0x49, 0x46, 0x69, 0x92, 0x5e, 0x72, 0x7e, 0xae, 0x3e, 0xb2,
+	0x6d, 0xfa, 0xc9, 0x26, 0xa9, 0xba, 0x90, 0xb2, 0xa4, 0x02, 0xb3, 0x10, 0xab, 0x2c, 0x48, 0x2d,
+	0x4e, 0x62, 0x03, 0x17, 0x21, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0x5e, 0xbf, 0x64, 0xfb,
+	0xed, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -52,6 +358,12 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
+	// rpc CreateUserDevices (MsgCreateUserDevices) returns (MsgCreateUserDevicesResponse);
+	// rpc UpdateUserDevices (MsgUpdateUserDevices) returns (MsgUpdateUserDevicesResponse);
+	// rpc DeleteUserDevices (MsgDeleteUserDevices) returns (MsgDeleteUserDevicesResponse);
+	CreateUserCertificates(ctx context.Context, in *MsgCreateUserCertificates, opts ...grpc.CallOption) (*MsgCreateUserCertificatesResponse, error)
+	UpdateUserCertificates(ctx context.Context, in *MsgUpdateUserCertificates, opts ...grpc.CallOption) (*MsgUpdateUserCertificatesResponse, error)
+	DeleteUserCertificates(ctx context.Context, in *MsgDeleteUserCertificates, opts ...grpc.CallOption) (*MsgDeleteUserCertificatesResponse, error)
 }
 
 type msgClient struct {
@@ -62,22 +374,1040 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
+func (c *msgClient) CreateUserCertificates(ctx context.Context, in *MsgCreateUserCertificates, opts ...grpc.CallOption) (*MsgCreateUserCertificatesResponse, error) {
+	out := new(MsgCreateUserCertificatesResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfetokenization.Msg/CreateUserCertificates", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateUserCertificates(ctx context.Context, in *MsgUpdateUserCertificates, opts ...grpc.CallOption) (*MsgUpdateUserCertificatesResponse, error) {
+	out := new(MsgUpdateUserCertificatesResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfetokenization.Msg/UpdateUserCertificates", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) DeleteUserCertificates(ctx context.Context, in *MsgDeleteUserCertificates, opts ...grpc.CallOption) (*MsgDeleteUserCertificatesResponse, error) {
+	out := new(MsgDeleteUserCertificatesResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfetokenization.Msg/DeleteUserCertificates", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
+	// rpc CreateUserDevices (MsgCreateUserDevices) returns (MsgCreateUserDevicesResponse);
+	// rpc UpdateUserDevices (MsgUpdateUserDevices) returns (MsgUpdateUserDevicesResponse);
+	// rpc DeleteUserDevices (MsgDeleteUserDevices) returns (MsgDeleteUserDevicesResponse);
+	CreateUserCertificates(context.Context, *MsgCreateUserCertificates) (*MsgCreateUserCertificatesResponse, error)
+	UpdateUserCertificates(context.Context, *MsgUpdateUserCertificates) (*MsgUpdateUserCertificatesResponse, error)
+	DeleteUserCertificates(context.Context, *MsgDeleteUserCertificates) (*MsgDeleteUserCertificatesResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
+func (*UnimplementedMsgServer) CreateUserCertificates(ctx context.Context, req *MsgCreateUserCertificates) (*MsgCreateUserCertificatesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUserCertificates not implemented")
+}
+func (*UnimplementedMsgServer) UpdateUserCertificates(ctx context.Context, req *MsgUpdateUserCertificates) (*MsgUpdateUserCertificatesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserCertificates not implemented")
+}
+func (*UnimplementedMsgServer) DeleteUserCertificates(ctx context.Context, req *MsgDeleteUserCertificates) (*MsgDeleteUserCertificatesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserCertificates not implemented")
+}
+
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
+}
+
+func _Msg_CreateUserCertificates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateUserCertificates)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateUserCertificates(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfetokenization.Msg/CreateUserCertificates",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateUserCertificates(ctx, req.(*MsgCreateUserCertificates))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateUserCertificates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateUserCertificates)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateUserCertificates(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfetokenization.Msg/UpdateUserCertificates",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateUserCertificates(ctx, req.(*MsgUpdateUserCertificates))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_DeleteUserCertificates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDeleteUserCertificates)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).DeleteUserCertificates(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfetokenization.Msg/DeleteUserCertificates",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).DeleteUserCertificates(ctx, req.(*MsgDeleteUserCertificates))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "chain4energy.c4echain.cfetokenization.Msg",
 	HandlerType: (*MsgServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams:     []grpc.StreamDesc{},
-	Metadata:    "c4echain/cfetokenization/tx.proto",
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateUserCertificates",
+			Handler:    _Msg_CreateUserCertificates_Handler,
+		},
+		{
+			MethodName: "UpdateUserCertificates",
+			Handler:    _Msg_UpdateUserCertificates_Handler,
+		},
+		{
+			MethodName: "DeleteUserCertificates",
+			Handler:    _Msg_DeleteUserCertificates_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "c4echain/cfetokenization/tx.proto",
 }
+
+func (m *MsgCreateUserCertificates) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgCreateUserCertificates) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCreateUserCertificates) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Certificates != nil {
+		{
+			size, err := m.Certificates.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTx(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgCreateUserCertificatesResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgCreateUserCertificatesResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCreateUserCertificatesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Id != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateUserCertificates) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateUserCertificates) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateUserCertificates) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Certificates != nil {
+		{
+			size, err := m.Certificates.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTx(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.Id != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateUserCertificatesResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateUserCertificatesResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateUserCertificatesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgDeleteUserCertificates) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgDeleteUserCertificates) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgDeleteUserCertificates) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Id != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgDeleteUserCertificatesResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgDeleteUserCertificatesResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgDeleteUserCertificatesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
+	offset -= sovTx(v)
+	base := offset
+	for v >= 1<<7 {
+		dAtA[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	dAtA[offset] = uint8(v)
+	return base
+}
+func (m *MsgCreateUserCertificates) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.Certificates != nil {
+		l = m.Certificates.Size()
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgCreateUserCertificatesResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Id != 0 {
+		n += 1 + sovTx(uint64(m.Id))
+	}
+	return n
+}
+
+func (m *MsgUpdateUserCertificates) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.Id != 0 {
+		n += 1 + sovTx(uint64(m.Id))
+	}
+	if m.Certificates != nil {
+		l = m.Certificates.Size()
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgUpdateUserCertificatesResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgDeleteUserCertificates) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.Id != 0 {
+		n += 1 + sovTx(uint64(m.Id))
+	}
+	return n
+}
+
+func (m *MsgDeleteUserCertificatesResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func sovTx(x uint64) (n int) {
+	return (math_bits.Len64(x|1) + 6) / 7
+}
+func sozTx(x uint64) (n int) {
+	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *MsgCreateUserCertificates) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgCreateUserCertificates: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgCreateUserCertificates: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Certificates", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Certificates == nil {
+				m.Certificates = &Certificate{}
+			}
+			if err := m.Certificates.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgCreateUserCertificatesResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgCreateUserCertificatesResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgCreateUserCertificatesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateUserCertificates) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateUserCertificates: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateUserCertificates: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Certificates", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Certificates == nil {
+				m.Certificates = &Certificate{}
+			}
+			if err := m.Certificates.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateUserCertificatesResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateUserCertificatesResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateUserCertificatesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgDeleteUserCertificates) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgDeleteUserCertificates: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgDeleteUserCertificates: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgDeleteUserCertificatesResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgDeleteUserCertificatesResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgDeleteUserCertificatesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func skipTx(dAtA []byte) (n int, err error) {
+	l := len(dAtA)
+	iNdEx := 0
+	depth := 0
+	for iNdEx < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return 0, ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return 0, io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		wireType := int(wire & 0x7)
+		switch wireType {
+		case 0:
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				iNdEx++
+				if dAtA[iNdEx-1] < 0x80 {
+					break
+				}
+			}
+		case 1:
+			iNdEx += 8
+		case 2:
+			var length int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				length |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if length < 0 {
+				return 0, ErrInvalidLengthTx
+			}
+			iNdEx += length
+		case 3:
+			depth++
+		case 4:
+			if depth == 0 {
+				return 0, ErrUnexpectedEndOfGroupTx
+			}
+			depth--
+		case 5:
+			iNdEx += 4
+		default:
+			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
+		}
+		if iNdEx < 0 {
+			return 0, ErrInvalidLengthTx
+		}
+		if depth == 0 {
+			return iNdEx, nil
+		}
+	}
+	return 0, io.ErrUnexpectedEOF
+}
+
+var (
+	ErrInvalidLengthTx        = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowTx          = fmt.Errorf("proto: integer overflow")
+	ErrUnexpectedEndOfGroupTx = fmt.Errorf("proto: unexpected end of group")
+)

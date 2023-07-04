@@ -8,6 +8,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "c4echain/cfetokenization/params.proto";
 import "c4echain/cfetokenization/certificate_type.proto";
 import "c4echain/cfetokenization/user_devices.proto";
+import "c4echain/cfetokenization/user_certificates.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfetokenization/types";
 
@@ -37,6 +38,16 @@ service Query {
   }
   rpc UserDevicesAll (QueryAllUserDevicesRequest) returns (QueryAllUserDevicesResponse) {
     option (google.api.http).get = "/chain4energy/c4e-chain/cfetokenization/user_devices";
+  
+  }
+  
+  // Queries a list of UserCertificates items.
+  rpc UserCertificates    (QueryGetUserCertificatesRequest) returns (QueryGetUserCertificatesResponse) {
+    option (google.api.http).get = "/chain4energy/c4e-chain/cfetokenization/user_certificates/{id}";
+  
+  }
+  rpc UserCertificatesAll (QueryAllUserCertificatesRequest) returns (QueryAllUserCertificatesResponse) {
+    option (google.api.http).get = "/chain4energy/c4e-chain/cfetokenization/user_certificates";
   
   }
 }
@@ -82,5 +93,22 @@ message QueryAllUserDevicesRequest {
 message QueryAllUserDevicesResponse {
   repeated UserDevices                            UserDevices = 1 [(gogoproto.nullable) = false];
            cosmos.base.query.v1beta1.PageResponse pagination  = 2;
+}
+
+message QueryGetUserCertificatesRequest {
+  uint64 id = 1;
+}
+
+message QueryGetUserCertificatesResponse {
+  UserCertificates UserCertificates = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllUserCertificatesRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllUserCertificatesResponse {
+  repeated UserCertificates                       UserCertificates = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination       = 2;
 }
 

@@ -27,3 +27,8 @@ const (
 	UserDevicesKey      = "UserDevices/value/"
 	UserDevicesCountKey = "UserDevices/count/"
 )
+
+const (
+	UserCertificatesKey      = "UserCertificates/value/"
+	UserCertificatesCountKey = "UserCertificates/count/"
+)

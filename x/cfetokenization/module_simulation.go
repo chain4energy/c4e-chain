@@ -36,6 +36,18 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgDeleteUserDevices int = 100
 
+	opWeightMsgCreateUserCertificates = "op_weight_msg_user_certificates"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateUserCertificates int = 100
+
+	opWeightMsgUpdateUserCertificates = "op_weight_msg_user_certificates"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateUserCertificates int = 100
+
+	opWeightMsgDeleteUserCertificates = "op_weight_msg_user_certificates"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgDeleteUserCertificates int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -58,6 +70,17 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 			},
 		},
 		UserDevicesCount: 2,
+		UserCertificatesList: []types.UserCertificates{
+			{
+				Id:    0,
+				Owner: sample.AccAddress(),
+			},
+			{
+				Id:    1,
+				Owner: sample.AccAddress(),
+			},
+		},
+		UserCertificatesCount: 2,
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&cfetokenizationGenesis)
@@ -113,6 +136,39 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	//	weightMsgDeleteUserDevices,
 	//	cfetokenizationsimulation.SimulateMsgDeleteUserDevices(am.accountKeeper, am.bankKeeper, am.keeper),
 	//))
+
+	var weightMsgCreateUserCertificates int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateUserCertificates, &weightMsgCreateUserCertificates, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateUserCertificates = defaultWeightMsgCreateUserCertificates
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateUserCertificates,
+		cfetokenizationsimulation.SimulateMsgCreateUserCertificates(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdateUserCertificates int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateUserCertificates, &weightMsgUpdateUserCertificates, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateUserCertificates = defaultWeightMsgUpdateUserCertificates
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateUserCertificates,
+		cfetokenizationsimulation.SimulateMsgUpdateUserCertificates(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgDeleteUserCertificates int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteUserCertificates, &weightMsgDeleteUserCertificates, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeleteUserCertificates = defaultWeightMsgDeleteUserCertificates
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteUserCertificates,
+		cfetokenizationsimulation.SimulateMsgDeleteUserCertificates(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

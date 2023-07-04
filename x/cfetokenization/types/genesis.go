@@ -10,8 +10,9 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		CertificateTypeList: []CertificateType{},
-		UserDevicesList:     []UserDevices{},
+		CertificateTypeList:  []CertificateType{},
+		UserDevicesList:      []UserDevices{},
+		UserCertificatesList: []UserCertificates{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -43,6 +44,18 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("userDevices id should be lower or equal than the last id")
 		}
 		userDevicesIdMap[elem.Id] = true
+	}
+	// Check for duplicated ID in userCertificates
+	userCertificatesIdMap := make(map[uint64]bool)
+	userCertificatesCount := gs.GetUserCertificatesCount()
+	for _, elem := range gs.UserCertificatesList {
+		if _, ok := userCertificatesIdMap[elem.Id]; ok {
+			return fmt.Errorf("duplicated id for userCertificates")
+		}
+		if elem.Id >= userCertificatesCount {
+			return fmt.Errorf("userCertificates id should be lower or equal than the last id")
+		}
+		userCertificatesIdMap[elem.Id] = true
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

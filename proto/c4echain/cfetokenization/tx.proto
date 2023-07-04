@@ -3,15 +3,21 @@ syntax = "proto3";
 package chain4energy.c4echain.cfetokenization;
 
 import "c4echain/cfetokenization/user_devices.proto";
+import "c4echain/cfetokenization/user_certificates.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfetokenization/types";
 
 // Msg defines the Msg service.
 service Msg {
-//  rpc CreateUserDevices (MsgCreateUserDevices) returns (MsgCreateUserDevicesResponse);
-//  rpc UpdateUserDevices (MsgUpdateUserDevices) returns (MsgUpdateUserDevicesResponse);
-//  rpc DeleteUserDevices (MsgDeleteUserDevices) returns (MsgDeleteUserDevicesResponse);
+
+  //  rpc CreateUserDevices (MsgCreateUserDevices) returns (MsgCreateUserDevicesResponse);
+  //  rpc UpdateUserDevices (MsgUpdateUserDevices) returns (MsgUpdateUserDevicesResponse);
+  //  rpc DeleteUserDevices (MsgDeleteUserDevices) returns (MsgDeleteUserDevicesResponse);
+  rpc CreateUserCertificates (MsgCreateUserCertificates) returns (MsgCreateUserCertificatesResponse);
+  rpc UpdateUserCertificates (MsgUpdateUserCertificates) returns (MsgUpdateUserCertificatesResponse);
+  rpc DeleteUserCertificates (MsgDeleteUserCertificates) returns (MsgDeleteUserCertificatesResponse);
 }
+
 //message MsgCreateUserDevices {
 //  string owner   = 1;
 //  Device devices = 2;
@@ -35,4 +41,28 @@ service Msg {
 //}
 //
 //message MsgDeleteUserDevicesResponse {}
+
+message MsgCreateUserCertificates {
+  string      owner        = 1;
+  Certificate certificates = 2;
+}
+
+message MsgCreateUserCertificatesResponse {
+  uint64 id = 1;
+}
+
+message MsgUpdateUserCertificates {
+  string      owner        = 1;
+  uint64      id           = 2;
+  Certificate certificates = 3;
+}
+
+message MsgUpdateUserCertificatesResponse {}
+
+message MsgDeleteUserCertificates {
+  string owner = 1;
+  uint64 id    = 2;
+}
+
+message MsgDeleteUserCertificatesResponse {}
 
