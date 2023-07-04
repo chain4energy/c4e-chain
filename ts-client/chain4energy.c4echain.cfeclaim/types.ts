@@ -2,16 +2,17 @@ import { Campaign } from "./types/c4echain/cfeclaim/campaign"
 import { UserEntry } from "./types/c4echain/cfeclaim/claim_record"
 import { ClaimRecord } from "./types/c4echain/cfeclaim/claim_record"
 import { ClaimRecordEntry } from "./types/c4echain/cfeclaim/claim_record"
-import { NewCampaign } from "./types/c4echain/cfeclaim/event"
-import { CloseCampaign } from "./types/c4echain/cfeclaim/event"
-import { RemoveCampaign } from "./types/c4echain/cfeclaim/event"
-import { EnableCampaign } from "./types/c4echain/cfeclaim/event"
-import { AddMission } from "./types/c4echain/cfeclaim/event"
-import { Claim } from "./types/c4echain/cfeclaim/event"
-import { InitialClaim } from "./types/c4echain/cfeclaim/event"
-import { AddClaimRecords } from "./types/c4echain/cfeclaim/event"
-import { DeleteClaimRecord } from "./types/c4echain/cfeclaim/event"
-import { CompleteMission } from "./types/c4echain/cfeclaim/event"
+import { EventNewCampaign } from "./types/c4echain/cfeclaim/event"
+import { EventCloseCampaign } from "./types/c4echain/cfeclaim/event"
+import { EventRemoveCampaign } from "./types/c4echain/cfeclaim/event"
+import { EventEnableCampaign } from "./types/c4echain/cfeclaim/event"
+import { EventAddMission } from "./types/c4echain/cfeclaim/event"
+import { EventClaim } from "./types/c4echain/cfeclaim/event"
+import { EventInitialClaim } from "./types/c4echain/cfeclaim/event"
+import { EventAddClaimRecords } from "./types/c4echain/cfeclaim/event"
+import { EventDeleteClaimRecord } from "./types/c4echain/cfeclaim/event"
+import { EventCompleteMission } from "./types/c4echain/cfeclaim/event"
+import { MissionCount } from "./types/c4echain/cfeclaim/genesis"
 import { Mission } from "./types/c4echain/cfeclaim/mission"
 
 
@@ -20,16 +21,17 @@ export {
     UserEntry,
     ClaimRecord,
     ClaimRecordEntry,
-    NewCampaign,
-    CloseCampaign,
-    RemoveCampaign,
-    EnableCampaign,
-    AddMission,
-    Claim,
-    InitialClaim,
-    AddClaimRecords,
-    DeleteClaimRecord,
-    CompleteMission,
+    EventNewCampaign,
+    EventCloseCampaign,
+    EventRemoveCampaign,
+    EventEnableCampaign,
+    EventAddMission,
+    EventClaim,
+    EventInitialClaim,
+    EventAddClaimRecords,
+    EventDeleteClaimRecord,
+    EventCompleteMission,
+    MissionCount,
     Mission,
     
  }

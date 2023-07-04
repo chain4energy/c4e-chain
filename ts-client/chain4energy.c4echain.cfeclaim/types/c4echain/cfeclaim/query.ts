@@ -45,12 +45,10 @@ export interface QueryMissionsResponse {
 
 export interface QueryCampaignMissionsRequest {
   campaignId: number;
-  pagination: PageRequest | undefined;
 }
 
 export interface QueryCampaignMissionsResponse {
   missions: Mission[];
-  pagination: PageResponse | undefined;
 }
 
 export interface QueryCampaignsRequest {
@@ -507,16 +505,13 @@ export const QueryMissionsResponse = {
 };
 
 function createBaseQueryCampaignMissionsRequest(): QueryCampaignMissionsRequest {
-  return { campaignId: 0, pagination: undefined };
+  return { campaignId: 0 };
 }
 
 export const QueryCampaignMissionsRequest = {
   encode(message: QueryCampaignMissionsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.campaignId !== 0) {
       writer.uint32(8).uint64(message.campaignId);
-    }
-    if (message.pagination !== undefined) {
-      PageRequest.encode(message.pagination, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -531,9 +526,6 @@ export const QueryCampaignMissionsRequest = {
         case 1:
           message.campaignId = longToNumber(reader.uint64() as Long);
           break;
-        case 2:
-          message.pagination = PageRequest.decode(reader, reader.uint32());
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -543,41 +535,30 @@ export const QueryCampaignMissionsRequest = {
   },
 
   fromJSON(object: any): QueryCampaignMissionsRequest {
-    return {
-      campaignId: isSet(object.campaignId) ? Number(object.campaignId) : 0,
-      pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined,
-    };
+    return { campaignId: isSet(object.campaignId) ? Number(object.campaignId) : 0 };
   },
 
   toJSON(message: QueryCampaignMissionsRequest): unknown {
     const obj: any = {};
     message.campaignId !== undefined && (obj.campaignId = Math.round(message.campaignId));
-    message.pagination !== undefined
-      && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryCampaignMissionsRequest>, I>>(object: I): QueryCampaignMissionsRequest {
     const message = createBaseQueryCampaignMissionsRequest();
     message.campaignId = object.campaignId ?? 0;
-    message.pagination = (object.pagination !== undefined && object.pagination !== null)
-      ? PageRequest.fromPartial(object.pagination)
-      : undefined;
     return message;
   },
 };
 
 function createBaseQueryCampaignMissionsResponse(): QueryCampaignMissionsResponse {
-  return { missions: [], pagination: undefined };
+  return { missions: [] };
 }
 
 export const QueryCampaignMissionsResponse = {
   encode(message: QueryCampaignMissionsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     for (const v of message.missions) {
       Mission.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
-    if (message.pagination !== undefined) {
-      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -592,9 +573,6 @@ export const QueryCampaignMissionsResponse = {
         case 1:
           message.missions.push(Mission.decode(reader, reader.uint32()));
           break;
-        case 2:
-          message.pagination = PageResponse.decode(reader, reader.uint32());
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -604,10 +582,7 @@ export const QueryCampaignMissionsResponse = {
   },
 
   fromJSON(object: any): QueryCampaignMissionsResponse {
-    return {
-      missions: Array.isArray(object?.missions) ? object.missions.map((e: any) => Mission.fromJSON(e)) : [],
-      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined,
-    };
+    return { missions: Array.isArray(object?.missions) ? object.missions.map((e: any) => Mission.fromJSON(e)) : [] };
   },
 
   toJSON(message: QueryCampaignMissionsResponse): unknown {
@@ -617,8 +592,6 @@ export const QueryCampaignMissionsResponse = {
     } else {
       obj.missions = [];
     }
-    message.pagination !== undefined
-      && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
     return obj;
   },
 
@@ -627,9 +600,6 @@ export const QueryCampaignMissionsResponse = {
   ): QueryCampaignMissionsResponse {
     const message = createBaseQueryCampaignMissionsResponse();
     message.missions = object.missions?.map((e) => Mission.fromPartial(e)) || [];
-    message.pagination = (object.pagination !== undefined && object.pagination !== null)
-      ? PageResponse.fromPartial(object.pagination)
-      : undefined;
     return message;
   },
 };

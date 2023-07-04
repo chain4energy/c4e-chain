@@ -192,7 +192,7 @@ export interface TypesBlockID {
 }
 
 /**
- * Header defines the structure of a Tendermint block header.
+ * Header defines the structure of a block header.
  */
 export interface TypesHeader {
   /**
@@ -398,7 +398,7 @@ recent HistoricalInfo
 (`n` is set by the staking module's `historical_entries` parameter).
 */
 export interface V1Beta1HistoricalInfo {
-  /** Header defines the structure of a Tendermint block header. */
+  /** Header defines the structure of a block header. */
   header?: TypesHeader;
   valset?: Stakingv1Beta1Validator[];
 }

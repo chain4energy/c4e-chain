@@ -5,7 +5,7 @@ import { Account } from "./sub_distributor";
 
 export const protobufPackage = "chain4energy.c4echain.cfedistributor";
 
-export interface Distribution {
+export interface EventDistribution {
   subdistributor: string;
   shareName: string;
   sources: Account[];
@@ -13,18 +13,18 @@ export interface Distribution {
   amount: DecCoin[];
 }
 
-export interface DistributionBurn {
+export interface EventDistributionBurn {
   subdistributor: string;
   sources: Account[];
   amount: DecCoin[];
 }
 
-function createBaseDistribution(): Distribution {
+function createBaseEventDistribution(): EventDistribution {
   return { subdistributor: "", shareName: "", sources: [], destination: undefined, amount: [] };
 }
 
-export const Distribution = {
-  encode(message: Distribution, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const EventDistribution = {
+  encode(message: EventDistribution, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.subdistributor !== "") {
       writer.uint32(10).string(message.subdistributor);
     }
@@ -43,10 +43,10 @@ export const Distribution = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): Distribution {
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventDistribution {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseDistribution();
+    const message = createBaseEventDistribution();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -73,7 +73,7 @@ export const Distribution = {
     return message;
   },
 
-  fromJSON(object: any): Distribution {
+  fromJSON(object: any): EventDistribution {
     return {
       subdistributor: isSet(object.subdistributor) ? String(object.subdistributor) : "",
       shareName: isSet(object.shareName) ? String(object.shareName) : "",
@@ -83,7 +83,7 @@ export const Distribution = {
     };
   },
 
-  toJSON(message: Distribution): unknown {
+  toJSON(message: EventDistribution): unknown {
     const obj: any = {};
     message.subdistributor !== undefined && (obj.subdistributor = message.subdistributor);
     message.shareName !== undefined && (obj.shareName = message.shareName);
@@ -102,8 +102,8 @@ export const Distribution = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<Distribution>, I>>(object: I): Distribution {
-    const message = createBaseDistribution();
+  fromPartial<I extends Exact<DeepPartial<EventDistribution>, I>>(object: I): EventDistribution {
+    const message = createBaseEventDistribution();
     message.subdistributor = object.subdistributor ?? "";
     message.shareName = object.shareName ?? "";
     message.sources = object.sources?.map((e) => Account.fromPartial(e)) || [];
@@ -115,12 +115,12 @@ export const Distribution = {
   },
 };
 
-function createBaseDistributionBurn(): DistributionBurn {
+function createBaseEventDistributionBurn(): EventDistributionBurn {
   return { subdistributor: "", sources: [], amount: [] };
 }
 
-export const DistributionBurn = {
-  encode(message: DistributionBurn, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const EventDistributionBurn = {
+  encode(message: EventDistributionBurn, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.subdistributor !== "") {
       writer.uint32(10).string(message.subdistributor);
     }
@@ -133,10 +133,10 @@ export const DistributionBurn = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): DistributionBurn {
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventDistributionBurn {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseDistributionBurn();
+    const message = createBaseEventDistributionBurn();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -157,7 +157,7 @@ export const DistributionBurn = {
     return message;
   },
 
-  fromJSON(object: any): DistributionBurn {
+  fromJSON(object: any): EventDistributionBurn {
     return {
       subdistributor: isSet(object.subdistributor) ? String(object.subdistributor) : "",
       sources: Array.isArray(object?.sources) ? object.sources.map((e: any) => Account.fromJSON(e)) : [],
@@ -165,7 +165,7 @@ export const DistributionBurn = {
     };
   },
 
-  toJSON(message: DistributionBurn): unknown {
+  toJSON(message: EventDistributionBurn): unknown {
     const obj: any = {};
     message.subdistributor !== undefined && (obj.subdistributor = message.subdistributor);
     if (message.sources) {
@@ -181,8 +181,8 @@ export const DistributionBurn = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<DistributionBurn>, I>>(object: I): DistributionBurn {
-    const message = createBaseDistributionBurn();
+  fromPartial<I extends Exact<DeepPartial<EventDistributionBurn>, I>>(object: I): EventDistributionBurn {
+    const message = createBaseEventDistributionBurn();
     message.subdistributor = object.subdistributor ?? "";
     message.sources = object.sources?.map((e) => Account.fromPartial(e)) || [];
     message.amount = object.amount?.map((e) => DecCoin.fromPartial(e)) || [];

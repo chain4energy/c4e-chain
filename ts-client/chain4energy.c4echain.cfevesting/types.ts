@@ -1,11 +1,11 @@
 import { AccountVestingPools } from "./types/c4echain/cfevesting/account_vesting_pool"
 import { VestingPool } from "./types/c4echain/cfevesting/account_vesting_pool"
 import { VestingPoolReservation } from "./types/c4echain/cfevesting/account_vesting_pool"
-import { NewVestingAccount } from "./types/c4echain/cfevesting/event"
-import { NewVestingPool } from "./types/c4echain/cfevesting/event"
-import { NewVestingPeriodFromVestingPool } from "./types/c4echain/cfevesting/event"
-import { WithdrawAvailable } from "./types/c4echain/cfevesting/event"
-import { VestingSplit } from "./types/c4echain/cfevesting/event"
+import { EventNewVestingAccount } from "./types/c4echain/cfevesting/event"
+import { EventNewVestingPool } from "./types/c4echain/cfevesting/event"
+import { EventNewVestingPeriodFromVestingPool } from "./types/c4echain/cfevesting/event"
+import { EventWithdrawAvailable } from "./types/c4echain/cfevesting/event"
+import { EventVestingSplit } from "./types/c4echain/cfevesting/event"
 import { GenesisVestingType } from "./types/c4echain/cfevesting/genesis"
 import { Params } from "./types/c4echain/cfevesting/params"
 import { VestingPoolInfo } from "./types/c4echain/cfevesting/query"
@@ -20,11 +20,11 @@ export {
     AccountVestingPools,
     VestingPool,
     VestingPoolReservation,
-    NewVestingAccount,
-    NewVestingPool,
-    NewVestingPeriodFromVestingPool,
-    WithdrawAvailable,
-    VestingSplit,
+    EventNewVestingAccount,
+    EventNewVestingPool,
+    EventNewVestingPeriodFromVestingPool,
+    EventWithdrawAvailable,
+    EventVestingSplit,
     GenesisVestingType,
     Params,
     VestingPoolInfo,

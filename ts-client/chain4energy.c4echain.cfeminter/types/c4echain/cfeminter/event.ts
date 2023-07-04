@@ -3,18 +3,18 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfeminter";
 
-export interface Mint {
+export interface EventMint {
   bondedRatio: string;
   inflation: string;
   amount: string;
 }
 
-function createBaseMint(): Mint {
+function createBaseEventMint(): EventMint {
   return { bondedRatio: "", inflation: "", amount: "" };
 }
 
-export const Mint = {
-  encode(message: Mint, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const EventMint = {
+  encode(message: EventMint, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.bondedRatio !== "") {
       writer.uint32(10).string(message.bondedRatio);
     }
@@ -27,10 +27,10 @@ export const Mint = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): Mint {
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventMint {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMint();
+    const message = createBaseEventMint();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -51,7 +51,7 @@ export const Mint = {
     return message;
   },
 
-  fromJSON(object: any): Mint {
+  fromJSON(object: any): EventMint {
     return {
       bondedRatio: isSet(object.bondedRatio) ? String(object.bondedRatio) : "",
       inflation: isSet(object.inflation) ? String(object.inflation) : "",
@@ -59,7 +59,7 @@ export const Mint = {
     };
   },
 
-  toJSON(message: Mint): unknown {
+  toJSON(message: EventMint): unknown {
     const obj: any = {};
     message.bondedRatio !== undefined && (obj.bondedRatio = message.bondedRatio);
     message.inflation !== undefined && (obj.inflation = message.inflation);
@@ -67,8 +67,8 @@ export const Mint = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<Mint>, I>>(object: I): Mint {
-    const message = createBaseMint();
+  fromPartial<I extends Exact<DeepPartial<EventMint>, I>>(object: I): EventMint {
+    const message = createBaseEventMint();
     message.bondedRatio = object.bondedRatio ?? "";
     message.inflation = object.inflation ?? "";
     message.amount = object.amount ?? "";

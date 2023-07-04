@@ -546,6 +546,19 @@ export interface V1QueryGroupsByMemberResponse {
 }
 
 /**
+* QueryGroupsResponse is the Query/Groups response type.
+
+Since: cosmos-sdk 0.47.1
+*/
+export interface V1QueryGroupsResponse {
+  /** `groups` is all the groups present in state. */
+  groups?: V1GroupInfo[];
+
+  /** pagination defines the pagination in the response. */
+  pagination?: V1Beta1PageResponse;
+}
+
+/**
  * QueryProposalResponse is the Query/Proposal response type.
  */
 export interface V1QueryProposalResponse {
@@ -969,6 +982,32 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     this.request<V1QueryGroupPolicyInfoResponse, RpcStatus>({
       path: `/cosmos/group/v1/group_policy_info/${address}`,
       method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * @description Since: cosmos-sdk 0.47.1
+   *
+   * @tags Query
+   * @name QueryGroups
+   * @summary Groups queries all groups in state.
+   * @request GET:/cosmos/group/v1/groups
+   */
+  queryGroups = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<V1QueryGroupsResponse, RpcStatus>({
+      path: `/cosmos/group/v1/groups`,
+      method: "GET",
+      query: query,
       format: "json",
       ...params,
     });

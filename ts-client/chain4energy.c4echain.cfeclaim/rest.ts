@@ -113,17 +113,6 @@ export type CfeclaimMsgRemoveCampaignResponse = object;
 
 export interface CfeclaimQueryCampaignMissionsResponse {
   missions?: CfeclaimMission[];
-
-  /**
-   * PageResponse is to be embedded in gRPC response messages where the
-   * corresponding request message has used PageRequest.
-   *
-   *  message SomeResponse {
-   *          repeated Bar results = 1;
-   *          PageResponse page = 2;
-   *  }
-   */
-  pagination?: V1Beta1PageResponse;
 }
 
 export interface CfeclaimQueryCampaignResponse {
@@ -499,21 +488,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @summary Queries a list of Mission items for a given campaign.
    * @request GET:/c4e/claim/v1beta1/missions/{campaign_id}
    */
-  queryCampaignMissions = (
-    campaignId: string,
-    query?: {
-      "pagination.key"?: string;
-      "pagination.offset"?: string;
-      "pagination.limit"?: string;
-      "pagination.count_total"?: boolean;
-      "pagination.reverse"?: boolean;
-    },
-    params: RequestParams = {},
-  ) =>
+  queryCampaignMissions = (campaignId: string, params: RequestParams = {}) =>
     this.request<CfeclaimQueryCampaignMissionsResponse, RpcStatus>({
       path: `/c4e/claim/v1beta1/missions/${campaignId}`,
       method: "GET",
-      query: query,
       format: "json",
       ...params,
     });

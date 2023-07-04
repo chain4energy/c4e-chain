@@ -11,7 +11,7 @@ import { MsgUpdateMintersParams } from "./types/c4echain/cfeminter/tx";
 import { MsgBurn } from "./types/c4echain/cfeminter/tx";
 import { MsgUpdateParams } from "./types/c4echain/cfeminter/tx";
 
-import { Mint as typeMint} from "./types"
+import { EventMint as typeEventMint} from "./types"
 import { Minter as typeMinter} from "./types"
 import { NoMinting as typeNoMinting} from "./types"
 import { LinearMinting as typeLinearMinting} from "./types"
@@ -171,7 +171,7 @@ class SDKModule {
 		this.query = queryClient({ addr: client.env.apiURL });		
 		this.updateTX(client);
 		this.structure =  {
-						Mint: getStructure(typeMint.fromPartial({})),
+						EventMint: getStructure(typeEventMint.fromPartial({})),
 						Minter: getStructure(typeMinter.fromPartial({})),
 						NoMinting: getStructure(typeNoMinting.fromPartial({})),
 						LinearMinting: getStructure(typeLinearMinting.fromPartial({})),

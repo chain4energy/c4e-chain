@@ -4,11 +4,11 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "chain4energy.c4echain.cfevesting";
 
-export interface NewVestingAccount {
+export interface EventNewVestingAccount {
   address: string;
 }
 
-export interface NewVestingPool {
+export interface EventNewVestingPool {
   owner: string;
   name: string;
   amount: string;
@@ -16,7 +16,7 @@ export interface NewVestingPool {
   vestingType: string;
 }
 
-export interface NewVestingPeriodFromVestingPool {
+export interface EventNewVestingPeriodFromVestingPool {
   owner: string;
   address: string;
   vestingPoolName: string;
@@ -25,33 +25,33 @@ export interface NewVestingPeriodFromVestingPool {
   periodId: number;
 }
 
-export interface WithdrawAvailable {
+export interface EventWithdrawAvailable {
   owner: string;
   vestingPoolName: string;
   amount: string;
 }
 
-export interface VestingSplit {
+export interface EventVestingSplit {
   source: string;
   destination: string;
 }
 
-function createBaseNewVestingAccount(): NewVestingAccount {
+function createBaseEventNewVestingAccount(): EventNewVestingAccount {
   return { address: "" };
 }
 
-export const NewVestingAccount = {
-  encode(message: NewVestingAccount, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const EventNewVestingAccount = {
+  encode(message: EventNewVestingAccount, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.address !== "") {
       writer.uint32(10).string(message.address);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): NewVestingAccount {
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventNewVestingAccount {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseNewVestingAccount();
+    const message = createBaseEventNewVestingAccount();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -66,29 +66,29 @@ export const NewVestingAccount = {
     return message;
   },
 
-  fromJSON(object: any): NewVestingAccount {
+  fromJSON(object: any): EventNewVestingAccount {
     return { address: isSet(object.address) ? String(object.address) : "" };
   },
 
-  toJSON(message: NewVestingAccount): unknown {
+  toJSON(message: EventNewVestingAccount): unknown {
     const obj: any = {};
     message.address !== undefined && (obj.address = message.address);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<NewVestingAccount>, I>>(object: I): NewVestingAccount {
-    const message = createBaseNewVestingAccount();
+  fromPartial<I extends Exact<DeepPartial<EventNewVestingAccount>, I>>(object: I): EventNewVestingAccount {
+    const message = createBaseEventNewVestingAccount();
     message.address = object.address ?? "";
     return message;
   },
 };
 
-function createBaseNewVestingPool(): NewVestingPool {
+function createBaseEventNewVestingPool(): EventNewVestingPool {
   return { owner: "", name: "", amount: "", duration: "", vestingType: "" };
 }
 
-export const NewVestingPool = {
-  encode(message: NewVestingPool, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const EventNewVestingPool = {
+  encode(message: EventNewVestingPool, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -107,10 +107,10 @@ export const NewVestingPool = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): NewVestingPool {
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventNewVestingPool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseNewVestingPool();
+    const message = createBaseEventNewVestingPool();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -137,7 +137,7 @@ export const NewVestingPool = {
     return message;
   },
 
-  fromJSON(object: any): NewVestingPool {
+  fromJSON(object: any): EventNewVestingPool {
     return {
       owner: isSet(object.owner) ? String(object.owner) : "",
       name: isSet(object.name) ? String(object.name) : "",
@@ -147,7 +147,7 @@ export const NewVestingPool = {
     };
   },
 
-  toJSON(message: NewVestingPool): unknown {
+  toJSON(message: EventNewVestingPool): unknown {
     const obj: any = {};
     message.owner !== undefined && (obj.owner = message.owner);
     message.name !== undefined && (obj.name = message.name);
@@ -157,8 +157,8 @@ export const NewVestingPool = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<NewVestingPool>, I>>(object: I): NewVestingPool {
-    const message = createBaseNewVestingPool();
+  fromPartial<I extends Exact<DeepPartial<EventNewVestingPool>, I>>(object: I): EventNewVestingPool {
+    const message = createBaseEventNewVestingPool();
     message.owner = object.owner ?? "";
     message.name = object.name ?? "";
     message.amount = object.amount ?? "";
@@ -168,12 +168,12 @@ export const NewVestingPool = {
   },
 };
 
-function createBaseNewVestingPeriodFromVestingPool(): NewVestingPeriodFromVestingPool {
+function createBaseEventNewVestingPeriodFromVestingPool(): EventNewVestingPeriodFromVestingPool {
   return { owner: "", address: "", vestingPoolName: "", amount: "", restartVesting: "", periodId: 0 };
 }
 
-export const NewVestingPeriodFromVestingPool = {
-  encode(message: NewVestingPeriodFromVestingPool, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const EventNewVestingPeriodFromVestingPool = {
+  encode(message: EventNewVestingPeriodFromVestingPool, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -195,10 +195,10 @@ export const NewVestingPeriodFromVestingPool = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): NewVestingPeriodFromVestingPool {
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventNewVestingPeriodFromVestingPool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseNewVestingPeriodFromVestingPool();
+    const message = createBaseEventNewVestingPeriodFromVestingPool();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -228,7 +228,7 @@ export const NewVestingPeriodFromVestingPool = {
     return message;
   },
 
-  fromJSON(object: any): NewVestingPeriodFromVestingPool {
+  fromJSON(object: any): EventNewVestingPeriodFromVestingPool {
     return {
       owner: isSet(object.owner) ? String(object.owner) : "",
       address: isSet(object.address) ? String(object.address) : "",
@@ -239,7 +239,7 @@ export const NewVestingPeriodFromVestingPool = {
     };
   },
 
-  toJSON(message: NewVestingPeriodFromVestingPool): unknown {
+  toJSON(message: EventNewVestingPeriodFromVestingPool): unknown {
     const obj: any = {};
     message.owner !== undefined && (obj.owner = message.owner);
     message.address !== undefined && (obj.address = message.address);
@@ -250,10 +250,10 @@ export const NewVestingPeriodFromVestingPool = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<NewVestingPeriodFromVestingPool>, I>>(
+  fromPartial<I extends Exact<DeepPartial<EventNewVestingPeriodFromVestingPool>, I>>(
     object: I,
-  ): NewVestingPeriodFromVestingPool {
-    const message = createBaseNewVestingPeriodFromVestingPool();
+  ): EventNewVestingPeriodFromVestingPool {
+    const message = createBaseEventNewVestingPeriodFromVestingPool();
     message.owner = object.owner ?? "";
     message.address = object.address ?? "";
     message.vestingPoolName = object.vestingPoolName ?? "";
@@ -264,12 +264,12 @@ export const NewVestingPeriodFromVestingPool = {
   },
 };
 
-function createBaseWithdrawAvailable(): WithdrawAvailable {
+function createBaseEventWithdrawAvailable(): EventWithdrawAvailable {
   return { owner: "", vestingPoolName: "", amount: "" };
 }
 
-export const WithdrawAvailable = {
-  encode(message: WithdrawAvailable, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const EventWithdrawAvailable = {
+  encode(message: EventWithdrawAvailable, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -282,10 +282,10 @@ export const WithdrawAvailable = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): WithdrawAvailable {
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventWithdrawAvailable {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseWithdrawAvailable();
+    const message = createBaseEventWithdrawAvailable();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -306,7 +306,7 @@ export const WithdrawAvailable = {
     return message;
   },
 
-  fromJSON(object: any): WithdrawAvailable {
+  fromJSON(object: any): EventWithdrawAvailable {
     return {
       owner: isSet(object.owner) ? String(object.owner) : "",
       vestingPoolName: isSet(object.vestingPoolName) ? String(object.vestingPoolName) : "",
@@ -314,7 +314,7 @@ export const WithdrawAvailable = {
     };
   },
 
-  toJSON(message: WithdrawAvailable): unknown {
+  toJSON(message: EventWithdrawAvailable): unknown {
     const obj: any = {};
     message.owner !== undefined && (obj.owner = message.owner);
     message.vestingPoolName !== undefined && (obj.vestingPoolName = message.vestingPoolName);
@@ -322,8 +322,8 @@ export const WithdrawAvailable = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<WithdrawAvailable>, I>>(object: I): WithdrawAvailable {
-    const message = createBaseWithdrawAvailable();
+  fromPartial<I extends Exact<DeepPartial<EventWithdrawAvailable>, I>>(object: I): EventWithdrawAvailable {
+    const message = createBaseEventWithdrawAvailable();
     message.owner = object.owner ?? "";
     message.vestingPoolName = object.vestingPoolName ?? "";
     message.amount = object.amount ?? "";
@@ -331,12 +331,12 @@ export const WithdrawAvailable = {
   },
 };
 
-function createBaseVestingSplit(): VestingSplit {
+function createBaseEventVestingSplit(): EventVestingSplit {
   return { source: "", destination: "" };
 }
 
-export const VestingSplit = {
-  encode(message: VestingSplit, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const EventVestingSplit = {
+  encode(message: EventVestingSplit, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.source !== "") {
       writer.uint32(10).string(message.source);
     }
@@ -346,10 +346,10 @@ export const VestingSplit = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): VestingSplit {
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventVestingSplit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseVestingSplit();
+    const message = createBaseEventVestingSplit();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -367,22 +367,22 @@ export const VestingSplit = {
     return message;
   },
 
-  fromJSON(object: any): VestingSplit {
+  fromJSON(object: any): EventVestingSplit {
     return {
       source: isSet(object.source) ? String(object.source) : "",
       destination: isSet(object.destination) ? String(object.destination) : "",
     };
   },
 
-  toJSON(message: VestingSplit): unknown {
+  toJSON(message: EventVestingSplit): unknown {
     const obj: any = {};
     message.source !== undefined && (obj.source = message.source);
     message.destination !== undefined && (obj.destination = message.destination);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<VestingSplit>, I>>(object: I): VestingSplit {
-    const message = createBaseVestingSplit();
+  fromPartial<I extends Exact<DeepPartial<EventVestingSplit>, I>>(object: I): EventVestingSplit {
+    const message = createBaseEventVestingSplit();
     message.source = object.source ?? "";
     message.destination = object.destination ?? "";
     return message;
