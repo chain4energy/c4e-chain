@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -61,27 +60,13 @@ func (k Keeper) CampaignMissions(c context.Context, req *types.QueryCampaignMiss
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
-
-	var missions []types.Mission
 	ctx := sdk.UnwrapSDKContext(c)
 
-	store := ctx.KVStore(k.storeKey)
-	missionStore := prefix.NewStore(store, types.MissionKeyPrefix)
+	missions, _ := k.AllMissionForCampaign(ctx, req.CampaignId)
 
-	pageRes, err := query.Paginate(missionStore, req.Pagination, func(key []byte, value []byte) error {
-		var mission types.Mission
-		if err := k.cdc.Unmarshal(value, &mission); err != nil {
-			return err
-		}
-		if mission.CampaignId == req.CampaignId {
-			missions = append(missions, mission)
-		}
-		return nil
-	})
-
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+	if len(missions) == 0 {
+		return nil, status.Error(codes.NotFound, "not found")
 	}
 
-	return &types.QueryCampaignMissionsResponse{Missions: missions, Pagination: pageRes}, nil
+	return &types.QueryCampaignMissionsResponse{Missions: missions}, nil
 }

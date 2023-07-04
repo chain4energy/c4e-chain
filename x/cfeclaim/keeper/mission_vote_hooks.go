@@ -19,11 +19,13 @@ var _ govtypes.GovHooks = MissionVoteHooks{}
 
 // AfterProposalVote completes mission when a vote is cast
 func (h MissionVoteHooks) AfterProposalVote(ctx sdk.Context, _ uint64, voterAddr sdk.AccAddress) {
-	missions := h.k.GetAllMission(ctx)
-	for _, mission := range missions {
-		if mission.MissionType == types.MissionVote {
-			if err := h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, voterAddr.String()); err != nil {
-				h.k.Logger(ctx).Debug("mission vote hook unsuccessful", "info", err)
+	if _, found := h.k.GetUserEntry(ctx, voterAddr.String()); found {
+		missions := h.k.GetAllMission(ctx)
+		for _, mission := range missions {
+			if mission.MissionType == types.MissionVote {
+				if err := h.k.CompleteMissionFromHook(ctx, mission.CampaignId, mission.Id, voterAddr.String()); err != nil {
+					h.k.Logger(ctx).Debug("mission vote hook unsuccessful", "info", err)
+				}
 			}
 		}
 	}

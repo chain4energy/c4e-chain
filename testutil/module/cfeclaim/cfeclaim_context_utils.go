@@ -158,9 +158,9 @@ func (h *ContextC4eClaimUtils) CreatePeriodicContinuousVestingAccount(address sd
 	return h.C4eClaimUtils.CreatePeriodicContinuousVestingAccount(h.testContext.GetContext(), address, originalVesting, startTime, endTime, periods...)
 }
 
-func (h *ContextC4eClaimUtils) CompleteDelegationMission(campaignId uint64, missionId uint64,
+func (h *ContextC4eClaimUtils) CompleteDelegationMission(expectedAmountOfDelegations int, campaignId uint64, missionId uint64,
 	claimer sdk.AccAddress, deleagtionAmount math.Int, valAddress sdk.ValAddress) {
-	h.C4eClaimUtils.CompleteDelegationMission(h.testContext.GetContext(), campaignId, missionId, claimer, deleagtionAmount, valAddress)
+	h.C4eClaimUtils.CompleteDelegationMission(h.testContext.GetContext(), expectedAmountOfDelegations, campaignId, missionId, claimer, deleagtionAmount, valAddress)
 }
 
 func (h *ContextC4eClaimUtils) CompleteVoteMission(campaignId uint64, missionId uint64, claimer sdk.AccAddress) {

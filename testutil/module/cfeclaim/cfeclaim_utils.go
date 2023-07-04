@@ -299,11 +299,16 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 	}
 
 	vestingAmount := expectedAmount
+	initialClaimDec := campaignBefore.Free
 	if campaignBefore.InitialClaimFreeAmount.IsPositive() {
 		vestingAmount = sdk.NewCoins()
 		for _, amount := range expectedAmount {
 			expectedAmountDec := sdk.NewDecFromInt(amount.Amount)
-			initialClaimDec := sdk.NewDecFromInt(campaignBefore.InitialClaimFreeAmount).Quo(expectedAmountDec)
+			free := sdk.NewDecFromInt(campaignBefore.InitialClaimFreeAmount).Quo(expectedAmountDec)
+
+			if initialClaimDec.LT(free) {
+				initialClaimDec = free
+			}
 			if initialClaimDec.GT(sdk.NewDec(1)) {
 				initialClaimDec = sdk.NewDec(1)
 			}
@@ -382,10 +387,13 @@ func (h *C4eClaimUtils) SetUsersEntries(
 	h.helpeCfeclaimkeeper.SetUserEntry(ctx, *userEntry)
 }
 
-func (h *C4eClaimUtils) CompleteDelegationMission(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress, deleagtionAmount math.Int, valAddress sdk.ValAddress) {
+func (h *C4eClaimUtils) CompleteDelegationMission(ctx sdk.Context, expectedAmountOfDelegations int, campaignId uint64, missionId uint64, claimer sdk.AccAddress, deleagtionAmount math.Int, valAddress sdk.ValAddress) {
 	action := func() error {
-		h.StakingUtils.SetupValidators(ctx, []sdk.ValAddress{valAddress}, math.NewInt(1))
-		h.StakingUtils.MessageDelegate(ctx, 2, 0, valAddress, claimer, deleagtionAmount)
+		if _, found := h.StakingUtils.GetValidator(ctx, valAddress); !found {
+			h.StakingUtils.SetupValidators(ctx, []sdk.ValAddress{valAddress}, math.NewInt(1))
+		}
+
+		h.StakingUtils.MessageDelegate(ctx, expectedAmountOfDelegations, 0, valAddress, claimer, deleagtionAmount)
 		return nil
 	}
 	beforeCheck := func(accBefore authtypes.AccountI, accAfter authtypes.AccountI, claimerAmountBefore sdk.Coins) (authtypes.AccountI, sdk.Coins) {
@@ -505,7 +513,9 @@ func (h *C4eClaimUtils) ClaimMissionToAddress(ctx sdk.Context, campaignId uint64
 		h.BankUtils.VerifyAccountBalanceByDenom(ctx, claimer, coin.Denom, claimerCoinBefore.Add(expectedAmount))
 		moduleCoinBefore := moduleBalanceBefore.AmountOf(coin.Denom)
 		h.BankUtils.VerifyModuleAccountBalanceByDenom(ctx, moduleName, coin.Denom, moduleCoinBefore.Sub(expectedAmount))
-		expectedCoins = expectedCoins.Add(sdk.NewCoin(coin.Denom, expectedAmount.Sub(sdk.NewDecFromInt(expectedAmount).Mul(campaign.Free).TruncateInt())))
+		decimalAmount := sdk.NewDecFromInt(expectedAmount)
+		vestingPeriodAmount := decimalAmount.Sub(decimalAmount.Mul(campaign.Free)).TruncateInt()
+		expectedCoins = expectedCoins.Add(sdk.NewCoin(coin.Denom, vestingPeriodAmount))
 	}
 
 	h.addExpectedDataToAccount(ctx, campaignId, claimerAccountBefore, expectedCoins)
@@ -698,12 +708,10 @@ func (h *C4eClaimUtils) RemoveCampaign(ctx sdk.Context, owner string, campaignId
 	require.NoError(h.t, h.helpeCfeclaimkeeper.RemoveCampaign(ctx, owner, campaignId))
 	_, found := h.helpeCfeclaimkeeper.GetCampaign(ctx, campaignId)
 	require.False(h.t, found)
-	res, err := h.helpeCfeclaimkeeper.CampaignMissions(ctx, &cfeclaimtypes.QueryCampaignMissionsRequest{
+	_, err := h.helpeCfeclaimkeeper.CampaignMissions(ctx, &cfeclaimtypes.QueryCampaignMissionsRequest{
 		CampaignId: campaignId,
-		Pagination: nil,
 	})
-	require.NoError(h.t, err)
-	require.Equal(h.t, 0, len(res.Missions))
+	require.Error(h.t, err)
 	missionCount := h.helpeCfeclaimkeeper.GetMissionCount(ctx, campaignId)
 	require.Equal(h.t, uint64(0), missionCount)
 

@@ -22,16 +22,143 @@ func TestCompleteDelegationMission(t *testing.T) {
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
 	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
-
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-
 	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
 	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
 	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
-	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
+	testHelper.C4eClaimUtils.CompleteDelegationMission(2, 0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
+func TestCompleteDelegationMissionDelegateTwiceToTheSameValidator(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, validatorAddresses := testcosmos.CreateAccounts(11, 1)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	campaign := prepareTestCampaign(testHelper.Context)
+	mission := prepareTestMission()
+
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+	delagationAmount := math.NewInt(1000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
+
+	testHelper.C4eClaimUtils.CompleteDelegationMission(2, 0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
+	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 1, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 1, nil, nil)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 1, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 1)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
+
+	testHelper.C4eClaimUtils.CompleteDelegationMission(3, 1, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
+	testHelper.C4eClaimUtils.ClaimMission(1, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
+func TestCompleteDelegationMissionDelegateTwiceToDifferentValidator(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, validatorAddresses := testcosmos.CreateAccounts(11, 3)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	campaign := prepareTestCampaign(testHelper.Context)
+	mission := prepareTestMission()
+
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+	delagationAmount := math.NewInt(1000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
+
+	testHelper.C4eClaimUtils.CompleteDelegationMission(2, 0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
+	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 1, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 1, nil, nil)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 1, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 1)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
+
+	testHelper.C4eClaimUtils.CompleteDelegationMission(4, 1, 1, acountsAddresses[1], delagationAmount, validatorAddresses[1])
+	testHelper.C4eClaimUtils.ClaimMission(1, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
+func TestCompleteDelegationMissionTwiceUndelegateAll(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, validatorAddresses := testcosmos.CreateAccounts(11, 3)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	campaign := prepareTestCampaign(testHelper.Context)
+	mission := prepareTestMission()
+
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+	delagationAmount := math.NewInt(1000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
+
+	testHelper.C4eClaimUtils.CompleteDelegationMission(2, 0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
+	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 1, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 1, nil, nil)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 1, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 1)
+	testHelper.StakingUtils.MessageUndelegate(3, 0, validatorAddresses[0], acountsAddresses[1], delagationAmount)
+	testHelper.C4eClaimUtils.ClaimMissionError(1, 1, acountsAddresses[1], "campaignId: 1, missionId: 1: mission not completed yet: mission claiming error")
+
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
+func TestCompleteDelegationMissionTwiceUndelegatePartial(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, validatorAddresses := testcosmos.CreateAccounts(11, 3)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	campaign := prepareTestCampaign(testHelper.Context)
+	mission := prepareTestMission()
+
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+	delagationAmount := math.NewInt(1000)
+	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
+
+	testHelper.C4eClaimUtils.CompleteDelegationMission(2, 0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
+	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 1, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 1, nil, nil)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 1, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 1)
+	testHelper.StakingUtils.MessageUndelegate(3, 0, validatorAddresses[0], acountsAddresses[1], delagationAmount.SubRaw(1))
+	testHelper.C4eClaimUtils.ClaimMission(1, 1, acountsAddresses[1])
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
@@ -130,7 +257,7 @@ func TestClaimMissionCampaignHasEnded(t *testing.T) {
 	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
-	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
+	testHelper.C4eClaimUtils.CompleteDelegationMission(2, 0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.ClaimMissionError(0, 1, acountsAddresses[1], fmt.Sprintf("campaign 0 has already ended (%s > endTime %s): campaign is disabled", testHelper.Context.BlockTime(), campaign.EndTime))
@@ -206,6 +333,95 @@ func TestClaimMissionWithTypeClaim(t *testing.T) {
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
+func TestInitialClaim0Amount(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	campaign := prepareTestCampaign(testHelper.Context)
+	mission := prepareTestMission()
+	mission.MissionType = cfeclaimtypes.MissionClaim
+	mission.Weight = sdk.NewDec(1)
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
+
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+
+	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
+func TestInitialClaim0AmountAndInititalClaimFreeAmount(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.InitialClaimFreeAmount = sdk.NewInt(100000000)
+	mission := prepareTestMission()
+	mission.MissionType = cfeclaimtypes.MissionClaim
+	mission.Weight = sdk.NewDec(1)
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
+
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+
+	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
+func TestInitialClaim0AmountAndInititalClaimFreeAmountAndFree(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.Free = sdk.MustNewDecFromStr("0.5")
+	campaign.InitialClaimFreeAmount = sdk.NewInt(100000000)
+	mission := prepareTestMission()
+	mission.MissionType = cfeclaimtypes.MissionClaim
+	mission.Weight = sdk.NewDec(1)
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
+
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+
+	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
+func TestInitialClaimFree100(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	campaign := prepareTestCampaign(testHelper.Context)
+	campaign.Free = sdk.NewDec(1)
+	campaign.InitialClaimFreeAmount = sdk.NewInt(100)
+	mission := prepareTestMission()
+	mission.MissionType = cfeclaimtypes.MissionClaim
+	mission.Weight = sdk.MustNewDecFromStr("0.5")
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
+
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+
+	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
 func TestClaimMissionAlreadyClaimed(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, _ := testcosmos.CreateAccounts(11, 0)
@@ -250,7 +466,7 @@ func TestFullCampaign(t *testing.T) {
 	delagationAmount := math.NewInt(1000000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
-	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
+	testHelper.C4eClaimUtils.CompleteDelegationMission(2, 0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
 
 	testHelper.C4eClaimUtils.CompleteVoteMission(0, 2, acountsAddresses[1])
 
@@ -425,7 +641,7 @@ func TestVestingPoolCampaignClaimMissionDelegate(t *testing.T) {
 	delagationAmount := math.NewInt(1000)
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(delagationAmount, acountsAddresses[1])
 
-	testHelper.C4eClaimUtils.CompleteDelegationMission(0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
+	testHelper.C4eClaimUtils.CompleteDelegationMission(2, 0, 1, acountsAddresses[1], delagationAmount, validatorAddresses[0])
 	testHelper.C4eClaimUtils.ClaimMission(0, 1, acountsAddresses[1])
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }

@@ -79,7 +79,7 @@ func (k Keeper) prepareClaimData(ctx sdk.Context, campaignId uint64, missionId u
 	if err != nil {
 		return missionFirstStepReturnError(err)
 	}
-	k.Logger(ctx).Debug("campaignId", campaignId, "missionId", missionId, "blockTime", ctx.BlockTime(), "campaign start", campaign.StartTime, "campaign end", campaign.EndTime)
+	k.Logger(ctx).Debug("prepare claim data", "campaignId", campaignId, "missionId", missionId, "blockTime", ctx.BlockTime(), "campaign start", campaign.StartTime, "campaign end", campaign.EndTime)
 
 	if err = campaign.ValidateIsActive(ctx.BlockTime()); err != nil {
 		return missionFirstStepReturnError(err)
@@ -92,7 +92,7 @@ func (k Keeper) prepareClaimData(ctx sdk.Context, campaignId uint64, missionId u
 	if err != nil {
 		return missionFirstStepReturnError(err)
 	}
-	k.Logger(ctx).Debug("mission", mission)
+	k.Logger(ctx).Debug("prepare claim data", "mission", mission)
 	if err = mission.IsEnabled(ctx.BlockTime()); err != nil {
 		return missionFirstStepReturnError(err)
 	}
