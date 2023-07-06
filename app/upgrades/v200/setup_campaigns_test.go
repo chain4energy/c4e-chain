@@ -107,8 +107,8 @@ func TestSetupCampaigns(t *testing.T) {
 
 	campaigns = testHelper.C4eClaimUtils.GetCampaigns()
 	userEntires := testHelper.C4eClaimUtils.GetAllUsersEntries()
-	require.Equal(t, 4, len(campaigns))
-	require.Equal(t, 107404, len(userEntires))
+	require.Equal(t, 5, len(campaigns))
+	require.Equal(t, 107927, len(userEntires))
 
 	// TODO: add elements match when all parameters of the campaign will be defined
 }

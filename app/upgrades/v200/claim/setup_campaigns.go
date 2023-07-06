@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-//go:embed stakedrop.json santadrop.json gleamdrop.json teamdrop.json
+//go:embed stakedrop.json santadrop.json gleamdrop.json teamdrop.json zealaydrop.json
 var f embed.FS
 
 const (
@@ -50,7 +50,7 @@ func setupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) erro
 	teamdropLockupPeriod := 730 * 24 * time.Hour
 	teamdropVestingPeriod := 730 * 24 * time.Hour
 	startTime := ctx.BlockTime()
-	endTime := startTime.Add(time.Hour * 100)
+	endTime := startTime.Add(time.Hour * 24 * 365)
 	zeroInt := math.ZeroInt()
 	zeroDec := sdk.ZeroDec()
 	inititalClaimOneC4E := math.NewInt(1000000)
@@ -73,6 +73,9 @@ func setupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) erro
 	}
 
 	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "gleamdrop", "gleamdrop",
+		types.VestingPoolCampaign, false, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
+
+	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "zealydrop", "zealydrop",
 		types.VestingPoolCampaign, false, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
 
 	return err
@@ -140,7 +143,16 @@ func addClaimRecordsToCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppK
 	if err != nil {
 		return err
 	}
-	return appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 3, gleamdropEntries)
+	if err = appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 3, gleamdropEntries); err != nil {
+		return err
+	}
+
+	zealaydropEntries, err := readClaimRecordEntriesFromJson("zealaydrop.json")
+	if err != nil {
+		return err
+	}
+
+	return appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 4, zealaydropEntries)
 }
 
 func readClaimRecordEntriesFromJson(fileName string) ([]*types.ClaimRecordEntry, error) {
