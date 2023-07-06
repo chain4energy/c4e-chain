@@ -70,8 +70,8 @@ var (
 	gleamdropCampaign = cfeclaimtypes.Campaign{
 		Id:                     3,
 		Owner:                  "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54",
-		Name:                   "gleamdrop",
-		Description:            "gleamdrop",
+		Name:                   "greendrop",
+		Description:            "greendrop",
 		CampaignType:           cfeclaimtypes.VestingPoolCampaign,
 		RemovableClaimRecords:  false,
 		FeegrantAmount:         math.ZeroInt(),
@@ -107,8 +107,8 @@ func TestSetupCampaigns(t *testing.T) {
 
 	campaigns = testHelper.C4eClaimUtils.GetCampaigns()
 	userEntires := testHelper.C4eClaimUtils.GetAllUsersEntries()
-	require.Equal(t, 5, len(campaigns))
-	require.Equal(t, 107927, len(userEntires))
+	require.Equal(t, 6, len(campaigns))
+	require.Equal(t, 107938, len(userEntires))
 
 	// TODO: add elements match when all parameters of the campaign will be defined
 }

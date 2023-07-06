@@ -33,10 +33,10 @@ func (s *MainnetMigrationSetupSuite) TestMainnetVestingsMigration() {
 	s.NoError(err)
 
 	campaigns := node.QueryCampaigns()
-	s.Equal(5, len(campaigns))
+	s.Equal(6, len(campaigns))
 
 	userEntries := node.QueryUserEntries()
-	s.Equal(107927, len(userEntries))
+	s.Equal(107938, len(userEntries))
 
 	vestingTypes := node.QueryVestingTypes()
 	s.Equal(6, len(vestingTypes))
@@ -76,6 +76,10 @@ func (s *MainnetMigrationSetupSuite) TestMainnetVestingsMigration() {
 	s.NotNil(zealaydropCampaign)
 	s.Equal(zealaydropCampaign.CampaignCurrentAmount, zealaydropCampaign.CampaignTotalAmount)
 
+	amadropCampaign := node.QueryCampaign("5")
+	s.NotNil(amadropCampaign)
+	s.Equal(amadropCampaign.CampaignCurrentAmount, amadropCampaign.CampaignTotalAmount)
+
 	fairdropVestingPools := node.QueryVestingPoolsInfo(v200.NewAirdropVestingPoolOwner)
 	for _, vestingPoolInfo := range fairdropVestingPools {
 		if vestingPoolInfo.Name == "Fairdrop" {
@@ -86,9 +90,9 @@ func (s *MainnetMigrationSetupSuite) TestMainnetVestingsMigration() {
 			s.Equal(vestingPoolInfo.Reservations[1].Amount, santadropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
 			s.Equal(vestingPoolInfo.Reservations[2].Amount, gleamdropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
 			s.Equal(vestingPoolInfo.Reservations[3].Amount, zealaydropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
+			s.Equal(vestingPoolInfo.Reservations[4].Amount, amadropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
 		}
 	}
-
 }
 
 func (s *MainnetMigrationSetupSuite) validateAllTokensReserved(vestingPoolInfo *cfevestingtypes.VestingPoolInfo, campaignTotalAmount sdk.Coins, campaignCurrentAmount sdk.Coins) {
@@ -173,10 +177,10 @@ func (s *MainnetMigrationChainingSetupSuite) TestMainnetVestingsMigrationWhenCha
 	s.NoError(err)
 
 	campaigns := node.QueryCampaigns()
-	s.Equal(5, len(campaigns))
+	s.Equal(6, len(campaigns))
 
 	userEntries := node.QueryUserEntries()
-	s.Equal(107927, len(userEntries))
+	s.Equal(107938, len(userEntries))
 
 	vestingTypes := node.QueryVestingTypes()
 	s.Equal(6, len(vestingTypes))
@@ -216,6 +220,10 @@ func (s *MainnetMigrationChainingSetupSuite) TestMainnetVestingsMigrationWhenCha
 	s.NotNil(zealaydropCampaign)
 	s.Equal(zealaydropCampaign.CampaignCurrentAmount, zealaydropCampaign.CampaignTotalAmount)
 
+	amadropCampaign := node.QueryCampaign("5")
+	s.NotNil(amadropCampaign)
+	s.Equal(amadropCampaign.CampaignCurrentAmount, amadropCampaign.CampaignTotalAmount)
+
 	fairdropVestingPools := node.QueryVestingPoolsInfo(v200.NewAirdropVestingPoolOwner)
 	for _, vestingPoolInfo := range fairdropVestingPools {
 		if vestingPoolInfo.Name == "Fairdrop" {
@@ -226,6 +234,7 @@ func (s *MainnetMigrationChainingSetupSuite) TestMainnetVestingsMigrationWhenCha
 			s.Equal(vestingPoolInfo.Reservations[1].Amount, santadropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
 			s.Equal(vestingPoolInfo.Reservations[2].Amount, gleamdropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
 			s.Equal(vestingPoolInfo.Reservations[3].Amount, zealaydropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
+			s.Equal(vestingPoolInfo.Reservations[4].Amount, amadropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
 		}
 	}
 }

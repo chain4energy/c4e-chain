@@ -42,7 +42,7 @@ var (
 
 	fairdropVestingType = cfevestingtypes.VestingType{
 		Name:          "Fairdrop",
-		Free:          sdk.MustNewDecFromStr("0.10"),
+		Free:          sdk.MustNewDecFromStr("0.01"),
 		LockupPeriod:  183 * 24 * time.Hour,
 		VestingPeriod: 91 * 24 * time.Hour,
 	}

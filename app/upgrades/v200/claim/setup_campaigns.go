@@ -5,6 +5,7 @@ import (
 	"cosmossdk.io/math"
 	"embed"
 	"encoding/json"
+	"fmt"
 	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,7 +13,7 @@ import (
 	"time"
 )
 
-//go:embed stakedrop.json santadrop.json gleamdrop.json teamdrop.json zealaydrop.json
+//go:embed stakedrop.json santadrop.json greendrop.json teamdrop.json zealydrop.json amadrop.json
 var f embed.FS
 
 const (
@@ -72,10 +73,13 @@ func setupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) erro
 		return err
 	}
 
-	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "gleamdrop", "gleamdrop",
+	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "greendrop", "greendrop",
 		types.VestingPoolCampaign, false, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
 
 	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "zealydrop", "zealydrop",
+		types.VestingPoolCampaign, false, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
+
+	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "amadrop", "amadrop",
 		types.VestingPoolCampaign, false, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
 
 	return err
@@ -139,7 +143,7 @@ func addClaimRecordsToCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppK
 		return err
 	}
 
-	gleamdropEntries, err := readClaimRecordEntriesFromJson("gleamdrop.json")
+	gleamdropEntries, err := readClaimRecordEntriesFromJson("greendrop.json")
 	if err != nil {
 		return err
 	}
@@ -147,12 +151,25 @@ func addClaimRecordsToCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppK
 		return err
 	}
 
-	zealaydropEntries, err := readClaimRecordEntriesFromJson("zealaydrop.json")
+	zealaydropEntries, err := readClaimRecordEntriesFromJson("zealydrop.json")
 	if err != nil {
 		return err
 	}
+	if err = appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 4, zealaydropEntries); err != nil {
+		return err
+	}
 
-	return appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 4, zealaydropEntries)
+	amadropEntries, err := readClaimRecordEntriesFromJson("amadrop.json")
+	if err != nil {
+		return err
+	}
+	for _, entry := range amadropEntries {
+		userEntry, found := appKeepers.GetC4eClaimKeeper().GetUserEntry(ctx, entry.UserEntryAddress) //
+		fmt.Println(userEntry)
+		fmt.Println(found)
+	}
+
+	return appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 5, amadropEntries)
 }
 
 func readClaimRecordEntriesFromJson(fileName string) ([]*types.ClaimRecordEntry, error) {
