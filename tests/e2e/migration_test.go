@@ -109,7 +109,7 @@ func createMainnetVestingTypes() []cfevestingtypes.GenesisVestingType {
 		LockupPeriodUnit:  "day",
 		VestingPeriod:     91,
 		VestingPeriodUnit: "day",
-		Free:              sdk.MustNewDecFromStr("0.10"),
+		Free:              sdk.MustNewDecFromStr("0.01"),
 	}
 
 	teamdropVestingType := cfevestingtypes.GenesisVestingType{

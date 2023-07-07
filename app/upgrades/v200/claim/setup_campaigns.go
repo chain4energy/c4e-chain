@@ -5,7 +5,6 @@ import (
 	"cosmossdk.io/math"
 	"embed"
 	"encoding/json"
-	"fmt"
 	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -162,11 +161,6 @@ func addClaimRecordsToCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppK
 	amadropEntries, err := readClaimRecordEntriesFromJson("amadrop.json")
 	if err != nil {
 		return err
-	}
-	for _, entry := range amadropEntries {
-		userEntry, found := appKeepers.GetC4eClaimKeeper().GetUserEntry(ctx, entry.UserEntryAddress) //
-		fmt.Println(userEntry)
-		fmt.Println(found)
 	}
 
 	return appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 5, amadropEntries)
