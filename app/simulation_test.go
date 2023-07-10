@@ -133,7 +133,11 @@ func setupSimulation(tb testing.TB, dirPrevix string, dbName string) (c4eapp *Ap
 	app, _, config, db, _, cleanup := BaseSimulationSetup(tb, dirPrevix, dbName)
 
 	weightedOperations := simapp.SimulationOperations(app, app.AppCodec(), config)
-
+	defer func() {
+		if r := recover(); r != nil {
+			cleanup()
+		}
+	}()
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		tb,
 		os.Stdout,
@@ -174,11 +178,9 @@ func BaseSimulationSetup(tb testing.TB, dirPrevix string, dbName string) (*App, 
 	)
 	genesisState := NewDefaultGenesisState(encoding.Codec)
 	cleanup := func() {
-		err = db.Close()
-		require.NoError(tb, err)
-		err = os.RemoveAll(dir)
-		require.NoError(tb, err)
+		require.NoError(tb, db.Close())
+		require.NoError(tb, os.RemoveAll(dir))
 	}
-	return app, genesisState, config, db, dir, cleanup
 
+	return app, genesisState, config, db, dir, cleanup
 }

@@ -145,7 +145,7 @@ func (s *ClaimSetupSuite) TestDefaultCampaignNoFeegrantAndUpdatedEnableTimes() {
 	userEntriesJSONString, err := util.NewClaimRecordsListJson(claimRecordEntries)
 	s.NoError(err)
 	node.AddClaimRecords(campaignIdString, userEntriesJSONString, creatorWalletName)
-	node.ValidateClaimInitialClaimerNotFound(campaignIdString, destinationAddress, claimer)
+	node.ClaimInitialMissionError(campaignIdString, destinationAddress, claimer, "campaign is disabled")
 	node.BankSendBaseBalanceFromNode(claimRecordEntries[randomUserEntryIndex].UserEntryAddress)
 
 	updatedStartTime := time.Now().Add(time.Minute)
