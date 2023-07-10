@@ -24,7 +24,9 @@ run_simulation(){
         simulationResultFileError=$simulationResultFile."ERROR"
         mv "$simulationResultFile" "$simulationResultFileError"
         echo "Error while running simulation"
-        curl -F file=@"$simulationResultFileError" -F "initial_comment=Error while running simulation $i at $START_TIME" -F channels=C049DAHR884 -H "Authorization: Bearer $SLACK_BOT_BEARER_TOKEN" https://slack.com/api/files.upload
+        if ! grep -zoPq  "from x\/staking:.*\n.*out of gas in location" "$simulationResultFileError" && ! grep -zoPq  "panic: group policies: unique constraint violation" "$simulationResultFileError"; then
+          curl -F file=@"$simulationResultFileError" -F "initial_comment=Error while running simulation $i at $START_TIME" -F channels=C049DAHR884 -H "Authorization: Bearer $SLACK_BOT_BEARER_TOKEN" https://slack.com/api/files.upload
+        fi
     fi
     done
 }

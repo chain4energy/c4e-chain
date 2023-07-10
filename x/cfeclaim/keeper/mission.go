@@ -93,6 +93,9 @@ func (k Keeper) prepareClaimData(ctx sdk.Context, campaignId uint64, missionId u
 		return missionFirstStepReturnError(err)
 	}
 	k.Logger(ctx).Debug("prepare claim data", "mission", mission)
+	if mission.MissionType == types.MissionUnkown {
+		return missionFirstStepReturnError(errors.Wrapf(types.ErrMissionClaiming, "cannot claim mission with type MissionUnkown"))
+	}
 	if err = mission.IsEnabled(ctx.BlockTime()); err != nil {
 		return missionFirstStepReturnError(err)
 	}

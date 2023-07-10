@@ -12,6 +12,7 @@ const (
 	MissionDelegate     = MissionType_DELEGATE
 	MissionVote         = MissionType_VOTE
 	MissionClaim        = MissionType_CLAIM
+	MissionUnkown       = MissionType_UNKNOWN
 )
 
 func MissionTypeFromString(str string) (MissionType, error) {
@@ -35,6 +36,10 @@ func NormalizeMissionType(option string) string {
 
 	case "Claim", "claim", "CLAIM":
 		return MissionClaim.String()
+
+	case "unknown", "UNKNOWN", "Unknown":
+		return MissionUnkown.String()
+
 	default:
 		return option
 	}
