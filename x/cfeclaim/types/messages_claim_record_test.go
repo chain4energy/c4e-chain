@@ -43,7 +43,7 @@ func TestMsgAddClaimRecords_ValidateBasic(t *testing.T) {
 				ClaimRecordEntries: []*types.ClaimRecordEntry{{UserEntryAddress: "", Amount: sample.Coins()}},
 			},
 			err:    c4eerrors.ErrParam,
-			errMsg: "claim record entry index 0: claim record entry empty user entry address: wrong param value",
+			errMsg: "claim record entry index 0: claim record entry user entry address parsing error (empty address string is not allowed): wrong param value",
 		},
 		{
 			name: "Invalid ClaimRecord Amount",
