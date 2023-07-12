@@ -12,22 +12,19 @@ const (
 	MissionDelegate     = MissionType_DELEGATE
 	MissionVote         = MissionType_VOTE
 	MissionClaim        = MissionType_CLAIM
-	MissionUnkown       = MissionType_UNKNOWN
+	MissionToDefine     = MissionType_TO_DEFINE
 )
 
 func MissionTypeFromString(str string) (MissionType, error) {
 	option, ok := MissionType_value[str]
 	if !ok {
-		return MissionEmpty, fmt.Errorf("'%s' is not a valid mission type, available options: initial_claim/vote/delegate", str)
+		return MissionEmpty, fmt.Errorf("'%s' is not a valid mission type, available options: claim/vote/delegate/to_define", str)
 	}
 	return MissionType(option), nil
 }
 
 func NormalizeMissionType(option string) string {
 	switch option {
-	case "InitialClaim", "initial_claim", "INITIAL_CLAIM":
-		return MissionInitialClaim.String()
-
 	case "Delegate", "delegate", "DELEGATE":
 		return MissionDelegate.String()
 
@@ -37,8 +34,8 @@ func NormalizeMissionType(option string) string {
 	case "Claim", "claim", "CLAIM":
 		return MissionClaim.String()
 
-	case "unknown", "UNKNOWN", "Unknown":
-		return MissionUnkown.String()
+	case "ToDefine", "to_define", "TO_DEFINE":
+		return MissionToDefine.String()
 
 	default:
 		return option

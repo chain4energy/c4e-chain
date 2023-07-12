@@ -349,6 +349,60 @@ func (s *ClaimSetupSuite) TestVestingPoolCampaign() {
 	node.RemoveCampaign(campaignIdString, creatorWalletName)
 }
 
+func (s *ClaimSetupSuite) TestMissionToDefine() {
+	chainA := s.configurer.GetChainConfig(0)
+	node, err := chainA.GetDefaultNode()
+	s.NoError(err)
+
+	creatorWalletName := utils.RandStringOfLength(10)
+	creatorAddress := node.CreateWallet(creatorWalletName)
+
+	node.BankSendBaseBalanceFromNode(creatorAddress)
+
+	s.NoError(err)
+
+	free := sdk.ZeroDec()
+	startTime := time.Now().Add(time.Second * 35)
+	endTime := startTime.Add(time.Second * 90)
+	lockupPeriod := time.Hour
+	vestingPeriod := time.Hour
+	randName := utils.RandStringOfLength(10)
+	randDescription := utils.RandStringOfLength(10)
+	feegrantAmount := math.NewInt(2500000).String()
+	inititalClaimFreeAmount := math.ZeroInt().String()
+	campaignType := types.DefaultCampaign
+	vestingPoolName := ""
+
+	campaignId := node.CreateCampaign(randName, randDescription, campaignType.String(), "true", feegrantAmount, inititalClaimFreeAmount, free.String(),
+		startTime.Format(cfeclaimcli.TimeLayout), endTime.Format(cfeclaimcli.TimeLayout), lockupPeriod.String(), vestingPeriod.String(), vestingPoolName, creatorWalletName)
+	campaignIdString := strconv.FormatUint(campaignId, 10)
+
+	claimStartDate := startTime.Add(time.Second * 25)
+	randMissionName := utils.RandStringOfLength(10)
+	randMissionDescription := utils.RandStringOfLength(10)
+	node.AddMissionError(campaignIdString, randMissionName, randMissionDescription, types.MissionInitialClaim.String(), "0.3",
+		claimStartDate.Format(cfeclaimcli.TimeLayout), creatorWalletName, "there can be only one mission with InitialClaim type and must be first in the campaign")
+	node.AddMission(campaignIdString, randMissionName, randMissionDescription, types.MissionClaim.String(), "0.3",
+		claimStartDate.Format(cfeclaimcli.TimeLayout), creatorWalletName)
+	node.AddMission(campaignIdString, randMissionName, randMissionDescription, types.MissionToDefine.String(), "0.3",
+		claimStartDate.Format(cfeclaimcli.TimeLayout), creatorWalletName)
+
+	balances, err := node.QueryBalances(creatorAddress)
+	require.NoError(s.T(), err)
+	claimRecordEntries, claimRecordEntriesWalletNames := prepareNClaimRecords(node, 10, balances.AmountOf(appparams.MicroC4eUnit))
+	userEntriesJSONString, err := util.NewClaimRecordsListJson(claimRecordEntries)
+	s.NoError(err)
+	node.BankSendBaseBalanceFromNode(creatorAddress)
+	node.AddClaimRecords(campaignIdString, userEntriesJSONString, creatorWalletName)
+	node.EnableCampaign(campaignIdString, "", "", creatorWalletName)
+	node.WaitUntilSpecifiedTime(claimStartDate)
+	destinationAddress := testcosmos.CreateRandomAccAddress()
+	claimer := claimRecordEntriesWalletNames[2]
+	node.ClaimInitialMission(campaignIdString, destinationAddress, claimer)
+	node.ClaimMission(campaignIdString, "1", claimer)
+	node.ClaimMissionError(campaignIdString, "2", claimer, "cannot claim mission with type TO_DEFINE: mission claiming error")
+}
+
 func prepareNClaimRecords(node *chain.NodeConfig, n int, allEntriesAmountSum math.Int) (claimRecordEntries []types.ClaimRecordEntry, claimRecordEntriesWalletNames []string) {
 	amountPerClaimRecord := allEntriesAmountSum.Quo(math.NewInt(int64(n)))
 	for i := 0; i < n; i++ {

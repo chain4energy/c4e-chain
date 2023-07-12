@@ -59,19 +59,16 @@ func (msg *MsgAddMission) ValidateBasic() error {
 	if msg.Weight == nil {
 		return errors.Wrapf(c4eerrors.ErrParam, "weight cannot be nil")
 	}
-	return ValidateAddMission(msg.Owner, msg.Name, msg.Description, msg.MissionType, *msg.Weight)
+	return ValidateAddMission(msg.Owner, msg.Name, msg.MissionType, *msg.Weight)
 }
 
-func ValidateAddMission(owner string, name string, description string, missionType MissionType, weight sdk.Dec) error {
+func ValidateAddMission(owner string, name string, missionType MissionType, weight sdk.Dec) error {
 	_, err := sdk.AccAddressFromBech32(owner)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
 	if name == "" {
 		return errors.Wrap(c4eerrors.ErrParam, "empty name error")
-	}
-	if description == "" {
-		return errors.Wrap(c4eerrors.ErrParam, "mission empty description error")
 	}
 	if err = ValidateMissionWeight(weight, missionType); err != nil {
 		return err
@@ -97,7 +94,7 @@ func ValidateMissionWeight(weight sdk.Dec, missionType MissionType) error {
 
 func ValidateMissionType(missionType MissionType) error {
 	switch missionType {
-	case MissionClaim, MissionDelegate, MissionVote, MissionInitialClaim:
+	case MissionClaim, MissionDelegate, MissionVote, MissionInitialClaim, MissionToDefine:
 		return nil
 	}
 

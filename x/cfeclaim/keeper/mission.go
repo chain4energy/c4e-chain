@@ -13,7 +13,7 @@ func (k Keeper) AddMission(ctx sdk.Context, owner string, campaignId uint64, nam
 	k.Logger(ctx).Debug("add mission to a campaign", "owner", owner, "campaignId", campaignId, "name", name,
 		"description", description, "missionType", missionType, "weight", weight)
 
-	campaign, err := k.ValidateAddMission(ctx, owner, campaignId, name, description, missionType, weight, claimStartDate)
+	campaign, err := k.ValidateAddMission(ctx, owner, campaignId, name, missionType, weight, claimStartDate)
 	if err != nil {
 		return nil, err
 	}
@@ -52,9 +52,9 @@ func (k Keeper) AddMission(ctx sdk.Context, owner string, campaignId uint64, nam
 	return &mission, nil
 }
 
-func (k Keeper) ValidateAddMission(ctx sdk.Context, owner string, campaignId uint64, name string, description string,
+func (k Keeper) ValidateAddMission(ctx sdk.Context, owner string, campaignId uint64, name string,
 	missionType types.MissionType, weight sdk.Dec, claimStartDate *time.Time) (*types.Campaign, error) {
-	err := types.ValidateAddMission(owner, name, description, missionType, weight)
+	err := types.ValidateAddMission(owner, name, missionType, weight)
 	if err != nil {
 		return nil, err
 	}
@@ -93,8 +93,8 @@ func (k Keeper) prepareClaimData(ctx sdk.Context, campaignId uint64, missionId u
 		return missionFirstStepReturnError(err)
 	}
 	k.Logger(ctx).Debug("prepare claim data", "mission", mission)
-	if mission.MissionType == types.MissionUnkown {
-		return missionFirstStepReturnError(errors.Wrapf(types.ErrMissionClaiming, "cannot claim mission with type MissionUnkown"))
+	if mission.MissionType == types.MissionToDefine {
+		return missionFirstStepReturnError(errors.Wrapf(types.ErrMissionClaiming, "cannot claim mission with type TO_DEFINE"))
 	}
 	if err = mission.IsEnabled(ctx.BlockTime()); err != nil {
 		return missionFirstStepReturnError(err)

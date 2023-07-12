@@ -80,6 +80,6 @@ func (msg *MsgCreateCampaign) ValidateBasic() error {
 	if msg.VestingPeriod == nil {
 		return errors.Wrap(c4eerrors.ErrParam, "vesting period cannot be nil")
 	}
-	return ValidateCreateCampaignParams(msg.Name, msg.Description, *msg.FeegrantAmount,
+	return ValidateCreateCampaignParams(msg.Name, *msg.FeegrantAmount,
 		*msg.InitialClaimFreeAmount, *msg.Free, *msg.StartTime, *msg.EndTime, msg.CampaignType, *msg.LockupPeriod, *msg.VestingPeriod, msg.VestingPoolName)
 }

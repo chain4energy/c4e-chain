@@ -17,7 +17,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
 func setCampaigns(ctx sdk.Context, k keeper.Keeper, campaigns []types.Campaign, campaignCount uint64) {
 	for _, campaign := range campaigns {
-		if err := k.ValidateCampaignParams(ctx, campaign.Name, campaign.Description, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount,
+		if err := k.ValidateCampaignParams(ctx, campaign.Name, campaign.FeegrantAmount, campaign.InitialClaimFreeAmount,
 			campaign.Free, campaign.StartTime, campaign.EndTime, campaign.CampaignType, campaign.Owner,
 			campaign.VestingPoolName, campaign.LockupPeriod, campaign.VestingPeriod); err != nil {
 			panic(err)
@@ -33,8 +33,8 @@ func setMissions(ctx sdk.Context, k keeper.Keeper, missions []types.Mission, mis
 		if err != nil {
 			panic(errors.Wrapf(err, "mission %s", mission.Name))
 		}
-		if _, err = k.ValidateAddMission(ctx, campaign.Owner, mission.CampaignId, mission.Name,
-			mission.Description, mission.MissionType, mission.Weight, mission.ClaimStartDate); err != nil {
+		if _, err = k.ValidateAddMission(ctx, campaign.Owner, mission.CampaignId, mission.Name, mission.MissionType,
+			mission.Weight, mission.ClaimStartDate); err != nil {
 			panic(err)
 		}
 		k.SetMission(ctx, mission)

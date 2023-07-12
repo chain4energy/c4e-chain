@@ -66,14 +66,11 @@ func (c *Campaign) ValidateIsEnabled() error {
 	return nil
 }
 
-func ValidateCreateCampaignParams(name string, description string, feegrantAmount math.Int,
+func ValidateCreateCampaignParams(name string, feegrantAmount math.Int,
 	initialClaimFreeAmount math.Int, free sdk.Dec, startTime time.Time, endTime time.Time,
 	campaignType CampaignType, lockupPeriod time.Duration, vestingPeriod time.Duration, vestingPoolName string) error {
 	if name == "" {
 		return errors.Wrap(c4eerrors.ErrParam, "campaign name is empty")
-	}
-	if description == "" {
-		return errors.Wrap(c4eerrors.ErrParam, "description is empty")
 	}
 	if lockupPeriod < 0 {
 		return errors.Wrap(c4eerrors.ErrParam, "lockup period cannot be negative")
