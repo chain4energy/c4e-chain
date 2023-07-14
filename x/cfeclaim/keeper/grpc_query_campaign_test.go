@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"fmt"
 	keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
 	"github.com/chain4energy/c4e-chain/testutil/nullify"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
@@ -16,37 +17,34 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func TestMissionQuerySingle(t *testing.T) {
+func TestCampaignQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.CfeclaimKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createAndSaveNTestMissions(keeper, ctx, 2)
+	msgs := createAndSaveNTestCampaigns(keeper, ctx, 2)
 	for _, tc := range []struct {
 		desc     string
-		request  *types.QueryMissionRequest
-		response *types.QueryMissionResponse
+		request  *types.QueryCampaignRequest
+		response *types.QueryCampaignResponse
 		err      error
 	}{
 		{
 			desc: "First",
-			request: &types.QueryMissionRequest{
-				CampaignId: msgs[0].CampaignId,
-				MissionId:  msgs[0].Id,
+			request: &types.QueryCampaignRequest{
+				CampaignId: msgs[0].Id,
 			},
-			response: &types.QueryMissionResponse{Mission: msgs[0]},
+			response: &types.QueryCampaignResponse{Campaign: msgs[0]},
 		},
 		{
 			desc: "Second",
-			request: &types.QueryMissionRequest{
-				CampaignId: msgs[1].CampaignId,
-				MissionId:  msgs[1].Id,
+			request: &types.QueryCampaignRequest{
+				CampaignId: msgs[1].Id,
 			},
-			response: &types.QueryMissionResponse{Mission: msgs[1]},
+			response: &types.QueryCampaignResponse{Campaign: msgs[1]},
 		},
 		{
 			desc: "KeyNotFound",
-			request: &types.QueryMissionRequest{
+			request: &types.QueryCampaignRequest{
 				CampaignId: 100000,
-				MissionId:  100000,
 			},
 			err: status.Error(codes.NotFound, "not found"),
 		},
@@ -56,7 +54,7 @@ func TestMissionQuerySingle(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			response, err := keeper.Mission(wctx, tc.request)
+			response, err := keeper.Campaign(wctx, tc.request)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {
@@ -70,13 +68,15 @@ func TestMissionQuerySingle(t *testing.T) {
 	}
 }
 
-func TestMissionQueryPaginated(t *testing.T) {
+func TestCampaignQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.CfeclaimKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createAndSaveNTestMissions(keeper, ctx, 5)
-
-	request := func(next []byte, offset, limit uint64, total bool) *types.QueryMissionsRequest {
-		return &types.QueryMissionsRequest{
+	msgs := createAndSaveNTestCampaigns(keeper, ctx, 5)
+	campaigns := keeper.GetAllCampaigns(ctx)
+	fmt.Println("campaigns", campaigns)
+	fmt.Println("campaignsLen", len(campaigns))
+	request := func(next []byte, offset, limit uint64, total bool) *types.QueryCampaignsRequest {
+		return &types.QueryCampaignsRequest{
 			Pagination: &query.PageRequest{
 				Key:        next,
 				Offset:     offset,
@@ -88,12 +88,12 @@ func TestMissionQueryPaginated(t *testing.T) {
 	t.Run("ByOffset", func(t *testing.T) {
 		step := 2
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.Missions(wctx, request(nil, uint64(i), uint64(step), false))
+			resp, err := keeper.Campaigns(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.Missions), step)
+			require.LessOrEqual(t, len(resp.Campaigns), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.Missions),
+				nullify.Fill(resp.Campaigns),
 			)
 		}
 	})
@@ -101,23 +101,25 @@ func TestMissionQueryPaginated(t *testing.T) {
 		step := 2
 		var next []byte
 		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.Missions(wctx, request(next, 0, uint64(step), false))
+			resp, err := keeper.Campaigns(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.Missions), step)
+			require.LessOrEqual(t, len(resp.Campaigns), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.Missions),
+				nullify.Fill(resp.Campaigns),
 			)
 			next = resp.Pagination.NextKey
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
-		resp, err := keeper.Missions(wctx, request(nil, 0, 0, true))
+		resp, err := keeper.Campaigns(wctx, request(nil, 0, 0, true))
+		fmt.Println(resp)
+		fmt.Println(campaigns)
 		require.NoError(t, err)
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(msgs),
-			nullify.Fill(resp.Missions),
+			nullify.Fill(resp.Campaigns),
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {

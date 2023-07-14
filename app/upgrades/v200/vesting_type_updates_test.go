@@ -42,14 +42,14 @@ var (
 
 	fairdropVestingType = cfevestingtypes.VestingType{
 		Name:          "Fairdrop",
-		Free:          sdk.MustNewDecFromStr("0.10"),
+		Free:          sdk.MustNewDecFromStr("0.01"),
 		LockupPeriod:  183 * 24 * time.Hour,
 		VestingPeriod: 91 * 24 * time.Hour,
 	}
 
-	teamdropVestingType = cfevestingtypes.VestingType{
-		Name:          "Teamdrop",
-		Free:          sdk.MustNewDecFromStr("0.10"),
+	moondropVestingType = cfevestingtypes.VestingType{
+		Name:          "Moondrop",
+		Free:          sdk.ZeroDec(),
 		LockupPeriod:  730 * 24 * time.Hour,
 		VestingPeriod: 730 * 24 * time.Hour,
 	}
@@ -68,7 +68,7 @@ func TestUpdateVestingTypes(t *testing.T) {
 
 	vestingTypesAfter := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAllVestingTypes(testHelper.Context)
 	require.Equal(t, 4, len(vestingTypesAfter.VestingTypes))
-	expectedTypes := []*cfevestingtypes.VestingType{&newEarlyBirdRoundVestingType, &newPublicRoundVestingType, &fairdropVestingType, &teamdropVestingType}
+	expectedTypes := []*cfevestingtypes.VestingType{&newEarlyBirdRoundVestingType, &newPublicRoundVestingType, &fairdropVestingType, &moondropVestingType}
 	require.ElementsMatch(t, expectedTypes, vestingTypesAfter.VestingTypes)
 }
 
@@ -84,7 +84,7 @@ func TestUpdateVestingTypesVestingTypesNotFound(t *testing.T) {
 
 	vestingTypesAfter := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAllVestingTypes(testHelper.Context)
 	require.Equal(t, 2, len(vestingTypesAfter.VestingTypes))
-	expectedTypes := []*cfevestingtypes.VestingType{&fairdropVestingType, &teamdropVestingType}
+	expectedTypes := []*cfevestingtypes.VestingType{&fairdropVestingType, &moondropVestingType}
 	require.ElementsMatch(t, expectedTypes, vestingTypesAfter.VestingTypes)
 }
 

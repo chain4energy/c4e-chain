@@ -82,6 +82,8 @@ func (h *C4eClaimUtils) AddClaimRecords(ctx sdk.Context, srcAddress sdk.AccAddre
 	require.EqualValues(h.t, claimRecordBeforeCount+len(claimRecordEntries), userEntryAfterCount)
 
 	for _, claimRecord := range claimRecordEntries {
+		acc := h.helperAccountKeeper.GetAccount(ctx, sdk.MustAccAddressFromBech32(claimRecord.UserEntryAddress))
+		require.NotNil(h.t, acc)
 		userEntry, found := h.helpeCfeclaimkeeper.GetUserEntry(ctx, claimRecord.UserEntryAddress)
 		require.True(h.t, found)
 		var userEntryBefore *cfeclaimtypes.UserEntry = nil

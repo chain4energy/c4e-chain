@@ -11,7 +11,7 @@ const (
 	EarlyBirdRoundTypeName = "Early-bird round"
 	PublicRoundTypeName    = "Public round"
 	FairdropTypeName       = "Fairdrop"
-	TeamdropTypeName       = "Teamdrop"
+	MoondropTypeName       = "Moondrop"
 )
 
 func ModifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
@@ -19,19 +19,19 @@ func ModifyAndAddVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKee
 
 	fairdropVestingType := cfevestingtypes.VestingType{
 		Name:          FairdropTypeName,
-		Free:          sdk.MustNewDecFromStr("0.10"),
+		Free:          sdk.MustNewDecFromStr("0.01"),
 		LockupPeriod:  183 * 24 * time.Hour,
 		VestingPeriod: 91 * 24 * time.Hour,
 	}
 	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, fairdropVestingType)
 
-	teamdropVestingType := cfevestingtypes.VestingType{
-		Name:          TeamdropTypeName,
-		Free:          sdk.MustNewDecFromStr("0.10"),
+	moondropVestingType := cfevestingtypes.VestingType{
+		Name:          MoondropTypeName,
+		Free:          sdk.ZeroDec(),
 		LockupPeriod:  730 * 24 * time.Hour,
 		VestingPeriod: 730 * 24 * time.Hour,
 	}
-	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, teamdropVestingType)
+	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, moondropVestingType)
 
 	_, err := appKeepers.GetC4eVestingKeeper().MustGetVestingType(ctx, EarlyBirdRoundTypeName)
 	if err != nil {

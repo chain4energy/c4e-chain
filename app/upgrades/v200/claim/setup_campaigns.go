@@ -12,13 +12,13 @@ import (
 	"time"
 )
 
-//go:embed stakedrop.json santadrop.json gleamdrop.json teamdrop.json
+//go:embed stakedrop.json santadrop.json greendrop.json moondrop.json zealydrop.json amadrop.json
 var f embed.FS
 
 const (
 	FairdropVestingPoolName  = "Fairdrop"
-	TeamdropVestingPoolName  = "Teamdrop"
-	TeamdropVestingPoolOwner = "c4e1dsm96gwcv35m4rqd93pzcsztpkrqe0ev7getj8"
+	MoondropVestingPoolName  = "Moondrop"
+	MoondropVestingPoolOwner = "c4e1dsm96gwcv35m4rqd93pzcsztpkrqe0ev7getj8"
 	AirdropVestingPoolOwner  = "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54"
 )
 
@@ -42,38 +42,74 @@ func SetupAirdrops(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error
 	return nil
 }
 
+const (
+	stakedropName        = "Stake Drop"
+	stakedropDescription = "Stake Drop is the airdrop aimed to spread knowledge about the C4E ecosystem among the Cosmos $ATOM " +
+		"stakers community. The airdrop snapshot has been taken on September 28th, 2022 at 9:30 PM " +
+		"UTC (during the ATOM 2.0 roadmap announcement at the Cosmoverse Conference."
+
+	moondropName = "Moon Drop"
+
+	santadropName        = "Santa Drop"
+	santadropDescription = "Santa Drop prize pool for was 10.000 C4E Tokens, with 10 lucky winners getting 1000 tokens per each. The participants had to complete the tasks to get a chance to be among lucky winners."
+
+	greendropName        = "Green Drop"
+	greendropDescription = "It was the first airdrop competition aimed at spreading knowledge about the C4E ecosystem. The Prize Pool was 1.000.000 C4E tokens and what is best — all the participants who completed the tasks are eligible for the c4e tokens from it!"
+
+	zealydropName        = "Incentived Testnet I"
+	zealydropDescription = "Incentivized Testnet Zealy campaign, is innovative approach designed to foster engagement and bolster network security. Community members are rewarded for participating in testnet and marketing tasks, receiving C4E tokens as a result of their contributions."
+
+	amadropName        = "AMA Drop"
+	amadropDescription = "Have you been active at our AMA sessions and won C4E prizes? This Drop belongs to you."
+)
+
+var (
+	airdropStartTime      = time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC)
+	airdropEndTime        = time.Date(2031, 1, 1, 0, 0, 0, 0, time.UTC)
+	airdropLockupPeriod   = 183 * 24 * time.Hour
+	airdropVestingPeriod  = 91 * 24 * time.Hour
+	moondropLockupPeriod  = 730 * 24 * time.Hour
+	moondropVestingPeriod = 730 * 24 * time.Hour
+)
+
 func setupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
 	ctx.Logger().Info("setup campaigns")
 
-	airdropLockupPeriod := 183 * 24 * time.Hour
-	airdropVestingPeriod := 91 * 24 * time.Hour
-	teamdropLockupPeriod := 730 * 24 * time.Hour
-	teamdropVestingPeriod := 730 * 24 * time.Hour
-	startTime := ctx.BlockTime()
-	endTime := startTime.Add(time.Hour * 100)
 	zeroInt := math.ZeroInt()
-	zeroDec := sdk.ZeroDec()
-	inititalClaimOneC4E := math.NewInt(1000000)
-	_, err := appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, TeamdropVestingPoolOwner, "teamdrop", "teamdrop",
-		types.VestingPoolCampaign, true, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, teamdropLockupPeriod, teamdropVestingPeriod, TeamdropVestingPoolName)
+	onePercentDec := sdk.MustNewDecFromStr("0.01")
+
+	_, err := appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, MoondropVestingPoolOwner, moondropName, "",
+		types.VestingPoolCampaign, true, zeroInt, zeroInt, sdk.ZeroDec(), airdropStartTime, airdropEndTime, moondropLockupPeriod, moondropVestingPeriod, MoondropVestingPoolName)
 	if err != nil {
 		return err
 	}
 
-	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "stakedrop", "stakedrop",
-		types.VestingPoolCampaign, false, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
+	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, stakedropName, stakedropDescription,
+		types.VestingPoolCampaign, false, zeroInt, zeroInt, onePercentDec, airdropStartTime, airdropEndTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
 	if err != nil {
 		return err
 	}
 
-	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "santadrop", "santadrop",
-		types.VestingPoolCampaign, false, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
+	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, santadropName, santadropDescription,
+		types.VestingPoolCampaign, false, zeroInt, zeroInt, onePercentDec, airdropStartTime, airdropEndTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
 	if err != nil {
 		return err
 	}
 
-	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, "gleamdrop", "gleamdrop",
-		types.VestingPoolCampaign, false, zeroInt, inititalClaimOneC4E, zeroDec, startTime, endTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
+	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, greendropName, greendropDescription,
+		types.VestingPoolCampaign, false, zeroInt, zeroInt, onePercentDec, airdropStartTime, airdropEndTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
+	if err != nil {
+		return err
+	}
+
+	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, zealydropName, zealydropDescription,
+		types.VestingPoolCampaign, false, zeroInt, zeroInt, onePercentDec, airdropStartTime, airdropEndTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
+	if err != nil {
+		return err
+	}
+
+	_, err = appKeepers.GetC4eClaimKeeper().CreateCampaign(ctx, AirdropVestingPoolOwner, amadropName, amadropDescription,
+		types.VestingPoolCampaign, false, zeroInt, zeroInt, onePercentDec, airdropStartTime, airdropEndTime, airdropLockupPeriod, airdropVestingPeriod, FairdropVestingPoolName)
 
 	return err
 }
@@ -94,29 +130,29 @@ func validateSetupCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepe
 		return errors.Wrapf(sdkerrors.ErrNotFound, "fairdrop vesting pool not found for NewAirdropVestingPoolOwner %s", AirdropVestingPoolOwner)
 	}
 
-	teamdropVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, TeamdropVestingPoolOwner)
+	moondropVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, MoondropVestingPoolOwner)
 	if !found {
-		return errors.Wrapf(sdkerrors.ErrNotFound, "account vesting pools not found for TeamdropVestingPoolOwner %s", TeamdropVestingPoolOwner)
+		return errors.Wrapf(sdkerrors.ErrNotFound, "account vesting pools not found for MoondropVestingPoolOwner %s", MoondropVestingPoolOwner)
 	}
 	found = false
-	for _, vestingPool := range teamdropVestingPools.VestingPools {
-		if vestingPool.Name == TeamdropVestingPoolName {
+	for _, vestingPool := range moondropVestingPools.VestingPools {
+		if vestingPool.Name == MoondropVestingPoolName {
 			found = true
 			break
 		}
 	}
 	if !found {
-		return errors.Wrapf(sdkerrors.ErrNotFound, "teamdrop vesting pool not found fo for TeamdropVestingPoolOwner %s", TeamdropVestingPoolOwner)
+		return errors.Wrapf(sdkerrors.ErrNotFound, "moondrop vesting pool not found fo for MoondropVestingPoolOwner %s", MoondropVestingPoolOwner)
 	}
 	return nil
 }
 
 func addClaimRecordsToCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
-	teamdropEntries, err := readClaimRecordEntriesFromJson("teamdrop.json")
+	moondropEntries, err := readClaimRecordEntriesFromJson("moondrop.json")
 	if err != nil {
 		return err
 	}
-	if err = appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, TeamdropVestingPoolOwner, 0, teamdropEntries); err != nil {
+	if err = appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, MoondropVestingPoolOwner, 0, moondropEntries); err != nil {
 		return err
 	}
 
@@ -136,11 +172,28 @@ func addClaimRecordsToCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppK
 		return err
 	}
 
-	gleamdropEntries, err := readClaimRecordEntriesFromJson("gleamdrop.json")
+	greendropEntries, err := readClaimRecordEntriesFromJson("greendrop.json")
 	if err != nil {
 		return err
 	}
-	return appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 3, gleamdropEntries)
+	if err = appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 3, greendropEntries); err != nil {
+		return err
+	}
+
+	zealaydropEntries, err := readClaimRecordEntriesFromJson("zealydrop.json")
+	if err != nil {
+		return err
+	}
+	if err = appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 4, zealaydropEntries); err != nil {
+		return err
+	}
+
+	amadropEntries, err := readClaimRecordEntriesFromJson("amadrop.json")
+	if err != nil {
+		return err
+	}
+
+	return appKeepers.GetC4eClaimKeeper().AddClaimRecords(ctx, AirdropVestingPoolOwner, 5, amadropEntries)
 }
 
 func readClaimRecordEntriesFromJson(fileName string) ([]*types.ClaimRecordEntry, error) {

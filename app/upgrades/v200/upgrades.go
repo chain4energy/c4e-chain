@@ -26,7 +26,7 @@ func CreateUpgradeHandler(
 		if err = MigrateAirdropModuleAccount(ctx, appKeepers); err != nil {
 			return vmResult, err
 		}
-		if err = MigrateTeamdropVestingAccount(ctx, appKeepers); err != nil {
+		if err = MigrateMoondropVestingAccount(ctx, appKeepers); err != nil {
 			return vmResult, err
 		}
 		return vmResult, claim.SetupAirdrops(ctx, appKeepers)

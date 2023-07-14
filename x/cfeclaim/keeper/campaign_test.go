@@ -5,6 +5,7 @@ import (
 	"fmt"
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	"github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
@@ -39,7 +40,7 @@ func TestCreateCampaignEmptyDescription(t *testing.T) {
 	acountsAddresses, _ := testcosmos.CreateAccounts(2, 0)
 	campaign := prepareTestCampaign(testHelper.Context)
 	campaign.Description = ""
-	testHelper.C4eClaimUtils.CreateCampaignError(acountsAddresses[0].String(), campaign, "description is empty: wrong param value")
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
 }
 
 func TestCreateCampaignStartTimeAfterEndTime(t *testing.T) {
@@ -483,6 +484,15 @@ func TestRemoveVestingPoolCampaign(t *testing.T) {
 	blockTime := campaign.EndTime.Add(time.Minute)
 	testHelper.SetContextBlockTime(blockTime)
 	testHelper.C4eClaimUtils.RemoveCampaign(ownerAddress.String(), 0)
+}
+
+func createAndSaveNTestCampaigns(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Campaign {
+	campaigns := prepareNTestCampaigns(ctx, n)
+	for i := range campaigns {
+		campaigns[i].Id = uint64(i)
+		keeper.SetCampaign(ctx, campaigns[i])
+	}
+	return campaigns
 }
 
 func prepareNTestCampaigns(ctx sdk.Context, n int) []types.Campaign {

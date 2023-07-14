@@ -15,7 +15,7 @@ func (k Keeper) CreateCampaign(ctx sdk.Context, owner string, name string, descr
 	k.Logger(ctx).Debug("create campaign", "owner", owner, "name", name, "description", description,
 		"startTime", startTime, "endTime", endTime, "lockupPeriod", lockupPeriod, "vestingPeriod", vestingPeriod)
 
-	if err := k.ValidateCampaignParams(ctx, name, description, feegrantAmount, initialClaimFreeAmount, free, startTime, endTime, campaignType, owner, vestingPoolName, lockupPeriod, vestingPeriod); err != nil {
+	if err := k.ValidateCampaignParams(ctx, name, feegrantAmount, initialClaimFreeAmount, free, startTime, endTime, campaignType, owner, vestingPoolName, lockupPeriod, vestingPeriod); err != nil {
 		return nil, err
 	}
 
@@ -189,11 +189,11 @@ func (k Keeper) sendCampaignCurrentAmountToOwner(ctx sdk.Context, campaign *type
 	return nil
 }
 
-func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, description string, feegrantAmount math.Int,
+func (k Keeper) ValidateCampaignParams(ctx sdk.Context, name string, feegrantAmount math.Int,
 	inititalClaimFreeAmount math.Int, free sdk.Dec, startTime time.Time, endTime time.Time,
 	campaignType types.CampaignType, owner string, vestingPoolName string, lockupPeriod time.Duration, vestingPeriod time.Duration) error {
 
-	if err := types.ValidateCreateCampaignParams(name, description, feegrantAmount, inititalClaimFreeAmount,
+	if err := types.ValidateCreateCampaignParams(name, feegrantAmount, inititalClaimFreeAmount,
 		free, startTime, endTime, campaignType, lockupPeriod, vestingPeriod, vestingPoolName); err != nil {
 		return err
 	}

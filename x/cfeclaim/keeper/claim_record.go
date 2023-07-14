@@ -45,6 +45,14 @@ func (k Keeper) AddClaimRecords(ctx sdk.Context, owner string, campaignId uint64
 	}
 
 	for _, userEntry := range usersEntries {
+		userEntryAddress, err := sdk.AccAddressFromBech32(userEntry.Address)
+		if err != nil {
+			return errors.Wrapf(c4eerrors.ErrParam, "claim record entry user entry address parsing error (%s)", err)
+		}
+		if k.accountKeeper.GetAccount(ctx, userEntryAddress) == nil {
+			acc := k.accountKeeper.NewAccountWithAddress(ctx, userEntryAddress)
+			k.accountKeeper.SetAccount(ctx, acc)
+		}
 		k.SetUserEntry(ctx, *userEntry)
 	}
 

@@ -352,6 +352,7 @@ paths:
                       - DELEGATE
                       - VOTE
                       - CLAIM
+                      - TO_DEFINE
                     default: MISSION_TYPE_UNSPECIFIED
                   weight:
                     type: string
@@ -422,6 +423,7 @@ paths:
                         - DELEGATE
                         - VOTE
                         - CLAIM
+                        - TO_DEFINE
                       default: MISSION_TYPE_UNSPECIFIED
                     weight:
                       type: string
@@ -566,6 +568,7 @@ paths:
                         - DELEGATE
                         - VOTE
                         - CLAIM
+                        - TO_DEFINE
                       default: MISSION_TYPE_UNSPECIFIED
                     weight:
                       type: string
@@ -47815,6 +47818,7 @@ definitions:
           - DELEGATE
           - VOTE
           - CLAIM
+          - TO_DEFINE
         default: MISSION_TYPE_UNSPECIFIED
       weight:
         type: string
@@ -47829,6 +47833,7 @@ definitions:
       - DELEGATE
       - VOTE
       - CLAIM
+      - TO_DEFINE
     default: MISSION_TYPE_UNSPECIFIED
   chain4energy.c4echain.cfeclaim.MsgAddClaimRecordsResponse:
     type: object
@@ -47912,6 +47917,7 @@ definitions:
                 - DELEGATE
                 - VOTE
                 - CLAIM
+                - TO_DEFINE
               default: MISSION_TYPE_UNSPECIFIED
             weight:
               type: string
@@ -48136,6 +48142,7 @@ definitions:
               - DELEGATE
               - VOTE
               - CLAIM
+              - TO_DEFINE
             default: MISSION_TYPE_UNSPECIFIED
           weight:
             type: string
@@ -48168,6 +48175,7 @@ definitions:
                 - DELEGATE
                 - VOTE
                 - CLAIM
+                - TO_DEFINE
               default: MISSION_TYPE_UNSPECIFIED
             weight:
               type: string

@@ -33,6 +33,45 @@ func TestCompleteDelegationMission(t *testing.T) {
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 
+func TestClaimToDefineMission(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(11, 1)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	campaign := prepareTestCampaign(testHelper.Context)
+	mission := prepareTestMission()
+	mission.MissionType = cfeclaimtypes.MissionToDefine
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+
+	testHelper.C4eClaimUtils.ClaimMissionError(0, 1, acountsAddresses[1], "cannot claim mission with type TO_DEFINE: mission claiming error")
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
+func TestClaimToDefineMissionMultipleMissions(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	acountsAddresses, _ := testcosmos.CreateAccounts(11, 1)
+	claimEntries, amountSum := createTestClaimRecordEntries(acountsAddresses, 100000000)
+	campaign := prepareTestCampaign(testHelper.Context)
+	mission := prepareTestMission()
+	mission.MissionType = cfeclaimtypes.MissionToDefine
+	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	mission.MissionType = cfeclaimtypes.MissionClaim
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
+	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
+	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
+	testHelper.C4eClaimUtils.AddClaimRecords(acountsAddresses[0], 0, claimEntries)
+	testHelper.C4eClaimUtils.ClaimInitial(acountsAddresses[1], 0)
+
+	testHelper.C4eClaimUtils.ClaimMission(0, 2, acountsAddresses[1])
+	testHelper.C4eClaimUtils.ClaimMissionError(0, 1, acountsAddresses[1], "cannot claim mission with type TO_DEFINE: mission claiming error")
+	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
+}
+
 func TestCompleteDelegationMissionDelegateTwiceToTheSameValidator(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	acountsAddresses, validatorAddresses := testcosmos.CreateAccounts(11, 1)

@@ -168,7 +168,7 @@ func TestAddClaimRecordsEmptyAddress(t *testing.T) {
 	claimRecordEntries[0].UserEntryAddress = ""
 	createCampaignMissionAndEnable(testHelper, acountsAddresses[0].String())
 	testHelper.C4eClaimUtils.AddCoinsToCampaignOwnerAcc(acountsAddresses[0], amountSum)
-	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimRecordEntries, "claim record entry index 0: claim record entry empty user entry address: wrong param value")
+	testHelper.C4eClaimUtils.AddClaimRecordsError(acountsAddresses[0], 0, claimRecordEntries, "claim record entry index 0: claim record entry user entry address parsing error (empty address string is not allowed): wrong param value")
 	testHelper.C4eClaimUtils.ValidateGenesisAndInvariants()
 }
 

@@ -168,7 +168,7 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenom() {
 	s.validateParams(func() bool {
 		var params cfevestingtypes.QueryParamsResponse
 		node.QueryCfevestingParams(&params)
-		return s.Equal(params.Params.Denom, newVestingDenom)
+		return s.EqualValues(params.Params.Denom, newVestingDenom)
 	})
 }
 

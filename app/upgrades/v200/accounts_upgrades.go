@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	TeamdropVestingAccount      = "c4e1dsm96gwcv35m4rqd93pzcsztpkrqe0ev7getj8"
+	MoondropVestingAccount      = "c4e1dsm96gwcv35m4rqd93pzcsztpkrqe0ev7getj8"
 	AirdropModuleAccount        = "fairdrop"
 	AirdropModuleAccountAddress = "c4e1dutmadwfernuzmzk8ndtfah254yhrnv34y68ts"
 	NewAirdropVestingPoolOwner  = "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54"
@@ -61,22 +61,22 @@ func MigrateAirdropModuleAccount(ctx sdk.Context, appKeepers cfeupgradetypes.App
 	return nil
 }
 
-func MigrateTeamdropVestingAccount(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
-	ctx.Logger().Info("migrating teamdrop module account")
+func MigrateMoondropVestingAccount(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+	ctx.Logger().Info("migrating moondrop module account")
 
-	teamdropAccAddress, err := sdk.AccAddressFromBech32(TeamdropVestingAccount)
+	moondropAccAddress, err := sdk.AccAddressFromBech32(MoondropVestingAccount)
 	if err != nil {
 		return err
 	}
-	teamdropAccount := appKeepers.GetAccountKeeper().GetAccount(ctx, teamdropAccAddress)
-	if teamdropAccount == nil {
-		ctx.Logger().Info("teamdrop account not found", "address", TeamdropVestingAccount)
+	moondropAccount := appKeepers.GetAccountKeeper().GetAccount(ctx, moondropAccAddress)
+	if moondropAccount == nil {
+		ctx.Logger().Info("moondrop account not found", "address", MoondropVestingAccount)
 		return nil
 	}
 
-	vestingAccount, ok := teamdropAccount.(*vestingtypes.ContinuousVestingAccount)
+	vestingAccount, ok := moondropAccount.(*vestingtypes.ContinuousVestingAccount)
 	if !ok {
-		ctx.Logger().Info("teamdrop account is not of *vestingtypes.ContinuousVestingAccount type", "vestingAccount", vestingAccount)
+		ctx.Logger().Info("moondrop account is not of *vestingtypes.ContinuousVestingAccount type", "vestingAccount", vestingAccount)
 		return nil
 	}
 
@@ -84,18 +84,18 @@ func MigrateTeamdropVestingAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 	originalVestingAmount := vestingAccount.OriginalVesting
 	vestingAccount.OriginalVesting = sdk.NewCoins()
 	appKeepers.GetAccountKeeper().SetAccount(ctx, vestingAccount)
-	err = bankkeeper.Keeper.SendCoinsFromAccountToModule(*appKeepers.GetBankKeeper(), ctx, teamdropAccAddress, cfevestingtypes.ModuleName, originalVestingAmount)
+	err = bankkeeper.Keeper.SendCoinsFromAccountToModule(*appKeepers.GetBankKeeper(), ctx, moondropAccAddress, cfevestingtypes.ModuleName, originalVestingAmount)
 	if err != nil {
-		ctx.Logger().Info("migrate teamdrop vesting account error", "err", err)
+		ctx.Logger().Info("migrate moondrop vesting account error", "err", err)
 		return err
 	}
 
 	accountVestingPools := cfevestingtypes.AccountVestingPools{
-		Owner: TeamdropVestingAccount,
+		Owner: MoondropVestingAccount,
 		VestingPools: []*cfevestingtypes.VestingPool{
 			{
-				Name:            "Teamdrop",
-				VestingType:     "Teamdrop",
+				Name:            "Moondrop",
+				VestingType:     "Moondrop",
 				LockStart:       time.Date(2024, 9, 26, 2, 00, 00, 00, time.UTC),
 				LockEnd:         time.Date(2026, 9, 25, 2, 00, 00, 00, time.UTC),
 				InitiallyLocked: originalVestingAmount.AmountOf(vestingDenom),

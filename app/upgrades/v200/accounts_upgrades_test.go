@@ -15,9 +15,9 @@ import (
 )
 
 var (
-	teamdropPool = cfevestingtypes.VestingPool{
-		Name:            "Teamdrop",
-		VestingType:     "Teamdrop",
+	moondropPool = cfevestingtypes.VestingPool{
+		Name:            "Moondrop",
+		VestingType:     "Moondrop",
 		LockStart:       time.Date(2024, 9, 26, 2, 00, 00, 00, time.UTC),
 		LockEnd:         time.Date(2026, 9, 25, 2, 00, 00, 00, time.UTC),
 		InitiallyLocked: math.NewInt(8899990000000),
@@ -105,38 +105,38 @@ func TestMigrateAirdropModuleAccountDoesntExist(t *testing.T) {
 	require.Equal(t, 2, len(accountVestingPools.VestingPools))
 }
 
-func TestMigrateTeamdropAccount(t *testing.T) {
+func TestMigrateMoondropAccount(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	addVestingTypes(testHelper)
-	addTeamdropVestingAccount(t, testHelper)
-	accountVestingPools, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v200.TeamdropVestingAccount)
+	addMoondropVestingAccount(t, testHelper)
+	accountVestingPools, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v200.MoondropVestingAccount)
 	require.False(t, found)
-	err := v200.MigrateTeamdropVestingAccount(testHelper.Context, testHelper.App)
+	err := v200.MigrateMoondropVestingAccount(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
 
-	accountVestingPools, found = testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v200.TeamdropVestingAccount)
+	accountVestingPools, found = testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v200.MoondropVestingAccount)
 	require.True(t, found)
 	require.Equal(t, 1, len(accountVestingPools.VestingPools))
-	expectedTypes := []*cfevestingtypes.VestingPool{&teamdropPool}
+	expectedTypes := []*cfevestingtypes.VestingPool{&moondropPool}
 	require.ElementsMatch(t, expectedTypes, accountVestingPools.VestingPools)
-	teamdropAccAddress, _ := sdk.AccAddressFromBech32(v200.TeamdropVestingAccount)
-	airdropModuleBalance := testHelper.BankUtils.GetAccountAllBalances(teamdropAccAddress)
+	moondropAccAddress, _ := sdk.AccAddressFromBech32(v200.MoondropVestingAccount)
+	airdropModuleBalance := testHelper.BankUtils.GetAccountAllBalances(moondropAccAddress)
 	require.Equal(t, airdropModuleBalance, sdk.NewCoins())
 }
 
-func TestMigrateTeamdropAccountAccountNotFound(t *testing.T) {
+func TestMigrateMoondropAccountAccountNotFound(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	addVestingTypes(testHelper)
-	_, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v200.TeamdropVestingAccount)
+	_, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v200.MoondropVestingAccount)
 	require.False(t, found)
-	err := v200.MigrateTeamdropVestingAccount(testHelper.Context, testHelper.App)
+	err := v200.MigrateMoondropVestingAccount(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
-	_, found = testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v200.TeamdropVestingAccount)
+	_, found = testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v200.MoondropVestingAccount)
 	require.False(t, found)
 }
 
-func addTeamdropVestingAccount(t *testing.T, testHelper *testapp.TestHelper) {
-	err := testHelper.AuthUtils.CreateVestingAccount(v200.TeamdropVestingAccount, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(8899990000000))), testHelper.Context.BlockTime(), testHelper.Context.BlockTime().Add(time.Hour))
+func addMoondropVestingAccount(t *testing.T, testHelper *testapp.TestHelper) {
+	err := testHelper.AuthUtils.CreateVestingAccount(v200.MoondropVestingAccount, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(8899990000000))), testHelper.Context.BlockTime(), testHelper.Context.BlockTime().Add(time.Hour))
 	require.NoError(t, err)
 }
 

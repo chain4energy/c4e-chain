@@ -122,7 +122,7 @@ func TestAddMissionEmptyDescription(t *testing.T) {
 	mission := prepareTestMission()
 	mission.Description = ""
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[0].String(), 0, mission, "mission empty description error: wrong param value")
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
 }
 
 func TestAddMissionWrongOwner(t *testing.T) {

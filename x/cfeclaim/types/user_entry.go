@@ -168,8 +168,9 @@ func (claimRecord *ClaimRecord) Validate() error {
 }
 
 func (claimRecordEntry *ClaimRecordEntry) Validate() error {
-	if claimRecordEntry.UserEntryAddress == "" {
-		return errors.Wrapf(c4eerrors.ErrParam, "claim record entry empty user entry address")
+	_, err := sdk.AccAddressFromBech32(claimRecordEntry.UserEntryAddress)
+	if err != nil {
+		return errors.Wrapf(c4eerrors.ErrParam, "claim record entry user entry address parsing error (%s)", err)
 	}
 	if claimRecordEntry.Amount == nil {
 		return errors.Wrapf(c4eerrors.ErrParam, "claim record entry amount cannot be nil")
