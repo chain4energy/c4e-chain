@@ -31,7 +31,7 @@ Arguments:
   [campaign-id]                ID of the campaign to add the mission to
   [name]                       Name of the mission
   [description]                Description of the mission
-  [mission-type]               Type of the mission (delegate/vote/claim)
+  [mission-type]               Type of the mission (delegate/vote/claim/to_define)
   [weight]                     Weight of the mission (must be privided as a decimal string)
   [optional-claim-start-date]  Optional claim start date for the mission
 
