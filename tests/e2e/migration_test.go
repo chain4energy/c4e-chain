@@ -39,7 +39,7 @@ func (s *MainnetMigrationSetupSuite) TestMainnetVestingsMigration() {
 	s.Equal(campaigns, createMainetCampaigns())
 
 	userEntries := node.QueryUserEntries()
-	s.Equal(107938, len(userEntries))
+	s.Equal(107940, len(userEntries))
 
 	vestingTypes := node.QueryVestingTypes()
 	s.Equal(6, len(vestingTypes))
@@ -183,8 +183,8 @@ func createMainetCampaigns() []cfeclaimtypes.Campaign {
 		EndTime:                airdropEndTime,
 		LockupPeriod:           moondropLockupPeriod,
 		VestingPeriod:          moondropVestingPeriod,
-		CampaignCurrentAmount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(1813750000000))),
-		CampaignTotalAmount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(1813750000000))),
+		CampaignCurrentAmount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(7280002000000))),
+		CampaignTotalAmount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(7280002000000))),
 		VestingPoolName:        "Moondrop",
 	}
 
@@ -315,7 +315,7 @@ func (s *MainnetMigrationChainingSetupSuite) TestMainnetVestingsMigrationWhenCha
 	s.Equal(6, len(campaigns))
 
 	userEntries := node.QueryUserEntries()
-	s.Equal(107938, len(userEntries))
+	s.Equal(107940, len(userEntries))
 
 	vestingTypes := node.QueryVestingTypes()
 	s.Equal(6, len(vestingTypes))

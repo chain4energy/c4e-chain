@@ -38,8 +38,8 @@ var (
 		EndTime:                airdropEndTime,
 		LockupPeriod:           moondropLockupPeriod,
 		VestingPeriod:          moondropVestingPeriod,
-		CampaignCurrentAmount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(1813750000000))),
-		CampaignTotalAmount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(1813750000000))),
+		CampaignCurrentAmount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(7280002000000))),
+		CampaignTotalAmount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(7280002000000))),
 		VestingPoolName:        "Moondrop",
 	}
 
@@ -166,7 +166,7 @@ func TestSetupCampaigns(t *testing.T) {
 	campaigns = testHelper.C4eClaimUtils.GetCampaigns()
 	userEntires := testHelper.C4eClaimUtils.GetAllUsersEntries()
 	require.Equal(t, 6, len(campaigns))
-	require.Equal(t, 107938, len(userEntires))
+	require.Equal(t, 107940, len(userEntires))
 
 	require.Equal(t, moondropCampaign, campaigns[0])
 	require.Equal(t, stakedropCampaign, campaigns[1])
