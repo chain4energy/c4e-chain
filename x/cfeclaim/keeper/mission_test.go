@@ -167,11 +167,9 @@ func TestAddMissionClaimStartDateAfterEndTime(t *testing.T) {
 	campaign := prepareTestCampaign(testHelper.Context)
 	mission := prepareTestMission()
 	testHelper.C4eClaimUtils.CreateCampaign(acountsAddresses[0].String(), campaign)
-	testHelper.C4eClaimUtils.EnableCampaign(acountsAddresses[0].String(), 0, nil, nil)
 	claimStartDate := campaign.StartTime.Add(time.Minute)
 	mission.ClaimStartDate = &claimStartDate
-	testHelper.C4eClaimUtils.AddMissionError(acountsAddresses[0].String(), 0, mission,
-		fmt.Sprintf("mission claim start date after campaign end time (end time - %s < %s): wrong param value", campaign.EndTime, claimStartDate))
+	testHelper.C4eClaimUtils.AddMission(acountsAddresses[0].String(), 0, mission)
 }
 
 func TestAddMissionClaimStartDate(t *testing.T) {

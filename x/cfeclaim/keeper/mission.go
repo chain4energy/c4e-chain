@@ -68,9 +68,6 @@ func (k Keeper) ValidateAddMission(ctx sdk.Context, owner string, campaignId uin
 	if err = k.ValidateMissionsWeightAndType(ctx, campaignId, weight, missionType); err != nil {
 		return nil, err
 	}
-	if err = campaign.ValidateMissionClaimStartDate(claimStartDate); err != nil {
-		return nil, err
-	}
 	return campaign, nil
 }
 

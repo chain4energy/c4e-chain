@@ -227,19 +227,6 @@ func (c *Campaign) IncrementCampaignTotalAmount(coins sdk.Coins) {
 	c.CampaignTotalAmount = c.CampaignTotalAmount.Add(coins...)
 }
 
-func (c *Campaign) ValidateMissionClaimStartDate(claimStartDate *time.Time) error {
-	if claimStartDate == nil {
-		return nil
-	}
-	if claimStartDate.After(c.EndTime) {
-		return errors.Wrapf(c4eerrors.ErrParam, "mission claim start date after campaign end time (end time - %s < %s)", c.EndTime, claimStartDate)
-	}
-	if claimStartDate.Before(c.StartTime) {
-		return errors.Wrapf(c4eerrors.ErrParam, "mission claim start date before campaign start time (start time - %s > %s)", c.StartTime, claimStartDate)
-	}
-	return nil
-}
-
 func (c *Campaign) ValidateRemovableClaimRecords() error {
 	if c.Enabled && !c.RemovableClaimRecords {
 		return errors.Wrap(sdkerrors.ErrInvalidType, "campaign must have RemovableClaimRecords flag set to true to be able to delete its entries")
