@@ -2,8 +2,6 @@ package cli
 
 import (
 	"context"
-	"strconv"
-
 	"github.com/chain4energy/c4e-chain/x/cfetokenization/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -53,13 +51,8 @@ func CmdShowUserDevices() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
 			params := &types.QueryGetUserDevicesRequest{
-				Id: id,
+				Owner: args[0],
 			}
 
 			res, err := queryClient.UserDevices(context.Background(), params)

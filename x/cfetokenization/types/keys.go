@@ -24,11 +24,11 @@ const (
 )
 
 const (
-	UserDevicesKey      = "UserDevices/value/"
-	UserDevicesCountKey = "UserDevices/count/"
+	UserDevicesKey   = "UserDevices/value/"
+	PendingDeviceKey = "PendingDevice/value/"
+	DeviceKey        = "gDevice/value/"
 )
 
 const (
-	UserCertificatesKey      = "UserCertificates/value/"
-	UserCertificatesCountKey = "UserCertificates/count/"
+	UserCertificatesKey = "UserCertificates/value/"
 )

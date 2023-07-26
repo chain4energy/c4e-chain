@@ -27,17 +27,17 @@ func TestUserDevicesQuerySingle(t *testing.T) {
 	}{
 		{
 			desc:     "First",
-			request:  &types.QueryGetUserDevicesRequest{Id: msgs[0].Id},
+			request:  &types.QueryGetUserDevicesRequest{Owner: msgs[0].Owner},
 			response: &types.QueryGetUserDevicesResponse{UserDevices: msgs[0]},
 		},
 		{
 			desc:     "Second",
-			request:  &types.QueryGetUserDevicesRequest{Id: msgs[1].Id},
+			request:  &types.QueryGetUserDevicesRequest{Owner: msgs[1].Owner},
 			response: &types.QueryGetUserDevicesResponse{UserDevices: msgs[1]},
 		},
 		{
 			desc:    "KeyNotFound",
-			request: &types.QueryGetUserDevicesRequest{Id: uint64(len(msgs))},
+			request: &types.QueryGetUserDevicesRequest{Owner: "abdc"},
 			err:     sdkerrors.ErrKeyNotFound,
 		},
 		{

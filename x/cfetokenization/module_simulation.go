@@ -5,7 +5,6 @@ import (
 
 	"github.com/chain4energy/c4e-chain/testutil/sample"
 	cfetokenizationsimulation "github.com/chain4energy/c4e-chain/x/cfetokenization/simulation"
-	"github.com/chain4energy/c4e-chain/x/cfetokenization/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -53,37 +52,37 @@ const (
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	accs := make([]string, len(simState.Accounts))
-	for i, acc := range simState.Accounts {
-		accs[i] = acc.Address.String()
-	}
-	cfetokenizationGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
-		UserDevicesList: []types.UserDevices{
-			{
-				Id:    0,
-				Owner: sample.AccAddress(),
-			},
-			{
-				Id:    1,
-				Owner: sample.AccAddress(),
-			},
-		},
-		UserDevicesCount: 2,
-		UserCertificatesList: []types.UserCertificates{
-			{
-				Id:    0,
-				Owner: sample.AccAddress(),
-			},
-			{
-				Id:    1,
-				Owner: sample.AccAddress(),
-			},
-		},
-		UserCertificatesCount: 2,
-		// this line is used by starport scaffolding # simapp/module/genesisState
-	}
-	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&cfetokenizationGenesis)
+	//accs := make([]string, len(simState.Accounts))
+	//for i, acc := range simState.Accounts {
+	//	accs[i] = acc.Address.String()
+	//}
+	//cfetokenizationGenesis := types.GenesisState{
+	//	Params: types.DefaultParams(),
+	//	UserDevicesList: []types.UserDevices{
+	//		{
+	//			Id:    0,
+	//			Owner: sample.AccAddress(),
+	//		},
+	//		{
+	//			Id:    1,
+	//			Owner: sample.AccAddress(),
+	//		},
+	//	},
+	//	UserDevicesCount: 2,
+	//	UserCertificatesList: []types.UserCertificates{
+	//		{
+	//			Id:    0,
+	//			Owner: sample.AccAddress(),
+	//		},
+	//		{
+	//			Id:    1,
+	//			Owner: sample.AccAddress(),
+	//		},
+	//	},
+	//	UserCertificatesCount: 2,
+	//	// this line is used by starport scaffolding # simapp/module/genesisState
+	//}
+	//simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&cfetokenizationGenesis)
 }
 
 // ProposalContents doesn't return any content functions for governance proposals
@@ -137,38 +136,38 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	//	cfetokenizationsimulation.SimulateMsgDeleteUserDevices(am.accountKeeper, am.bankKeeper, am.keeper),
 	//))
 
-	var weightMsgCreateUserCertificates int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateUserCertificates, &weightMsgCreateUserCertificates, nil,
-		func(_ *rand.Rand) {
-			weightMsgCreateUserCertificates = defaultWeightMsgCreateUserCertificates
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgCreateUserCertificates,
-		cfetokenizationsimulation.SimulateMsgCreateUserCertificates(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgUpdateUserCertificates int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateUserCertificates, &weightMsgUpdateUserCertificates, nil,
-		func(_ *rand.Rand) {
-			weightMsgUpdateUserCertificates = defaultWeightMsgUpdateUserCertificates
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgUpdateUserCertificates,
-		cfetokenizationsimulation.SimulateMsgUpdateUserCertificates(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgDeleteUserCertificates int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteUserCertificates, &weightMsgDeleteUserCertificates, nil,
-		func(_ *rand.Rand) {
-			weightMsgDeleteUserCertificates = defaultWeightMsgDeleteUserCertificates
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgDeleteUserCertificates,
-		cfetokenizationsimulation.SimulateMsgDeleteUserCertificates(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
+	//var weightMsgCreateUserCertificates int
+	//simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateUserCertificates, &weightMsgCreateUserCertificates, nil,
+	//	func(_ *rand.Rand) {
+	//		weightMsgCreateUserCertificates = defaultWeightMsgCreateUserCertificates
+	//	},
+	//)
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgCreateUserCertificates,
+	//	cfetokenizationsimulation.SimulateMsgCreateUserCertificates(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//
+	//var weightMsgUpdateUserCertificates int
+	//simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateUserCertificates, &weightMsgUpdateUserCertificates, nil,
+	//	func(_ *rand.Rand) {
+	//		weightMsgUpdateUserCertificates = defaultWeightMsgUpdateUserCertificates
+	//	},
+	//)
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgUpdateUserCertificates,
+	//	cfetokenizationsimulation.SimulateMsgUpdateUserCertificates(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
+	//
+	//var weightMsgDeleteUserCertificates int
+	//simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteUserCertificates, &weightMsgDeleteUserCertificates, nil,
+	//	func(_ *rand.Rand) {
+	//		weightMsgDeleteUserCertificates = defaultWeightMsgDeleteUserCertificates
+	//	},
+	//)
+	//operations = append(operations, simulation.NewWeightedOperation(
+	//	weightMsgDeleteUserCertificates,
+	//	cfetokenizationsimulation.SimulateMsgDeleteUserCertificates(am.accountKeeper, am.bankKeeper, am.keeper),
+	//))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

@@ -46,7 +46,7 @@ func (k Keeper) UserDevices(goCtx context.Context, req *types.QueryGetUserDevice
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	userDevices, found := k.GetUserDevices(ctx, req.Id)
+	userDevices, found := k.GetUserDevices(ctx, req.Owner)
 	if !found {
 		return nil, sdkerrors.ErrKeyNotFound
 	}

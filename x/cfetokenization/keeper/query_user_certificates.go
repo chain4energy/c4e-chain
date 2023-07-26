@@ -46,7 +46,7 @@ func (k Keeper) UserCertificates(goCtx context.Context, req *types.QueryGetUserC
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	userCertificates, found := k.GetUserCertificates(ctx, req.Id)
+	userCertificates, found := k.GetUserCertificates(ctx, req.Owner)
 	if !found {
 		return nil, sdkerrors.ErrKeyNotFound
 	}

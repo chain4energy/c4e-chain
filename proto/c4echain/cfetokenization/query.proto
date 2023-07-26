@@ -33,7 +33,7 @@ service Query {
   
   // Queries a list of UserDevices items.
   rpc UserDevices    (QueryGetUserDevicesRequest) returns (QueryGetUserDevicesResponse) {
-    option (google.api.http).get = "/chain4energy/c4e-chain/cfetokenization/user_devices/{id}";
+    option (google.api.http).get = "/chain4energy/c4e-chain/cfetokenization/user_devices/{owner}";
   
   }
   rpc UserDevicesAll (QueryAllUserDevicesRequest) returns (QueryAllUserDevicesResponse) {
@@ -43,7 +43,7 @@ service Query {
   
   // Queries a list of UserCertificates items.
   rpc UserCertificates    (QueryGetUserCertificatesRequest) returns (QueryGetUserCertificatesResponse) {
-    option (google.api.http).get = "/chain4energy/c4e-chain/cfetokenization/user_certificates/{id}";
+    option (google.api.http).get = "/chain4energy/c4e-chain/cfetokenization/user_certificates/{owner}";
   
   }
   rpc UserCertificatesAll (QueryAllUserCertificatesRequest) returns (QueryAllUserCertificatesResponse) {
@@ -79,7 +79,7 @@ message QueryAllCertificateTypeResponse {
 }
 
 message QueryGetUserDevicesRequest {
-  uint64 id = 1;
+  string owner = 1;
 }
 
 message QueryGetUserDevicesResponse {
@@ -96,7 +96,7 @@ message QueryAllUserDevicesResponse {
 }
 
 message QueryGetUserCertificatesRequest {
-  uint64 id = 1;
+  string owner = 1;
 }
 
 message QueryGetUserCertificatesResponse {

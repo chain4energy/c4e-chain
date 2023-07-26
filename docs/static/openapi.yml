@@ -2365,9 +2365,8 @@ paths:
                 items:
                   type: object
                   properties:
-                    id:
+                    owner:
                       type: string
-                      format: uint64
                     certificates:
                       type: object
                       properties:
@@ -2391,8 +2390,6 @@ paths:
                           type: string
                         valid:
                           type: boolean
-                    owner:
-                      type: string
               pagination:
                 type: object
                 properties:
@@ -2498,7 +2495,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /chain4energy/c4e-chain/cfetokenization/user_certificates/{id}:
+  /chain4energy/c4e-chain/cfetokenization/user_certificates/{owner}:
     get:
       summary: Queries a list of UserCertificates items.
       operationId: Chain4EnergyC4EchainCfetokenizationUserCertificates
@@ -2511,9 +2508,8 @@ paths:
               UserCertificates:
                 type: object
                 properties:
-                  id:
+                  owner:
                     type: string
-                    format: uint64
                   certificates:
                     type: object
                     properties:
@@ -2537,8 +2533,6 @@ paths:
                         type: string
                       valid:
                         type: boolean
-                  owner:
-                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -2558,11 +2552,10 @@ paths:
                       type: string
                   additionalProperties: {}
       parameters:
-        - name: id
+        - name: owner
           in: path
           required: true
           type: string
-          format: uint64
       tags:
         - Query
   /chain4energy/c4e-chain/cfetokenization/user_devices:
@@ -2579,22 +2572,17 @@ paths:
                 items:
                   type: object
                   properties:
-                    id:
+                    owner:
                       type: string
-                      format: uint64
                     devices:
                       type: array
                       items:
                         type: object
                         properties:
-                          device_id:
+                          device_address:
                             type: string
                           name:
                             type: string
-                          device_address:
-                            type: string
-                    owner:
-                      type: string
               pagination:
                 type: object
                 properties:
@@ -2700,7 +2688,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /chain4energy/c4e-chain/cfetokenization/user_devices/{id}:
+  /chain4energy/c4e-chain/cfetokenization/user_devices/{owner}:
     get:
       summary: Queries a list of UserDevices items.
       operationId: Chain4EnergyC4EchainCfetokenizationUserDevices
@@ -2713,22 +2701,17 @@ paths:
               UserDevices:
                 type: object
                 properties:
-                  id:
+                  owner:
                     type: string
-                    format: uint64
                   devices:
                     type: array
                     items:
                       type: object
                       properties:
-                        device_id:
+                        device_address:
                           type: string
                         name:
                           type: string
-                        device_address:
-                          type: string
-                  owner:
-                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -2748,11 +2731,10 @@ paths:
                       type: string
                   additionalProperties: {}
       parameters:
-        - name: id
+        - name: owner
           in: path
           required: true
           type: string
-          format: uint64
       tags:
         - Query
   /c4e/vesting/v1beta1/genesis_summary:
@@ -50388,25 +50370,18 @@ definitions:
         type: string
       description:
         type: string
-  chain4energy.c4echain.cfetokenization.Device:
+  chain4energy.c4echain.cfetokenization.MsgAcceptDeviceResponse:
     type: object
-    properties:
-      device_id:
-        type: string
-      name:
-        type: string
-      device_address:
-        type: string
+  chain4energy.c4echain.cfetokenization.MsgAddMeasurementResponse:
+    type: object
+  chain4energy.c4echain.cfetokenization.MsgAssignDeviceToUserResponse:
+    type: object
   chain4energy.c4echain.cfetokenization.MsgCreateUserCertificatesResponse:
     type: object
     properties:
       id:
         type: string
         format: uint64
-  chain4energy.c4echain.cfetokenization.MsgDeleteUserCertificatesResponse:
-    type: object
-  chain4energy.c4echain.cfetokenization.MsgUpdateUserCertificatesResponse:
-    type: object
   chain4energy.c4echain.cfetokenization.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -50459,9 +50434,8 @@ definitions:
         items:
           type: object
           properties:
-            id:
+            owner:
               type: string
-              format: uint64
             certificates:
               type: object
               properties:
@@ -50485,8 +50459,6 @@ definitions:
                   type: string
                 valid:
                   type: boolean
-            owner:
-              type: string
       pagination:
         type: object
         properties:
@@ -50521,22 +50493,17 @@ definitions:
         items:
           type: object
           properties:
-            id:
+            owner:
               type: string
-              format: uint64
             devices:
               type: array
               items:
                 type: object
                 properties:
-                  device_id:
+                  device_address:
                     type: string
                   name:
                     type: string
-                  device_address:
-                    type: string
-            owner:
-              type: string
       pagination:
         type: object
         properties:
@@ -50582,9 +50549,8 @@ definitions:
       UserCertificates:
         type: object
         properties:
-          id:
+          owner:
             type: string
-            format: uint64
           certificates:
             type: object
             properties:
@@ -50608,30 +50574,23 @@ definitions:
                 type: string
               valid:
                 type: boolean
-          owner:
-            type: string
   chain4energy.c4echain.cfetokenization.QueryGetUserDevicesResponse:
     type: object
     properties:
       UserDevices:
         type: object
         properties:
-          id:
+          owner:
             type: string
-            format: uint64
           devices:
             type: array
             items:
               type: object
               properties:
-                device_id:
+                device_address:
                   type: string
                 name:
                   type: string
-                device_address:
-                  type: string
-          owner:
-            type: string
   chain4energy.c4echain.cfetokenization.QueryParamsResponse:
     type: object
     properties:
@@ -50642,9 +50601,8 @@ definitions:
   chain4energy.c4echain.cfetokenization.UserCertificates:
     type: object
     properties:
-      id:
+      owner:
         type: string
-        format: uint64
       certificates:
         type: object
         properties:
@@ -50668,27 +50626,27 @@ definitions:
             type: string
           valid:
             type: boolean
-      owner:
+  chain4energy.c4echain.cfetokenization.UserDevice:
+    type: object
+    properties:
+      device_address:
+        type: string
+      name:
         type: string
   chain4energy.c4echain.cfetokenization.UserDevices:
     type: object
     properties:
-      id:
+      owner:
         type: string
-        format: uint64
       devices:
         type: array
         items:
           type: object
           properties:
-            device_id:
+            device_address:
               type: string
             name:
               type: string
-            device_address:
-              type: string
-      owner:
-        type: string
   chain4energy.c4echain.cfevesting.GenesisVestingType:
     type: object
     properties:

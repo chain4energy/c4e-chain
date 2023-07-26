@@ -6,26 +6,215 @@ package types
 import (
 	context "context"
 	fmt "fmt"
+	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
+	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
+	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+var _ = time.Kitchen
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
+
+type MsgAssignDeviceToUser struct {
+	DeviceAddress string `protobuf:"bytes,1,opt,name=device_address,json=deviceAddress,proto3" json:"device_address,omitempty"`
+	UserAddress   string `protobuf:"bytes,2,opt,name=user_address,json=userAddress,proto3" json:"user_address,omitempty"`
+}
+
+func (m *MsgAssignDeviceToUser) Reset()         { *m = MsgAssignDeviceToUser{} }
+func (m *MsgAssignDeviceToUser) String() string { return proto.CompactTextString(m) }
+func (*MsgAssignDeviceToUser) ProtoMessage()    {}
+func (*MsgAssignDeviceToUser) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ba357ac3aeb2dd39, []int{0}
+}
+func (m *MsgAssignDeviceToUser) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgAssignDeviceToUser) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgAssignDeviceToUser.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgAssignDeviceToUser) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAssignDeviceToUser.Merge(m, src)
+}
+func (m *MsgAssignDeviceToUser) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgAssignDeviceToUser) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAssignDeviceToUser.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgAssignDeviceToUser proto.InternalMessageInfo
+
+func (m *MsgAssignDeviceToUser) GetDeviceAddress() string {
+	if m != nil {
+		return m.DeviceAddress
+	}
+	return ""
+}
+
+func (m *MsgAssignDeviceToUser) GetUserAddress() string {
+	if m != nil {
+		return m.UserAddress
+	}
+	return ""
+}
+
+type MsgAssignDeviceToUserResponse struct {
+}
+
+func (m *MsgAssignDeviceToUserResponse) Reset()         { *m = MsgAssignDeviceToUserResponse{} }
+func (m *MsgAssignDeviceToUserResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAssignDeviceToUserResponse) ProtoMessage()    {}
+func (*MsgAssignDeviceToUserResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ba357ac3aeb2dd39, []int{1}
+}
+func (m *MsgAssignDeviceToUserResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgAssignDeviceToUserResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgAssignDeviceToUserResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgAssignDeviceToUserResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAssignDeviceToUserResponse.Merge(m, src)
+}
+func (m *MsgAssignDeviceToUserResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgAssignDeviceToUserResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAssignDeviceToUserResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgAssignDeviceToUserResponse proto.InternalMessageInfo
+
+type MsgAcceptDevice struct {
+	UserAddress   string `protobuf:"bytes,1,opt,name=user_address,json=userAddress,proto3" json:"user_address,omitempty"`
+	DeviceAddress string `protobuf:"bytes,2,opt,name=device_address,json=deviceAddress,proto3" json:"device_address,omitempty"`
+	DeviceName    string `protobuf:"bytes,3,opt,name=device_name,json=deviceName,proto3" json:"device_name,omitempty"`
+}
+
+func (m *MsgAcceptDevice) Reset()         { *m = MsgAcceptDevice{} }
+func (m *MsgAcceptDevice) String() string { return proto.CompactTextString(m) }
+func (*MsgAcceptDevice) ProtoMessage()    {}
+func (*MsgAcceptDevice) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ba357ac3aeb2dd39, []int{2}
+}
+func (m *MsgAcceptDevice) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgAcceptDevice) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgAcceptDevice.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgAcceptDevice) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAcceptDevice.Merge(m, src)
+}
+func (m *MsgAcceptDevice) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgAcceptDevice) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAcceptDevice.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgAcceptDevice proto.InternalMessageInfo
+
+func (m *MsgAcceptDevice) GetUserAddress() string {
+	if m != nil {
+		return m.UserAddress
+	}
+	return ""
+}
+
+func (m *MsgAcceptDevice) GetDeviceAddress() string {
+	if m != nil {
+		return m.DeviceAddress
+	}
+	return ""
+}
+
+func (m *MsgAcceptDevice) GetDeviceName() string {
+	if m != nil {
+		return m.DeviceName
+	}
+	return ""
+}
+
+type MsgAcceptDeviceResponse struct {
+}
+
+func (m *MsgAcceptDeviceResponse) Reset()         { *m = MsgAcceptDeviceResponse{} }
+func (m *MsgAcceptDeviceResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAcceptDeviceResponse) ProtoMessage()    {}
+func (*MsgAcceptDeviceResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ba357ac3aeb2dd39, []int{3}
+}
+func (m *MsgAcceptDeviceResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgAcceptDeviceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgAcceptDeviceResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgAcceptDeviceResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAcceptDeviceResponse.Merge(m, src)
+}
+func (m *MsgAcceptDeviceResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgAcceptDeviceResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAcceptDeviceResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgAcceptDeviceResponse proto.InternalMessageInfo
 
 type MsgCreateUserCertificates struct {
 	Owner        string       `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
@@ -36,7 +225,7 @@ func (m *MsgCreateUserCertificates) Reset()         { *m = MsgCreateUserCertific
 func (m *MsgCreateUserCertificates) String() string { return proto.CompactTextString(m) }
 func (*MsgCreateUserCertificates) ProtoMessage()    {}
 func (*MsgCreateUserCertificates) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ba357ac3aeb2dd39, []int{0}
+	return fileDescriptor_ba357ac3aeb2dd39, []int{4}
 }
 func (m *MsgCreateUserCertificates) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -87,7 +276,7 @@ func (m *MsgCreateUserCertificatesResponse) Reset()         { *m = MsgCreateUser
 func (m *MsgCreateUserCertificatesResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgCreateUserCertificatesResponse) ProtoMessage()    {}
 func (*MsgCreateUserCertificatesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ba357ac3aeb2dd39, []int{1}
+	return fileDescriptor_ba357ac3aeb2dd39, []int{5}
 }
 func (m *MsgCreateUserCertificatesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -123,24 +312,24 @@ func (m *MsgCreateUserCertificatesResponse) GetId() uint64 {
 	return 0
 }
 
-type MsgUpdateUserCertificates struct {
-	Owner        string       `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	Id           uint64       `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
-	Certificates *Certificate `protobuf:"bytes,3,opt,name=certificates,proto3" json:"certificates,omitempty"`
+type MsgAddMeasurement struct {
+	DeviceAddress string     `protobuf:"bytes,1,opt,name=device_address,json=deviceAddress,proto3" json:"device_address,omitempty"`
+	Timestamp     *time.Time `protobuf:"bytes,9,opt,name=timestamp,proto3,stdtime" json:"timestamp,omitempty"`
+	Value         uint64     `protobuf:"varint,3,opt,name=value,proto3" json:"value,omitempty"`
 }
 
-func (m *MsgUpdateUserCertificates) Reset()         { *m = MsgUpdateUserCertificates{} }
-func (m *MsgUpdateUserCertificates) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateUserCertificates) ProtoMessage()    {}
-func (*MsgUpdateUserCertificates) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ba357ac3aeb2dd39, []int{2}
+func (m *MsgAddMeasurement) Reset()         { *m = MsgAddMeasurement{} }
+func (m *MsgAddMeasurement) String() string { return proto.CompactTextString(m) }
+func (*MsgAddMeasurement) ProtoMessage()    {}
+func (*MsgAddMeasurement) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ba357ac3aeb2dd39, []int{6}
 }
-func (m *MsgUpdateUserCertificates) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddMeasurement) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateUserCertificates) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddMeasurement) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateUserCertificates.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddMeasurement.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -150,142 +339,54 @@ func (m *MsgUpdateUserCertificates) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateUserCertificates) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateUserCertificates.Merge(m, src)
+func (m *MsgAddMeasurement) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddMeasurement.Merge(m, src)
 }
-func (m *MsgUpdateUserCertificates) XXX_Size() int {
+func (m *MsgAddMeasurement) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateUserCertificates) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateUserCertificates.DiscardUnknown(m)
+func (m *MsgAddMeasurement) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddMeasurement.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateUserCertificates proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddMeasurement proto.InternalMessageInfo
 
-func (m *MsgUpdateUserCertificates) GetOwner() string {
+func (m *MsgAddMeasurement) GetDeviceAddress() string {
 	if m != nil {
-		return m.Owner
+		return m.DeviceAddress
 	}
 	return ""
 }
 
-func (m *MsgUpdateUserCertificates) GetId() uint64 {
+func (m *MsgAddMeasurement) GetTimestamp() *time.Time {
 	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-func (m *MsgUpdateUserCertificates) GetCertificates() *Certificate {
-	if m != nil {
-		return m.Certificates
+		return m.Timestamp
 	}
 	return nil
 }
 
-type MsgUpdateUserCertificatesResponse struct {
-}
-
-func (m *MsgUpdateUserCertificatesResponse) Reset()         { *m = MsgUpdateUserCertificatesResponse{} }
-func (m *MsgUpdateUserCertificatesResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateUserCertificatesResponse) ProtoMessage()    {}
-func (*MsgUpdateUserCertificatesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ba357ac3aeb2dd39, []int{3}
-}
-func (m *MsgUpdateUserCertificatesResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgUpdateUserCertificatesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgUpdateUserCertificatesResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgUpdateUserCertificatesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateUserCertificatesResponse.Merge(m, src)
-}
-func (m *MsgUpdateUserCertificatesResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgUpdateUserCertificatesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateUserCertificatesResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgUpdateUserCertificatesResponse proto.InternalMessageInfo
-
-type MsgDeleteUserCertificates struct {
-	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	Id    uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
-}
-
-func (m *MsgDeleteUserCertificates) Reset()         { *m = MsgDeleteUserCertificates{} }
-func (m *MsgDeleteUserCertificates) String() string { return proto.CompactTextString(m) }
-func (*MsgDeleteUserCertificates) ProtoMessage()    {}
-func (*MsgDeleteUserCertificates) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ba357ac3aeb2dd39, []int{4}
-}
-func (m *MsgDeleteUserCertificates) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgDeleteUserCertificates) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgDeleteUserCertificates.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgDeleteUserCertificates) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDeleteUserCertificates.Merge(m, src)
-}
-func (m *MsgDeleteUserCertificates) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgDeleteUserCertificates) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDeleteUserCertificates.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgDeleteUserCertificates proto.InternalMessageInfo
-
-func (m *MsgDeleteUserCertificates) GetOwner() string {
+func (m *MsgAddMeasurement) GetValue() uint64 {
 	if m != nil {
-		return m.Owner
-	}
-	return ""
-}
-
-func (m *MsgDeleteUserCertificates) GetId() uint64 {
-	if m != nil {
-		return m.Id
+		return m.Value
 	}
 	return 0
 }
 
-type MsgDeleteUserCertificatesResponse struct {
+type MsgAddMeasurementResponse struct {
 }
 
-func (m *MsgDeleteUserCertificatesResponse) Reset()         { *m = MsgDeleteUserCertificatesResponse{} }
-func (m *MsgDeleteUserCertificatesResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgDeleteUserCertificatesResponse) ProtoMessage()    {}
-func (*MsgDeleteUserCertificatesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ba357ac3aeb2dd39, []int{5}
+func (m *MsgAddMeasurementResponse) Reset()         { *m = MsgAddMeasurementResponse{} }
+func (m *MsgAddMeasurementResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAddMeasurementResponse) ProtoMessage()    {}
+func (*MsgAddMeasurementResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ba357ac3aeb2dd39, []int{7}
 }
-func (m *MsgDeleteUserCertificatesResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddMeasurementResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgDeleteUserCertificatesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddMeasurementResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgDeleteUserCertificatesResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddMeasurementResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -295,55 +396,69 @@ func (m *MsgDeleteUserCertificatesResponse) XXX_Marshal(b []byte, deterministic 
 		return b[:n], nil
 	}
 }
-func (m *MsgDeleteUserCertificatesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgDeleteUserCertificatesResponse.Merge(m, src)
+func (m *MsgAddMeasurementResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddMeasurementResponse.Merge(m, src)
 }
-func (m *MsgDeleteUserCertificatesResponse) XXX_Size() int {
+func (m *MsgAddMeasurementResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgDeleteUserCertificatesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgDeleteUserCertificatesResponse.DiscardUnknown(m)
+func (m *MsgAddMeasurementResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddMeasurementResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgDeleteUserCertificatesResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddMeasurementResponse proto.InternalMessageInfo
 
 func init() {
+	proto.RegisterType((*MsgAssignDeviceToUser)(nil), "chain4energy.c4echain.cfetokenization.MsgAssignDeviceToUser")
+	proto.RegisterType((*MsgAssignDeviceToUserResponse)(nil), "chain4energy.c4echain.cfetokenization.MsgAssignDeviceToUserResponse")
+	proto.RegisterType((*MsgAcceptDevice)(nil), "chain4energy.c4echain.cfetokenization.MsgAcceptDevice")
+	proto.RegisterType((*MsgAcceptDeviceResponse)(nil), "chain4energy.c4echain.cfetokenization.MsgAcceptDeviceResponse")
 	proto.RegisterType((*MsgCreateUserCertificates)(nil), "chain4energy.c4echain.cfetokenization.MsgCreateUserCertificates")
 	proto.RegisterType((*MsgCreateUserCertificatesResponse)(nil), "chain4energy.c4echain.cfetokenization.MsgCreateUserCertificatesResponse")
-	proto.RegisterType((*MsgUpdateUserCertificates)(nil), "chain4energy.c4echain.cfetokenization.MsgUpdateUserCertificates")
-	proto.RegisterType((*MsgUpdateUserCertificatesResponse)(nil), "chain4energy.c4echain.cfetokenization.MsgUpdateUserCertificatesResponse")
-	proto.RegisterType((*MsgDeleteUserCertificates)(nil), "chain4energy.c4echain.cfetokenization.MsgDeleteUserCertificates")
-	proto.RegisterType((*MsgDeleteUserCertificatesResponse)(nil), "chain4energy.c4echain.cfetokenization.MsgDeleteUserCertificatesResponse")
+	proto.RegisterType((*MsgAddMeasurement)(nil), "chain4energy.c4echain.cfetokenization.MsgAddMeasurement")
+	proto.RegisterType((*MsgAddMeasurementResponse)(nil), "chain4energy.c4echain.cfetokenization.MsgAddMeasurementResponse")
 }
 
 func init() { proto.RegisterFile("c4echain/cfetokenization/tx.proto", fileDescriptor_ba357ac3aeb2dd39) }
 
 var fileDescriptor_ba357ac3aeb2dd39 = []byte{
-	// 372 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x4c, 0x36, 0x49, 0x4d,
-	0xce, 0x48, 0xcc, 0xcc, 0xd3, 0x4f, 0x4e, 0x4b, 0x2d, 0xc9, 0xcf, 0x4e, 0xcd, 0xcb, 0xac, 0x4a,
-	0x2c, 0xc9, 0xcc, 0xcf, 0xd3, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x52, 0x05,
-	0xcb, 0x9b, 0xa4, 0xe6, 0xa5, 0x16, 0xa5, 0x57, 0xea, 0xc1, 0xd4, 0xeb, 0xa1, 0xa9, 0x97, 0xd2,
-	0xc6, 0x69, 0x52, 0x69, 0x71, 0x6a, 0x51, 0x7c, 0x4a, 0x6a, 0x59, 0x66, 0x72, 0x6a, 0x31, 0xc4,
-	0x4c, 0x29, 0x03, 0xfc, 0x8a, 0x93, 0x53, 0x8b, 0x4a, 0x32, 0xd3, 0x32, 0x93, 0x13, 0x4b, 0x60,
-	0x3a, 0x94, 0x3a, 0x19, 0xb9, 0x24, 0x7d, 0x8b, 0xd3, 0x9d, 0x8b, 0x52, 0x13, 0x4b, 0x52, 0x43,
-	0x8b, 0x53, 0x8b, 0x9c, 0x91, 0xd4, 0x08, 0x89, 0x70, 0xb1, 0xe6, 0x97, 0xe7, 0xa5, 0x16, 0x49,
-	0x30, 0x2a, 0x30, 0x6a, 0x70, 0x06, 0x41, 0x38, 0x42, 0x61, 0x5c, 0x3c, 0xc8, 0x26, 0x49, 0x30,
-	0x29, 0x30, 0x6a, 0x70, 0x1b, 0x19, 0xe9, 0x11, 0xe5, 0x21, 0x3d, 0x24, 0x0b, 0x82, 0x50, 0xcc,
-	0x51, 0x32, 0xe6, 0x52, 0xc4, 0xe9, 0x94, 0xa0, 0xd4, 0xe2, 0x82, 0xfc, 0xbc, 0xe2, 0x54, 0x21,
-	0x3e, 0x2e, 0xa6, 0xcc, 0x14, 0xb0, 0x7b, 0x58, 0x82, 0x98, 0x32, 0x53, 0x94, 0x66, 0x42, 0x3c,
-	0x10, 0x5a, 0x90, 0x42, 0xbc, 0x07, 0x20, 0x66, 0x30, 0xc1, 0xcc, 0xc0, 0xf0, 0x10, 0x33, 0x95,
-	0x3c, 0xa4, 0x0c, 0xf6, 0x10, 0x76, 0xa7, 0xc1, 0x3c, 0xa4, 0xe4, 0x08, 0x76, 0xbf, 0x4b, 0x6a,
-	0x4e, 0x2a, 0xb9, 0xee, 0x87, 0xda, 0x83, 0xdd, 0x08, 0x98, 0x3d, 0x46, 0xbf, 0x98, 0xb9, 0x98,
-	0x7d, 0x8b, 0xd3, 0x85, 0x96, 0x30, 0x72, 0x89, 0xe1, 0x88, 0x6e, 0x07, 0x22, 0x7d, 0x8c, 0x33,
-	0x96, 0xa4, 0x3c, 0x28, 0x35, 0x01, 0x1e, 0xcf, 0x20, 0x67, 0xe2, 0x88, 0x54, 0x12, 0x9c, 0x89,
-	0xdd, 0x04, 0x52, 0x9c, 0x89, 0x3f, 0xf6, 0xc0, 0xce, 0xc4, 0x11, 0x77, 0x24, 0x38, 0x13, 0xbb,
-	0x09, 0xa4, 0x38, 0x13, 0x7f, 0xe4, 0x3b, 0x05, 0x9f, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c,
-	0xe3, 0x83, 0x47, 0x72, 0x8c, 0x13, 0x1e, 0xcb, 0x31, 0x5c, 0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1,
-	0x1c, 0x43, 0x94, 0x65, 0x7a, 0x66, 0x49, 0x46, 0x69, 0x92, 0x5e, 0x72, 0x7e, 0xae, 0x3e, 0xb2,
-	0x6d, 0xfa, 0xc9, 0x26, 0xa9, 0xba, 0x90, 0xb2, 0xa4, 0x02, 0xb3, 0x10, 0xab, 0x2c, 0x48, 0x2d,
-	0x4e, 0x62, 0x03, 0x17, 0x21, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0x5e, 0xbf, 0x64, 0xfb,
-	0xed, 0x04, 0x00, 0x00,
+	// 567 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x95, 0xc1, 0x6e, 0xd3, 0x4c,
+	0x14, 0x85, 0x33, 0x69, 0xfe, 0x5f, 0x64, 0x12, 0x82, 0xb0, 0x0a, 0xa4, 0x46, 0x38, 0xc4, 0x52,
+	0x25, 0x24, 0x84, 0x8d, 0xd2, 0x08, 0x81, 0x84, 0x50, 0x9b, 0x76, 0xc1, 0x26, 0x2c, 0x4c, 0x61,
+	0xc1, 0xa6, 0x9a, 0xd8, 0x37, 0xee, 0x88, 0xda, 0x13, 0x79, 0x26, 0xa5, 0x45, 0xac, 0x91, 0x90,
+	0x58, 0x74, 0xc1, 0x82, 0x07, 0xe0, 0x61, 0xba, 0xec, 0x92, 0x15, 0x45, 0xc9, 0x8b, 0x20, 0xcf,
+	0xc4, 0xc6, 0x49, 0x1c, 0x94, 0xb6, 0x3b, 0xcf, 0xcd, 0xb9, 0x67, 0xbe, 0x7b, 0x7d, 0x92, 0xe0,
+	0xa6, 0xdb, 0x06, 0x77, 0x9f, 0xd0, 0xd0, 0x76, 0xfb, 0x20, 0xd8, 0x7b, 0x08, 0xe9, 0x47, 0x22,
+	0x28, 0x0b, 0x6d, 0x71, 0x64, 0x0d, 0x22, 0x26, 0x98, 0xb6, 0x2e, 0x3f, 0x6f, 0x43, 0x08, 0x91,
+	0x7f, 0x6c, 0x25, 0x7a, 0x6b, 0x46, 0xaf, 0x3f, 0x5c, 0xe8, 0x34, 0xe4, 0x10, 0xed, 0x79, 0x70,
+	0x48, 0x5d, 0xe0, 0xca, 0x53, 0x7f, 0xfc, 0x6f, 0xb1, 0x0b, 0x91, 0xa0, 0x7d, 0xea, 0x12, 0x91,
+	0x76, 0x34, 0x7c, 0xc6, 0xfc, 0x03, 0xb0, 0xe5, 0xa9, 0x37, 0xec, 0xdb, 0x82, 0x06, 0xc0, 0x05,
+	0x09, 0x06, 0x13, 0xc1, 0xaa, 0xcf, 0x7c, 0x26, 0x1f, 0xed, 0xf8, 0x49, 0x55, 0x4d, 0x82, 0x6f,
+	0x75, 0xb9, 0xbf, 0xc5, 0x39, 0xf5, 0xc3, 0x1d, 0x89, 0xb0, 0xcb, 0xde, 0x70, 0x88, 0xb4, 0x75,
+	0x5c, 0x53, 0x48, 0x7b, 0xc4, 0xf3, 0x22, 0xe0, 0xbc, 0x8e, 0xee, 0xa3, 0x07, 0x65, 0xe7, 0xba,
+	0xaa, 0x6e, 0xa9, 0xa2, 0xd6, 0xc4, 0x55, 0x49, 0x94, 0x88, 0x8a, 0x52, 0x54, 0x89, 0x6b, 0x13,
+	0x89, 0xd9, 0xc0, 0xf7, 0x72, 0xaf, 0x70, 0x80, 0x0f, 0x58, 0xc8, 0xc1, 0xfc, 0x84, 0x6f, 0xc4,
+	0x02, 0xd7, 0x85, 0x81, 0x50, 0x82, 0x39, 0x5b, 0x34, 0x67, 0x9b, 0x03, 0x58, 0xcc, 0x03, 0x6c,
+	0xe0, 0xca, 0x44, 0x16, 0x92, 0x00, 0xea, 0x2b, 0x52, 0x83, 0x55, 0xe9, 0x15, 0x09, 0xc0, 0x5c,
+	0xc3, 0x77, 0x66, 0x6e, 0x4f, 0xc1, 0xbe, 0x20, 0xbc, 0xd6, 0xe5, 0xfe, 0x76, 0x04, 0x44, 0x40,
+	0x8c, 0xbc, 0x9d, 0xd9, 0xbb, 0xb6, 0x8a, 0xff, 0x63, 0x1f, 0x42, 0x88, 0x26, 0x70, 0xea, 0xa0,
+	0xbd, 0xc5, 0xd5, 0xec, 0xdb, 0x91, 0x50, 0x95, 0x56, 0xcb, 0x5a, 0x2a, 0x24, 0x56, 0xe6, 0x02,
+	0x67, 0xca, 0xc7, 0xdc, 0xc0, 0xcd, 0x85, 0x28, 0x09, 0xb0, 0x56, 0xc3, 0x45, 0xea, 0x49, 0x9e,
+	0x92, 0x53, 0xa4, 0x9e, 0xf9, 0x0d, 0xe1, 0x9b, 0xf1, 0x70, 0x9e, 0xd7, 0x05, 0xc2, 0x87, 0x11,
+	0x04, 0x10, 0x8a, 0x65, 0x5f, 0x6d, 0x07, 0x97, 0xd3, 0x0c, 0xd5, 0xcb, 0x72, 0x0c, 0xdd, 0x52,
+	0x29, 0xb3, 0x92, 0x94, 0x59, 0xbb, 0x89, 0xa2, 0x73, 0xed, 0xf4, 0x57, 0x03, 0x9d, 0x9c, 0x37,
+	0x90, 0xf3, 0xb7, 0x2d, 0xde, 0xd1, 0x21, 0x39, 0x18, 0xaa, 0xbd, 0x97, 0x1c, 0x75, 0x30, 0xef,
+	0xca, 0xb5, 0x4e, 0x53, 0x25, 0x33, 0xb4, 0xce, 0x4b, 0x78, 0xa5, 0xcb, 0x7d, 0xed, 0x3b, 0xc2,
+	0x5a, 0x4e, 0x2e, 0x9f, 0x2f, 0xb9, 0xc9, 0xdc, 0xc8, 0xe9, 0x3b, 0x57, 0xe9, 0x4e, 0xd7, 0xfc,
+	0x19, 0xe1, 0xea, 0x54, 0x5c, 0x9f, 0x5c, 0xc0, 0x36, 0xd3, 0xa7, 0xbf, 0xb8, 0x5c, 0x5f, 0x0a,
+	0xf2, 0x03, 0xe1, 0xdb, 0x0b, 0xd2, 0xb9, 0xb9, 0xbc, 0x75, 0xbe, 0x83, 0xfe, 0xf2, 0xaa, 0x0e,
+	0x29, 0xe6, 0x57, 0x84, 0x6b, 0x33, 0x19, 0x7c, 0x7a, 0x81, 0xc9, 0xa7, 0x3a, 0xf5, 0xcd, 0xcb,
+	0x76, 0x26, 0x38, 0x9d, 0xd7, 0xa7, 0x23, 0x03, 0x9d, 0x8d, 0x0c, 0xf4, 0x7b, 0x64, 0xa0, 0x93,
+	0xb1, 0x51, 0x38, 0x1b, 0x1b, 0x85, 0x9f, 0x63, 0xa3, 0xf0, 0xee, 0x99, 0x4f, 0xc5, 0xfe, 0xb0,
+	0x67, 0xb9, 0x2c, 0xb0, 0xb3, 0xb7, 0xd8, 0x6e, 0x1b, 0x1e, 0xa9, 0xdf, 0xe3, 0xa3, 0xf9, 0x3f,
+	0x82, 0xe3, 0x01, 0xf0, 0xde, 0xff, 0xf2, 0x2b, 0xb1, 0xf1, 0x27, 0x00, 0x00, 0xff, 0xff, 0x88,
+	0x50, 0x7f, 0xdb, 0x31, 0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -358,12 +473,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// rpc CreateUserDevices (MsgCreateUserDevices) returns (MsgCreateUserDevicesResponse);
-	// rpc UpdateUserDevices (MsgUpdateUserDevices) returns (MsgUpdateUserDevicesResponse);
-	// rpc DeleteUserDevices (MsgDeleteUserDevices) returns (MsgDeleteUserDevicesResponse);
+	AssignDeviceToUser(ctx context.Context, in *MsgAssignDeviceToUser, opts ...grpc.CallOption) (*MsgAssignDeviceToUserResponse, error)
+	AcceptDevice(ctx context.Context, in *MsgAcceptDevice, opts ...grpc.CallOption) (*MsgAcceptDeviceResponse, error)
 	CreateUserCertificates(ctx context.Context, in *MsgCreateUserCertificates, opts ...grpc.CallOption) (*MsgCreateUserCertificatesResponse, error)
-	UpdateUserCertificates(ctx context.Context, in *MsgUpdateUserCertificates, opts ...grpc.CallOption) (*MsgUpdateUserCertificatesResponse, error)
-	DeleteUserCertificates(ctx context.Context, in *MsgDeleteUserCertificates, opts ...grpc.CallOption) (*MsgDeleteUserCertificatesResponse, error)
+	AddMeasurement(ctx context.Context, in *MsgAddMeasurement, opts ...grpc.CallOption) (*MsgAddMeasurementResponse, error)
 }
 
 type msgClient struct {
@@ -372,6 +485,24 @@ type msgClient struct {
 
 func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
+}
+
+func (c *msgClient) AssignDeviceToUser(ctx context.Context, in *MsgAssignDeviceToUser, opts ...grpc.CallOption) (*MsgAssignDeviceToUserResponse, error) {
+	out := new(MsgAssignDeviceToUserResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfetokenization.Msg/AssignDeviceToUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) AcceptDevice(ctx context.Context, in *MsgAcceptDevice, opts ...grpc.CallOption) (*MsgAcceptDeviceResponse, error) {
+	out := new(MsgAcceptDeviceResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfetokenization.Msg/AcceptDevice", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *msgClient) CreateUserCertificates(ctx context.Context, in *MsgCreateUserCertificates, opts ...grpc.CallOption) (*MsgCreateUserCertificatesResponse, error) {
@@ -383,18 +514,9 @@ func (c *msgClient) CreateUserCertificates(ctx context.Context, in *MsgCreateUse
 	return out, nil
 }
 
-func (c *msgClient) UpdateUserCertificates(ctx context.Context, in *MsgUpdateUserCertificates, opts ...grpc.CallOption) (*MsgUpdateUserCertificatesResponse, error) {
-	out := new(MsgUpdateUserCertificatesResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfetokenization.Msg/UpdateUserCertificates", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) DeleteUserCertificates(ctx context.Context, in *MsgDeleteUserCertificates, opts ...grpc.CallOption) (*MsgDeleteUserCertificatesResponse, error) {
-	out := new(MsgDeleteUserCertificatesResponse)
-	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfetokenization.Msg/DeleteUserCertificates", in, out, opts...)
+func (c *msgClient) AddMeasurement(ctx context.Context, in *MsgAddMeasurement, opts ...grpc.CallOption) (*MsgAddMeasurementResponse, error) {
+	out := new(MsgAddMeasurementResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfetokenization.Msg/AddMeasurement", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -403,30 +525,67 @@ func (c *msgClient) DeleteUserCertificates(ctx context.Context, in *MsgDeleteUse
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// rpc CreateUserDevices (MsgCreateUserDevices) returns (MsgCreateUserDevicesResponse);
-	// rpc UpdateUserDevices (MsgUpdateUserDevices) returns (MsgUpdateUserDevicesResponse);
-	// rpc DeleteUserDevices (MsgDeleteUserDevices) returns (MsgDeleteUserDevicesResponse);
+	AssignDeviceToUser(context.Context, *MsgAssignDeviceToUser) (*MsgAssignDeviceToUserResponse, error)
+	AcceptDevice(context.Context, *MsgAcceptDevice) (*MsgAcceptDeviceResponse, error)
 	CreateUserCertificates(context.Context, *MsgCreateUserCertificates) (*MsgCreateUserCertificatesResponse, error)
-	UpdateUserCertificates(context.Context, *MsgUpdateUserCertificates) (*MsgUpdateUserCertificatesResponse, error)
-	DeleteUserCertificates(context.Context, *MsgDeleteUserCertificates) (*MsgDeleteUserCertificatesResponse, error)
+	AddMeasurement(context.Context, *MsgAddMeasurement) (*MsgAddMeasurementResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
+func (*UnimplementedMsgServer) AssignDeviceToUser(ctx context.Context, req *MsgAssignDeviceToUser) (*MsgAssignDeviceToUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AssignDeviceToUser not implemented")
+}
+func (*UnimplementedMsgServer) AcceptDevice(ctx context.Context, req *MsgAcceptDevice) (*MsgAcceptDeviceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AcceptDevice not implemented")
+}
 func (*UnimplementedMsgServer) CreateUserCertificates(ctx context.Context, req *MsgCreateUserCertificates) (*MsgCreateUserCertificatesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUserCertificates not implemented")
 }
-func (*UnimplementedMsgServer) UpdateUserCertificates(ctx context.Context, req *MsgUpdateUserCertificates) (*MsgUpdateUserCertificatesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserCertificates not implemented")
-}
-func (*UnimplementedMsgServer) DeleteUserCertificates(ctx context.Context, req *MsgDeleteUserCertificates) (*MsgDeleteUserCertificatesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteUserCertificates not implemented")
+func (*UnimplementedMsgServer) AddMeasurement(ctx context.Context, req *MsgAddMeasurement) (*MsgAddMeasurementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddMeasurement not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
+}
+
+func _Msg_AssignDeviceToUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAssignDeviceToUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AssignDeviceToUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfetokenization.Msg/AssignDeviceToUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AssignDeviceToUser(ctx, req.(*MsgAssignDeviceToUser))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_AcceptDevice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAcceptDevice)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AcceptDevice(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfetokenization.Msg/AcceptDevice",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AcceptDevice(ctx, req.(*MsgAcceptDevice))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_CreateUserCertificates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -447,38 +606,20 @@ func _Msg_CreateUserCertificates_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateUserCertificates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateUserCertificates)
+func _Msg_AddMeasurement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAddMeasurement)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateUserCertificates(ctx, in)
+		return srv.(MsgServer).AddMeasurement(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfetokenization.Msg/UpdateUserCertificates",
+		FullMethod: "/chain4energy.c4echain.cfetokenization.Msg/AddMeasurement",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateUserCertificates(ctx, req.(*MsgUpdateUserCertificates))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_DeleteUserCertificates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgDeleteUserCertificates)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).DeleteUserCertificates(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/chain4energy.c4echain.cfetokenization.Msg/DeleteUserCertificates",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).DeleteUserCertificates(ctx, req.(*MsgDeleteUserCertificates))
+		return srv.(MsgServer).AddMeasurement(ctx, req.(*MsgAddMeasurement))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -488,20 +629,151 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "AssignDeviceToUser",
+			Handler:    _Msg_AssignDeviceToUser_Handler,
+		},
+		{
+			MethodName: "AcceptDevice",
+			Handler:    _Msg_AcceptDevice_Handler,
+		},
+		{
 			MethodName: "CreateUserCertificates",
 			Handler:    _Msg_CreateUserCertificates_Handler,
 		},
 		{
-			MethodName: "UpdateUserCertificates",
-			Handler:    _Msg_UpdateUserCertificates_Handler,
-		},
-		{
-			MethodName: "DeleteUserCertificates",
-			Handler:    _Msg_DeleteUserCertificates_Handler,
+			MethodName: "AddMeasurement",
+			Handler:    _Msg_AddMeasurement_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "c4echain/cfetokenization/tx.proto",
+}
+
+func (m *MsgAssignDeviceToUser) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgAssignDeviceToUser) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgAssignDeviceToUser) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.UserAddress) > 0 {
+		i -= len(m.UserAddress)
+		copy(dAtA[i:], m.UserAddress)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.UserAddress)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.DeviceAddress) > 0 {
+		i -= len(m.DeviceAddress)
+		copy(dAtA[i:], m.DeviceAddress)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.DeviceAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgAssignDeviceToUserResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgAssignDeviceToUserResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgAssignDeviceToUserResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgAcceptDevice) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgAcceptDevice) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgAcceptDevice) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.DeviceName) > 0 {
+		i -= len(m.DeviceName)
+		copy(dAtA[i:], m.DeviceName)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.DeviceName)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.DeviceAddress) > 0 {
+		i -= len(m.DeviceAddress)
+		copy(dAtA[i:], m.DeviceAddress)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.DeviceAddress)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.UserAddress) > 0 {
+		i -= len(m.UserAddress)
+		copy(dAtA[i:], m.UserAddress)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.UserAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgAcceptDeviceResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgAcceptDeviceResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgAcceptDeviceResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
 }
 
 func (m *MsgCreateUserCertificates) Marshal() (dAtA []byte, err error) {
@@ -574,7 +846,7 @@ func (m *MsgCreateUserCertificatesResponse) MarshalToSizedBuffer(dAtA []byte) (i
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateUserCertificates) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddMeasurement) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -584,102 +856,42 @@ func (m *MsgUpdateUserCertificates) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateUserCertificates) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddMeasurement) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateUserCertificates) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddMeasurement) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Certificates != nil {
-		{
-			size, err := m.Certificates.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintTx(dAtA, i, uint64(size))
+	if m.Timestamp != nil {
+		n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.Timestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.Timestamp):])
+		if err2 != nil {
+			return 0, err2
 		}
+		i -= n2
+		i = encodeVarintTx(dAtA, i, uint64(n2))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x4a
 	}
-	if m.Id != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Id))
+	if m.Value != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Value))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x18
 	}
-	if len(m.Owner) > 0 {
-		i -= len(m.Owner)
-		copy(dAtA[i:], m.Owner)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Owner)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgUpdateUserCertificatesResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgUpdateUserCertificatesResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgUpdateUserCertificatesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgDeleteUserCertificates) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgDeleteUserCertificates) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgDeleteUserCertificates) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Id != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Id))
-		i--
-		dAtA[i] = 0x10
-	}
-	if len(m.Owner) > 0 {
-		i -= len(m.Owner)
-		copy(dAtA[i:], m.Owner)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Owner)))
+	if len(m.DeviceAddress) > 0 {
+		i -= len(m.DeviceAddress)
+		copy(dAtA[i:], m.DeviceAddress)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.DeviceAddress)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgDeleteUserCertificatesResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddMeasurementResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -689,12 +901,12 @@ func (m *MsgDeleteUserCertificatesResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgDeleteUserCertificatesResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddMeasurementResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgDeleteUserCertificatesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddMeasurementResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -713,6 +925,62 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *MsgAssignDeviceToUser) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.DeviceAddress)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.UserAddress)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgAssignDeviceToUserResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgAcceptDevice) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.UserAddress)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.DeviceAddress)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.DeviceName)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgAcceptDeviceResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
 func (m *MsgCreateUserCertificates) Size() (n int) {
 	if m == nil {
 		return 0
@@ -742,52 +1010,27 @@ func (m *MsgCreateUserCertificatesResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateUserCertificates) Size() (n int) {
+func (m *MsgAddMeasurement) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Owner)
+	l = len(m.DeviceAddress)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.Id != 0 {
-		n += 1 + sovTx(uint64(m.Id))
+	if m.Value != 0 {
+		n += 1 + sovTx(uint64(m.Value))
 	}
-	if m.Certificates != nil {
-		l = m.Certificates.Size()
+	if m.Timestamp != nil {
+		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.Timestamp)
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
 
-func (m *MsgUpdateUserCertificatesResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgDeleteUserCertificates) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Owner)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	if m.Id != 0 {
-		n += 1 + sovTx(uint64(m.Id))
-	}
-	return n
-}
-
-func (m *MsgDeleteUserCertificatesResponse) Size() (n int) {
+func (m *MsgAddMeasurementResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -801,6 +1044,366 @@ func sovTx(x uint64) (n int) {
 }
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *MsgAssignDeviceToUser) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgAssignDeviceToUser: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgAssignDeviceToUser: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DeviceAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DeviceAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UserAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UserAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgAssignDeviceToUserResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgAssignDeviceToUserResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgAssignDeviceToUserResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgAcceptDevice) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgAcceptDevice: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgAcceptDevice: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UserAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UserAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DeviceAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DeviceAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DeviceName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DeviceName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgAcceptDeviceResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgAcceptDeviceResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgAcceptDeviceResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *MsgCreateUserCertificates) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -989,7 +1592,7 @@ func (m *MsgCreateUserCertificatesResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateUserCertificates) Unmarshal(dAtA []byte) error {
+func (m *MsgAddMeasurement) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1012,15 +1615,15 @@ func (m *MsgUpdateUserCertificates) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateUserCertificates: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddMeasurement: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateUserCertificates: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddMeasurement: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DeviceAddress", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1048,13 +1651,13 @@ func (m *MsgUpdateUserCertificates) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Owner = string(dAtA[iNdEx:postIndex])
+			m.DeviceAddress = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 2:
+		case 3:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Value", wireType)
 			}
-			m.Id = 0
+			m.Value = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -1064,14 +1667,14 @@ func (m *MsgUpdateUserCertificates) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				m.Value |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 3:
+		case 9:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Certificates", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1098,10 +1701,10 @@ func (m *MsgUpdateUserCertificates) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Certificates == nil {
-				m.Certificates = &Certificate{}
+			if m.Timestamp == nil {
+				m.Timestamp = new(time.Time)
 			}
-			if err := m.Certificates.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.Timestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1126,7 +1729,7 @@ func (m *MsgUpdateUserCertificates) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateUserCertificatesResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgAddMeasurementResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1149,161 +1752,10 @@ func (m *MsgUpdateUserCertificatesResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateUserCertificatesResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddMeasurementResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateUserCertificatesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgDeleteUserCertificates) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDeleteUserCertificates: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDeleteUserCertificates: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Owner = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			m.Id = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgDeleteUserCertificatesResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgDeleteUserCertificatesResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgDeleteUserCertificatesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddMeasurementResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

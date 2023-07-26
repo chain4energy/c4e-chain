@@ -2,8 +2,6 @@ package cli
 
 import (
 	"context"
-	"strconv"
-
 	"github.com/chain4energy/c4e-chain/x/cfetokenization/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -45,7 +43,7 @@ func CmdListUserCertificates() *cobra.Command {
 
 func CmdShowUserCertificates() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-user-certificates [id]",
+		Use:   "show-user-certificates [owner]",
 		Short: "shows a UserCertificates",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -53,13 +51,8 @@ func CmdShowUserCertificates() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
 			params := &types.QueryGetUserCertificatesRequest{
-				Id: id,
+				Owner: args[0],
 			}
 
 			res, err := queryClient.UserCertificates(context.Background(), params)

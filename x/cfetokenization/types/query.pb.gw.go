@@ -152,15 +152,15 @@ func request_Query_UserDevices_0(ctx context.Context, marshaler runtime.Marshale
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["owner"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Owner, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
 	msg, err := client.UserDevices(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -179,15 +179,15 @@ func local_request_Query_UserDevices_0(ctx context.Context, marshaler runtime.Ma
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["owner"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Owner, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
 	msg, err := server.UserDevices(ctx, &protoReq)
@@ -242,15 +242,15 @@ func request_Query_UserCertificates_0(ctx context.Context, marshaler runtime.Mar
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["owner"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Owner, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
 	msg, err := client.UserCertificates(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -269,15 +269,15 @@ func local_request_Query_UserCertificates_0(ctx context.Context, marshaler runti
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["owner"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "owner")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Owner, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "owner", err)
 	}
 
 	msg, err := server.UserCertificates(ctx, &protoReq)
@@ -679,11 +679,11 @@ var (
 
 	pattern_Query_CertificateTypeAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"chain4energy", "c4e-chain", "cfetokenization", "certificate_type"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_UserDevices_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"chain4energy", "c4e-chain", "cfetokenization", "user_devices", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_UserDevices_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"chain4energy", "c4e-chain", "cfetokenization", "user_devices", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_UserDevicesAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"chain4energy", "c4e-chain", "cfetokenization", "user_devices"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_UserCertificates_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"chain4energy", "c4e-chain", "cfetokenization", "user_certificates", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_UserCertificates_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"chain4energy", "c4e-chain", "cfetokenization", "user_certificates", "owner"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_UserCertificatesAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"chain4energy", "c4e-chain", "cfetokenization", "user_certificates"}, "", runtime.AssumeColonVerbOpt(true)))
 )

@@ -34,29 +34,9 @@ func (gs GenesisState) Validate() error {
 		certificateTypeIdMap[elem.Id] = true
 	}
 	// Check for duplicated ID in userDevices
-	userDevicesIdMap := make(map[uint64]bool)
-	userDevicesCount := gs.GetUserDevicesCount()
-	for _, elem := range gs.UserDevicesList {
-		if _, ok := userDevicesIdMap[elem.Id]; ok {
-			return fmt.Errorf("duplicated id for userDevices")
-		}
-		if elem.Id >= userDevicesCount {
-			return fmt.Errorf("userDevices id should be lower or equal than the last id")
-		}
-		userDevicesIdMap[elem.Id] = true
-	}
+	// TODO: add validation
 	// Check for duplicated ID in userCertificates
-	userCertificatesIdMap := make(map[uint64]bool)
-	userCertificatesCount := gs.GetUserCertificatesCount()
-	for _, elem := range gs.UserCertificatesList {
-		if _, ok := userCertificatesIdMap[elem.Id]; ok {
-			return fmt.Errorf("duplicated id for userCertificates")
-		}
-		if elem.Id >= userCertificatesCount {
-			return fmt.Errorf("userCertificates id should be lower or equal than the last id")
-		}
-		userCertificatesIdMap[elem.Id] = true
-	}
+	// TODO: add validation
 	// this line is used by starport scaffolding # genesis/types/validate
 
 	return gs.Params.Validate()

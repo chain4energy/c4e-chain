@@ -27,17 +27,17 @@ func TestUserCertificatesQuerySingle(t *testing.T) {
 	}{
 		{
 			desc:     "First",
-			request:  &types.QueryGetUserCertificatesRequest{Id: msgs[0].Id},
+			request:  &types.QueryGetUserCertificatesRequest{Owner: msgs[0].Owner},
 			response: &types.QueryGetUserCertificatesResponse{UserCertificates: msgs[0]},
 		},
 		{
 			desc:     "Second",
-			request:  &types.QueryGetUserCertificatesRequest{Id: msgs[1].Id},
+			request:  &types.QueryGetUserCertificatesRequest{Owner: msgs[1].Owner},
 			response: &types.QueryGetUserCertificatesResponse{UserCertificates: msgs[1]},
 		},
 		{
 			desc:    "KeyNotFound",
-			request: &types.QueryGetUserCertificatesRequest{Id: uint64(len(msgs))},
+			request: &types.QueryGetUserCertificatesRequest{Owner: "abcd"},
 			err:     sdkerrors.ErrKeyNotFound,
 		},
 		{

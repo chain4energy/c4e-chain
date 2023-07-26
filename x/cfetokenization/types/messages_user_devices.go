@@ -1,127 +1,152 @@
 package types
 
-//
-//import (
-//	sdk "github.com/cosmos/cosmos-sdk/types"
-//	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-//)
-//
-//const (
-//	TypeMsgCreateUserDevices = "create_user_devices"
-//	TypeMsgUpdateUserDevices = "update_user_devices"
-//	TypeMsgDeleteUserDevices = "delete_user_devices"
-//)
-//
-//var _ sdk.Msg = &MsgCreateUserDevices{}
-//
-//func NewMsgCreateUserDevices(owner string, devices *Device) *MsgCreateUserDevices {
-//  return &MsgCreateUserDevices{
-//		Owner: owner,
-//    Devices: devices,
-//	}
-//}
-//
-//func (msg *MsgCreateUserDevices) Route() string {
-//  return RouterKey
-//}
-//
-//func (msg *MsgCreateUserDevices) Type() string {
-//  return TypeMsgCreateUserDevices
-//}
-//
-//func (msg *MsgCreateUserDevices) GetSigners() []sdk.AccAddress {
-//  owner, err := sdk.AccAddressFromBech32(msg.Owner)
-//  if err != nil {
-//    panic(err)
-//  }
-//  return []sdk.AccAddress{owner}
-//}
-//
-//func (msg *MsgCreateUserDevices) GetSignBytes() []byte {
-//  bz := ModuleCdc.MustMarshalJSON(msg)
-//  return sdk.MustSortJSON(bz)
-//}
-//
-//func (msg *MsgCreateUserDevices) ValidateBasic() error {
-//  _, err := sdk.AccAddressFromBech32(msg.Owner)
-//  	if err != nil {
-//  		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
-//  	}
-//  return nil
-//}
-//
-//var _ sdk.Msg = &MsgUpdateUserDevices{}
-//
-//func NewMsgUpdateUserDevices(owner string, id uint64, devices *Device) *MsgUpdateUserDevices {
-//  return &MsgUpdateUserDevices{
-//        Id: id,
-//		Owner: owner,
-//    Devices: devices,
-//	}
-//}
-//
-//func (msg *MsgUpdateUserDevices) Route() string {
-//  return RouterKey
-//}
-//
-//func (msg *MsgUpdateUserDevices) Type() string {
-//  return TypeMsgUpdateUserDevices
-//}
-//
-//func (msg *MsgUpdateUserDevices) GetSigners() []sdk.AccAddress {
-//  owner, err := sdk.AccAddressFromBech32(msg.Owner)
-//  if err != nil {
-//    panic(err)
-//  }
-//  return []sdk.AccAddress{owner}
-//}
-//
-//func (msg *MsgUpdateUserDevices) GetSignBytes() []byte {
-//  bz := ModuleCdc.MustMarshalJSON(msg)
-//  return sdk.MustSortJSON(bz)
-//}
-//
-//func (msg *MsgUpdateUserDevices) ValidateBasic() error {
-//  _, err := sdk.AccAddressFromBech32(msg.Owner)
-//  if err != nil {
-//    return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
-//  }
-//   return nil
-//}
-//
-//var _ sdk.Msg = &MsgDeleteUserDevices{}
-//
-//func NewMsgDeleteUserDevices(owner string, id uint64) *MsgDeleteUserDevices {
-//  return &MsgDeleteUserDevices{
-//        Id: id,
-//		Owner: owner,
-//	}
-//}
-//func (msg *MsgDeleteUserDevices) Route() string {
-//  return RouterKey
-//}
-//
-//func (msg *MsgDeleteUserDevices) Type() string {
-//  return TypeMsgDeleteUserDevices
-//}
-//
-//func (msg *MsgDeleteUserDevices) GetSigners() []sdk.AccAddress {
-//  owner, err := sdk.AccAddressFromBech32(msg.Owner)
-//  if err != nil {
-//    panic(err)
-//  }
-//  return []sdk.AccAddress{owner}
-//}
-//
-//func (msg *MsgDeleteUserDevices) GetSignBytes() []byte {
-//  bz := ModuleCdc.MustMarshalJSON(msg)
-//  return sdk.MustSortJSON(bz)
-//}
-//
-//func (msg *MsgDeleteUserDevices) ValidateBasic() error {
-//  _, err := sdk.AccAddressFromBech32(msg.Owner)
-//  if err != nil {
-//    return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
-//  }
-//  return nil
-//}
+import (
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"time"
+)
+
+const (
+	TypeMsgAssingDeviceToUser = "assing_device_to_user"
+	TypeMsgAcceptDevice       = "accept_device"
+)
+
+var _ sdk.Msg = &MsgAssignDeviceToUser{}
+
+func NewMsgAssignDeviceToUser(deviceAddress, userAddress string) *MsgAssignDeviceToUser {
+	return &MsgAssignDeviceToUser{
+		UserAddress:   userAddress,
+		DeviceAddress: deviceAddress,
+	}
+}
+
+func (msg *MsgAssignDeviceToUser) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgAssignDeviceToUser) Type() string {
+	return TypeMsgAssingDeviceToUser
+}
+
+func (msg *MsgAssignDeviceToUser) GetSigners() []sdk.AccAddress {
+	owner, err := sdk.AccAddressFromBech32(msg.DeviceAddress)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{owner}
+}
+
+func (msg *MsgAssignDeviceToUser) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgAssignDeviceToUser) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.DeviceAddress)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid device address (%s)", err)
+	}
+
+	_, err = sdk.AccAddressFromBech32(msg.UserAddress)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid user address (%s)", err)
+	}
+	return nil
+}
+
+var _ sdk.Msg = &MsgAcceptDevice{}
+
+func NewMsgAcceptDevice(userAddress string, deviceAddress string, deviceName string) *MsgAcceptDevice {
+	return &MsgAcceptDevice{
+		UserAddress:   userAddress,
+		DeviceAddress: deviceAddress,
+		DeviceName:    deviceName,
+	}
+}
+
+func (msg *MsgAcceptDevice) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgAcceptDevice) Type() string {
+	return TypeMsgAcceptDevice
+}
+
+func (msg *MsgAcceptDevice) GetSigners() []sdk.AccAddress {
+	owner, err := sdk.AccAddressFromBech32(msg.UserAddress)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{owner}
+}
+
+func (msg *MsgAcceptDevice) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgAcceptDevice) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.UserAddress)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid user address (%s)", err)
+	}
+
+	_, err = sdk.AccAddressFromBech32(msg.DeviceAddress)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid device address (%s)", err)
+	}
+
+	if msg.DeviceName == "" {
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "empty device name")
+	}
+	return nil
+}
+
+var _ sdk.Msg = &MsgAddMeasurement{}
+
+func NewMsgAddMeasurement(deviceAddress string, timestamp *time.Time, value uint64) *MsgAddMeasurement {
+	return &MsgAddMeasurement{
+		DeviceAddress: deviceAddress,
+		Timestamp:     timestamp,
+		Value:         value,
+	}
+}
+
+func (msg *MsgAddMeasurement) Route() string {
+	return RouterKey
+}
+
+func (msg *MsgAddMeasurement) Type() string {
+	return TypeMsgAcceptDevice
+}
+
+func (msg *MsgAddMeasurement) GetSigners() []sdk.AccAddress {
+	owner, err := sdk.AccAddressFromBech32(msg.DeviceAddress)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{owner}
+}
+
+func (msg *MsgAddMeasurement) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func (msg *MsgAddMeasurement) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.DeviceAddress)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid user address (%s)", err)
+	}
+
+	_, err = sdk.AccAddressFromBech32(msg.DeviceAddress)
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid device address (%s)", err)
+	}
+
+	if msg.Timestamp == nil {
+		return sdkerrors.Wrapf(c4eerrors.ErrParam, "empty timestamp")
+	}
+	return nil
+}
