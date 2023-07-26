@@ -24,6 +24,8 @@ message PendingDevice {
 message Device {
   string device_address = 1;
   repeated Measurement measurements = 2;
+  uint64 power_sum = 3;
+  uint64 used_power = 4;
 }
 
 message Measurement {
@@ -31,5 +33,5 @@ message Measurement {
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-  uint64 value = 2;
+  uint64 power = 2;
 }

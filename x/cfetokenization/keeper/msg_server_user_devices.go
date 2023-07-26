@@ -62,8 +62,9 @@ func (k msgServer) AddMeasurement(goCtx context.Context, msg *types.MsgAddMeasur
 	}
 	device.Measurements = append(device.Measurements, &types.Measurement{
 		Timestamp: *msg.Timestamp,
-		Value:     msg.Value,
+		Power:     msg.Power,
 	})
+	device.PowerSum += msg.Power
 
 	k.SetDevice(ctx, device)
 

@@ -13,7 +13,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfetokenization/types";
 service Msg {
   rpc AssignDeviceToUser (MsgAssignDeviceToUser) returns (MsgAssignDeviceToUserResponse);
   rpc AcceptDevice (MsgAcceptDevice) returns (MsgAcceptDeviceResponse);
-  rpc CreateUserCertificates (MsgCreateUserCertificates) returns (MsgCreateUserCertificatesResponse);
+  rpc CreateUserCertificate (MsgCreateUserCertificates) returns (MsgCreateUserCertificatesResponse);
   rpc AddMeasurement (MsgAddMeasurement) returns (MsgAddMeasurementResponse);
 }
 
@@ -33,21 +33,47 @@ message MsgAcceptDevice {
 message MsgAcceptDeviceResponse {}
 
 message MsgCreateUserCertificates {
-  string      owner        = 1;
-  Certificate certificates = 2;
+  string owner = 1;
+  string device_address = 2;
+  string power = 3;
+  repeated string allowed_authorities = 4;
+  uint64 certyficate_type_id = 5;
 }
 
-message MsgCreateUserCertificatesResponse {
-  uint64 id = 1;
-}
+message MsgCreateUserCertificatesResponse {}
 
 message MsgAddMeasurement {
   string device_address = 1;
-  google.protobuf.Timestamp timestamp = 9 [
+  google.protobuf.Timestamp timestamp = 2 [
     (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
-  uint64 value = 3;
+  uint64 power = 3;
 }
 
 message MsgAddMeasurementResponse {}
+
+message MsgAddCertificateToMarketplace {
+  string owner = 1;
+  string certificate_id = 2;
+  repeated cosmos.base.v1beta1.Coin price = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message MsgAddCertificateToMarketplaceResponse {}
+
+message MsgBuyCertificate {
+  string buyer = 1;
+  string certificate_id = 2;
+}
+
+message MsgBuyCertificateResponse {}
+
+message MsgBurnCertificate {
+  string owner = 1;
+  string certificate_id = 2;
+}
+
+message MsgBurnCertificateResponse {}

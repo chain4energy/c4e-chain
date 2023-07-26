@@ -10,11 +10,17 @@ message UserCertificates {
 
 message Certificate {
   uint64 id = 1;
-  string certyficate_type_id = 2;
-  string name = 3;
-  uint64 amount = 4;
-  string device_id = 5;
-  repeated string allowed_authorities = 6;
-  string authority = 7;
-  bool valid = 8;
+  uint64 certyficate_type_id = 2;
+  uint64 power = 3;
+  string device_address = 4;
+  repeated string allowed_authorities = 5;
+  string authority = 6;
+  CertificateStatus certificate_status = 7;
+}
+
+enum CertificateStatus {
+  UNKNOWN_CERTIFICATE_STATUS = 0;
+  VALID = 1;
+  INVALID = 2;
+  BURNED = 3;
 }
