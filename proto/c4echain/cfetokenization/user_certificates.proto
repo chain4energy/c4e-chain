@@ -5,7 +5,7 @@ option go_package = "github.com/chain4energy/c4e-chain/x/cfetokenization/types";
 
 message UserCertificates {
   string owner = 1;
-  Certificate certificates = 2;
+  repeated Certificate certificates = 2;
 }
 
 message Certificate {

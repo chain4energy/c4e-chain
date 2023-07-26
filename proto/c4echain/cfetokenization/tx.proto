@@ -6,6 +6,7 @@ import "c4echain/cfetokenization/user_devices.proto";
 import "c4echain/cfetokenization/user_certificates.proto";
 import "google/protobuf/timestamp.proto";
 import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfetokenization/types";
 
@@ -35,7 +36,7 @@ message MsgAcceptDeviceResponse {}
 message MsgCreateUserCertificates {
   string owner = 1;
   string device_address = 2;
-  string power = 3;
+  uint64 power = 3;
   repeated string allowed_authorities = 4;
   uint64 certyficate_type_id = 5;
 }

@@ -2,33 +2,45 @@ package keeper
 
 import (
 	"context"
-	"fmt"
-
 	"github.com/chain4energy/c4e-chain/x/cfetokenization/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k msgServer) CreateUserCertificates(goCtx context.Context, msg *types.MsgCreateUserCertificates) (*types.MsgCreateUserCertificatesResponse, error) {
+func (k msgServer) CreateUserCertificate(goCtx context.Context, msg *types.MsgCreateUserCertificates) (*types.MsgCreateUserCertificatesResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	var userCertificates = types.UserCertificates{
-		Owner:        msg.Owner,
-		Certificates: msg.Certificates,
-	}
-
-	// Checks that the element exists
-	val, found := k.GetUserCertificates(ctx, msg.Owner)
+	userCertificates, found := k.GetUserCertificates(ctx, msg.Owner)
 	if !found {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("key %d doesn't exist", msg.Owner))
+		userCertificates = types.UserCertificates{
+			Owner: msg.Owner,
+		}
+	}
+	_, found = k.GetDevice(ctx, msg.Owner)
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "user not found")
+	}
+	device, found := k.GetDevice(ctx, msg.Owner)
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "device not found")
+	}
+	if device.PowerSum-device.UsedPower < msg.Power {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not enough power")
 	}
 
-	// Checks if the msg owner is the same as the current owner
-	if msg.Owner != val.Owner {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
-	}
+	device.UsedPower += msg.Power
+	userCertificates.Certificates = append(userCertificates.Certificates, &types.Certificate{
+		Id:                 uint64(len(userCertificates.Certificates)),
+		CertyficateTypeId:  msg.CertyficateTypeId,
+		Power:              msg.Power,
+		DeviceAddress:      msg.DeviceAddress,
+		AllowedAuthorities: msg.AllowedAuthorities,
+		Authority:          "",
+		CertificateStatus:  types.CertificateStatus_INVALID,
+	})
 
 	k.SetUserCertificates(ctx, userCertificates)
+	k.SetDevice(ctx, device)
 
 	return &types.MsgCreateUserCertificatesResponse{}, nil
 }

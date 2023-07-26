@@ -22,9 +22,40 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type CertificateStatus int32
+
+const (
+	CertificateStatus_UNKNOWN_CERTIFICATE_STATUS CertificateStatus = 0
+	CertificateStatus_VALID                      CertificateStatus = 1
+	CertificateStatus_INVALID                    CertificateStatus = 2
+	CertificateStatus_BURNED                     CertificateStatus = 3
+)
+
+var CertificateStatus_name = map[int32]string{
+	0: "UNKNOWN_CERTIFICATE_STATUS",
+	1: "VALID",
+	2: "INVALID",
+	3: "BURNED",
+}
+
+var CertificateStatus_value = map[string]int32{
+	"UNKNOWN_CERTIFICATE_STATUS": 0,
+	"VALID":                      1,
+	"INVALID":                    2,
+	"BURNED":                     3,
+}
+
+func (x CertificateStatus) String() string {
+	return proto.EnumName(CertificateStatus_name, int32(x))
+}
+
+func (CertificateStatus) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_a17fd18775f25ee5, []int{0}
+}
+
 type UserCertificates struct {
-	Owner        string       `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	Certificates *Certificate `protobuf:"bytes,2,opt,name=certificates,proto3" json:"certificates,omitempty"`
+	Owner        string         `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	Certificates []*Certificate `protobuf:"bytes,2,rep,name=certificates,proto3" json:"certificates,omitempty"`
 }
 
 func (m *UserCertificates) Reset()         { *m = UserCertificates{} }
@@ -67,7 +98,7 @@ func (m *UserCertificates) GetOwner() string {
 	return ""
 }
 
-func (m *UserCertificates) GetCertificates() *Certificate {
+func (m *UserCertificates) GetCertificates() []*Certificate {
 	if m != nil {
 		return m.Certificates
 	}
@@ -75,14 +106,13 @@ func (m *UserCertificates) GetCertificates() *Certificate {
 }
 
 type Certificate struct {
-	Id                 uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	CertyficateTypeId  string   `protobuf:"bytes,2,opt,name=certyficate_type_id,json=certyficateTypeId,proto3" json:"certyficate_type_id,omitempty"`
-	Name               string   `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Amount             uint64   `protobuf:"varint,4,opt,name=amount,proto3" json:"amount,omitempty"`
-	DeviceId           string   `protobuf:"bytes,5,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	AllowedAuthorities []string `protobuf:"bytes,6,rep,name=allowed_authorities,json=allowedAuthorities,proto3" json:"allowed_authorities,omitempty"`
-	Authority          string   `protobuf:"bytes,7,opt,name=authority,proto3" json:"authority,omitempty"`
-	Valid              bool     `protobuf:"varint,8,opt,name=valid,proto3" json:"valid,omitempty"`
+	Id                 uint64            `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	CertyficateTypeId  uint64            `protobuf:"varint,2,opt,name=certyficate_type_id,json=certyficateTypeId,proto3" json:"certyficate_type_id,omitempty"`
+	Power              uint64            `protobuf:"varint,3,opt,name=power,proto3" json:"power,omitempty"`
+	DeviceAddress      string            `protobuf:"bytes,4,opt,name=device_address,json=deviceAddress,proto3" json:"device_address,omitempty"`
+	AllowedAuthorities []string          `protobuf:"bytes,5,rep,name=allowed_authorities,json=allowedAuthorities,proto3" json:"allowed_authorities,omitempty"`
+	Authority          string            `protobuf:"bytes,6,opt,name=authority,proto3" json:"authority,omitempty"`
+	CertificateStatus  CertificateStatus `protobuf:"varint,7,opt,name=certificate_status,json=certificateStatus,proto3,enum=chain4energy.c4echain.cfetokenization.CertificateStatus" json:"certificate_status,omitempty"`
 }
 
 func (m *Certificate) Reset()         { *m = Certificate{} }
@@ -125,30 +155,23 @@ func (m *Certificate) GetId() uint64 {
 	return 0
 }
 
-func (m *Certificate) GetCertyficateTypeId() string {
+func (m *Certificate) GetCertyficateTypeId() uint64 {
 	if m != nil {
 		return m.CertyficateTypeId
-	}
-	return ""
-}
-
-func (m *Certificate) GetName() string {
-	if m != nil {
-		return m.Name
-	}
-	return ""
-}
-
-func (m *Certificate) GetAmount() uint64 {
-	if m != nil {
-		return m.Amount
 	}
 	return 0
 }
 
-func (m *Certificate) GetDeviceId() string {
+func (m *Certificate) GetPower() uint64 {
 	if m != nil {
-		return m.DeviceId
+		return m.Power
+	}
+	return 0
+}
+
+func (m *Certificate) GetDeviceAddress() string {
+	if m != nil {
+		return m.DeviceAddress
 	}
 	return ""
 }
@@ -167,14 +190,15 @@ func (m *Certificate) GetAuthority() string {
 	return ""
 }
 
-func (m *Certificate) GetValid() bool {
+func (m *Certificate) GetCertificateStatus() CertificateStatus {
 	if m != nil {
-		return m.Valid
+		return m.CertificateStatus
 	}
-	return false
+	return CertificateStatus_UNKNOWN_CERTIFICATE_STATUS
 }
 
 func init() {
+	proto.RegisterEnum("chain4energy.c4echain.cfetokenization.CertificateStatus", CertificateStatus_name, CertificateStatus_value)
 	proto.RegisterType((*UserCertificates)(nil), "chain4energy.c4echain.cfetokenization.UserCertificates")
 	proto.RegisterType((*Certificate)(nil), "chain4energy.c4echain.cfetokenization.Certificate")
 }
@@ -184,30 +208,35 @@ func init() {
 }
 
 var fileDescriptor_a17fd18775f25ee5 = []byte{
-	// 358 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0xbb, 0x4e, 0xeb, 0x30,
-	0x18, 0xae, 0x7b, 0x3b, 0x8d, 0x7b, 0x74, 0x74, 0x70, 0x11, 0x8a, 0x04, 0x8a, 0xa2, 0x4a, 0x48,
-	0x59, 0x48, 0x50, 0xe9, 0xc2, 0x08, 0x4c, 0x5d, 0xc3, 0x65, 0x60, 0x89, 0x5c, 0xfb, 0x6f, 0x6b,
-	0xd1, 0xc6, 0x95, 0xe3, 0xb4, 0x84, 0x89, 0x47, 0xe0, 0xb1, 0x18, 0x3b, 0x32, 0xa2, 0xf6, 0x31,
-	0x58, 0x50, 0x9d, 0x56, 0x0d, 0xb0, 0xb0, 0xf9, 0xf7, 0x77, 0x93, 0x3e, 0x7d, 0xf8, 0x94, 0x75,
-	0x81, 0x8d, 0xa8, 0x88, 0x03, 0x36, 0x00, 0x2d, 0x1f, 0x20, 0x16, 0x4f, 0x54, 0x0b, 0x19, 0x07,
-	0x69, 0x02, 0x2a, 0x62, 0xa0, 0xb4, 0x18, 0x08, 0x46, 0x35, 0x24, 0xfe, 0x54, 0x49, 0x2d, 0xc9,
-	0xb1, 0xa1, 0x77, 0x21, 0x06, 0x35, 0xcc, 0xfc, 0xad, 0xdc, 0xff, 0x26, 0x6f, 0x3f, 0x23, 0xfc,
-	0xff, 0x36, 0x01, 0x75, 0x55, 0x70, 0x20, 0xfb, 0xb8, 0x26, 0xe7, 0x31, 0x28, 0x1b, 0xb9, 0xc8,
-	0xb3, 0xc2, 0xfc, 0x20, 0x77, 0xf8, 0x6f, 0x31, 0xc7, 0x2e, 0xbb, 0xc8, 0x6b, 0x76, 0x3a, 0xfe,
-	0xaf, 0x82, 0xfc, 0x42, 0x40, 0xf8, 0xc5, 0xa7, 0xfd, 0x81, 0x70, 0xb3, 0x80, 0x92, 0x7f, 0xb8,
-	0x2c, 0xb8, 0x89, 0xae, 0x86, 0x65, 0xc1, 0x89, 0x8f, 0x5b, 0x6b, 0x7e, 0x96, 0xc3, 0x91, 0xce,
-	0xa6, 0x10, 0x09, 0x6e, 0xe2, 0xad, 0x70, 0xaf, 0x00, 0xdd, 0x64, 0x53, 0xe8, 0x71, 0x42, 0x70,
-	0x35, 0xa6, 0x13, 0xb0, 0x2b, 0x86, 0x60, 0xde, 0xe4, 0x00, 0xd7, 0xe9, 0x44, 0xa6, 0xb1, 0xb6,
-	0xab, 0xc6, 0x77, 0x73, 0x91, 0x43, 0x6c, 0x71, 0x98, 0x09, 0x66, 0x1c, 0x6b, 0x46, 0xd0, 0xc8,
-	0x3f, 0x7a, 0x9c, 0x04, 0xb8, 0x45, 0xc7, 0x63, 0x39, 0x07, 0x1e, 0xd1, 0x54, 0x8f, 0xa4, 0x12,
-	0x5a, 0x40, 0x62, 0xd7, 0xdd, 0x8a, 0x67, 0x85, 0x64, 0x03, 0x5d, 0xec, 0x10, 0x72, 0x84, 0xad,
-	0x2d, 0x31, 0xb3, 0xff, 0x18, 0xb7, 0xdd, 0xc7, 0xba, 0xd5, 0x19, 0x1d, 0x0b, 0x6e, 0x37, 0x5c,
-	0xe4, 0x35, 0xc2, 0xfc, 0xb8, 0xbc, 0x7e, 0x5d, 0x3a, 0x68, 0xb1, 0x74, 0xd0, 0xfb, 0xd2, 0x41,
-	0x2f, 0x2b, 0xa7, 0xb4, 0x58, 0x39, 0xa5, 0xb7, 0x95, 0x53, 0xba, 0x3f, 0x1f, 0x0a, 0x3d, 0x4a,
-	0xfb, 0x3e, 0x93, 0x93, 0xa0, 0xd8, 0x71, 0xc0, 0xba, 0x70, 0x92, 0x8f, 0xe1, 0xf1, 0xc7, 0x1c,
-	0xd6, 0xed, 0x24, 0xfd, 0xba, 0xd9, 0xc0, 0xd9, 0x67, 0x00, 0x00, 0x00, 0xff, 0xff, 0xac, 0x19,
-	0x6a, 0x0d, 0x37, 0x02, 0x00, 0x00,
+	// 434 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x52, 0xc1, 0x6e, 0xd3, 0x40,
+	0x14, 0x8c, 0x9d, 0x26, 0x55, 0x5e, 0x20, 0x4a, 0xb7, 0x1c, 0x2c, 0x84, 0xac, 0xa8, 0x52, 0xa5,
+	0x08, 0x09, 0x1b, 0x85, 0x1c, 0xe0, 0xe8, 0xa6, 0x41, 0xb2, 0x40, 0x46, 0x72, 0x9c, 0x56, 0xe2,
+	0x62, 0xb9, 0xde, 0xd7, 0x64, 0x45, 0xf1, 0x46, 0xbb, 0x6b, 0x82, 0x39, 0xf1, 0x09, 0x7c, 0x13,
+	0x27, 0x8e, 0x3d, 0x72, 0x44, 0xc9, 0x8f, 0xa0, 0xec, 0x52, 0xd5, 0xa5, 0x17, 0x38, 0xbe, 0x99,
+	0x79, 0x6f, 0x3c, 0xde, 0x81, 0xe7, 0xf9, 0x18, 0xf3, 0x65, 0xc6, 0x0a, 0x3f, 0xbf, 0x44, 0xc5,
+	0x3f, 0x60, 0xc1, 0xbe, 0x64, 0x8a, 0xf1, 0xc2, 0x2f, 0x25, 0x8a, 0x34, 0x47, 0xa1, 0xd8, 0x25,
+	0xcb, 0x33, 0x85, 0xd2, 0x5b, 0x09, 0xae, 0x38, 0x39, 0xd6, 0xf2, 0x31, 0x16, 0x28, 0x16, 0x95,
+	0x77, 0xb3, 0xee, 0xfd, 0xb5, 0x7e, 0xf4, 0xd5, 0x82, 0xfe, 0x5c, 0xa2, 0x98, 0xd4, 0x2e, 0x90,
+	0x47, 0xd0, 0xe2, 0xeb, 0x02, 0x85, 0x63, 0x0d, 0xac, 0x61, 0x27, 0x36, 0x03, 0x39, 0x83, 0x07,
+	0x75, 0x1f, 0xc7, 0x1e, 0x34, 0x87, 0xdd, 0xd1, 0xc8, 0xfb, 0x27, 0x23, 0xaf, 0x66, 0x10, 0xdf,
+	0xb9, 0x73, 0xf4, 0xdd, 0x86, 0x6e, 0x8d, 0x25, 0x3d, 0xb0, 0x19, 0xd5, 0xd6, 0x7b, 0xb1, 0xcd,
+	0x28, 0xf1, 0xe0, 0x70, 0xa7, 0xaf, 0x0c, 0x9d, 0xaa, 0x6a, 0x85, 0x29, 0xa3, 0x8e, 0xad, 0x05,
+	0x07, 0x35, 0x2a, 0xa9, 0x56, 0x18, 0xd2, 0xdd, 0xd7, 0xaf, 0xf8, 0x1a, 0x85, 0xd3, 0xd4, 0x0a,
+	0x33, 0x90, 0x63, 0xe8, 0x51, 0xfc, 0xc4, 0x72, 0x4c, 0x33, 0x4a, 0x05, 0x4a, 0xe9, 0xec, 0xe9,
+	0x70, 0x0f, 0x0d, 0x1a, 0x18, 0x90, 0xf8, 0x70, 0x98, 0x5d, 0x5d, 0xf1, 0x35, 0xd2, 0x34, 0x2b,
+	0xd5, 0x92, 0x0b, 0xa6, 0x18, 0x4a, 0xa7, 0x35, 0x68, 0x0e, 0x3b, 0x31, 0xf9, 0x43, 0x05, 0xb7,
+	0x0c, 0x79, 0x02, 0x9d, 0x1b, 0x61, 0xe5, 0xb4, 0xf5, 0xc9, 0x5b, 0x80, 0x2c, 0x80, 0xd4, 0xb2,
+	0xa6, 0x52, 0x65, 0xaa, 0x94, 0xce, 0xfe, 0xc0, 0x1a, 0xf6, 0x46, 0x2f, 0xff, 0xff, 0xcf, 0xcd,
+	0xf4, 0xbe, 0x09, 0x7d, 0x07, 0x7a, 0x7a, 0x0e, 0x07, 0xf7, 0x74, 0xc4, 0x85, 0xc7, 0xf3, 0xe8,
+	0x4d, 0xf4, 0xee, 0x3c, 0x4a, 0x27, 0xd3, 0x38, 0x09, 0x5f, 0x87, 0x93, 0x20, 0x99, 0xa6, 0xb3,
+	0x24, 0x48, 0xe6, 0xb3, 0x7e, 0x83, 0x74, 0xa0, 0x75, 0x16, 0xbc, 0x0d, 0x4f, 0xfb, 0x16, 0xe9,
+	0xc2, 0x7e, 0x18, 0x99, 0xc1, 0x26, 0x00, 0xed, 0x93, 0x79, 0x1c, 0x4d, 0x4f, 0xfb, 0xcd, 0x93,
+	0xd9, 0x8f, 0x8d, 0x6b, 0x5d, 0x6f, 0x5c, 0xeb, 0xd7, 0xc6, 0xb5, 0xbe, 0x6d, 0xdd, 0xc6, 0xf5,
+	0xd6, 0x6d, 0xfc, 0xdc, 0xba, 0x8d, 0xf7, 0xaf, 0x16, 0x4c, 0x2d, 0xcb, 0x0b, 0x2f, 0xe7, 0x1f,
+	0xfd, 0x7a, 0x12, 0x3f, 0x1f, 0xe3, 0x33, 0x53, 0xd6, 0xcf, 0xf7, 0xea, 0xba, 0x7b, 0x3d, 0x79,
+	0xd1, 0xd6, 0x1d, 0x7d, 0xf1, 0x3b, 0x00, 0x00, 0xff, 0xff, 0xe5, 0x2b, 0x94, 0x9f, 0xd7, 0x02,
+	0x00, 0x00,
 }
 
 func (m *UserCertificates) Marshal() (dAtA []byte, err error) {
@@ -230,17 +259,19 @@ func (m *UserCertificates) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Certificates != nil {
-		{
-			size, err := m.Certificates.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
+	if len(m.Certificates) > 0 {
+		for iNdEx := len(m.Certificates) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Certificates[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintUserCertificates(dAtA, i, uint64(size))
 			}
-			i -= size
-			i = encodeVarintUserCertificates(dAtA, i, uint64(size))
+			i--
+			dAtA[i] = 0x12
 		}
-		i--
-		dAtA[i] = 0x12
 	}
 	if len(m.Owner) > 0 {
 		i -= len(m.Owner)
@@ -272,22 +303,17 @@ func (m *Certificate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Valid {
+	if m.CertificateStatus != 0 {
+		i = encodeVarintUserCertificates(dAtA, i, uint64(m.CertificateStatus))
 		i--
-		if m.Valid {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
-		i--
-		dAtA[i] = 0x40
+		dAtA[i] = 0x38
 	}
 	if len(m.Authority) > 0 {
 		i -= len(m.Authority)
 		copy(dAtA[i:], m.Authority)
 		i = encodeVarintUserCertificates(dAtA, i, uint64(len(m.Authority)))
 		i--
-		dAtA[i] = 0x3a
+		dAtA[i] = 0x32
 	}
 	if len(m.AllowedAuthorities) > 0 {
 		for iNdEx := len(m.AllowedAuthorities) - 1; iNdEx >= 0; iNdEx-- {
@@ -295,34 +321,25 @@ func (m *Certificate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			copy(dAtA[i:], m.AllowedAuthorities[iNdEx])
 			i = encodeVarintUserCertificates(dAtA, i, uint64(len(m.AllowedAuthorities[iNdEx])))
 			i--
-			dAtA[i] = 0x32
+			dAtA[i] = 0x2a
 		}
 	}
-	if len(m.DeviceId) > 0 {
-		i -= len(m.DeviceId)
-		copy(dAtA[i:], m.DeviceId)
-		i = encodeVarintUserCertificates(dAtA, i, uint64(len(m.DeviceId)))
+	if len(m.DeviceAddress) > 0 {
+		i -= len(m.DeviceAddress)
+		copy(dAtA[i:], m.DeviceAddress)
+		i = encodeVarintUserCertificates(dAtA, i, uint64(len(m.DeviceAddress)))
 		i--
-		dAtA[i] = 0x2a
+		dAtA[i] = 0x22
 	}
-	if m.Amount != 0 {
-		i = encodeVarintUserCertificates(dAtA, i, uint64(m.Amount))
+	if m.Power != 0 {
+		i = encodeVarintUserCertificates(dAtA, i, uint64(m.Power))
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x18
 	}
-	if len(m.Name) > 0 {
-		i -= len(m.Name)
-		copy(dAtA[i:], m.Name)
-		i = encodeVarintUserCertificates(dAtA, i, uint64(len(m.Name)))
+	if m.CertyficateTypeId != 0 {
+		i = encodeVarintUserCertificates(dAtA, i, uint64(m.CertyficateTypeId))
 		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.CertyficateTypeId) > 0 {
-		i -= len(m.CertyficateTypeId)
-		copy(dAtA[i:], m.CertyficateTypeId)
-		i = encodeVarintUserCertificates(dAtA, i, uint64(len(m.CertyficateTypeId)))
-		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
 	if m.Id != 0 {
 		i = encodeVarintUserCertificates(dAtA, i, uint64(m.Id))
@@ -353,9 +370,11 @@ func (m *UserCertificates) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovUserCertificates(uint64(l))
 	}
-	if m.Certificates != nil {
-		l = m.Certificates.Size()
-		n += 1 + l + sovUserCertificates(uint64(l))
+	if len(m.Certificates) > 0 {
+		for _, e := range m.Certificates {
+			l = e.Size()
+			n += 1 + l + sovUserCertificates(uint64(l))
+		}
 	}
 	return n
 }
@@ -369,18 +388,13 @@ func (m *Certificate) Size() (n int) {
 	if m.Id != 0 {
 		n += 1 + sovUserCertificates(uint64(m.Id))
 	}
-	l = len(m.CertyficateTypeId)
-	if l > 0 {
-		n += 1 + l + sovUserCertificates(uint64(l))
+	if m.CertyficateTypeId != 0 {
+		n += 1 + sovUserCertificates(uint64(m.CertyficateTypeId))
 	}
-	l = len(m.Name)
-	if l > 0 {
-		n += 1 + l + sovUserCertificates(uint64(l))
+	if m.Power != 0 {
+		n += 1 + sovUserCertificates(uint64(m.Power))
 	}
-	if m.Amount != 0 {
-		n += 1 + sovUserCertificates(uint64(m.Amount))
-	}
-	l = len(m.DeviceId)
+	l = len(m.DeviceAddress)
 	if l > 0 {
 		n += 1 + l + sovUserCertificates(uint64(l))
 	}
@@ -394,8 +408,8 @@ func (m *Certificate) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovUserCertificates(uint64(l))
 	}
-	if m.Valid {
-		n += 2
+	if m.CertificateStatus != 0 {
+		n += 1 + sovUserCertificates(uint64(m.CertificateStatus))
 	}
 	return n
 }
@@ -496,10 +510,8 @@ func (m *UserCertificates) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Certificates == nil {
-				m.Certificates = &Certificate{}
-			}
-			if err := m.Certificates.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Certificates = append(m.Certificates, &Certificate{})
+			if err := m.Certificates[len(m.Certificates)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -573,10 +585,10 @@ func (m *Certificate) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CertyficateTypeId", wireType)
 			}
-			var stringLen uint64
+			m.CertyficateTypeId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowUserCertificates
@@ -586,61 +598,16 @@ func (m *Certificate) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.CertyficateTypeId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthUserCertificates
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthUserCertificates
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CertyficateTypeId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowUserCertificates
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthUserCertificates
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthUserCertificates
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Name = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Power", wireType)
 			}
-			m.Amount = 0
+			m.Power = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowUserCertificates
@@ -650,14 +617,14 @@ func (m *Certificate) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Amount |= uint64(b&0x7F) << shift
+				m.Power |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 5:
+		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DeviceId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DeviceAddress", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -685,9 +652,9 @@ func (m *Certificate) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DeviceId = string(dAtA[iNdEx:postIndex])
+			m.DeviceAddress = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 6:
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AllowedAuthorities", wireType)
 			}
@@ -719,7 +686,7 @@ func (m *Certificate) Unmarshal(dAtA []byte) error {
 			}
 			m.AllowedAuthorities = append(m.AllowedAuthorities, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
-		case 7:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
 			}
@@ -751,11 +718,11 @@ func (m *Certificate) Unmarshal(dAtA []byte) error {
 			}
 			m.Authority = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 8:
+		case 7:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Valid", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CertificateStatus", wireType)
 			}
-			var v int
+			m.CertificateStatus = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowUserCertificates
@@ -765,12 +732,11 @@ func (m *Certificate) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				v |= int(b&0x7F) << shift
+				m.CertificateStatus |= CertificateStatus(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			m.Valid = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipUserCertificates(dAtA[iNdEx:])

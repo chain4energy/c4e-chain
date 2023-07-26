@@ -2368,28 +2368,35 @@ paths:
                     owner:
                       type: string
                     certificates:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                          format: uint64
-                        certyficate_type_id:
-                          type: string
-                        name:
-                          type: string
-                        amount:
-                          type: string
-                          format: uint64
-                        device_id:
-                          type: string
-                        allowed_authorities:
-                          type: array
-                          items:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
                             type: string
-                        authority:
-                          type: string
-                        valid:
-                          type: boolean
+                            format: uint64
+                          certyficate_type_id:
+                            type: string
+                            format: uint64
+                          power:
+                            type: string
+                            format: uint64
+                          device_address:
+                            type: string
+                          allowed_authorities:
+                            type: array
+                            items:
+                              type: string
+                          authority:
+                            type: string
+                          certificate_status:
+                            type: string
+                            enum:
+                              - UNKNOWN_CERTIFICATE_STATUS
+                              - VALID
+                              - INVALID
+                              - BURNED
+                            default: UNKNOWN_CERTIFICATE_STATUS
               pagination:
                 type: object
                 properties:
@@ -2511,28 +2518,35 @@ paths:
                   owner:
                     type: string
                   certificates:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        format: uint64
-                      certyficate_type_id:
-                        type: string
-                      name:
-                        type: string
-                      amount:
-                        type: string
-                        format: uint64
-                      device_id:
-                        type: string
-                      allowed_authorities:
-                        type: array
-                        items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
                           type: string
-                      authority:
-                        type: string
-                      valid:
-                        type: boolean
+                          format: uint64
+                        certyficate_type_id:
+                          type: string
+                          format: uint64
+                        power:
+                          type: string
+                          format: uint64
+                        device_address:
+                          type: string
+                        allowed_authorities:
+                          type: array
+                          items:
+                            type: string
+                        authority:
+                          type: string
+                        certificate_status:
+                          type: string
+                          enum:
+                            - UNKNOWN_CERTIFICATE_STATUS
+                            - VALID
+                            - INVALID
+                            - BURNED
+                          default: UNKNOWN_CERTIFICATE_STATUS
         default:
           description: An unexpected error response.
           schema:
@@ -50345,12 +50359,11 @@ definitions:
         format: uint64
       certyficate_type_id:
         type: string
-      name:
-        type: string
-      amount:
+        format: uint64
+      power:
         type: string
         format: uint64
-      device_id:
+      device_address:
         type: string
       allowed_authorities:
         type: array
@@ -50358,8 +50371,22 @@ definitions:
           type: string
       authority:
         type: string
-      valid:
-        type: boolean
+      certificate_status:
+        type: string
+        enum:
+          - UNKNOWN_CERTIFICATE_STATUS
+          - VALID
+          - INVALID
+          - BURNED
+        default: UNKNOWN_CERTIFICATE_STATUS
+  chain4energy.c4echain.cfetokenization.CertificateStatus:
+    type: string
+    enum:
+      - UNKNOWN_CERTIFICATE_STATUS
+      - VALID
+      - INVALID
+      - BURNED
+    default: UNKNOWN_CERTIFICATE_STATUS
   chain4energy.c4echain.cfetokenization.CertificateType:
     type: object
     properties:
@@ -50378,10 +50405,6 @@ definitions:
     type: object
   chain4energy.c4echain.cfetokenization.MsgCreateUserCertificatesResponse:
     type: object
-    properties:
-      id:
-        type: string
-        format: uint64
   chain4energy.c4echain.cfetokenization.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -50437,28 +50460,35 @@ definitions:
             owner:
               type: string
             certificates:
-              type: object
-              properties:
-                id:
-                  type: string
-                  format: uint64
-                certyficate_type_id:
-                  type: string
-                name:
-                  type: string
-                amount:
-                  type: string
-                  format: uint64
-                device_id:
-                  type: string
-                allowed_authorities:
-                  type: array
-                  items:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
                     type: string
-                authority:
-                  type: string
-                valid:
-                  type: boolean
+                    format: uint64
+                  certyficate_type_id:
+                    type: string
+                    format: uint64
+                  power:
+                    type: string
+                    format: uint64
+                  device_address:
+                    type: string
+                  allowed_authorities:
+                    type: array
+                    items:
+                      type: string
+                  authority:
+                    type: string
+                  certificate_status:
+                    type: string
+                    enum:
+                      - UNKNOWN_CERTIFICATE_STATUS
+                      - VALID
+                      - INVALID
+                      - BURNED
+                    default: UNKNOWN_CERTIFICATE_STATUS
       pagination:
         type: object
         properties:
@@ -50552,28 +50582,35 @@ definitions:
           owner:
             type: string
           certificates:
-            type: object
-            properties:
-              id:
-                type: string
-                format: uint64
-              certyficate_type_id:
-                type: string
-              name:
-                type: string
-              amount:
-                type: string
-                format: uint64
-              device_id:
-                type: string
-              allowed_authorities:
-                type: array
-                items:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
                   type: string
-              authority:
-                type: string
-              valid:
-                type: boolean
+                  format: uint64
+                certyficate_type_id:
+                  type: string
+                  format: uint64
+                power:
+                  type: string
+                  format: uint64
+                device_address:
+                  type: string
+                allowed_authorities:
+                  type: array
+                  items:
+                    type: string
+                authority:
+                  type: string
+                certificate_status:
+                  type: string
+                  enum:
+                    - UNKNOWN_CERTIFICATE_STATUS
+                    - VALID
+                    - INVALID
+                    - BURNED
+                  default: UNKNOWN_CERTIFICATE_STATUS
   chain4energy.c4echain.cfetokenization.QueryGetUserDevicesResponse:
     type: object
     properties:
@@ -50604,28 +50641,35 @@ definitions:
       owner:
         type: string
       certificates:
-        type: object
-        properties:
-          id:
-            type: string
-            format: uint64
-          certyficate_type_id:
-            type: string
-          name:
-            type: string
-          amount:
-            type: string
-            format: uint64
-          device_id:
-            type: string
-          allowed_authorities:
-            type: array
-            items:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
               type: string
-          authority:
-            type: string
-          valid:
-            type: boolean
+              format: uint64
+            certyficate_type_id:
+              type: string
+              format: uint64
+            power:
+              type: string
+              format: uint64
+            device_address:
+              type: string
+            allowed_authorities:
+              type: array
+              items:
+                type: string
+            authority:
+              type: string
+            certificate_status:
+              type: string
+              enum:
+                - UNKNOWN_CERTIFICATE_STATUS
+                - VALID
+                - INVALID
+                - BURNED
+              default: UNKNOWN_CERTIFICATE_STATUS
   chain4energy.c4echain.cfetokenization.UserDevice:
     type: object
     properties:
