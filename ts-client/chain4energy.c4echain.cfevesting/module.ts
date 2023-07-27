@@ -7,14 +7,14 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
-import { MsgMoveAvailableVesting } from "./types/c4echain/cfevesting/tx";
-import { MsgUpdateDenomParam } from "./types/c4echain/cfevesting/tx";
-import { MsgSendToVestingAccount } from "./types/c4echain/cfevesting/tx";
 import { MsgMoveAvailableVestingByDenoms } from "./types/c4echain/cfevesting/tx";
-import { MsgCreateVestingAccount } from "./types/c4echain/cfevesting/tx";
+import { MsgSendToVestingAccount } from "./types/c4echain/cfevesting/tx";
 import { MsgSplitVesting } from "./types/c4echain/cfevesting/tx";
-import { MsgWithdrawAllAvailable } from "./types/c4echain/cfevesting/tx";
 import { MsgCreateVestingPool } from "./types/c4echain/cfevesting/tx";
+import { MsgCreateVestingAccount } from "./types/c4echain/cfevesting/tx";
+import { MsgMoveAvailableVesting } from "./types/c4echain/cfevesting/tx";
+import { MsgWithdrawAllAvailable } from "./types/c4echain/cfevesting/tx";
+import { MsgUpdateDenomParam } from "./types/c4echain/cfevesting/tx";
 
 import { AccountVestingPools as typeAccountVestingPools} from "./types"
 import { VestingPool as typeVestingPool} from "./types"
@@ -33,16 +33,10 @@ import { PeriodicContinuousVestingAccount as typePeriodicContinuousVestingAccoun
 import { VestingTypes as typeVestingTypes} from "./types"
 import { VestingType as typeVestingType} from "./types"
 
-export { MsgMoveAvailableVesting, MsgUpdateDenomParam, MsgSendToVestingAccount, MsgMoveAvailableVestingByDenoms, MsgCreateVestingAccount, MsgSplitVesting, MsgWithdrawAllAvailable, MsgCreateVestingPool };
+export { MsgMoveAvailableVestingByDenoms, MsgSendToVestingAccount, MsgSplitVesting, MsgCreateVestingPool, MsgCreateVestingAccount, MsgMoveAvailableVesting, MsgWithdrawAllAvailable, MsgUpdateDenomParam };
 
-type sendMsgMoveAvailableVestingParams = {
-  value: MsgMoveAvailableVesting,
-  fee?: StdFee,
-  memo?: string
-};
-
-type sendMsgUpdateDenomParamParams = {
-  value: MsgUpdateDenomParam,
+type sendMsgMoveAvailableVestingByDenomsParams = {
+  value: MsgMoveAvailableVestingByDenoms,
   fee?: StdFee,
   memo?: string
 };
@@ -53,26 +47,8 @@ type sendMsgSendToVestingAccountParams = {
   memo?: string
 };
 
-type sendMsgMoveAvailableVestingByDenomsParams = {
-  value: MsgMoveAvailableVestingByDenoms,
-  fee?: StdFee,
-  memo?: string
-};
-
-type sendMsgCreateVestingAccountParams = {
-  value: MsgCreateVestingAccount,
-  fee?: StdFee,
-  memo?: string
-};
-
 type sendMsgSplitVestingParams = {
   value: MsgSplitVesting,
-  fee?: StdFee,
-  memo?: string
-};
-
-type sendMsgWithdrawAllAvailableParams = {
-  value: MsgWithdrawAllAvailable,
   fee?: StdFee,
   memo?: string
 };
@@ -83,37 +59,61 @@ type sendMsgCreateVestingPoolParams = {
   memo?: string
 };
 
-
-type msgMoveAvailableVestingParams = {
-  value: MsgMoveAvailableVesting,
+type sendMsgCreateVestingAccountParams = {
+  value: MsgCreateVestingAccount,
+  fee?: StdFee,
+  memo?: string
 };
 
-type msgUpdateDenomParamParams = {
+type sendMsgMoveAvailableVestingParams = {
+  value: MsgMoveAvailableVesting,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgWithdrawAllAvailableParams = {
+  value: MsgWithdrawAllAvailable,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgUpdateDenomParamParams = {
   value: MsgUpdateDenomParam,
+  fee?: StdFee,
+  memo?: string
+};
+
+
+type msgMoveAvailableVestingByDenomsParams = {
+  value: MsgMoveAvailableVestingByDenoms,
 };
 
 type msgSendToVestingAccountParams = {
   value: MsgSendToVestingAccount,
 };
 
-type msgMoveAvailableVestingByDenomsParams = {
-  value: MsgMoveAvailableVestingByDenoms,
+type msgSplitVestingParams = {
+  value: MsgSplitVesting,
+};
+
+type msgCreateVestingPoolParams = {
+  value: MsgCreateVestingPool,
 };
 
 type msgCreateVestingAccountParams = {
   value: MsgCreateVestingAccount,
 };
 
-type msgSplitVestingParams = {
-  value: MsgSplitVesting,
+type msgMoveAvailableVestingParams = {
+  value: MsgMoveAvailableVesting,
 };
 
 type msgWithdrawAllAvailableParams = {
   value: MsgWithdrawAllAvailable,
 };
 
-type msgCreateVestingPoolParams = {
-  value: MsgCreateVestingPool,
+type msgUpdateDenomParamParams = {
+  value: MsgUpdateDenomParam,
 };
 
 
@@ -146,31 +146,17 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
-		async sendMsgMoveAvailableVesting({ value, fee, memo }: sendMsgMoveAvailableVestingParams): Promise<DeliverTxResponse> {
+		async sendMsgMoveAvailableVestingByDenoms({ value, fee, memo }: sendMsgMoveAvailableVestingByDenomsParams): Promise<DeliverTxResponse> {
 			if (!signer) {
-					throw new Error('TxClient:sendMsgMoveAvailableVesting: Unable to sign Tx. Signer is not present.')
+					throw new Error('TxClient:sendMsgMoveAvailableVestingByDenoms: Unable to sign Tx. Signer is not present.')
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
 				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgMoveAvailableVesting({ value: MsgMoveAvailableVesting.fromPartial(value) })
+				let msg = this.msgMoveAvailableVestingByDenoms({ value: MsgMoveAvailableVestingByDenoms.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:sendMsgMoveAvailableVesting: Could not broadcast Tx: '+ e.message)
-			}
-		},
-		
-		async sendMsgUpdateDenomParam({ value, fee, memo }: sendMsgUpdateDenomParamParams): Promise<DeliverTxResponse> {
-			if (!signer) {
-					throw new Error('TxClient:sendMsgUpdateDenomParam: Unable to sign Tx. Signer is not present.')
-			}
-			try {			
-				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgUpdateDenomParam({ value: MsgUpdateDenomParam.fromPartial(value) })
-				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
-			} catch (e: any) {
-				throw new Error('TxClient:sendMsgUpdateDenomParam: Could not broadcast Tx: '+ e.message)
+				throw new Error('TxClient:sendMsgMoveAvailableVestingByDenoms: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
@@ -188,34 +174,6 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		async sendMsgMoveAvailableVestingByDenoms({ value, fee, memo }: sendMsgMoveAvailableVestingByDenomsParams): Promise<DeliverTxResponse> {
-			if (!signer) {
-					throw new Error('TxClient:sendMsgMoveAvailableVestingByDenoms: Unable to sign Tx. Signer is not present.')
-			}
-			try {			
-				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgMoveAvailableVestingByDenoms({ value: MsgMoveAvailableVestingByDenoms.fromPartial(value) })
-				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
-			} catch (e: any) {
-				throw new Error('TxClient:sendMsgMoveAvailableVestingByDenoms: Could not broadcast Tx: '+ e.message)
-			}
-		},
-		
-		async sendMsgCreateVestingAccount({ value, fee, memo }: sendMsgCreateVestingAccountParams): Promise<DeliverTxResponse> {
-			if (!signer) {
-					throw new Error('TxClient:sendMsgCreateVestingAccount: Unable to sign Tx. Signer is not present.')
-			}
-			try {			
-				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgCreateVestingAccount({ value: MsgCreateVestingAccount.fromPartial(value) })
-				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
-			} catch (e: any) {
-				throw new Error('TxClient:sendMsgCreateVestingAccount: Could not broadcast Tx: '+ e.message)
-			}
-		},
-		
 		async sendMsgSplitVesting({ value, fee, memo }: sendMsgSplitVestingParams): Promise<DeliverTxResponse> {
 			if (!signer) {
 					throw new Error('TxClient:sendMsgSplitVesting: Unable to sign Tx. Signer is not present.')
@@ -227,20 +185,6 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
 				throw new Error('TxClient:sendMsgSplitVesting: Could not broadcast Tx: '+ e.message)
-			}
-		},
-		
-		async sendMsgWithdrawAllAvailable({ value, fee, memo }: sendMsgWithdrawAllAvailableParams): Promise<DeliverTxResponse> {
-			if (!signer) {
-					throw new Error('TxClient:sendMsgWithdrawAllAvailable: Unable to sign Tx. Signer is not present.')
-			}
-			try {			
-				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgWithdrawAllAvailable({ value: MsgWithdrawAllAvailable.fromPartial(value) })
-				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
-			} catch (e: any) {
-				throw new Error('TxClient:sendMsgWithdrawAllAvailable: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
@@ -258,20 +202,68 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		
-		msgMoveAvailableVesting({ value }: msgMoveAvailableVestingParams): EncodeObject {
-			try {
-				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgMoveAvailableVesting", value: MsgMoveAvailableVesting.fromPartial( value ) }  
+		async sendMsgCreateVestingAccount({ value, fee, memo }: sendMsgCreateVestingAccountParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgCreateVestingAccount: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgCreateVestingAccount({ value: MsgCreateVestingAccount.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:MsgMoveAvailableVesting: Could not create message: ' + e.message)
+				throw new Error('TxClient:sendMsgCreateVestingAccount: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
-		msgUpdateDenomParam({ value }: msgUpdateDenomParamParams): EncodeObject {
-			try {
-				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgUpdateDenomParam", value: MsgUpdateDenomParam.fromPartial( value ) }  
+		async sendMsgMoveAvailableVesting({ value, fee, memo }: sendMsgMoveAvailableVestingParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgMoveAvailableVesting: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgMoveAvailableVesting({ value: MsgMoveAvailableVesting.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:MsgUpdateDenomParam: Could not create message: ' + e.message)
+				throw new Error('TxClient:sendMsgMoveAvailableVesting: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgWithdrawAllAvailable({ value, fee, memo }: sendMsgWithdrawAllAvailableParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgWithdrawAllAvailable: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgWithdrawAllAvailable({ value: MsgWithdrawAllAvailable.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgWithdrawAllAvailable: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgUpdateDenomParam({ value, fee, memo }: sendMsgUpdateDenomParamParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgUpdateDenomParam: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgUpdateDenomParam({ value: MsgUpdateDenomParam.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgUpdateDenomParam: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		
+		msgMoveAvailableVestingByDenoms({ value }: msgMoveAvailableVestingByDenomsParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgMoveAvailableVestingByDenoms", value: MsgMoveAvailableVestingByDenoms.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgMoveAvailableVestingByDenoms: Could not create message: ' + e.message)
 			}
 		},
 		
@@ -283,11 +275,19 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		msgMoveAvailableVestingByDenoms({ value }: msgMoveAvailableVestingByDenomsParams): EncodeObject {
+		msgSplitVesting({ value }: msgSplitVestingParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgMoveAvailableVestingByDenoms", value: MsgMoveAvailableVestingByDenoms.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgSplitVesting", value: MsgSplitVesting.fromPartial( value ) }  
 			} catch (e: any) {
-				throw new Error('TxClient:MsgMoveAvailableVestingByDenoms: Could not create message: ' + e.message)
+				throw new Error('TxClient:MsgSplitVesting: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgCreateVestingPool({ value }: msgCreateVestingPoolParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgCreateVestingPool", value: MsgCreateVestingPool.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgCreateVestingPool: Could not create message: ' + e.message)
 			}
 		},
 		
@@ -299,11 +299,11 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		msgSplitVesting({ value }: msgSplitVestingParams): EncodeObject {
+		msgMoveAvailableVesting({ value }: msgMoveAvailableVestingParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgSplitVesting", value: MsgSplitVesting.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgMoveAvailableVesting", value: MsgMoveAvailableVesting.fromPartial( value ) }  
 			} catch (e: any) {
-				throw new Error('TxClient:MsgSplitVesting: Could not create message: ' + e.message)
+				throw new Error('TxClient:MsgMoveAvailableVesting: Could not create message: ' + e.message)
 			}
 		},
 		
@@ -315,11 +315,11 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		msgCreateVestingPool({ value }: msgCreateVestingPoolParams): EncodeObject {
+		msgUpdateDenomParam({ value }: msgUpdateDenomParamParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgCreateVestingPool", value: MsgCreateVestingPool.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgUpdateDenomParam", value: MsgUpdateDenomParam.fromPartial( value ) }  
 			} catch (e: any) {
-				throw new Error('TxClient:MsgCreateVestingPool: Could not create message: ' + e.message)
+				throw new Error('TxClient:MsgUpdateDenomParam: Could not create message: ' + e.message)
 			}
 		},
 		
