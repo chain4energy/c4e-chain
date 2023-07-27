@@ -7,8 +7,6 @@ import (
 
 const (
 	TypeMsgCreateUserCertificates = "create_user_certificates"
-	TypeMsgUpdateUserCertificates = "update_user_certificates"
-	TypeMsgDeleteUserCertificates = "delete_user_certificates"
 )
 
 var _ sdk.Msg = &MsgCreateUserCertificates{}

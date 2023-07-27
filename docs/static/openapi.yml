@@ -50399,9 +50399,17 @@ definitions:
         type: string
   chain4energy.c4echain.cfetokenization.MsgAcceptDeviceResponse:
     type: object
+  chain4energy.c4echain.cfetokenization.MsgAddCertificateToMarketplaceResponse:
+    type: object
   chain4energy.c4echain.cfetokenization.MsgAddMeasurementResponse:
     type: object
   chain4energy.c4echain.cfetokenization.MsgAssignDeviceToUserResponse:
+    type: object
+  chain4energy.c4echain.cfetokenization.MsgAuthorizeCertificateResponse:
+    type: object
+  chain4energy.c4echain.cfetokenization.MsgBurnCertificateResponse:
+    type: object
+  chain4energy.c4echain.cfetokenization.MsgBuyCertificateResponse:
     type: object
   chain4energy.c4echain.cfetokenization.MsgCreateUserCertificatesResponse:
     type: object

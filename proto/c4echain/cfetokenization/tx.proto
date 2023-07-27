@@ -15,6 +15,10 @@ service Msg {
   rpc AssignDeviceToUser (MsgAssignDeviceToUser) returns (MsgAssignDeviceToUserResponse);
   rpc AcceptDevice (MsgAcceptDevice) returns (MsgAcceptDeviceResponse);
   rpc CreateUserCertificate (MsgCreateUserCertificates) returns (MsgCreateUserCertificatesResponse);
+  rpc AuthorizeCertificate (MsgAuthorizeCertificate) returns (MsgAuthorizeCertificateResponse);
+  rpc AddCertificateToMarketplace (MsgAddCertificateToMarketplace) returns (MsgAddCertificateToMarketplaceResponse);
+  rpc BurnCertificate (MsgBurnCertificate) returns (MsgBurnCertificateResponse);
+  rpc BuyCertificate (MsgBuyCertificate) returns (MsgBuyCertificateResponse);
   rpc AddMeasurement (MsgAddMeasurement) returns (MsgAddMeasurementResponse);
 }
 
@@ -78,3 +82,11 @@ message MsgBurnCertificate {
 }
 
 message MsgBurnCertificateResponse {}
+
+message MsgAuthorizeCertificate {
+  string authorizer = 1;
+  string user_address = 2;
+  string certificate_id = 3;
+}
+
+message MsgAuthorizeCertificateResponse {}
