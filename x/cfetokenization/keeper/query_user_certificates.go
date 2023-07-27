@@ -53,3 +53,45 @@ func (k Keeper) UserCertificates(goCtx context.Context, req *types.QueryGetUserC
 
 	return &types.QueryGetUserCertificatesResponse{UserCertificates: userCertificates}, nil
 }
+
+func (k Keeper) MarketplaceCertificatesAll(goCtx context.Context, req *types.QueryMarketplaceCertificatesAllRequest) (*types.QueryMarketplaceCertificatesAllResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	var marketplaceCertificates []types.CertificateOffer
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	store := ctx.KVStore(k.storeKey)
+	marketplaceCertificatesStore := prefix.NewStore(store, types.KeyPrefix(types.MarketplaceCertificatesKey))
+
+	pageRes, err := query.Paginate(marketplaceCertificatesStore, req.Pagination, func(key []byte, value []byte) error {
+		var userCertificates types.CertificateOffer
+		if err := k.cdc.Unmarshal(value, &userCertificates); err != nil {
+			return err
+		}
+
+		marketplaceCertificates = append(marketplaceCertificates, userCertificates)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryMarketplaceCertificatesAllResponse{MarketplaceCertificates: marketplaceCertificates, Pagination: pageRes}, nil
+}
+
+func (k Keeper) MarketplaceCertificate(goCtx context.Context, req *types.QueryMarketplaceCertificateRequest) (*types.QueryMarketplaceCertificateResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	marketplaceCertificate, found := k.GetMarketplaceCertificate(ctx, req.Id)
+	if !found {
+		return nil, sdkerrors.ErrKeyNotFound
+	}
+
+	return &types.QueryMarketplaceCertificateResponse{MarketplaceCertificate: &marketplaceCertificate}, nil
+}

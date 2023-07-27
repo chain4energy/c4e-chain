@@ -53,3 +53,45 @@ func (k Keeper) UserDevices(goCtx context.Context, req *types.QueryGetUserDevice
 
 	return &types.QueryGetUserDevicesResponse{UserDevices: userDevices}, nil
 }
+
+func (k Keeper) DeviceAll(goCtx context.Context, req *types.QueryDeviceAllRequest) (*types.QueryDeviceAllResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	var devices []types.Device
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	store := ctx.KVStore(k.storeKey)
+	userDevicesStore := prefix.NewStore(store, types.KeyPrefix(types.DeviceKey))
+
+	pageRes, err := query.Paginate(userDevicesStore, req.Pagination, func(key []byte, value []byte) error {
+		var device types.Device
+		if err := k.cdc.Unmarshal(value, &device); err != nil {
+			return err
+		}
+
+		devices = append(devices, device)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryDeviceAllResponse{Devices: devices, Pagination: pageRes}, nil
+}
+
+func (k Keeper) Device(goCtx context.Context, req *types.QueryDeviceRequest) (*types.QueryDeviceResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	device, found := k.GetDevice(ctx, req.DeviceAddress)
+	if !found {
+		return nil, sdkerrors.ErrKeyNotFound
+	}
+
+	return &types.QueryDeviceResponse{Device: &device}, nil
+}

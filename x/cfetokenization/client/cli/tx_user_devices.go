@@ -16,16 +16,16 @@ const (
 
 func CmdAddMeasurement() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-user-devices [timestamp] [power]",
+		Use:   "add-measurement [timestamp] [power]",
 		Short: "Create a new UserDevices",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argTimestamp, err := time.Parse(TimeLayout, args[1])
+			argTimestamp, err := time.Parse(TimeLayout, args[0])
 			if err != nil {
 				return err
 			}
 
-			argPower, err := cast.ToUint64E(args[0])
+			argPower, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}

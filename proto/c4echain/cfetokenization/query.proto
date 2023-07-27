@@ -17,38 +17,53 @@ service Query {
   
   // Parameters queries the parameters of the module.
   rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/chain4energy/c4e-chain/cfetokenization/params";
+    option (google.api.http).get = "/c4e/tokenization/v1beta1/params";
   
   }
   
   // Queries a list of CertificateType items.
   rpc CertificateType    (QueryGetCertificateTypeRequest) returns (QueryGetCertificateTypeResponse) {
-    option (google.api.http).get = "/chain4energy/c4e-chain/cfetokenization/certificate_type/{id}";
+    option (google.api.http).get = "/c4e/tokenization/v1beta1/certificate_type/{id}";
   
   }
   rpc CertificateTypeAll (QueryAllCertificateTypeRequest) returns (QueryAllCertificateTypeResponse) {
-    option (google.api.http).get = "/chain4energy/c4e-chain/cfetokenization/certificate_type";
+    option (google.api.http).get = "/c4e/tokenization/v1beta1/certificate_type";
   
   }
   
   // Queries a list of UserDevices items.
   rpc UserDevices    (QueryGetUserDevicesRequest) returns (QueryGetUserDevicesResponse) {
-    option (google.api.http).get = "/chain4energy/c4e-chain/cfetokenization/user_devices/{owner}";
+    option (google.api.http).get = "/c4e/tokenization/v1beta1/user_devices/{owner}";
   
   }
   rpc UserDevicesAll (QueryAllUserDevicesRequest) returns (QueryAllUserDevicesResponse) {
-    option (google.api.http).get = "/chain4energy/c4e-chain/cfetokenization/user_devices";
+    option (google.api.http).get = "/c4e/tokenization/v1beta1/user_devices";
   
   }
   
   // Queries a list of UserCertificates items.
   rpc UserCertificates    (QueryGetUserCertificatesRequest) returns (QueryGetUserCertificatesResponse) {
-    option (google.api.http).get = "/chain4energy/c4e-chain/cfetokenization/user_certificates/{owner}";
+    option (google.api.http).get = "/c4e/tokenization/v1beta1/user_certificates/{owner}";
   
   }
   rpc UserCertificatesAll (QueryAllUserCertificatesRequest) returns (QueryAllUserCertificatesResponse) {
-    option (google.api.http).get = "/chain4energy/c4e-chain/cfetokenization/user_certificates";
-  
+    option (google.api.http).get = "/c4e/tokenization/v1beta1/user_certificates";
+  }
+
+  rpc Device (QueryDeviceRequest) returns (QueryDeviceResponse) {
+    option (google.api.http).get = "/c4e/tokenization/v1beta1/device/{device_address}";
+  }
+
+  rpc DeviceAll (QueryDeviceAllRequest) returns (QueryDeviceAllResponse) {
+    option (google.api.http).get = "/c4e/tokenization/v1beta1/devices";
+  }
+
+  rpc MarketplaceCertificatesAll (QueryMarketplaceCertificatesAllRequest) returns (QueryMarketplaceCertificatesAllResponse) {
+    option (google.api.http).get = "/c4e/tokenization/v1beta1/marketplace_certificates";
+  }
+
+  rpc MarketplaceCertificate (QueryMarketplaceCertificateRequest) returns (QueryMarketplaceCertificateResponse) {
+    option (google.api.http).get = "/c4e/tokenization/v1beta1/marketplace_certificate/{id}";
   }
 }
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -64,6 +79,41 @@ message QueryParamsResponse {
 message QueryGetCertificateTypeRequest {
   uint64 id = 1;
 }
+
+message QueryDeviceRequest {
+  string device_address = 1;
+}
+
+message QueryDeviceResponse{
+  Device device = 1;
+}
+
+message QueryDeviceAllRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryDeviceAllResponse{
+  repeated Device                        devices = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination      = 2;
+}
+
+message QueryMarketplaceCertificatesAllRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryMarketplaceCertificatesAllResponse{
+  repeated CertificateOffer  marketplace_certificates = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination      = 2;
+}
+
+message QueryMarketplaceCertificateRequest{
+  uint64 id = 1;
+}
+
+message QueryMarketplaceCertificateResponse {
+  CertificateOffer marketplace_certificate = 1;
+}
+
 
 message QueryGetCertificateTypeResponse {
   CertificateType CertificateType = 1 [(gogoproto.nullable) = false];

@@ -28,7 +28,7 @@ const (
 	UserDevicesKey             = "UserDevices/value/"
 	MarketplaceCertificatesKey = "MarketplaceCertificates/value/"
 	PendingDeviceKey           = "PendingDevice/value/"
-	DeviceKey                  = "gDevice/value/"
+	DeviceKey                  = "Device/value/"
 )
 
 const (

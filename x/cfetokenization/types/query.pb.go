@@ -157,6 +157,378 @@ func (m *QueryGetCertificateTypeRequest) GetId() uint64 {
 	return 0
 }
 
+type QueryDeviceRequest struct {
+	DeviceAddress string `protobuf:"bytes,1,opt,name=device_address,json=deviceAddress,proto3" json:"device_address,omitempty"`
+}
+
+func (m *QueryDeviceRequest) Reset()         { *m = QueryDeviceRequest{} }
+func (m *QueryDeviceRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryDeviceRequest) ProtoMessage()    {}
+func (*QueryDeviceRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5f8ac351f8667968, []int{3}
+}
+func (m *QueryDeviceRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryDeviceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryDeviceRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryDeviceRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryDeviceRequest.Merge(m, src)
+}
+func (m *QueryDeviceRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryDeviceRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryDeviceRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryDeviceRequest proto.InternalMessageInfo
+
+func (m *QueryDeviceRequest) GetDeviceAddress() string {
+	if m != nil {
+		return m.DeviceAddress
+	}
+	return ""
+}
+
+type QueryDeviceResponse struct {
+	Device *Device `protobuf:"bytes,1,opt,name=device,proto3" json:"device,omitempty"`
+}
+
+func (m *QueryDeviceResponse) Reset()         { *m = QueryDeviceResponse{} }
+func (m *QueryDeviceResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryDeviceResponse) ProtoMessage()    {}
+func (*QueryDeviceResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5f8ac351f8667968, []int{4}
+}
+func (m *QueryDeviceResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryDeviceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryDeviceResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryDeviceResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryDeviceResponse.Merge(m, src)
+}
+func (m *QueryDeviceResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryDeviceResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryDeviceResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryDeviceResponse proto.InternalMessageInfo
+
+func (m *QueryDeviceResponse) GetDevice() *Device {
+	if m != nil {
+		return m.Device
+	}
+	return nil
+}
+
+type QueryDeviceAllRequest struct {
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryDeviceAllRequest) Reset()         { *m = QueryDeviceAllRequest{} }
+func (m *QueryDeviceAllRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryDeviceAllRequest) ProtoMessage()    {}
+func (*QueryDeviceAllRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5f8ac351f8667968, []int{5}
+}
+func (m *QueryDeviceAllRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryDeviceAllRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryDeviceAllRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryDeviceAllRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryDeviceAllRequest.Merge(m, src)
+}
+func (m *QueryDeviceAllRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryDeviceAllRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryDeviceAllRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryDeviceAllRequest proto.InternalMessageInfo
+
+func (m *QueryDeviceAllRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryDeviceAllResponse struct {
+	Devices    []Device            `protobuf:"bytes,1,rep,name=devices,proto3" json:"devices"`
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryDeviceAllResponse) Reset()         { *m = QueryDeviceAllResponse{} }
+func (m *QueryDeviceAllResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryDeviceAllResponse) ProtoMessage()    {}
+func (*QueryDeviceAllResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5f8ac351f8667968, []int{6}
+}
+func (m *QueryDeviceAllResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryDeviceAllResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryDeviceAllResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryDeviceAllResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryDeviceAllResponse.Merge(m, src)
+}
+func (m *QueryDeviceAllResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryDeviceAllResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryDeviceAllResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryDeviceAllResponse proto.InternalMessageInfo
+
+func (m *QueryDeviceAllResponse) GetDevices() []Device {
+	if m != nil {
+		return m.Devices
+	}
+	return nil
+}
+
+func (m *QueryDeviceAllResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryMarketplaceCertificatesAllRequest struct {
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryMarketplaceCertificatesAllRequest) Reset() {
+	*m = QueryMarketplaceCertificatesAllRequest{}
+}
+func (m *QueryMarketplaceCertificatesAllRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryMarketplaceCertificatesAllRequest) ProtoMessage()    {}
+func (*QueryMarketplaceCertificatesAllRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5f8ac351f8667968, []int{7}
+}
+func (m *QueryMarketplaceCertificatesAllRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryMarketplaceCertificatesAllRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryMarketplaceCertificatesAllRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryMarketplaceCertificatesAllRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryMarketplaceCertificatesAllRequest.Merge(m, src)
+}
+func (m *QueryMarketplaceCertificatesAllRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryMarketplaceCertificatesAllRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryMarketplaceCertificatesAllRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryMarketplaceCertificatesAllRequest proto.InternalMessageInfo
+
+func (m *QueryMarketplaceCertificatesAllRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryMarketplaceCertificatesAllResponse struct {
+	MarketplaceCertificates []CertificateOffer  `protobuf:"bytes,1,rep,name=marketplace_certificates,json=marketplaceCertificates,proto3" json:"marketplace_certificates"`
+	Pagination              *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryMarketplaceCertificatesAllResponse) Reset() {
+	*m = QueryMarketplaceCertificatesAllResponse{}
+}
+func (m *QueryMarketplaceCertificatesAllResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryMarketplaceCertificatesAllResponse) ProtoMessage()    {}
+func (*QueryMarketplaceCertificatesAllResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5f8ac351f8667968, []int{8}
+}
+func (m *QueryMarketplaceCertificatesAllResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryMarketplaceCertificatesAllResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryMarketplaceCertificatesAllResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryMarketplaceCertificatesAllResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryMarketplaceCertificatesAllResponse.Merge(m, src)
+}
+func (m *QueryMarketplaceCertificatesAllResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryMarketplaceCertificatesAllResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryMarketplaceCertificatesAllResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryMarketplaceCertificatesAllResponse proto.InternalMessageInfo
+
+func (m *QueryMarketplaceCertificatesAllResponse) GetMarketplaceCertificates() []CertificateOffer {
+	if m != nil {
+		return m.MarketplaceCertificates
+	}
+	return nil
+}
+
+func (m *QueryMarketplaceCertificatesAllResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryMarketplaceCertificateRequest struct {
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+}
+
+func (m *QueryMarketplaceCertificateRequest) Reset()         { *m = QueryMarketplaceCertificateRequest{} }
+func (m *QueryMarketplaceCertificateRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryMarketplaceCertificateRequest) ProtoMessage()    {}
+func (*QueryMarketplaceCertificateRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5f8ac351f8667968, []int{9}
+}
+func (m *QueryMarketplaceCertificateRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryMarketplaceCertificateRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryMarketplaceCertificateRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryMarketplaceCertificateRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryMarketplaceCertificateRequest.Merge(m, src)
+}
+func (m *QueryMarketplaceCertificateRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryMarketplaceCertificateRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryMarketplaceCertificateRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryMarketplaceCertificateRequest proto.InternalMessageInfo
+
+func (m *QueryMarketplaceCertificateRequest) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
+type QueryMarketplaceCertificateResponse struct {
+	MarketplaceCertificate *CertificateOffer `protobuf:"bytes,1,opt,name=marketplace_certificate,json=marketplaceCertificate,proto3" json:"marketplace_certificate,omitempty"`
+}
+
+func (m *QueryMarketplaceCertificateResponse) Reset()         { *m = QueryMarketplaceCertificateResponse{} }
+func (m *QueryMarketplaceCertificateResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryMarketplaceCertificateResponse) ProtoMessage()    {}
+func (*QueryMarketplaceCertificateResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5f8ac351f8667968, []int{10}
+}
+func (m *QueryMarketplaceCertificateResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryMarketplaceCertificateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryMarketplaceCertificateResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryMarketplaceCertificateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryMarketplaceCertificateResponse.Merge(m, src)
+}
+func (m *QueryMarketplaceCertificateResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryMarketplaceCertificateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryMarketplaceCertificateResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryMarketplaceCertificateResponse proto.InternalMessageInfo
+
+func (m *QueryMarketplaceCertificateResponse) GetMarketplaceCertificate() *CertificateOffer {
+	if m != nil {
+		return m.MarketplaceCertificate
+	}
+	return nil
+}
+
 type QueryGetCertificateTypeResponse struct {
 	CertificateType CertificateType `protobuf:"bytes,1,opt,name=CertificateType,proto3" json:"CertificateType"`
 }
@@ -165,7 +537,7 @@ func (m *QueryGetCertificateTypeResponse) Reset()         { *m = QueryGetCertifi
 func (m *QueryGetCertificateTypeResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetCertificateTypeResponse) ProtoMessage()    {}
 func (*QueryGetCertificateTypeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5f8ac351f8667968, []int{3}
+	return fileDescriptor_5f8ac351f8667968, []int{11}
 }
 func (m *QueryGetCertificateTypeResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -209,7 +581,7 @@ func (m *QueryAllCertificateTypeRequest) Reset()         { *m = QueryAllCertific
 func (m *QueryAllCertificateTypeRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllCertificateTypeRequest) ProtoMessage()    {}
 func (*QueryAllCertificateTypeRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5f8ac351f8667968, []int{4}
+	return fileDescriptor_5f8ac351f8667968, []int{12}
 }
 func (m *QueryAllCertificateTypeRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -254,7 +626,7 @@ func (m *QueryAllCertificateTypeResponse) Reset()         { *m = QueryAllCertifi
 func (m *QueryAllCertificateTypeResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllCertificateTypeResponse) ProtoMessage()    {}
 func (*QueryAllCertificateTypeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5f8ac351f8667968, []int{5}
+	return fileDescriptor_5f8ac351f8667968, []int{13}
 }
 func (m *QueryAllCertificateTypeResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -305,7 +677,7 @@ func (m *QueryGetUserDevicesRequest) Reset()         { *m = QueryGetUserDevicesR
 func (m *QueryGetUserDevicesRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGetUserDevicesRequest) ProtoMessage()    {}
 func (*QueryGetUserDevicesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5f8ac351f8667968, []int{6}
+	return fileDescriptor_5f8ac351f8667968, []int{14}
 }
 func (m *QueryGetUserDevicesRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -349,7 +721,7 @@ func (m *QueryGetUserDevicesResponse) Reset()         { *m = QueryGetUserDevices
 func (m *QueryGetUserDevicesResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetUserDevicesResponse) ProtoMessage()    {}
 func (*QueryGetUserDevicesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5f8ac351f8667968, []int{7}
+	return fileDescriptor_5f8ac351f8667968, []int{15}
 }
 func (m *QueryGetUserDevicesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -393,7 +765,7 @@ func (m *QueryAllUserDevicesRequest) Reset()         { *m = QueryAllUserDevicesR
 func (m *QueryAllUserDevicesRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllUserDevicesRequest) ProtoMessage()    {}
 func (*QueryAllUserDevicesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5f8ac351f8667968, []int{8}
+	return fileDescriptor_5f8ac351f8667968, []int{16}
 }
 func (m *QueryAllUserDevicesRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -438,7 +810,7 @@ func (m *QueryAllUserDevicesResponse) Reset()         { *m = QueryAllUserDevices
 func (m *QueryAllUserDevicesResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllUserDevicesResponse) ProtoMessage()    {}
 func (*QueryAllUserDevicesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5f8ac351f8667968, []int{9}
+	return fileDescriptor_5f8ac351f8667968, []int{17}
 }
 func (m *QueryAllUserDevicesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -489,7 +861,7 @@ func (m *QueryGetUserCertificatesRequest) Reset()         { *m = QueryGetUserCer
 func (m *QueryGetUserCertificatesRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGetUserCertificatesRequest) ProtoMessage()    {}
 func (*QueryGetUserCertificatesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5f8ac351f8667968, []int{10}
+	return fileDescriptor_5f8ac351f8667968, []int{18}
 }
 func (m *QueryGetUserCertificatesRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -533,7 +905,7 @@ func (m *QueryGetUserCertificatesResponse) Reset()         { *m = QueryGetUserCe
 func (m *QueryGetUserCertificatesResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetUserCertificatesResponse) ProtoMessage()    {}
 func (*QueryGetUserCertificatesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5f8ac351f8667968, []int{11}
+	return fileDescriptor_5f8ac351f8667968, []int{19}
 }
 func (m *QueryGetUserCertificatesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -577,7 +949,7 @@ func (m *QueryAllUserCertificatesRequest) Reset()         { *m = QueryAllUserCer
 func (m *QueryAllUserCertificatesRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllUserCertificatesRequest) ProtoMessage()    {}
 func (*QueryAllUserCertificatesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5f8ac351f8667968, []int{12}
+	return fileDescriptor_5f8ac351f8667968, []int{20}
 }
 func (m *QueryAllUserCertificatesRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -622,7 +994,7 @@ func (m *QueryAllUserCertificatesResponse) Reset()         { *m = QueryAllUserCe
 func (m *QueryAllUserCertificatesResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllUserCertificatesResponse) ProtoMessage()    {}
 func (*QueryAllUserCertificatesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5f8ac351f8667968, []int{13}
+	return fileDescriptor_5f8ac351f8667968, []int{21}
 }
 func (m *QueryAllUserCertificatesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -669,6 +1041,14 @@ func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "chain4energy.c4echain.cfetokenization.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "chain4energy.c4echain.cfetokenization.QueryParamsResponse")
 	proto.RegisterType((*QueryGetCertificateTypeRequest)(nil), "chain4energy.c4echain.cfetokenization.QueryGetCertificateTypeRequest")
+	proto.RegisterType((*QueryDeviceRequest)(nil), "chain4energy.c4echain.cfetokenization.QueryDeviceRequest")
+	proto.RegisterType((*QueryDeviceResponse)(nil), "chain4energy.c4echain.cfetokenization.QueryDeviceResponse")
+	proto.RegisterType((*QueryDeviceAllRequest)(nil), "chain4energy.c4echain.cfetokenization.QueryDeviceAllRequest")
+	proto.RegisterType((*QueryDeviceAllResponse)(nil), "chain4energy.c4echain.cfetokenization.QueryDeviceAllResponse")
+	proto.RegisterType((*QueryMarketplaceCertificatesAllRequest)(nil), "chain4energy.c4echain.cfetokenization.QueryMarketplaceCertificatesAllRequest")
+	proto.RegisterType((*QueryMarketplaceCertificatesAllResponse)(nil), "chain4energy.c4echain.cfetokenization.QueryMarketplaceCertificatesAllResponse")
+	proto.RegisterType((*QueryMarketplaceCertificateRequest)(nil), "chain4energy.c4echain.cfetokenization.QueryMarketplaceCertificateRequest")
+	proto.RegisterType((*QueryMarketplaceCertificateResponse)(nil), "chain4energy.c4echain.cfetokenization.QueryMarketplaceCertificateResponse")
 	proto.RegisterType((*QueryGetCertificateTypeResponse)(nil), "chain4energy.c4echain.cfetokenization.QueryGetCertificateTypeResponse")
 	proto.RegisterType((*QueryAllCertificateTypeRequest)(nil), "chain4energy.c4echain.cfetokenization.QueryAllCertificateTypeRequest")
 	proto.RegisterType((*QueryAllCertificateTypeResponse)(nil), "chain4energy.c4echain.cfetokenization.QueryAllCertificateTypeResponse")
@@ -687,58 +1067,77 @@ func init() {
 }
 
 var fileDescriptor_5f8ac351f8667968 = []byte{
-	// 806 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x97, 0xcd, 0x6e, 0xd3, 0x40,
-	0x10, 0xc7, 0xb3, 0xe9, 0x87, 0xc4, 0x16, 0x15, 0xb4, 0xed, 0x01, 0x19, 0xe4, 0x56, 0x16, 0x05,
-	0x04, 0xaa, 0xdd, 0x86, 0xaa, 0xa5, 0xa5, 0x7c, 0xb8, 0x1f, 0xa9, 0x10, 0x97, 0x12, 0xe0, 0xd2,
-	0x4b, 0xe5, 0x38, 0x5b, 0x77, 0x85, 0xeb, 0x75, 0x6d, 0xa7, 0x10, 0xaa, 0x5e, 0xb8, 0x71, 0x40,
-	0x42, 0xe2, 0x19, 0x78, 0x06, 0xee, 0x9c, 0x7a, 0xac, 0x40, 0x20, 0xc4, 0x01, 0xa1, 0x06, 0x84,
-	0xb8, 0xf0, 0x0c, 0xc8, 0xeb, 0x35, 0x71, 0x9c, 0x38, 0x8d, 0x93, 0x70, 0x83, 0x78, 0xff, 0x33,
-	0xff, 0xdf, 0xcc, 0x78, 0xc7, 0x85, 0x17, 0xf5, 0x19, 0xac, 0x6f, 0x6b, 0xc4, 0x52, 0xf4, 0x2d,
-	0xec, 0xd1, 0x27, 0xd8, 0x22, 0xcf, 0x35, 0x8f, 0x50, 0x4b, 0xd9, 0x2d, 0x63, 0xa7, 0x22, 0xdb,
-	0x0e, 0xf5, 0x28, 0x9a, 0x60, 0x47, 0x66, 0xb0, 0x85, 0x1d, 0xa3, 0x22, 0x87, 0x12, 0x39, 0x26,
-	0x11, 0x46, 0x0d, 0x6a, 0x50, 0xa6, 0x50, 0xfc, 0x7f, 0x05, 0x62, 0xe1, 0x82, 0x41, 0xa9, 0x61,
-	0x62, 0x45, 0xb3, 0x89, 0xa2, 0x59, 0x16, 0xf5, 0xd8, 0x61, 0x97, 0x3f, 0xbd, 0xaa, 0x53, 0x77,
-	0x87, 0xba, 0x4a, 0x51, 0x73, 0x71, 0x90, 0x53, 0xd9, 0x9b, 0x2e, 0x62, 0x4f, 0x9b, 0x56, 0x6c,
-	0xcd, 0x20, 0x16, 0x3b, 0xcc, 0xcf, 0x4e, 0x24, 0x9a, 0xb5, 0x35, 0x47, 0xdb, 0x09, 0x43, 0x2a,
-	0x89, 0xc7, 0x74, 0xec, 0x78, 0x64, 0x8b, 0xe8, 0x9a, 0x87, 0x37, 0xbd, 0x8a, 0x8d, 0xb9, 0xe0,
-	0x5a, 0xa2, 0xa0, 0xec, 0x62, 0x67, 0xb3, 0x84, 0xf7, 0x88, 0x8e, 0xc3, 0xe8, 0x53, 0xad, 0x0f,
-	0x47, 0x52, 0x70, 0x85, 0x34, 0x0a, 0xd1, 0x03, 0x1f, 0x6c, 0x9d, 0x99, 0x2c, 0xe0, 0xdd, 0x32,
-	0x76, 0x3d, 0xa9, 0x08, 0x47, 0xea, 0x7e, 0x75, 0x6d, 0x6a, 0xb9, 0x18, 0xdd, 0x87, 0x83, 0x01,
-	0xcc, 0x39, 0x30, 0x0e, 0xae, 0x0c, 0xe5, 0x26, 0xe5, 0xb6, 0x6a, 0x2f, 0x07, 0x61, 0x96, 0xfa,
-	0x0f, 0xbf, 0x8d, 0x65, 0x0a, 0x3c, 0x84, 0x34, 0x05, 0x45, 0x96, 0x63, 0x0d, 0x7b, 0xcb, 0x35,
-	0x5f, 0x8f, 0x2a, 0x36, 0xe6, 0x2e, 0xd0, 0x30, 0xcc, 0x92, 0x12, 0x4b, 0xd5, 0x5f, 0xc8, 0x92,
-	0x92, 0xf4, 0x12, 0xc0, 0xb1, 0x44, 0x09, 0xb7, 0xb8, 0x05, 0xcf, 0xc4, 0x1e, 0x71, 0xaf, 0xb3,
-	0x6d, 0x7a, 0x8d, 0xa9, 0xb9, 0xe9, 0x78, 0x50, 0x69, 0x9b, 0xbb, 0x57, 0x4d, 0x33, 0xc1, 0x7d,
-	0x1e, 0xc2, 0xda, 0x90, 0x70, 0x13, 0x97, 0xe4, 0x60, 0xa2, 0x64, 0x7f, 0xa2, 0xe4, 0x60, 0x8a,
-	0xf9, 0x44, 0xc9, 0xeb, 0x9a, 0x11, 0x6a, 0x0b, 0x11, 0xa5, 0xf4, 0x21, 0xa4, 0x6e, 0x96, 0xaa,
-	0x15, 0x75, 0x5f, 0xcf, 0xa9, 0xd1, 0x5a, 0x1d, 0x53, 0x96, 0x31, 0x5d, 0x3e, 0x91, 0x29, 0x30,
-	0x59, 0x07, 0x95, 0x83, 0x42, 0xd8, 0xc9, 0xc7, 0x2e, 0x76, 0x56, 0x82, 0x29, 0x0e, 0x4b, 0x37,
-	0x0a, 0x07, 0xe8, 0x53, 0x0b, 0x3b, 0xac, 0x6a, 0xa7, 0x0a, 0xc1, 0x7f, 0xa4, 0x0a, 0x3c, 0xdf,
-	0x54, 0xc3, 0x6b, 0xb0, 0x01, 0x87, 0x22, 0x3f, 0xf3, 0x82, 0xe7, 0xda, 0xe4, 0x8f, 0x28, 0x39,
-	0x7b, 0x34, 0x98, 0x54, 0xe2, 0x76, 0x55, 0xd3, 0x6c, 0x62, 0xb7, 0x57, 0x9d, 0x7e, 0x0f, 0x38,
-	0x61, 0x3c, 0x4d, 0x12, 0x61, 0x5f, 0xcf, 0x08, 0x7b, 0xd7, 0xd9, 0xb9, 0xda, 0x3b, 0xea, 0xc7,
-	0x8f, 0x4c, 0xd0, 0x09, 0xed, 0x7d, 0x05, 0xe0, 0x78, 0xb2, 0x92, 0x97, 0x80, 0xc0, 0xb3, 0xf1,
-	0x67, 0xbc, 0xe0, 0x73, 0x29, 0xea, 0x10, 0x95, 0xf3, 0x62, 0x34, 0x84, 0x95, 0x48, 0xed, 0xb5,
-	0x4b, 0x02, 0xe9, 0x55, 0xe3, 0x3f, 0x87, 0xe8, 0x4d, 0x73, 0xb5, 0x44, 0xef, 0xfb, 0x0f, 0xe8,
-	0x3d, 0x1b, 0x86, 0xdc, 0xdb, 0xd3, 0x70, 0x80, 0x81, 0xa1, 0x77, 0x00, 0x0e, 0x06, 0x6b, 0x00,
-	0xcd, 0xb7, 0x69, 0xb7, 0x71, 0x2f, 0x09, 0x0b, 0x9d, 0x48, 0x03, 0x5f, 0xd2, 0xec, 0x8b, 0x8f,
-	0x3f, 0xde, 0x64, 0xa7, 0x90, 0xac, 0x44, 0x63, 0xf8, 0xfb, 0x78, 0xb2, 0xd5, 0xde, 0x46, 0xbf,
-	0x40, 0xc3, 0xe5, 0x8a, 0x56, 0xd3, 0xf8, 0x48, 0x5c, 0x70, 0x42, 0xbe, 0xdb, 0x30, 0x1c, 0x6d,
-	0x95, 0xa1, 0xdd, 0x41, 0xb7, 0xda, 0x45, 0x8b, 0x7f, 0x6b, 0x28, 0xfb, 0xa4, 0x74, 0x80, 0x7e,
-	0x02, 0x88, 0x62, 0x29, 0x54, 0xd3, 0x4c, 0x07, 0x9b, 0xb8, 0x0f, 0xd3, 0xc1, 0x26, 0xef, 0x3a,
-	0xe9, 0x2e, 0x83, 0x5d, 0x40, 0x37, 0x3a, 0x85, 0x45, 0x5f, 0x41, 0xdd, 0x45, 0x8a, 0xd4, 0x94,
-	0x6d, 0x68, 0x5c, 0x01, 0xc2, 0x52, 0x37, 0x21, 0x38, 0xd8, 0x0a, 0x03, 0xbb, 0x8d, 0x16, 0xdb,
-	0x05, 0x8b, 0x7e, 0x00, 0x2a, 0xfb, 0xec, 0x16, 0x3d, 0x40, 0x9f, 0x00, 0x1c, 0x8e, 0x44, 0xf7,
-	0x1b, 0xa8, 0xa6, 0xac, 0x7c, 0xb7, 0x7c, 0xcd, 0xd7, 0x97, 0xb4, 0xc8, 0xf8, 0x66, 0xd1, 0x4c,
-	0x27, 0x7c, 0xe8, 0x0f, 0x68, 0xbc, 0xff, 0x50, 0xbe, 0x83, 0xb2, 0x37, 0xb9, 0xc8, 0x85, 0xb5,
-	0xae, 0xe3, 0x70, 0xc6, 0x7b, 0x8c, 0x71, 0x19, 0xa9, 0xa9, 0x18, 0xa3, 0xdf, 0xe5, 0xff, 0x1a,
-	0xf9, 0x1b, 0xc0, 0x91, 0x78, 0x1e, 0xbf, 0x9b, 0xf9, 0x0e, 0x5a, 0xd1, 0x35, 0x73, 0x8b, 0xc5,
-	0x24, 0xa9, 0x8c, 0xf9, 0x26, 0x9a, 0xef, 0x98, 0x79, 0xe9, 0xe1, 0xe1, 0xb1, 0x08, 0x8e, 0x8e,
-	0x45, 0xf0, 0xfd, 0x58, 0x04, 0xaf, 0xab, 0x62, 0xe6, 0xa8, 0x2a, 0x66, 0xbe, 0x54, 0xc5, 0xcc,
-	0xc6, 0xbc, 0x41, 0xbc, 0xed, 0x72, 0x51, 0xd6, 0xe9, 0x4e, 0x52, 0xf8, 0x67, 0x0d, 0x09, 0xfc,
-	0xb7, 0xdc, 0x2d, 0x0e, 0xb2, 0xbf, 0x70, 0xae, 0xff, 0x0d, 0x00, 0x00, 0xff, 0xff, 0xbb, 0x4c,
-	0x26, 0x27, 0x47, 0x0e, 0x00, 0x00,
+	// 1111 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x98, 0x4d, 0x6c, 0x1b, 0x45,
+	0x14, 0xc7, 0x33, 0x49, 0x1b, 0xd4, 0x57, 0x11, 0xd0, 0x34, 0xa4, 0xd1, 0x82, 0xdc, 0x30, 0x25,
+	0x69, 0x68, 0xc9, 0x6e, 0xe2, 0x84, 0x84, 0xb4, 0x80, 0xe4, 0x40, 0x13, 0x01, 0x0a, 0x14, 0x03,
+	0x97, 0x0a, 0x29, 0x5a, 0xdb, 0x63, 0x67, 0xd5, 0xb5, 0x77, 0xbb, 0xbb, 0x29, 0x35, 0x51, 0x2e,
+	0xdc, 0x38, 0x20, 0x21, 0x71, 0xe0, 0xce, 0x8d, 0x1b, 0x12, 0x37, 0x8e, 0x5c, 0xe8, 0x81, 0x43,
+	0x05, 0x12, 0x1f, 0x42, 0x42, 0x55, 0xc2, 0x11, 0x89, 0x23, 0xd7, 0x6a, 0x67, 0xde, 0xd6, 0xeb,
+	0xb5, 0xc7, 0xf6, 0xda, 0xdb, 0x5b, 0xb2, 0x9e, 0xf7, 0xde, 0xff, 0xf7, 0xde, 0xec, 0x9b, 0x79,
+	0x0b, 0x2f, 0x94, 0xd7, 0x78, 0x79, 0xdf, 0xb4, 0x1a, 0x46, 0xb9, 0xca, 0x03, 0xe7, 0x16, 0x6f,
+	0x58, 0x9f, 0x9a, 0x81, 0xe5, 0x34, 0x8c, 0xdb, 0x07, 0xdc, 0x6b, 0xea, 0xae, 0xe7, 0x04, 0x0e,
+	0x9d, 0x17, 0x4b, 0xd6, 0x78, 0x83, 0x7b, 0xb5, 0xa6, 0x1e, 0x99, 0xe8, 0x09, 0x13, 0x6d, 0xba,
+	0xe6, 0xd4, 0x1c, 0x61, 0x61, 0x84, 0x7f, 0x49, 0x63, 0xed, 0xb9, 0x9a, 0xe3, 0xd4, 0x6c, 0x6e,
+	0x98, 0xae, 0x65, 0x98, 0x8d, 0x86, 0x13, 0x88, 0xc5, 0x3e, 0xfe, 0x7a, 0xb9, 0xec, 0xf8, 0x75,
+	0xc7, 0x37, 0x4a, 0xa6, 0xcf, 0x65, 0x4c, 0xe3, 0xce, 0x4a, 0x89, 0x07, 0xe6, 0x8a, 0xe1, 0x9a,
+	0x35, 0xab, 0x21, 0x16, 0xe3, 0xda, 0x79, 0xa5, 0x58, 0xd7, 0xf4, 0xcc, 0x7a, 0xe4, 0xd2, 0x50,
+	0x2e, 0x2b, 0x73, 0x2f, 0xb0, 0xaa, 0x56, 0xd9, 0x0c, 0xf8, 0x5e, 0xd0, 0x74, 0x39, 0x1a, 0x5c,
+	0x51, 0x1a, 0x1c, 0xf8, 0xdc, 0xdb, 0xab, 0xf0, 0x3b, 0x56, 0x99, 0x47, 0xde, 0x97, 0x7b, 0x2f,
+	0x8e, 0x85, 0x40, 0x0b, 0x36, 0x0d, 0xf4, 0xfd, 0x10, 0xec, 0x86, 0x10, 0x59, 0xe4, 0xb7, 0x0f,
+	0xb8, 0x1f, 0xb0, 0x12, 0x9c, 0x6b, 0x7b, 0xea, 0xbb, 0x4e, 0xc3, 0xe7, 0xf4, 0x1d, 0x98, 0x94,
+	0x30, 0xb3, 0x64, 0x8e, 0x2c, 0x9e, 0xcd, 0x2f, 0xe9, 0x03, 0xe5, 0x5e, 0x97, 0x6e, 0xb6, 0x4e,
+	0xdd, 0xfb, 0xfb, 0xc2, 0x58, 0x11, 0x5d, 0xb0, 0x65, 0xc8, 0x89, 0x18, 0x3b, 0x3c, 0x78, 0xa3,
+	0xa5, 0xeb, 0xc3, 0xa6, 0xcb, 0x51, 0x05, 0x9d, 0x82, 0x71, 0xab, 0x22, 0x42, 0x9d, 0x2a, 0x8e,
+	0x5b, 0x15, 0x76, 0x0d, 0xb5, 0xbe, 0x29, 0x98, 0xa3, 0x55, 0xf3, 0x30, 0x25, 0x93, 0xb0, 0x67,
+	0x56, 0x2a, 0x1e, 0xf7, 0xa5, 0xb8, 0x33, 0xc5, 0x27, 0xe5, 0xd3, 0x82, 0x7c, 0xc8, 0x3e, 0x46,
+	0xa4, 0xc8, 0x18, 0x91, 0xae, 0xc3, 0xa4, 0x5c, 0x97, 0x12, 0x09, 0xdd, 0xa0, 0x31, 0xdb, 0x83,
+	0x67, 0x62, 0xde, 0x0b, 0xb6, 0x1d, 0xa9, 0xdb, 0x06, 0x68, 0x6d, 0x15, 0x8c, 0xb1, 0xa0, 0xcb,
+	0x7d, 0xa5, 0x87, 0xfb, 0x4a, 0x97, 0x7b, 0x19, 0xf7, 0x95, 0x7e, 0xc3, 0xac, 0x45, 0x64, 0xc5,
+	0x98, 0x25, 0xfb, 0x8e, 0xc0, 0x4c, 0x32, 0x02, 0x22, 0xec, 0xc2, 0x13, 0xb8, 0x0b, 0x66, 0xc9,
+	0xdc, 0x44, 0x6a, 0x06, 0x2c, 0x4b, 0xe4, 0x83, 0xee, 0xb4, 0x29, 0x1e, 0x17, 0x8a, 0x2f, 0xf5,
+	0x55, 0x2c, 0xb5, 0xb4, 0x49, 0x76, 0x61, 0x41, 0x28, 0xde, 0x35, 0xbd, 0x5b, 0x3c, 0x70, 0x6d,
+	0xb3, 0xcc, 0x63, 0x85, 0xf6, 0x1f, 0x43, 0x92, 0xfe, 0x25, 0x70, 0xa9, 0x6f, 0x48, 0xcc, 0xda,
+	0x5d, 0x98, 0xad, 0xb7, 0x56, 0xb5, 0xbd, 0x1a, 0x98, 0xc6, 0x8d, 0x01, 0xd3, 0x18, 0x8b, 0xf0,
+	0x5e, 0xb5, 0xca, 0x3d, 0x4c, 0xe8, 0xf9, 0x7a, 0x77, 0x11, 0xd9, 0x25, 0x78, 0x0d, 0x58, 0x0f,
+	0x5a, 0xd5, 0x5b, 0xf4, 0x35, 0x81, 0x8b, 0x3d, 0xcd, 0x30, 0x41, 0x2e, 0x9c, 0x57, 0x24, 0x08,
+	0x2b, 0x34, 0x6c, 0x7e, 0x8a, 0x33, 0xdd, 0x33, 0xc3, 0x3e, 0x27, 0x70, 0x41, 0xd9, 0x12, 0x50,
+	0x55, 0x15, 0x9e, 0x4a, 0xfc, 0x84, 0x6a, 0xd6, 0xd3, 0xab, 0x09, 0xad, 0xb1, 0x58, 0x49, 0xa7,
+	0x6c, 0x1f, 0xbb, 0x53, 0xc1, 0xb6, 0x15, 0xdd, 0x29, 0xab, 0x4d, 0xfb, 0x4b, 0x44, 0xdd, 0x2d,
+	0x54, 0x2f, 0xea, 0x89, 0xcc, 0xa9, 0xb3, 0xdb, 0x9a, 0x79, 0xd0, 0xa2, 0x4a, 0x7e, 0xe4, 0x73,
+	0x4f, 0x76, 0x9a, 0xe8, 0x78, 0xa1, 0xd3, 0x70, 0xda, 0xf9, 0xa4, 0xc1, 0x3d, 0xec, 0xd4, 0xf2,
+	0x1f, 0xd6, 0x84, 0x67, 0xbb, 0xda, 0x60, 0x0e, 0x6e, 0xc2, 0xd9, 0xd8, 0x63, 0x4c, 0x78, 0x7e,
+	0x40, 0xfe, 0x98, 0x25, 0xb2, 0xc7, 0x9d, 0xb1, 0x0a, 0xca, 0x2d, 0xd8, 0x76, 0x17, 0xb9, 0x59,
+	0x55, 0xfa, 0x47, 0x82, 0x84, 0xc9, 0x30, 0x2a, 0xc2, 0x89, 0xcc, 0x08, 0xb3, 0xab, 0xec, 0x46,
+	0xeb, 0x1d, 0x0d, 0xfd, 0xc7, 0x3b, 0x5b, 0xef, 0xf2, 0x7e, 0x41, 0x60, 0x4e, 0x6d, 0x89, 0x29,
+	0xb0, 0xe0, 0xe9, 0xe4, 0x6f, 0x29, 0xbb, 0x4d, 0xd2, 0x1c, 0x93, 0xd1, 0xe1, 0x96, 0x59, 0xad,
+	0xd7, 0x4e, 0x05, 0x92, 0x55, 0xe1, 0x7f, 0x8b, 0xd0, 0xbb, 0xc6, 0xea, 0x89, 0x3e, 0xf1, 0x18,
+	0xd0, 0x33, 0xdb, 0x0c, 0xf9, 0x6f, 0x28, 0x9c, 0x16, 0x60, 0xf4, 0x5b, 0x02, 0x93, 0xf2, 0x9a,
+	0x47, 0x37, 0x07, 0x94, 0xdb, 0x79, 0xef, 0xd4, 0xae, 0x0e, 0x63, 0x2a, 0x75, 0xb1, 0xc5, 0xcf,
+	0x7e, 0xfd, 0xe7, 0xab, 0x71, 0x46, 0xe7, 0xc2, 0x2b, 0xb6, 0xd1, 0x76, 0xf9, 0x6d, 0x5d, 0xda,
+	0x85, 0xc0, 0x3f, 0x49, 0x47, 0x3b, 0xa5, 0xd7, 0xd3, 0x44, 0x56, 0x5e, 0x59, 0xb5, 0xed, 0x51,
+	0xdd, 0x20, 0xcc, 0x86, 0x80, 0x59, 0xa1, 0x86, 0x1a, 0x26, 0x39, 0x2f, 0x18, 0x87, 0x56, 0xe5,
+	0x88, 0xfe, 0x4e, 0x80, 0x26, 0x9c, 0x16, 0x6c, 0x3b, 0x1d, 0x9e, 0xf2, 0xcc, 0x4b, 0x87, 0xa7,
+	0x3e, 0xcf, 0x58, 0x5e, 0xe0, 0xbd, 0x44, 0x2f, 0x0f, 0x8e, 0x47, 0x7f, 0x26, 0x6d, 0xed, 0x91,
+	0x16, 0x52, 0xa6, 0xba, 0xb3, 0xb1, 0x6b, 0x5b, 0xa3, 0xb8, 0x40, 0x94, 0x75, 0x81, 0xb2, 0x4c,
+	0x75, 0x35, 0x4a, 0x7c, 0x50, 0x33, 0x0e, 0x45, 0x37, 0x3c, 0xa2, 0x3f, 0x11, 0x98, 0x8a, 0xf9,
+	0x0b, 0x8b, 0x54, 0x48, 0x99, 0xdd, 0x51, 0x89, 0xba, 0x1f, 0x43, 0x4c, 0x17, 0x44, 0x8b, 0x74,
+	0x61, 0x30, 0x22, 0xfa, 0x80, 0x74, 0x76, 0x2e, 0xba, 0x3d, 0x44, 0x6a, 0xbb, 0xb4, 0x60, 0x6d,
+	0x67, 0x64, 0x3f, 0x48, 0x75, 0x4d, 0x50, 0xbd, 0x4c, 0x57, 0xfb, 0x50, 0xc5, 0x07, 0x81, 0x47,
+	0xc5, 0xfa, 0x8b, 0xc0, 0xb9, 0xa4, 0xe7, 0xb0, 0x62, 0xdb, 0x43, 0xa4, 0x7b, 0x64, 0xca, 0x1e,
+	0x87, 0x08, 0x5b, 0x15, 0x94, 0x4b, 0xf4, 0x4a, 0x0a, 0x4a, 0xfa, 0x03, 0x81, 0x49, 0xb9, 0x09,
+	0xd2, 0xf5, 0xee, 0xb6, 0x39, 0x3c, 0x5d, 0xef, 0x6e, 0x9f, 0xc2, 0xd9, 0xa6, 0x90, 0xbd, 0x4a,
+	0x57, 0xd4, 0xb2, 0xe5, 0x6e, 0x33, 0x0e, 0xdb, 0x67, 0xfd, 0x23, 0xfa, 0x3d, 0x81, 0x33, 0x8f,
+	0x66, 0x62, 0xfa, 0x6a, 0x7a, 0x11, 0xad, 0x39, 0x54, 0x7b, 0x6d, 0x48, 0x6b, 0xa4, 0x78, 0x51,
+	0x50, 0x5c, 0xa4, 0xcf, 0xf7, 0xa3, 0xf0, 0xe9, 0xff, 0x04, 0x34, 0xf5, 0x90, 0x4a, 0x77, 0xd3,
+	0x08, 0xe9, 0x3b, 0x5f, 0x6b, 0xef, 0x66, 0xe5, 0x0e, 0x41, 0xaf, 0x0a, 0xd0, 0x35, 0x9a, 0x57,
+	0x83, 0xaa, 0x66, 0x6b, 0xfa, 0x1f, 0x81, 0x99, 0xee, 0x21, 0xe8, 0x5b, 0xa3, 0xcb, 0x8c, 0x88,
+	0xdf, 0xce, 0xc2, 0x15, 0xd2, 0xbe, 0x2e, 0x68, 0x5f, 0xa1, 0xeb, 0xa9, 0x69, 0xc5, 0x91, 0xbc,
+	0xf5, 0xc1, 0xbd, 0xe3, 0x1c, 0xb9, 0x7f, 0x9c, 0x23, 0x0f, 0x8e, 0x73, 0xe4, 0xcb, 0x93, 0xdc,
+	0xd8, 0xfd, 0x93, 0xdc, 0xd8, 0x1f, 0x27, 0xb9, 0xb1, 0x9b, 0x9b, 0x35, 0x2b, 0xd8, 0x3f, 0x28,
+	0xe9, 0x65, 0xa7, 0x6e, 0xc4, 0xf5, 0x86, 0x81, 0x96, 0xe4, 0x77, 0xbc, 0xbb, 0x1d, 0x5f, 0xf2,
+	0xc2, 0xc3, 0xd0, 0x2f, 0x4d, 0x8a, 0xcf, 0x77, 0xab, 0x0f, 0x03, 0x00, 0x00, 0xff, 0xff, 0xee,
+	0xfe, 0x56, 0xcf, 0x24, 0x15, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -764,6 +1163,10 @@ type QueryClient interface {
 	// Queries a list of UserCertificates items.
 	UserCertificates(ctx context.Context, in *QueryGetUserCertificatesRequest, opts ...grpc.CallOption) (*QueryGetUserCertificatesResponse, error)
 	UserCertificatesAll(ctx context.Context, in *QueryAllUserCertificatesRequest, opts ...grpc.CallOption) (*QueryAllUserCertificatesResponse, error)
+	Device(ctx context.Context, in *QueryDeviceRequest, opts ...grpc.CallOption) (*QueryDeviceResponse, error)
+	DeviceAll(ctx context.Context, in *QueryDeviceAllRequest, opts ...grpc.CallOption) (*QueryDeviceAllResponse, error)
+	MarketplaceCertificatesAll(ctx context.Context, in *QueryMarketplaceCertificatesAllRequest, opts ...grpc.CallOption) (*QueryMarketplaceCertificatesAllResponse, error)
+	MarketplaceCertificate(ctx context.Context, in *QueryMarketplaceCertificateRequest, opts ...grpc.CallOption) (*QueryMarketplaceCertificateResponse, error)
 }
 
 type queryClient struct {
@@ -837,6 +1240,42 @@ func (c *queryClient) UserCertificatesAll(ctx context.Context, in *QueryAllUserC
 	return out, nil
 }
 
+func (c *queryClient) Device(ctx context.Context, in *QueryDeviceRequest, opts ...grpc.CallOption) (*QueryDeviceResponse, error) {
+	out := new(QueryDeviceResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfetokenization.Query/Device", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) DeviceAll(ctx context.Context, in *QueryDeviceAllRequest, opts ...grpc.CallOption) (*QueryDeviceAllResponse, error) {
+	out := new(QueryDeviceAllResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfetokenization.Query/DeviceAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) MarketplaceCertificatesAll(ctx context.Context, in *QueryMarketplaceCertificatesAllRequest, opts ...grpc.CallOption) (*QueryMarketplaceCertificatesAllResponse, error) {
+	out := new(QueryMarketplaceCertificatesAllResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfetokenization.Query/MarketplaceCertificatesAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) MarketplaceCertificate(ctx context.Context, in *QueryMarketplaceCertificateRequest, opts ...grpc.CallOption) (*QueryMarketplaceCertificateResponse, error) {
+	out := new(QueryMarketplaceCertificateResponse)
+	err := c.cc.Invoke(ctx, "/chain4energy.c4echain.cfetokenization.Query/MarketplaceCertificate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
@@ -850,6 +1289,10 @@ type QueryServer interface {
 	// Queries a list of UserCertificates items.
 	UserCertificates(context.Context, *QueryGetUserCertificatesRequest) (*QueryGetUserCertificatesResponse, error)
 	UserCertificatesAll(context.Context, *QueryAllUserCertificatesRequest) (*QueryAllUserCertificatesResponse, error)
+	Device(context.Context, *QueryDeviceRequest) (*QueryDeviceResponse, error)
+	DeviceAll(context.Context, *QueryDeviceAllRequest) (*QueryDeviceAllResponse, error)
+	MarketplaceCertificatesAll(context.Context, *QueryMarketplaceCertificatesAllRequest) (*QueryMarketplaceCertificatesAllResponse, error)
+	MarketplaceCertificate(context.Context, *QueryMarketplaceCertificateRequest) (*QueryMarketplaceCertificateResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -876,6 +1319,18 @@ func (*UnimplementedQueryServer) UserCertificates(ctx context.Context, req *Quer
 }
 func (*UnimplementedQueryServer) UserCertificatesAll(ctx context.Context, req *QueryAllUserCertificatesRequest) (*QueryAllUserCertificatesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserCertificatesAll not implemented")
+}
+func (*UnimplementedQueryServer) Device(ctx context.Context, req *QueryDeviceRequest) (*QueryDeviceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Device not implemented")
+}
+func (*UnimplementedQueryServer) DeviceAll(ctx context.Context, req *QueryDeviceAllRequest) (*QueryDeviceAllResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeviceAll not implemented")
+}
+func (*UnimplementedQueryServer) MarketplaceCertificatesAll(ctx context.Context, req *QueryMarketplaceCertificatesAllRequest) (*QueryMarketplaceCertificatesAllResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarketplaceCertificatesAll not implemented")
+}
+func (*UnimplementedQueryServer) MarketplaceCertificate(ctx context.Context, req *QueryMarketplaceCertificateRequest) (*QueryMarketplaceCertificateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarketplaceCertificate not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -1008,6 +1463,78 @@ func _Query_UserCertificatesAll_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Device_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryDeviceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Device(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfetokenization.Query/Device",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Device(ctx, req.(*QueryDeviceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_DeviceAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryDeviceAllRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).DeviceAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfetokenization.Query/DeviceAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).DeviceAll(ctx, req.(*QueryDeviceAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_MarketplaceCertificatesAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryMarketplaceCertificatesAllRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).MarketplaceCertificatesAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfetokenization.Query/MarketplaceCertificatesAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).MarketplaceCertificatesAll(ctx, req.(*QueryMarketplaceCertificatesAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_MarketplaceCertificate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryMarketplaceCertificateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).MarketplaceCertificate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chain4energy.c4echain.cfetokenization.Query/MarketplaceCertificate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).MarketplaceCertificate(ctx, req.(*QueryMarketplaceCertificateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "chain4energy.c4echain.cfetokenization.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -1039,6 +1566,22 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UserCertificatesAll",
 			Handler:    _Query_UserCertificatesAll_Handler,
+		},
+		{
+			MethodName: "Device",
+			Handler:    _Query_Device_Handler,
+		},
+		{
+			MethodName: "DeviceAll",
+			Handler:    _Query_DeviceAll_Handler,
+		},
+		{
+			MethodName: "MarketplaceCertificatesAll",
+			Handler:    _Query_MarketplaceCertificatesAll_Handler,
+		},
+		{
+			MethodName: "MarketplaceCertificate",
+			Handler:    _Query_MarketplaceCertificate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1125,6 +1668,302 @@ func (m *QueryGetCertificateTypeRequest) MarshalToSizedBuffer(dAtA []byte) (int,
 		i = encodeVarintQuery(dAtA, i, uint64(m.Id))
 		i--
 		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryDeviceRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryDeviceRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryDeviceRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.DeviceAddress) > 0 {
+		i -= len(m.DeviceAddress)
+		copy(dAtA[i:], m.DeviceAddress)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.DeviceAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryDeviceResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryDeviceResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryDeviceResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Device != nil {
+		{
+			size, err := m.Device.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryDeviceAllRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryDeviceAllRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryDeviceAllRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryDeviceAllResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryDeviceAllResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryDeviceAllResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Devices) > 0 {
+		for iNdEx := len(m.Devices) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Devices[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryMarketplaceCertificatesAllRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryMarketplaceCertificatesAllRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryMarketplaceCertificatesAllRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryMarketplaceCertificatesAllResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryMarketplaceCertificatesAllResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryMarketplaceCertificatesAllResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.MarketplaceCertificates) > 0 {
+		for iNdEx := len(m.MarketplaceCertificates) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.MarketplaceCertificates[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryMarketplaceCertificateRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryMarketplaceCertificateRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryMarketplaceCertificateRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Id != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryMarketplaceCertificateResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryMarketplaceCertificateResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryMarketplaceCertificateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.MarketplaceCertificate != nil {
+		{
+			size, err := m.MarketplaceCertificate.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -1583,6 +2422,121 @@ func (m *QueryGetCertificateTypeRequest) Size() (n int) {
 	return n
 }
 
+func (m *QueryDeviceRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.DeviceAddress)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryDeviceResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Device != nil {
+		l = m.Device.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryDeviceAllRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryDeviceAllResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Devices) > 0 {
+		for _, e := range m.Devices {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryMarketplaceCertificatesAllRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryMarketplaceCertificatesAllResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.MarketplaceCertificates) > 0 {
+		for _, e := range m.MarketplaceCertificates {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryMarketplaceCertificateRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Id != 0 {
+		n += 1 + sovQuery(uint64(m.Id))
+	}
+	return n
+}
+
+func (m *QueryMarketplaceCertificateResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.MarketplaceCertificate != nil {
+		l = m.MarketplaceCertificate.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
 func (m *QueryGetCertificateTypeResponse) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1925,6 +2879,741 @@ func (m *QueryGetCertificateTypeRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryDeviceRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryDeviceRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryDeviceRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DeviceAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DeviceAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryDeviceResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryDeviceResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryDeviceResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Device", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Device == nil {
+				m.Device = &Device{}
+			}
+			if err := m.Device.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryDeviceAllRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryDeviceAllRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryDeviceAllRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryDeviceAllResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryDeviceAllResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryDeviceAllResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Devices", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Devices = append(m.Devices, Device{})
+			if err := m.Devices[len(m.Devices)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryMarketplaceCertificatesAllRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryMarketplaceCertificatesAllRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryMarketplaceCertificatesAllRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryMarketplaceCertificatesAllResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryMarketplaceCertificatesAllResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryMarketplaceCertificatesAllResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MarketplaceCertificates", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.MarketplaceCertificates = append(m.MarketplaceCertificates, CertificateOffer{})
+			if err := m.MarketplaceCertificates[len(m.MarketplaceCertificates)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryMarketplaceCertificateRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryMarketplaceCertificateRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryMarketplaceCertificateRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryMarketplaceCertificateResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryMarketplaceCertificateResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryMarketplaceCertificateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MarketplaceCertificate", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.MarketplaceCertificate == nil {
+				m.MarketplaceCertificate = &CertificateOffer{}
+			}
+			if err := m.MarketplaceCertificate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
