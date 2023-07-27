@@ -135,9 +135,8 @@ func (k msgServer) BuyCertificate(goCtx context.Context, msg *types.MsgBuyCertif
 	if marketplaceCertificate.Buyer != "" {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "certificate already bought")
 	}
-	// TODO: check price
-	buyerAccAddr, err := sdk.AccAddressFromBech32(msg.Buyer)
 
+	buyerAccAddr, err := sdk.AccAddressFromBech32(msg.Buyer)
 	buyerSpendable := k.bankKeeper.SpendableCoins(ctx, buyerAccAddr)
 	if buyerSpendable.IsAllLT(marketplaceCertificate.Price) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not enough coins")
@@ -152,28 +151,29 @@ func (k msgServer) BuyCertificate(goCtx context.Context, msg *types.MsgBuyCertif
 	if !found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "user not found")
 	}
-	certificate, err := userCertificates.GetUserCertificate(marketplaceCertificate.CertificateId)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "certificate not found")
-	}
 
+	var certCopy types.Certificate
 	for i, cert := range userCertificates.Certificates {
-		if cert.Id == marketplaceCertificate.CertificateId && cert.Owner == msg.Owner {
-			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "certificate already in marketplace")
+		if cert.Id == marketplaceCertificate.CertificateId {
+			certCopy = *cert
+			remove(userCertificates.Certificates, i)
 		}
 	}
 
-	certificateOffer := types.CertificateOffer{
-		CertificateId: msg.CertificateId,
-		Owner:         msg.Owner,
-		Buyer:         "",
-		Price:         msg.Price,
+	buyerCertificates, found := k.GetUserCertificates(ctx, msg.Buyer)
+	if !found {
+		buyerCertificates = types.UserCertificates{
+			Owner: msg.Buyer,
+		}
 	}
-	k.AppendMarketplaceCertificate(ctx, certificateOffer)
+	buyerCertificates.Certificates = append(buyerCertificates.Certificates, &certCopy)
+	k.SetUserCertificates(ctx, buyerCertificates)
+	marketplaceCertificate.Buyer = msg.Buyer
+	k.SetMarketplaceCertificate(ctx, marketplaceCertificate)
 
 	return &types.MsgBuyCertificateResponse{}, nil
 }
 
-func remove(slice []int, s int) []int {
+func remove(slice []*types.Certificate, s int) []*types.Certificate {
 	return append(slice[:s], slice[s+1:]...)
 }
