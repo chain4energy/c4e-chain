@@ -13,10 +13,10 @@ import (
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	legacy.RegisterAminoMsg(cdc, &MsgCreateUserCertificates{}, "cfetokenization/CreateUserCertificates")
 	legacy.RegisterAminoMsg(cdc, &MsgBuyCertificate{}, "cfetokenization/BuyCertificate")
-	legacy.RegisterAminoMsg(cdc, &MsgAddCertificateToMarketplace{}, "cfetokenization/AddCertificateToMarketplace")
+	legacy.RegisterAminoMsg(cdc, &MsgAddCertificateToMarketplace{}, "cfetokenization/AddCertToMarketplace")
 	legacy.RegisterAminoMsg(cdc, &MsgAcceptDevice{}, "cfetokenization/AcceptDevice")
 	legacy.RegisterAminoMsg(cdc, &MsgAssignDeviceToUser{}, "cfetokenization/AssignDeviceToUser")
-	legacy.RegisterAminoMsg(cdc, &MsgBurnCertificate{}, "cfetokenization/AddMeasurement")
+	legacy.RegisterAminoMsg(cdc, &MsgBurnCertificate{}, "cfetokenization/BurnCertificate")
 	legacy.RegisterAminoMsg(cdc, &MsgAddMeasurement{}, "cfetokenization/AddMeasurement")
 	legacy.RegisterAminoMsg(cdc, &MsgAuthorizeCertificate{}, "cfetokenization/AuthorizeCertificate")
 	// this line is used by starport scaffolding # 2
