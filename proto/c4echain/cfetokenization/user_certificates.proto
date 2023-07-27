@@ -1,6 +1,9 @@
 syntax = "proto3";
 package chain4energy.c4echain.cfetokenization;
 
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
 option go_package = "github.com/chain4energy/c4e-chain/x/cfetokenization/types";
 
 message UserCertificates {
@@ -23,4 +26,15 @@ enum CertificateStatus {
   VALID = 1;
   INVALID = 2;
   BURNED = 3;
+}
+
+message CertificateOffer {
+  uint64 id = 1;
+  uint64 certificate_id = 2;
+  string owner = 3;
+  string buyer = 4;
+  repeated cosmos.base.v1beta1.Coin price = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 }

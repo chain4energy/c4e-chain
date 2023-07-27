@@ -11,7 +11,7 @@ const (
 
 var _ sdk.Msg = &MsgBuyCertificate{}
 
-func NewMsgBuyCertificate(buyer string, certificateId string) *MsgBuyCertificate {
+func NewMsgBuyCertificate(buyer string, certificateId uint64) *MsgBuyCertificate {
 	return &MsgBuyCertificate{
 		Buyer:         buyer,
 		CertificateId: certificateId,

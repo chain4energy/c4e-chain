@@ -11,7 +11,7 @@ const (
 
 var _ sdk.Msg = &MsgBurnCertificate{}
 
-func NewMsgBurnCertificate(owner string, certificateId string) *MsgBurnCertificate {
+func NewMsgBurnCertificate(owner string, certificateId uint64) *MsgBurnCertificate {
 	return &MsgBurnCertificate{
 		Owner:         owner,
 		CertificateId: certificateId,

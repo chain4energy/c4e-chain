@@ -11,7 +11,7 @@ const (
 
 var _ sdk.Msg = &MsgAddCertificateToMarketplace{}
 
-func NewMsgAddCertificateToMarketplace(owner string, certificateId string, price sdk.Coins) *MsgAddCertificateToMarketplace {
+func NewMsgAddCertificateToMarketplace(owner string, certificateId uint64, price sdk.Coins) *MsgAddCertificateToMarketplace {
 	return &MsgAddCertificateToMarketplace{
 		Owner:         owner,
 		CertificateId: certificateId,

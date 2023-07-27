@@ -19,14 +19,16 @@ func KeyPrefix(p string) []byte {
 }
 
 const (
-	CertificateTypeKey      = "CertificateType/value/"
-	CertificateTypeCountKey = "CertificateType/count/"
+	CertificateTypeKey              = "CertificateType/value/"
+	CertificateTypeCountKey         = "CertificateType/count/"
+	MarketplaceCertificatesCountKey = "MarketplaceCertificatesCountKey/count/"
 )
 
 const (
-	UserDevicesKey   = "UserDevices/value/"
-	PendingDeviceKey = "PendingDevice/value/"
-	DeviceKey        = "gDevice/value/"
+	UserDevicesKey             = "UserDevices/value/"
+	MarketplaceCertificatesKey = "MarketplaceCertificates/value/"
+	PendingDeviceKey           = "PendingDevice/value/"
+	DeviceKey                  = "gDevice/value/"
 )
 
 const (

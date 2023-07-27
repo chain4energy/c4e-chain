@@ -60,7 +60,7 @@ message MsgAddMeasurementResponse {}
 
 message MsgAddCertificateToMarketplace {
   string owner = 1;
-  string certificate_id = 2;
+  uint64 certificate_id = 2;
   repeated cosmos.base.v1beta1.Coin price = 3 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
@@ -71,14 +71,14 @@ message MsgAddCertificateToMarketplaceResponse {}
 
 message MsgBuyCertificate {
   string buyer = 1;
-  string certificate_id = 2;
+  uint64 marketplace_certificate_id = 2;
 }
 
 message MsgBuyCertificateResponse {}
 
 message MsgBurnCertificate {
   string owner = 1;
-  string certificate_id = 2;
+  uint64 certificate_id = 2;
 }
 
 message MsgBurnCertificateResponse {}
@@ -86,7 +86,7 @@ message MsgBurnCertificateResponse {}
 message MsgAuthorizeCertificate {
   string authorizer = 1;
   string user_address = 2;
-  string certificate_id = 3;
+  uint64 certificate_id = 3;
 }
 
 message MsgAuthorizeCertificateResponse {}

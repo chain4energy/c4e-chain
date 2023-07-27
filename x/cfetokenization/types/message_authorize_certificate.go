@@ -11,7 +11,7 @@ const (
 
 var _ sdk.Msg = &MsgAuthorizeCertificate{}
 
-func NewMsgAuthorizeCertificate(authorizer string, userAddress string, certificateId string) *MsgAuthorizeCertificate {
+func NewMsgAuthorizeCertificate(authorizer string, userAddress string, certificateId uint64) *MsgAuthorizeCertificate {
 	return &MsgAuthorizeCertificate{
 		Authorizer:    authorizer,
 		UserAddress:   userAddress,

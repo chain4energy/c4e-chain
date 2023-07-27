@@ -602,6 +602,7 @@ func New(
 		keys[cfetokenizationmoduletypes.StoreKey],
 		keys[cfetokenizationmoduletypes.MemStoreKey],
 		app.GetSubspace(cfetokenizationmoduletypes.ModuleName),
+		app.BankKeeper,
 	)
 	cfetokenizationModule := cfetokenizationmodule.NewAppModule(appCodec, app.CfetokenizationKeeper, app.AccountKeeper, app.BankKeeper)
 
