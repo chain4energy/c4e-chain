@@ -30,7 +30,9 @@ require (
 
 require (
 	github.com/cometbft/cometbft-db v0.7.0 // indirect
+	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/google/s2a-go v0.1.4 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.16.1 // indirect
 	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
 	google.golang.org/genproto v0.0.0-20230706204954-ccb25ca9f130 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230724170836-66ad5b6ff146 // indirect
