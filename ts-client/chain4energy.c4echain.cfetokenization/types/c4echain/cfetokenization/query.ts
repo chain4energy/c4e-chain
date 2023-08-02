@@ -4,8 +4,8 @@ import _m0 from "protobufjs/minimal";
 import { PageRequest, PageResponse } from "../../cosmos/base/query/v1beta1/pagination";
 import { CertificateType } from "./certificate_type";
 import { Params } from "./params";
-import { UserCertificates } from "./user_certificates";
-import { UserDevices } from "./user_devices";
+import { CertificateOffer, UserCertificates } from "./user_certificates";
+import { Device, UserDevices } from "./user_devices";
 
 export const protobufPackage = "chain4energy.c4echain.cfetokenization";
 
@@ -21,6 +21,40 @@ export interface QueryParamsResponse {
 
 export interface QueryGetCertificateTypeRequest {
   id: number;
+}
+
+export interface QueryDeviceRequest {
+  deviceAddress: string;
+}
+
+export interface QueryDeviceResponse {
+  device: Device | undefined;
+}
+
+export interface QueryDeviceAllRequest {
+  pagination: PageRequest | undefined;
+}
+
+export interface QueryDeviceAllResponse {
+  devices: Device[];
+  pagination: PageResponse | undefined;
+}
+
+export interface QueryMarketplaceCertificatesAllRequest {
+  pagination: PageRequest | undefined;
+}
+
+export interface QueryMarketplaceCertificatesAllResponse {
+  marketplaceCertificates: CertificateOffer[];
+  pagination: PageResponse | undefined;
+}
+
+export interface QueryMarketplaceCertificateRequest {
+  id: number;
+}
+
+export interface QueryMarketplaceCertificateResponse {
+  marketplaceCertificate: CertificateOffer | undefined;
 }
 
 export interface QueryGetCertificateTypeResponse {
@@ -203,6 +237,447 @@ export const QueryGetCertificateTypeRequest = {
   ): QueryGetCertificateTypeRequest {
     const message = createBaseQueryGetCertificateTypeRequest();
     message.id = object.id ?? 0;
+    return message;
+  },
+};
+
+function createBaseQueryDeviceRequest(): QueryDeviceRequest {
+  return { deviceAddress: "" };
+}
+
+export const QueryDeviceRequest = {
+  encode(message: QueryDeviceRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.deviceAddress !== "") {
+      writer.uint32(10).string(message.deviceAddress);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryDeviceRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryDeviceRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.deviceAddress = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryDeviceRequest {
+    return { deviceAddress: isSet(object.deviceAddress) ? String(object.deviceAddress) : "" };
+  },
+
+  toJSON(message: QueryDeviceRequest): unknown {
+    const obj: any = {};
+    message.deviceAddress !== undefined && (obj.deviceAddress = message.deviceAddress);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryDeviceRequest>, I>>(object: I): QueryDeviceRequest {
+    const message = createBaseQueryDeviceRequest();
+    message.deviceAddress = object.deviceAddress ?? "";
+    return message;
+  },
+};
+
+function createBaseQueryDeviceResponse(): QueryDeviceResponse {
+  return { device: undefined };
+}
+
+export const QueryDeviceResponse = {
+  encode(message: QueryDeviceResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.device !== undefined) {
+      Device.encode(message.device, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryDeviceResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryDeviceResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.device = Device.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryDeviceResponse {
+    return { device: isSet(object.device) ? Device.fromJSON(object.device) : undefined };
+  },
+
+  toJSON(message: QueryDeviceResponse): unknown {
+    const obj: any = {};
+    message.device !== undefined && (obj.device = message.device ? Device.toJSON(message.device) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryDeviceResponse>, I>>(object: I): QueryDeviceResponse {
+    const message = createBaseQueryDeviceResponse();
+    message.device = (object.device !== undefined && object.device !== null)
+      ? Device.fromPartial(object.device)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryDeviceAllRequest(): QueryDeviceAllRequest {
+  return { pagination: undefined };
+}
+
+export const QueryDeviceAllRequest = {
+  encode(message: QueryDeviceAllRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryDeviceAllRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryDeviceAllRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryDeviceAllRequest {
+    return { pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined };
+  },
+
+  toJSON(message: QueryDeviceAllRequest): unknown {
+    const obj: any = {};
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryDeviceAllRequest>, I>>(object: I): QueryDeviceAllRequest {
+    const message = createBaseQueryDeviceAllRequest();
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageRequest.fromPartial(object.pagination)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryDeviceAllResponse(): QueryDeviceAllResponse {
+  return { devices: [], pagination: undefined };
+}
+
+export const QueryDeviceAllResponse = {
+  encode(message: QueryDeviceAllResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.devices) {
+      Device.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryDeviceAllResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryDeviceAllResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.devices.push(Device.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryDeviceAllResponse {
+    return {
+      devices: Array.isArray(object?.devices) ? object.devices.map((e: any) => Device.fromJSON(e)) : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined,
+    };
+  },
+
+  toJSON(message: QueryDeviceAllResponse): unknown {
+    const obj: any = {};
+    if (message.devices) {
+      obj.devices = message.devices.map((e) => e ? Device.toJSON(e) : undefined);
+    } else {
+      obj.devices = [];
+    }
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryDeviceAllResponse>, I>>(object: I): QueryDeviceAllResponse {
+    const message = createBaseQueryDeviceAllResponse();
+    message.devices = object.devices?.map((e) => Device.fromPartial(e)) || [];
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageResponse.fromPartial(object.pagination)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryMarketplaceCertificatesAllRequest(): QueryMarketplaceCertificatesAllRequest {
+  return { pagination: undefined };
+}
+
+export const QueryMarketplaceCertificatesAllRequest = {
+  encode(message: QueryMarketplaceCertificatesAllRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryMarketplaceCertificatesAllRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryMarketplaceCertificatesAllRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryMarketplaceCertificatesAllRequest {
+    return { pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined };
+  },
+
+  toJSON(message: QueryMarketplaceCertificatesAllRequest): unknown {
+    const obj: any = {};
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryMarketplaceCertificatesAllRequest>, I>>(
+    object: I,
+  ): QueryMarketplaceCertificatesAllRequest {
+    const message = createBaseQueryMarketplaceCertificatesAllRequest();
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageRequest.fromPartial(object.pagination)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryMarketplaceCertificatesAllResponse(): QueryMarketplaceCertificatesAllResponse {
+  return { marketplaceCertificates: [], pagination: undefined };
+}
+
+export const QueryMarketplaceCertificatesAllResponse = {
+  encode(message: QueryMarketplaceCertificatesAllResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.marketplaceCertificates) {
+      CertificateOffer.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryMarketplaceCertificatesAllResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryMarketplaceCertificatesAllResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.marketplaceCertificates.push(CertificateOffer.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryMarketplaceCertificatesAllResponse {
+    return {
+      marketplaceCertificates: Array.isArray(object?.marketplaceCertificates)
+        ? object.marketplaceCertificates.map((e: any) => CertificateOffer.fromJSON(e))
+        : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined,
+    };
+  },
+
+  toJSON(message: QueryMarketplaceCertificatesAllResponse): unknown {
+    const obj: any = {};
+    if (message.marketplaceCertificates) {
+      obj.marketplaceCertificates = message.marketplaceCertificates.map((e) =>
+        e ? CertificateOffer.toJSON(e) : undefined
+      );
+    } else {
+      obj.marketplaceCertificates = [];
+    }
+    message.pagination !== undefined
+      && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryMarketplaceCertificatesAllResponse>, I>>(
+    object: I,
+  ): QueryMarketplaceCertificatesAllResponse {
+    const message = createBaseQueryMarketplaceCertificatesAllResponse();
+    message.marketplaceCertificates = object.marketplaceCertificates?.map((e) => CertificateOffer.fromPartial(e)) || [];
+    message.pagination = (object.pagination !== undefined && object.pagination !== null)
+      ? PageResponse.fromPartial(object.pagination)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryMarketplaceCertificateRequest(): QueryMarketplaceCertificateRequest {
+  return { id: 0 };
+}
+
+export const QueryMarketplaceCertificateRequest = {
+  encode(message: QueryMarketplaceCertificateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryMarketplaceCertificateRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryMarketplaceCertificateRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.uint64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryMarketplaceCertificateRequest {
+    return { id: isSet(object.id) ? Number(object.id) : 0 };
+  },
+
+  toJSON(message: QueryMarketplaceCertificateRequest): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = Math.round(message.id));
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryMarketplaceCertificateRequest>, I>>(
+    object: I,
+  ): QueryMarketplaceCertificateRequest {
+    const message = createBaseQueryMarketplaceCertificateRequest();
+    message.id = object.id ?? 0;
+    return message;
+  },
+};
+
+function createBaseQueryMarketplaceCertificateResponse(): QueryMarketplaceCertificateResponse {
+  return { marketplaceCertificate: undefined };
+}
+
+export const QueryMarketplaceCertificateResponse = {
+  encode(message: QueryMarketplaceCertificateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.marketplaceCertificate !== undefined) {
+      CertificateOffer.encode(message.marketplaceCertificate, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryMarketplaceCertificateResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryMarketplaceCertificateResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.marketplaceCertificate = CertificateOffer.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryMarketplaceCertificateResponse {
+    return {
+      marketplaceCertificate: isSet(object.marketplaceCertificate)
+        ? CertificateOffer.fromJSON(object.marketplaceCertificate)
+        : undefined,
+    };
+  },
+
+  toJSON(message: QueryMarketplaceCertificateResponse): unknown {
+    const obj: any = {};
+    message.marketplaceCertificate !== undefined && (obj.marketplaceCertificate = message.marketplaceCertificate
+      ? CertificateOffer.toJSON(message.marketplaceCertificate)
+      : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryMarketplaceCertificateResponse>, I>>(
+    object: I,
+  ): QueryMarketplaceCertificateResponse {
+    const message = createBaseQueryMarketplaceCertificateResponse();
+    message.marketplaceCertificate =
+      (object.marketplaceCertificate !== undefined && object.marketplaceCertificate !== null)
+        ? CertificateOffer.fromPartial(object.marketplaceCertificate)
+        : undefined;
     return message;
   },
 };
@@ -834,6 +1309,12 @@ export interface Query {
   /** Queries a list of UserCertificates items. */
   UserCertificates(request: QueryGetUserCertificatesRequest): Promise<QueryGetUserCertificatesResponse>;
   UserCertificatesAll(request: QueryAllUserCertificatesRequest): Promise<QueryAllUserCertificatesResponse>;
+  Device(request: QueryDeviceRequest): Promise<QueryDeviceResponse>;
+  DeviceAll(request: QueryDeviceAllRequest): Promise<QueryDeviceAllResponse>;
+  MarketplaceCertificatesAll(
+    request: QueryMarketplaceCertificatesAllRequest,
+  ): Promise<QueryMarketplaceCertificatesAllResponse>;
+  MarketplaceCertificate(request: QueryMarketplaceCertificateRequest): Promise<QueryMarketplaceCertificateResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -847,6 +1328,10 @@ export class QueryClientImpl implements Query {
     this.UserDevicesAll = this.UserDevicesAll.bind(this);
     this.UserCertificates = this.UserCertificates.bind(this);
     this.UserCertificatesAll = this.UserCertificatesAll.bind(this);
+    this.Device = this.Device.bind(this);
+    this.DeviceAll = this.DeviceAll.bind(this);
+    this.MarketplaceCertificatesAll = this.MarketplaceCertificatesAll.bind(this);
+    this.MarketplaceCertificate = this.MarketplaceCertificate.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
@@ -888,6 +1373,32 @@ export class QueryClientImpl implements Query {
     const data = QueryAllUserCertificatesRequest.encode(request).finish();
     const promise = this.rpc.request("chain4energy.c4echain.cfetokenization.Query", "UserCertificatesAll", data);
     return promise.then((data) => QueryAllUserCertificatesResponse.decode(new _m0.Reader(data)));
+  }
+
+  Device(request: QueryDeviceRequest): Promise<QueryDeviceResponse> {
+    const data = QueryDeviceRequest.encode(request).finish();
+    const promise = this.rpc.request("chain4energy.c4echain.cfetokenization.Query", "Device", data);
+    return promise.then((data) => QueryDeviceResponse.decode(new _m0.Reader(data)));
+  }
+
+  DeviceAll(request: QueryDeviceAllRequest): Promise<QueryDeviceAllResponse> {
+    const data = QueryDeviceAllRequest.encode(request).finish();
+    const promise = this.rpc.request("chain4energy.c4echain.cfetokenization.Query", "DeviceAll", data);
+    return promise.then((data) => QueryDeviceAllResponse.decode(new _m0.Reader(data)));
+  }
+
+  MarketplaceCertificatesAll(
+    request: QueryMarketplaceCertificatesAllRequest,
+  ): Promise<QueryMarketplaceCertificatesAllResponse> {
+    const data = QueryMarketplaceCertificatesAllRequest.encode(request).finish();
+    const promise = this.rpc.request("chain4energy.c4echain.cfetokenization.Query", "MarketplaceCertificatesAll", data);
+    return promise.then((data) => QueryMarketplaceCertificatesAllResponse.decode(new _m0.Reader(data)));
+  }
+
+  MarketplaceCertificate(request: QueryMarketplaceCertificateRequest): Promise<QueryMarketplaceCertificateResponse> {
+    const data = QueryMarketplaceCertificateRequest.encode(request).finish();
+    const promise = this.rpc.request("chain4energy.c4echain.cfetokenization.Query", "MarketplaceCertificate", data);
+    return promise.then((data) => QueryMarketplaceCertificateResponse.decode(new _m0.Reader(data)));
   }
 }
 

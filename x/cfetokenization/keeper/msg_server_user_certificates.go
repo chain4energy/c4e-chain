@@ -17,11 +17,21 @@ func (k msgServer) CreateUserCertificate(goCtx context.Context, msg *types.MsgCr
 			Owner: msg.Owner,
 		}
 	}
-	_, found = k.GetDevice(ctx, msg.Owner)
+	userDevices, found := k.GetUserDevices(ctx, msg.Owner)
 	if !found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "user not found")
 	}
-	device, found := k.GetDevice(ctx, msg.Owner)
+	found = false
+	for _, device := range userDevices.Devices {
+		if device.DeviceAddress == msg.DeviceAddress {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "device not found")
+	}
+	device, found := k.GetDevice(ctx, msg.DeviceAddress)
 	if !found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "device not found")
 	}

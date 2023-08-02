@@ -16,8 +16,7 @@ message GenesisState {
   repeated CertificateType  certificateTypeList   = 2 [(gogoproto.nullable) = false];
            uint64           certificateTypeCount  = 3;
   repeated UserDevices      userDevicesList       = 4 [(gogoproto.nullable) = false];
-           uint64           userDevicesCount      = 5;
-  repeated UserCertificates userCertificatesList  = 6 [(gogoproto.nullable) = false];
-           uint64           userCertificatesCount = 7;
+  repeated UserCertificates userCertificatesList  = 5 [(gogoproto.nullable) = false];
+  repeated Device devicesList  = 6 [(gogoproto.nullable) = false];
 }
 

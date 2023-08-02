@@ -8,22 +8,16 @@ import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
 import { MsgCreateAccount } from "./types/c4echain/cfesignature/tx";
-import { MsgStoreSignature } from "./types/c4echain/cfesignature/tx";
 import { MsgPublishReferencePayloadLink } from "./types/c4echain/cfesignature/tx";
+import { MsgStoreSignature } from "./types/c4echain/cfesignature/tx";
 
 import { Params as typeParams} from "./types"
 import { Signature as typeSignature} from "./types"
 
-export { MsgCreateAccount, MsgStoreSignature, MsgPublishReferencePayloadLink };
+export { MsgCreateAccount, MsgPublishReferencePayloadLink, MsgStoreSignature };
 
 type sendMsgCreateAccountParams = {
   value: MsgCreateAccount,
-  fee?: StdFee,
-  memo?: string
-};
-
-type sendMsgStoreSignatureParams = {
-  value: MsgStoreSignature,
   fee?: StdFee,
   memo?: string
 };
@@ -34,17 +28,23 @@ type sendMsgPublishReferencePayloadLinkParams = {
   memo?: string
 };
 
+type sendMsgStoreSignatureParams = {
+  value: MsgStoreSignature,
+  fee?: StdFee,
+  memo?: string
+};
+
 
 type msgCreateAccountParams = {
   value: MsgCreateAccount,
 };
 
-type msgStoreSignatureParams = {
-  value: MsgStoreSignature,
-};
-
 type msgPublishReferencePayloadLinkParams = {
   value: MsgPublishReferencePayloadLink,
+};
+
+type msgStoreSignatureParams = {
+  value: MsgStoreSignature,
 };
 
 
@@ -91,20 +91,6 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		async sendMsgStoreSignature({ value, fee, memo }: sendMsgStoreSignatureParams): Promise<DeliverTxResponse> {
-			if (!signer) {
-					throw new Error('TxClient:sendMsgStoreSignature: Unable to sign Tx. Signer is not present.')
-			}
-			try {			
-				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgStoreSignature({ value: MsgStoreSignature.fromPartial(value) })
-				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
-			} catch (e: any) {
-				throw new Error('TxClient:sendMsgStoreSignature: Could not broadcast Tx: '+ e.message)
-			}
-		},
-		
 		async sendMsgPublishReferencePayloadLink({ value, fee, memo }: sendMsgPublishReferencePayloadLinkParams): Promise<DeliverTxResponse> {
 			if (!signer) {
 					throw new Error('TxClient:sendMsgPublishReferencePayloadLink: Unable to sign Tx. Signer is not present.')
@@ -119,6 +105,20 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
+		async sendMsgStoreSignature({ value, fee, memo }: sendMsgStoreSignatureParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgStoreSignature: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgStoreSignature({ value: MsgStoreSignature.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgStoreSignature: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
 		
 		msgCreateAccount({ value }: msgCreateAccountParams): EncodeObject {
 			try {
@@ -128,19 +128,19 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		msgStoreSignature({ value }: msgStoreSignatureParams): EncodeObject {
-			try {
-				return { typeUrl: "/chain4energy.c4echain.cfesignature.MsgStoreSignature", value: MsgStoreSignature.fromPartial( value ) }  
-			} catch (e: any) {
-				throw new Error('TxClient:MsgStoreSignature: Could not create message: ' + e.message)
-			}
-		},
-		
 		msgPublishReferencePayloadLink({ value }: msgPublishReferencePayloadLinkParams): EncodeObject {
 			try {
 				return { typeUrl: "/chain4energy.c4echain.cfesignature.MsgPublishReferencePayloadLink", value: MsgPublishReferencePayloadLink.fromPartial( value ) }  
 			} catch (e: any) {
 				throw new Error('TxClient:MsgPublishReferencePayloadLink: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgStoreSignature({ value }: msgStoreSignatureParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfesignature.MsgStoreSignature", value: MsgStoreSignature.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgStoreSignature: Could not create message: ' + e.message)
 			}
 		},
 		

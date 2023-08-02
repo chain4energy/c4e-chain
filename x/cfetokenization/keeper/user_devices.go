@@ -65,10 +65,10 @@ func (k Keeper) GetPendingDevice(ctx sdk.Context, deviceAddress string) (val typ
 }
 
 // SetUserDevices set a specific userDevices in the store
-func (k Keeper) SetDevice(ctx sdk.Context, pendingDevice types.Device) {
+func (k Keeper) SetDevice(ctx sdk.Context, device types.Device) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DeviceKey))
-	b := k.cdc.MustMarshal(&pendingDevice)
-	store.Set([]byte(pendingDevice.DeviceAddress), b)
+	b := k.cdc.MustMarshal(&device)
+	store.Set([]byte(device.DeviceAddress), b)
 }
 
 // SetUserDevices set a specific userDevices in the store
@@ -80,4 +80,20 @@ func (k Keeper) GetDevice(ctx sdk.Context, deviceAddress string) (val types.Devi
 	}
 	k.cdc.MustUnmarshal(b, &val)
 	return val, true
+}
+
+// SetUserDevices set a specific userDevices in the store
+func (k Keeper) GetAllDevices(ctx sdk.Context) (list []types.Device) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.DeviceKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Device
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		list = append(list, val)
+	}
+
+	return
 }

@@ -24,6 +24,17 @@ export interface CfetokenizationCertificate {
   certificate_status?: CfetokenizationCertificateStatus;
 }
 
+export interface CfetokenizationCertificateOffer {
+  /** @format uint64 */
+  id?: string;
+
+  /** @format uint64 */
+  certificate_id?: string;
+  owner?: string;
+  buyer?: string;
+  price?: V1Beta1Coin[];
+}
+
 export enum CfetokenizationCertificateStatus {
   UNKNOWN_CERTIFICATE_STATUS = "UNKNOWN_CERTIFICATE_STATUS",
   VALID = "VALID",
@@ -36,6 +47,25 @@ export interface CfetokenizationCertificateType {
   id?: string;
   name?: string;
   description?: string;
+}
+
+export interface CfetokenizationDevice {
+  device_address?: string;
+  measurements?: CfetokenizationMeasurement[];
+
+  /** @format uint64 */
+  power_sum?: string;
+
+  /** @format uint64 */
+  used_power?: string;
+}
+
+export interface CfetokenizationMeasurement {
+  /** @format date-time */
+  timestamp?: string;
+
+  /** @format uint64 */
+  power?: string;
 }
 
 export type CfetokenizationMsgAcceptDeviceResponse = object;
@@ -104,6 +134,25 @@ export interface CfetokenizationQueryAllUserDevicesResponse {
   pagination?: V1Beta1PageResponse;
 }
 
+export interface CfetokenizationQueryDeviceAllResponse {
+  devices?: CfetokenizationDevice[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
+}
+
+export interface CfetokenizationQueryDeviceResponse {
+  device?: CfetokenizationDevice;
+}
+
 export interface CfetokenizationQueryGetCertificateTypeResponse {
   CertificateType?: CfetokenizationCertificateType;
 }
@@ -114,6 +163,25 @@ export interface CfetokenizationQueryGetUserCertificatesResponse {
 
 export interface CfetokenizationQueryGetUserDevicesResponse {
   UserDevices?: CfetokenizationUserDevices;
+}
+
+export interface CfetokenizationQueryMarketplaceCertificateResponse {
+  marketplace_certificate?: CfetokenizationCertificateOffer;
+}
+
+export interface CfetokenizationQueryMarketplaceCertificatesAllResponse {
+  marketplace_certificates?: CfetokenizationCertificateOffer[];
+
+  /**
+   * PageResponse is to be embedded in gRPC response messages where the
+   * corresponding request message has used PageRequest.
+   *
+   *  message SomeResponse {
+   *          repeated Bar results = 1;
+   *          PageResponse page = 2;
+   *  }
+   */
+  pagination?: V1Beta1PageResponse;
 }
 
 /**
@@ -363,7 +431,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    *
    * @tags Query
    * @name QueryCertificateTypeAll
-   * @request GET:/chain4energy/c4e-chain/cfetokenization/certificate_type
+   * @request GET:/c4e/tokenization/v1beta1/certificate_type
    */
   queryCertificateTypeAll = (
     query?: {
@@ -376,7 +444,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     params: RequestParams = {},
   ) =>
     this.request<CfetokenizationQueryAllCertificateTypeResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/cfetokenization/certificate_type`,
+      path: `/c4e/tokenization/v1beta1/certificate_type`,
       method: "GET",
       query: query,
       format: "json",
@@ -389,12 +457,92 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryCertificateType
    * @summary Queries a list of CertificateType items.
-   * @request GET:/chain4energy/c4e-chain/cfetokenization/certificate_type/{id}
+   * @request GET:/c4e/tokenization/v1beta1/certificate_type/{id}
    */
   queryCertificateType = (id: string, params: RequestParams = {}) =>
     this.request<CfetokenizationQueryGetCertificateTypeResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/cfetokenization/certificate_type/${id}`,
+      path: `/c4e/tokenization/v1beta1/certificate_type/${id}`,
       method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryDevice
+   * @request GET:/c4e/tokenization/v1beta1/device/{device_address}
+   */
+  queryDevice = (deviceAddress: string, params: RequestParams = {}) =>
+    this.request<CfetokenizationQueryDeviceResponse, RpcStatus>({
+      path: `/c4e/tokenization/v1beta1/device/${deviceAddress}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryDeviceAll
+   * @request GET:/c4e/tokenization/v1beta1/devices
+   */
+  queryDeviceAll = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<CfetokenizationQueryDeviceAllResponse, RpcStatus>({
+      path: `/c4e/tokenization/v1beta1/devices`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryMarketplaceCertificate
+   * @request GET:/c4e/tokenization/v1beta1/marketplace_certificate/{id}
+   */
+  queryMarketplaceCertificate = (id: string, params: RequestParams = {}) =>
+    this.request<CfetokenizationQueryMarketplaceCertificateResponse, RpcStatus>({
+      path: `/c4e/tokenization/v1beta1/marketplace_certificate/${id}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryMarketplaceCertificatesAll
+   * @request GET:/c4e/tokenization/v1beta1/marketplace_certificates
+   */
+  queryMarketplaceCertificatesAll = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.count_total"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.request<CfetokenizationQueryMarketplaceCertificatesAllResponse, RpcStatus>({
+      path: `/c4e/tokenization/v1beta1/marketplace_certificates`,
+      method: "GET",
+      query: query,
       format: "json",
       ...params,
     });
@@ -405,11 +553,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryParams
    * @summary Parameters queries the parameters of the module.
-   * @request GET:/chain4energy/c4e-chain/cfetokenization/params
+   * @request GET:/c4e/tokenization/v1beta1/params
    */
   queryParams = (params: RequestParams = {}) =>
     this.request<CfetokenizationQueryParamsResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/cfetokenization/params`,
+      path: `/c4e/tokenization/v1beta1/params`,
       method: "GET",
       format: "json",
       ...params,
@@ -420,7 +568,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    *
    * @tags Query
    * @name QueryUserCertificatesAll
-   * @request GET:/chain4energy/c4e-chain/cfetokenization/user_certificates
+   * @request GET:/c4e/tokenization/v1beta1/user_certificates
    */
   queryUserCertificatesAll = (
     query?: {
@@ -433,7 +581,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     params: RequestParams = {},
   ) =>
     this.request<CfetokenizationQueryAllUserCertificatesResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/cfetokenization/user_certificates`,
+      path: `/c4e/tokenization/v1beta1/user_certificates`,
       method: "GET",
       query: query,
       format: "json",
@@ -446,11 +594,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryUserCertificates
    * @summary Queries a list of UserCertificates items.
-   * @request GET:/chain4energy/c4e-chain/cfetokenization/user_certificates/{owner}
+   * @request GET:/c4e/tokenization/v1beta1/user_certificates/{owner}
    */
   queryUserCertificates = (owner: string, params: RequestParams = {}) =>
     this.request<CfetokenizationQueryGetUserCertificatesResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/cfetokenization/user_certificates/${owner}`,
+      path: `/c4e/tokenization/v1beta1/user_certificates/${owner}`,
       method: "GET",
       format: "json",
       ...params,
@@ -461,7 +609,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    *
    * @tags Query
    * @name QueryUserDevicesAll
-   * @request GET:/chain4energy/c4e-chain/cfetokenization/user_devices
+   * @request GET:/c4e/tokenization/v1beta1/user_devices
    */
   queryUserDevicesAll = (
     query?: {
@@ -474,7 +622,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     params: RequestParams = {},
   ) =>
     this.request<CfetokenizationQueryAllUserDevicesResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/cfetokenization/user_devices`,
+      path: `/c4e/tokenization/v1beta1/user_devices`,
       method: "GET",
       query: query,
       format: "json",
@@ -487,11 +635,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryUserDevices
    * @summary Queries a list of UserDevices items.
-   * @request GET:/chain4energy/c4e-chain/cfetokenization/user_devices/{owner}
+   * @request GET:/c4e/tokenization/v1beta1/user_devices/{owner}
    */
   queryUserDevices = (owner: string, params: RequestParams = {}) =>
     this.request<CfetokenizationQueryGetUserDevicesResponse, RpcStatus>({
-      path: `/chain4energy/c4e-chain/cfetokenization/user_devices/${owner}`,
+      path: `/c4e/tokenization/v1beta1/user_devices/${owner}`,
       method: "GET",
       format: "json",
       ...params,
