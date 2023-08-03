@@ -107,6 +107,8 @@ func (k msgServer) AddCertificateToMarketplace(goCtx context.Context, msg *types
 		Owner:         msg.Owner,
 		Buyer:         "",
 		Price:         msg.Price,
+		Authorizer:    certificate.Authority,
+		Power:         certificate.Power,
 	}
 	k.AppendMarketplaceCertificate(ctx, certificateOffer)
 
@@ -127,7 +129,12 @@ func (k msgServer) BurnCertificate(goCtx context.Context, msg *types.MsgBurnCert
 	if certificate.CertificateStatus != types.CertificateStatus_VALID {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "certificate already authorized or burned")
 	}
-
+	certificates := k.GetMarketplaceCertificates(ctx)
+	for _, cert := range certificates {
+		if cert.CertificateId == msg.CertificateId && cert.Owner == msg.Owner {
+			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "certificate already in marketplace")
+		}
+	}
 	certificate.CertificateStatus = types.CertificateStatus_BURNED
 
 	k.SetUserCertificates(ctx, userCertificates)

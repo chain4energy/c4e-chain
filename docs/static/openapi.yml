@@ -2548,6 +2548,11 @@ paths:
                         custom method
 
                         signatures required by gogoproto.
+                  authorizer:
+                    type: string
+                  power:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -2616,6 +2621,11 @@ paths:
                           custom method
 
                           signatures required by gogoproto.
+                    authorizer:
+                      type: string
+                    power:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -50812,6 +50822,11 @@ definitions:
 
             NOTE: The amount field is an Int which implements the custom method
             signatures required by gogoproto.
+      authorizer:
+        type: string
+      power:
+        type: string
+        format: uint64
   chain4energy.c4echain.cfetokenization.CertificateStatus:
     type: string
     enum:
@@ -51211,6 +51226,11 @@ definitions:
                 method
 
                 signatures required by gogoproto.
+          authorizer:
+            type: string
+          power:
+            type: string
+            format: uint64
   chain4energy.c4echain.cfetokenization.QueryMarketplaceCertificatesAllResponse:
     type: object
     properties:
@@ -51246,6 +51266,11 @@ definitions:
                   method
 
                   signatures required by gogoproto.
+            authorizer:
+              type: string
+            power:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:

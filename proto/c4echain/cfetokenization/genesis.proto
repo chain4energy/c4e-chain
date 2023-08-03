@@ -18,5 +18,6 @@ message GenesisState {
   repeated UserDevices      userDevicesList       = 4 [(gogoproto.nullable) = false];
   repeated UserCertificates userCertificatesList  = 5 [(gogoproto.nullable) = false];
   repeated Device devicesList  = 6 [(gogoproto.nullable) = false];
+  repeated CertificateOffer certificates  = 7 [(gogoproto.nullable) = false];
 }
 

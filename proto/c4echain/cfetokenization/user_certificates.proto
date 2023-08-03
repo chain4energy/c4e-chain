@@ -37,4 +37,6 @@ message CertificateOffer {
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+  string authorizer = 6;
+  uint64 power = 7;
 }
