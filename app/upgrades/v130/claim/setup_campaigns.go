@@ -5,7 +5,6 @@ import (
 	"cosmossdk.io/math"
 	"embed"
 	"encoding/json"
-	"fmt"
 	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -182,16 +181,6 @@ func addClaimRecordsToCampaigns(ctx sdk.Context, appKeepers cfeupgradetypes.AppK
 	}
 
 	zealaydropEntries, err := readClaimRecordEntriesFromJson("zealydrop.json")
-	foundEntries := 0
-	totalEntries := len(zealaydropEntries)
-	fmt.Println("totalEntries: ", totalEntries)
-	for _, entry := range zealaydropEntries {
-		_, found := appKeepers.GetC4eClaimKeeper().GetUserEntry(ctx, entry.UserEntryAddress)
-		if found {
-			foundEntries++
-		}
-	}
-	fmt.Print("foundEntries: ", foundEntries, "\n")
 	if err != nil {
 		return err
 	}
