@@ -147,7 +147,7 @@ func (k msgServer) BuyCertificate(goCtx context.Context, msg *types.MsgBuyCertif
 
 	marketplaceCertificate, found := k.GetMarketplaceCertificate(ctx, msg.MarketplaceCertificateId)
 	if !found {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "user not found")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "certificate not found")
 	}
 	if marketplaceCertificate.Buyer != "" {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "certificate already bought")
@@ -158,10 +158,10 @@ func (k msgServer) BuyCertificate(goCtx context.Context, msg *types.MsgBuyCertif
 	if buyerSpendable.IsAllLT(marketplaceCertificate.Price) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not enough coins")
 	}
-	ownerAccAddr, err := sdk.AccAddressFromBech32(msg.Buyer)
+	ownerAccAddr, err := sdk.AccAddressFromBech32(marketplaceCertificate.Owner)
 	err = k.bankKeeper.SendCoins(ctx, buyerAccAddr, ownerAccAddr, marketplaceCertificate.Price)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(c4eerrors.ErrAmount, "not enough coins (%v)", err)
+		return nil, sdkerrors.Wrapf(c4eerrors.ErrAmount, "send coins error (%v)", err)
 	}
 
 	userCertificates, found := k.GetUserCertificates(ctx, marketplaceCertificate.Owner)
@@ -185,6 +185,7 @@ func (k msgServer) BuyCertificate(goCtx context.Context, msg *types.MsgBuyCertif
 	}
 	buyerCertificates.Certificates = append(buyerCertificates.Certificates, &certCopy)
 	k.SetUserCertificates(ctx, buyerCertificates)
+	k.SetUserCertificates(ctx, userCertificates)
 	marketplaceCertificate.Buyer = msg.Buyer
 	k.SetMarketplaceCertificate(ctx, marketplaceCertificate)
 
