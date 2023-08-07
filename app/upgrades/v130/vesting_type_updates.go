@@ -1,4 +1,4 @@
-package v200
+package v130
 
 import (
 	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"

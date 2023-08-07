@@ -1,7 +1,7 @@
-package v200_test
+package v130_test
 
 import (
-	v200 "github.com/chain4energy/c4e-chain/app/upgrades/v200"
+	v130 "github.com/chain4energy/c4e-chain/app/upgrades/v130"
 	"testing"
 	"time"
 
@@ -63,7 +63,7 @@ func TestUpdateVestingTypes(t *testing.T) {
 	require.NotNil(t, vestingTypesBefore)
 	require.Equal(t, 2, len(vestingTypesBefore.VestingTypes))
 
-	err := v200.ModifyAndAddVestingTypes(testHelper.Context, testHelper.App)
+	err := v130.ModifyAndAddVestingTypes(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
 
 	vestingTypesAfter := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAllVestingTypes(testHelper.Context)
@@ -79,7 +79,7 @@ func TestUpdateVestingTypesVestingTypesNotFound(t *testing.T) {
 	require.NotNil(t, vestingTypesBefore)
 	require.Equal(t, 0, len(vestingTypesBefore.VestingTypes))
 
-	err := v200.ModifyAndAddVestingTypes(testHelper.Context, testHelper.App)
+	err := v130.ModifyAndAddVestingTypes(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
 
 	vestingTypesAfter := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAllVestingTypes(testHelper.Context)

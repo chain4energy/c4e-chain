@@ -1,9 +1,9 @@
-package v200_test
+package v130_test
 
 import (
 	"cosmossdk.io/math"
-	v200 "github.com/chain4energy/c4e-chain/app/upgrades/v200"
-	"github.com/chain4energy/c4e-chain/app/upgrades/v200/claim"
+	v130 "github.com/chain4energy/c4e-chain/app/upgrades/v130"
+	"github.com/chain4energy/c4e-chain/app/upgrades/v130/claim"
 	testapp "github.com/chain4energy/c4e-chain/testutil/app"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
@@ -118,8 +118,8 @@ var (
 		EndTime:                airdropEndTime,
 		LockupPeriod:           airdropLockupPeriod,
 		VestingPeriod:          airdropVestingPeriod,
-		CampaignCurrentAmount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(99695340916))),
-		CampaignTotalAmount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(99695340916))),
+		CampaignCurrentAmount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(392677840916))),
+		CampaignTotalAmount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(392677840916))),
 		VestingPoolName:        "Fairdrop",
 	}
 
@@ -154,11 +154,11 @@ func TestSetupCampaigns(t *testing.T) {
 	_ = addAirdropModuleAccount(testHelper)
 	campaigns := testHelper.C4eClaimUtils.GetCampaigns()
 	require.Nil(t, campaigns)
-	err := v200.ModifyAndAddVestingTypes(testHelper.Context, testHelper.App)
+	err := v130.ModifyAndAddVestingTypes(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
-	err = v200.MigrateMoondropVestingAccount(testHelper.Context, testHelper.App)
+	err = v130.MigrateMoondropVestingAccount(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
-	err = v200.MigrateAirdropModuleAccount(testHelper.Context, testHelper.App)
+	err = v130.MigrateAirdropModuleAccount(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
 	err = claim.SetupAirdrops(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
@@ -166,7 +166,7 @@ func TestSetupCampaigns(t *testing.T) {
 	campaigns = testHelper.C4eClaimUtils.GetCampaigns()
 	userEntires := testHelper.C4eClaimUtils.GetAllUsersEntries()
 	require.Equal(t, 6, len(campaigns))
-	require.Equal(t, 107940, len(userEntires))
+	require.Equal(t, 108359, len(userEntires))
 
 	require.Equal(t, moondropCampaign, campaigns[0])
 	require.Equal(t, stakedropCampaign, campaigns[1])
@@ -184,9 +184,9 @@ func TestSetupCampaignsNoMoondropVestingAccount(t *testing.T) {
 	addAirdropModuleAccount(testHelper)
 	campaigns := testHelper.C4eClaimUtils.GetCampaigns()
 	require.Nil(t, campaigns)
-	err := v200.ModifyAndAddVestingTypes(testHelper.Context, testHelper.App)
+	err := v130.ModifyAndAddVestingTypes(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
-	err = v200.MigrateAirdropModuleAccount(testHelper.Context, testHelper.App)
+	err = v130.MigrateAirdropModuleAccount(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
 	err = claim.SetupAirdrops(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
@@ -204,9 +204,9 @@ func TestSetupCampaignsNoAirdropModuleAccount(t *testing.T) {
 
 	campaigns := testHelper.App.CfeclaimKeeper.GetAllCampaigns(testHelper.Context)
 	require.Nil(t, campaigns)
-	err := v200.ModifyAndAddVestingTypes(testHelper.Context, testHelper.App)
+	err := v130.ModifyAndAddVestingTypes(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
-	err = v200.MigrateMoondropVestingAccount(testHelper.Context, testHelper.App)
+	err = v130.MigrateMoondropVestingAccount(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
 	err = claim.SetupAirdrops(testHelper.Context, testHelper.App)
 	require.NoError(t, err)

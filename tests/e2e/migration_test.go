@@ -2,7 +2,7 @@ package e2e
 
 import (
 	"cosmossdk.io/math"
-	v200 "github.com/chain4energy/c4e-chain/app/upgrades/v200"
+	v130 "github.com/chain4energy/c4e-chain/app/upgrades/v130"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
@@ -39,18 +39,18 @@ func (s *MainnetMigrationSetupSuite) TestMainnetVestingsMigration() {
 	s.Equal(campaigns, createMainetCampaigns())
 
 	userEntries := node.QueryUserEntries()
-	s.Equal(107940, len(userEntries))
+	s.Equal(108359, len(userEntries))
 
 	vestingTypes := node.QueryVestingTypes()
 	s.Equal(6, len(vestingTypes))
 	s.ElementsMatch(createMainnetVestingTypes(), vestingTypes)
-	balances, err := node.QueryBalances(v200.AirdropModuleAccountAddress)
+	balances, err := node.QueryBalances(v130.AirdropModuleAccountAddress)
 	s.NoError(err)
 	s.True(balances.IsEqual(sdk.NewCoins()))
 
-	moondropAccount := node.QueryAccount(v200.MoondropVestingAccount)
+	moondropAccount := node.QueryAccount(v130.MoondropVestingAccount)
 	s.NotNil(moondropAccount)
-	moondropVestingPools := node.QueryVestingPoolsInfo(v200.MoondropVestingAccount)
+	moondropVestingPools := node.QueryVestingPoolsInfo(v130.MoondropVestingAccount)
 	s.Equal(1, len(moondropVestingPools))
 	s.Equal(moondropVestingPools[0].VestingType, "Moondrop")
 
@@ -83,7 +83,7 @@ func (s *MainnetMigrationSetupSuite) TestMainnetVestingsMigration() {
 	s.NotNil(amadropCampaign)
 	s.Equal(amadropCampaign.CampaignCurrentAmount, amadropCampaign.CampaignTotalAmount)
 
-	fairdropVestingPools := node.QueryVestingPoolsInfo(v200.NewAirdropVestingPoolOwner)
+	fairdropVestingPools := node.QueryVestingPoolsInfo(v130.NewAirdropVestingPoolOwner)
 	for _, vestingPoolInfo := range fairdropVestingPools {
 		if vestingPoolInfo.Name == "Fairdrop" {
 			s.Equal(vestingPoolInfo.VestingType, "Fairdrop")
@@ -263,8 +263,8 @@ func createMainetCampaigns() []cfeclaimtypes.Campaign {
 		EndTime:                airdropEndTime,
 		LockupPeriod:           airdropLockupPeriod,
 		VestingPeriod:          airdropVestingPeriod,
-		CampaignCurrentAmount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(99695340916))),
-		CampaignTotalAmount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(99695340916))),
+		CampaignCurrentAmount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(392677840916))),
+		CampaignTotalAmount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(392677840916))),
 		VestingPoolName:        "Fairdrop",
 	}
 
@@ -315,18 +315,18 @@ func (s *MainnetMigrationChainingSetupSuite) TestMainnetVestingsMigrationWhenCha
 	s.Equal(6, len(campaigns))
 
 	userEntries := node.QueryUserEntries()
-	s.Equal(107940, len(userEntries))
+	s.Equal(108359, len(userEntries))
 
 	vestingTypes := node.QueryVestingTypes()
 	s.Equal(6, len(vestingTypes))
 	s.ElementsMatch(createMainnetVestingTypes(), vestingTypes)
-	balances, err := node.QueryBalances(v200.AirdropModuleAccountAddress)
+	balances, err := node.QueryBalances(v130.AirdropModuleAccountAddress)
 	s.NoError(err)
 	s.True(balances.IsEqual(sdk.NewCoins()))
 
-	moondropAccount := node.QueryAccount(v200.MoondropVestingAccount)
+	moondropAccount := node.QueryAccount(v130.MoondropVestingAccount)
 	s.NotNil(moondropAccount)
-	moondropVestingPools := node.QueryVestingPoolsInfo(v200.MoondropVestingAccount)
+	moondropVestingPools := node.QueryVestingPoolsInfo(v130.MoondropVestingAccount)
 	s.Equal(1, len(moondropVestingPools))
 	s.Equal(moondropVestingPools[0].VestingType, "Moondrop")
 
@@ -359,7 +359,7 @@ func (s *MainnetMigrationChainingSetupSuite) TestMainnetVestingsMigrationWhenCha
 	s.NotNil(amadropCampaign)
 	s.Equal(amadropCampaign.CampaignCurrentAmount, amadropCampaign.CampaignTotalAmount)
 
-	fairdropVestingPools := node.QueryVestingPoolsInfo(v200.NewAirdropVestingPoolOwner)
+	fairdropVestingPools := node.QueryVestingPoolsInfo(v130.NewAirdropVestingPoolOwner)
 	for _, vestingPoolInfo := range fairdropVestingPools {
 		if vestingPoolInfo.Name == "Fairdrop" {
 			s.Equal(vestingPoolInfo.VestingType, "Fairdrop")
