@@ -25,7 +25,8 @@ enum CertificateStatus {
   UNKNOWN_CERTIFICATE_STATUS = 0;
   VALID = 1;
   INVALID = 2;
-  BURNED = 3;
+  ON_MARKETPLACE = 3;
+  BURNED = 4;
 }
 
 message CertificateOffer {

@@ -2811,6 +2811,7 @@ paths:
                               - UNKNOWN_CERTIFICATE_STATUS
                               - VALID
                               - INVALID
+                              - ON_MARKETPLACE
                               - BURNED
                             default: UNKNOWN_CERTIFICATE_STATUS
               pagination:
@@ -2961,6 +2962,7 @@ paths:
                             - UNKNOWN_CERTIFICATE_STATUS
                             - VALID
                             - INVALID
+                            - ON_MARKETPLACE
                             - BURNED
                           default: UNKNOWN_CERTIFICATE_STATUS
         default:
@@ -50793,6 +50795,7 @@ definitions:
           - UNKNOWN_CERTIFICATE_STATUS
           - VALID
           - INVALID
+          - ON_MARKETPLACE
           - BURNED
         default: UNKNOWN_CERTIFICATE_STATUS
   chain4energy.c4echain.cfetokenization.CertificateOffer:
@@ -50833,6 +50836,7 @@ definitions:
       - UNKNOWN_CERTIFICATE_STATUS
       - VALID
       - INVALID
+      - ON_MARKETPLACE
       - BURNED
     default: UNKNOWN_CERTIFICATE_STATUS
   chain4energy.c4echain.cfetokenization.CertificateType:
@@ -50974,6 +50978,7 @@ definitions:
                       - UNKNOWN_CERTIFICATE_STATUS
                       - VALID
                       - INVALID
+                      - ON_MARKETPLACE
                       - BURNED
                     default: UNKNOWN_CERTIFICATE_STATUS
       pagination:
@@ -51174,6 +51179,7 @@ definitions:
                     - UNKNOWN_CERTIFICATE_STATUS
                     - VALID
                     - INVALID
+                    - ON_MARKETPLACE
                     - BURNED
                   default: UNKNOWN_CERTIFICATE_STATUS
   chain4energy.c4echain.cfetokenization.QueryGetUserDevicesResponse:
@@ -51337,6 +51343,7 @@ definitions:
                 - UNKNOWN_CERTIFICATE_STATUS
                 - VALID
                 - INVALID
+                - ON_MARKETPLACE
                 - BURNED
               default: UNKNOWN_CERTIFICATE_STATUS
   chain4energy.c4echain.cfetokenization.UserDevice:

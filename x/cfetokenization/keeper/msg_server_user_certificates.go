@@ -93,14 +93,9 @@ func (k msgServer) AddCertificateToMarketplace(goCtx context.Context, msg *types
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "certificate not found")
 	}
 	if certificate.CertificateStatus != types.CertificateStatus_VALID {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "certificate not authorized or burned")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "certificate not authorized, burned or on marketplace")
 	}
-	certificates := k.GetMarketplaceCertificates(ctx)
-	for _, cert := range certificates {
-		if cert.CertificateId == msg.CertificateId && cert.Owner == msg.Owner {
-			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "certificate already in marketplace")
-		}
-	}
+	certificate.CertificateStatus = types.CertificateStatus_ON_MARKETPLACE
 
 	certificateOffer := types.CertificateOffer{
 		CertificateId: msg.CertificateId,
@@ -111,6 +106,7 @@ func (k msgServer) AddCertificateToMarketplace(goCtx context.Context, msg *types
 		Power:         certificate.Power,
 	}
 	k.AppendMarketplaceCertificate(ctx, certificateOffer)
+	k.SetUserCertificates(ctx, userCertificates)
 
 	return &types.MsgAddCertificateToMarketplaceResponse{}, nil
 }
@@ -173,10 +169,10 @@ func (k msgServer) BuyCertificate(goCtx context.Context, msg *types.MsgBuyCertif
 	for i, cert := range userCertificates.Certificates {
 		if cert.Id == marketplaceCertificate.CertificateId {
 			certCopy = *cert
-			remove(userCertificates.Certificates, i)
+			userCertificates.Certificates = remove(userCertificates.Certificates, i)
 		}
 	}
-
+	certCopy.CertificateStatus = types.CertificateStatus_VALID
 	buyerCertificates, found := k.GetUserCertificates(ctx, msg.Buyer)
 	if !found {
 		buyerCertificates = types.UserCertificates{
