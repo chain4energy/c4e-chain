@@ -173,12 +173,14 @@ func (k msgServer) BuyCertificate(goCtx context.Context, msg *types.MsgBuyCertif
 		}
 	}
 	certCopy.CertificateStatus = types.CertificateStatus_VALID
+
 	buyerCertificates, found := k.GetUserCertificates(ctx, msg.Buyer)
 	if !found {
 		buyerCertificates = types.UserCertificates{
 			Owner: msg.Buyer,
 		}
 	}
+	certCopy.Id = uint64(len(buyerCertificates.Certificates))
 	buyerCertificates.Certificates = append(buyerCertificates.Certificates, &certCopy)
 	k.SetUserCertificates(ctx, buyerCertificates)
 	k.SetUserCertificates(ctx, userCertificates)
