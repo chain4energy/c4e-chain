@@ -391,12 +391,12 @@ Chain4Energy distributor module emits the following events:
 
 #### Tokens distribution
 
-| Type             | Attribute Key         | Description       |
-|------------------|-----------------------|-------------------|
-| Distribution     | Distribution type     | Distribution data |
-| DistributionBurn | DistributionBurn type | Burn data         |
+| Type                  | Attribute Key         | Description       |
+|-----------------------|-----------------------|-------------------|
+| EventDistribution     | Distribution type     | Distribution data |
+| EventDistributionBurn | DistributionBurn type | Burn data         |
 
-##### Distribution type
+##### EventDistribution type
 
 Distribution type represents one send operation to one destination in one block
 
@@ -408,7 +408,7 @@ Distribution type represents one send operation to one destination in one block
 | destination    | Account type (see **[Account type](#account-type)**)         | destination                                                                            |
 | amount         | DecCoins                                                     | coins sent to destination                                                              |
 
-##### DistributionBurn type
+##### EventDistributionBurn type
 
 DistributionBurn type represents one burn operation
 
