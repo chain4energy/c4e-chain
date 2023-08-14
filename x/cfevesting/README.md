@@ -36,6 +36,14 @@ Vesting pools have the following parameters:
 * initially_locked - amount of tokens locked initially in the pool
 * withdrawn - amount of tokens that were already withdrawn from the pool (currently all available (available = initially_locked - sent) tokens can be withdrawn by the owner only after lock end time)
 * sent - amount of tokens that were already sent to vesting accounts from the vesting pool
+* reservations - amount of tokens that were reserved from the vesting pool (reserved tokens are not available for sending to vesting accounts)
+
+### VestingPoolReservation
+
+Vesting pool reservation defines amount of tokens reserved in a vesting pool.
+Vesting pool reservation has the following parameters:
+* id - unique id
+* amount - amount of reserved tokens
 
 ### Vesting Type
 
@@ -568,7 +576,7 @@ See example response:
       "sent_amount": "0",
       "reservations": [
         {
-          "denom": "uc4e",
+          "id": "1",
           "amount": "15000000000000"
         }
       ]
@@ -587,7 +595,7 @@ See example response:
       "sent_amount": "0",
       "reservations": [
         {
-          "denom": "uc4e",
+          "id": "1",
           "amount": "15000000000000"
         }
       ]

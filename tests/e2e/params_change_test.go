@@ -149,7 +149,7 @@ func (s *ParamsSetupSuite) TestCfevestingEmptyDenom() {
 	node.QueryFailedProposal(chainA.LatestProposalNumber + 1)
 }
 
-func (s *ParamsSetupSuite) TestCfevestingNewDenom() {
+func (s *ParamsSetupSuite) TestCfevestingNewDenomAndWhenVestingPoolExists() {
 	chainA := s.configurer.GetChainConfig(0)
 	node, err := chainA.GetDefaultNode()
 
@@ -170,18 +170,13 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenom() {
 		node.QueryCfevestingParams(&params)
 		return s.EqualValues(params.Params.Denom, newVestingDenom)
 	})
-}
-
-func (s *ParamsSetupSuite) TestCfevestingNewDenomVestingPoolsExist() {
-	chainA := s.configurer.GetChainConfig(0)
-	node, err := chainA.GetDefaultNode()
 
 	// set previous denom
-	proposalMessage := cfevestingtypes.MsgUpdateDenomParam{
+	proposalMessage = cfevestingtypes.MsgUpdateDenomParam{
 		Authority: appparams.GetAuthority(),
 		Denom:     appparams.MicroC4eUnit,
 	}
-	proposalJSON, err := util.NewProposalJSON([]sdk.Msg{&proposalMessage})
+	proposalJSON, err = util.NewProposalJSON([]sdk.Msg{&proposalMessage})
 	s.NoError(err)
 
 	node.SubmitDepositAndVoteOnProposal(proposalJSON, initialization.ValidatorWalletName, chainA)
@@ -199,7 +194,6 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenomVestingPoolsExist() {
 	vestingAmount := balanceBeforeAmount.Quo(math.NewInt(4))
 	node.CreateVestingPool(randVestingPoolName, vestingAmount.String(), (10 * time.Minute).String(), vestingTypes[0].Name, creatorWalletName)
 
-	// submit new proposal
 	proposalMessage = cfevestingtypes.MsgUpdateDenomParam{
 		Authority: appparams.GetAuthority(),
 		Denom:     "abcNewDenom",
