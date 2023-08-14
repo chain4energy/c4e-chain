@@ -1,6 +1,4 @@
-# cfeclaim Module Specification
-
-# Chain4Energy Claiming Module - cfeclaim
+# Chain4Energy claiming module - cfeclaim
 
 ## Abstract
 
@@ -16,7 +14,7 @@ mission-driven campaigns.
 3. **[Events](#events)**
 4. **[Queries](#queries)**
 5. **[Invariants](#invariants)**
-6. **[Genesis validations](#genesis-validations)**
+6. **[Genesis validations](#genesis-initialization-and-validation)**
 
 ## Concepts
 
@@ -32,30 +30,43 @@ Campaigns have the following parameters:
 * name - Name of the campaign.
 * description - A brief overview of the campaign.
 * campaign_type - Type or category of the campaign.
-* removable_claim_records - Indicates if claim records can be removed.
+  * VESTING_POOL - Campaign that is created from a vesting pool.
+  * DEFAULT - Campaign that is created from an account balance.
+* removable_claim_records - Indicates if claim records can be removed after start time of a campaign.
 * feegrant_amount - Amount designated for fee grants.
-* initial_claim_free_amount - Amount available for initial claims without any fees.
-* free - Amount available for free claims without any specific missions.
+* initial_claim_free_amount - The number of tokens to be released immediately 
+(regardless of the lockup and vesting period) in the case of an initial claim.
+* free - Percentage of tokens to be released during mission claim (regardless of lockup and vesting period).
 * start_time - Timestamp for the start time of the campaign.
 * end_time - Timestamp for the end time of the campaign.
 * lockup_period - Duration of time during which tokens cannot be withdrawn.
 * vesting_period - Duration of vesting period for tokens.
-* vesting_pool_name - Name of the vesting pool associated with the campaign.
+* vesting_pool_name - Name of the vesting pool associated with the campaign (only when campaign is of VESTING_POOL type).
 
 ### Mission
 
 A mission is a specific task or objective within a campaign. Upon completion of a mission,
-users can claim tokens. Each mission also has a specific weightage within its parent 
-campaign, which defines its significance.
+users can claim tokens. Each mission also has a percentage weight field that indicates 
+how many tokens out of the total amount of tokens assigned to a 
+given user the user will get for this mission. Example - the user is assigned 100 tokens, 
+the weight of the mission is 0.4, so the user for completing and claiming this mission
+will get 40 tokens.
 
 Missions have the following parameters:
-* owner - Address of the campaign owner.
+* id - Identifier of the mission.
 * campaign_id - ID of the campaign under which the mission resides.
 * name - Name of the mission.
 * description - Brief about the mission.
 * mission_type - Type or category of the mission.
-* weight - Importance of the mission within the campaign.
+* weight - Mission weight percentage. This is the percentage of tokens that will be sent to the user at the time of claiming the mission.
 * claim_start_date - Timestamp for the date from which claims can be initiated for this mission.
+
+Currently, we distinguish following types of missions:
+* INITIAL_CLAIM - required mission added at the beginning of the campaign along with adding the campaign.
+* DELEGATE - require the user to delegate tokens before claiming these missions
+* VOTE - require the user to vote on the proposal before claiming these missions
+* CLAIM - the user can immediately redeem it without any additional actions
+
 
 ### User Entry
 Every user in the ecosystem is identified by an entry. This entry holds information 
@@ -63,38 +74,64 @@ related to the user's claims and the records associated with those claims.
 
 User Entries have the following parameters:
 
-address - Unique identifier for the user, typically their blockchain address.
-claim_records - List of all claim records associated with the user. Each record holds 
-information about a specific claim event.
+* address - User blockchain address.
+* claim_records - List of all claim records associated with the user. Each record holds 
+information about a specific campaign assigned to user.
 
 ### Claim Record
-Claim Records store details about the claims made by users. Each record is 
-specific to a campaign and carries information about the amount claimed, the
-missions completed, and the missions for which the claim was made.
+Claim record stores information about the user assigned to a given campaign
+(including the number of tokens assigned to him, ids of completed and claimed 
+missions)
 
 Claim Records have the following parameters:
 
-campaign_id - Identifier for the campaign related to this claim.
-address - Address of the user making the claim.
-amount - The amount claimed by the user in various denominations.
-completedMissions - List of mission IDs that the user has completed.
-claimedMissions - List of mission IDs for which the user has made a claim.
+* campaign_id - Identifier for the campaign related to this claim record.
+* address - User address to which the claimed tokens will be sent.
+* amount - The amount of tokens assigned to the user for the entire campaign
+* completed_missions - List of mission IDs that the user has completed.
+* claimed_missions - List of mission IDs for which the user has made a claim.
 
 ### Claim Record Entry
 While similar to a Claim Record, a Claim Record Entry contains more granular information 
-about the claim related to a specific campaign. It's an entry in the system that records 
-the details of the claim for easier tracking.
+about the claim related to a specific campaign. It is used while adding a new claim record.
 
 Claim Record Entries have the following parameters:
 
-campaign_id - Identifier for the campaign related to this claim entry.
-user_entry_address - The address of the user associated with this claim entry.
-amount - The specific amount claimed, defined in various denominations.
+* campaign_id - Identifier for the campaign related to this claim entry.
+* user_entry_address - The address of the user associated with this claim entry.
+* amount -  The amount of tokens assigned to the user for the entire campaign
 
+### Fee granting
 
-# Messages
+Feegrant is a special option in a campaign that allows for the first use of an initial claim for
+each user of that campaign. This option was created so that users who did not have a blockchain 
+account and therefore, did not have tokens to cover transaction fees, could perform the first 
+mission (initial claim) of the campaign. Feegrant takes on a specific value. If feegrant is set 
+to a value greater than zero in a given campaign, when adding each user entry, it is checked whether 
+the user who adds the user entries is also able to cover this feegrant. To prevent situations
+in which the founder of a campaign does not have enough tokens in their account to pay for 
+feegrant for another user, an additional, special module account is created, which stores tokens
+to pay for feegrant. If a user correctly uses initial claim (transaction is successful),
+feegrant is revoked. Tokens that were not used by users are treated in the same way as 
+campaign’s leftovers during the closure of the campaign.
 
-## Create Campaign
+### Vesting pool reservation mechanism
+Function of the mechanism is to allow vesting pool owners to reserve vesting
+pool tokens for other module functionality. In case of a claim module,
+tokens are reserved for claiming purposes.
+The mechanism will not expose blockchain messages API, it is an internal mechanism only.
+
+Each reservation has its unique id within one vesting pool. Reservation can be
+increased and decreased by the owner:
+* increased by adding reservation with the same id
+* decreased by dedicated method
+
+In the case of the claim module, when user entry of vesting pool campaign is added 
+reservation is increased, when removed decreased.
+
+## Messages
+
+### Create Campaign
 
 Create a new campaign with a set of specified parameters.
 
@@ -161,8 +198,8 @@ The `MsgEnableCampaign` can be used to modify the start and end times of a campa
 type MsgEnableCampaign struct {
 	Owner       string
 	CampaignId  uint64
-	StartTime   *time.Time
-	EndTime     *time.Time
+	StartTime   *time.Time (optional)
+	EndTime     *time.Time (optional)
 }
 ```
 
@@ -225,6 +262,7 @@ Remove an existing campaign based on the specified parameters.
 
 The `MsgRemoveCampaign` can be submitted by the campaign owner to initiate 
 the removal of a campaign. All the assets within the campaign are returned to the owner before removal.
+This message can be only used if the campaign is not enabled.
 
 ### Structure
 
@@ -256,7 +294,7 @@ and that the campaign is not enabled.
 The `MsgAddMission` message type facilitates the addition of a mission to an existing campaign on 
 the blockchain. A mission, in the context of this chain, represents a specific task or objective
 within a campaign, and has parameters like weight, claim start date, and type, dictating its 
-significance and behavior. By submitting this message, the campaign owner can diversify the 
+ behavior. By submitting this message, the campaign owner can diversify the 
 range of activities within a campaign, giving participants more avenues to engage with the campaign.
 
 ### Structure
@@ -291,8 +329,6 @@ and weight for validity. Incorrect or malicious inputs are rejected.
 - All existing missions within the campaign are summed up with the new mission's weight to ensure the
 total doesn't exceed a weight of 1. This ensures no single mission or a combination overshadows the 
 rest in significance.
-- The system ensures there's only one mission of type InitialClaim and also confirms it's the first 
-mission if it exists.
 - The state checks if the campaign is still active and not ended. Missions can't be added to an expired
 or inactive campaign.
 - Upon successful validation, the new mission is appended to the campaign's list of missions and a 
@@ -332,10 +368,8 @@ entry, and the claim record using the provided CampaignId.
 completion.
 - The claimable amount for the user's initial claim is computed. This amount depends on the user's 
 interactions and the campaign's configuration.
-- Depending on the type of campaign:
-  - If it's a VestingPoolCampaign, the claimable amount is sent to a new vesting account.
-  - For other campaign types, the claimable amount is sent to a periodic continuous vesting account.
-  - This ensures that the claimed rewards are vested according to the campaign's rules.
+- For all campaign types, the claimable amount is sent to a periodic continuous vesting account. 
+This ensures that the claimed rewards are vested according to the campaign's rules.
 - After the claim, the campaign's current balance is decremented by the claimable amount.
 - Once the initial claim is processed successfully, an EventInitialClaim event is emitted to indicate 
 the completion of the claim.
@@ -370,10 +404,8 @@ record using the provided CampaignId and MissionId.
 - Confirms if the initial mission associated with the campaign has been claimed.
 - If the mission type is specifically a "claim" mission, it's marked as completed.
 - Determines the amount eligible to be claimed based on the provided mission.
-- Depending on the type of campaign:
-  - For VestingPoolCampaign type, sends the claimable amount to a new vesting account.
-  - For other campaign types, sends the claimable amount to a periodic continuous vesting account.
-  - This ensures the claimed rewards are vested according to the campaign's rules.
+- For all campaign types, the claimable amount is sent to a periodic continuous vesting account.
+  This ensures that the claimed rewards are vested according to the campaign's rules.
 - Decreases the current balance of the campaign by the claimed amount.
 - Emits the EventClaim event, indicating a successful claim.
 
@@ -419,8 +451,9 @@ type MsgAddClaimRecords struct {
   - Checks if the campaign owner has sufficient balance to cover these fees.
 
 - Adjustment for Vesting Pool Campaigns:
-  - If the campaign is of type VestingPoolCampaign, it adds the claim records to the associated vesting pool.
-  - Verifies the owner's balance is sufficient to cover the fees and the claim records' amounts.
+  - If the campaign is of type VestingPoolCampaign, it adds a new reservation to the associated vesting pool.
+  - Verifies the owner's balance is sufficient to cover the fees.
+  - Verifies the vesting pool balance is sufficient to cover the claim records' amounts.
 
 - Adjustment for Default Campaigns:
   - If the campaign is of a default type, the module calculates the sum of fees and the amounts
@@ -445,6 +478,8 @@ Allows a campaign owner to remove an existing claim record for a specific user w
 given campaign. The `MsgDeleteClaimRecord` action encompasses several validations, balance 
 calculations, and state modifications, ensuring that the claim record deletion is properly
 recorded and the associated funds are correctly handled.
+If the campaign has the removableClaimRecords flag set to true, you can delete claim records at any time during the campaign.
+Otherwise, claim records can only be deleted until the campaign is enabled.
 
 The `MsgDeleteClaimRecord` can be submitted by the campaign owner to delete a claim 
 record for a given user associated with a campaign.
@@ -469,9 +504,8 @@ type MsgDeleteClaimRecord struct {
 
 ### State Modifications
 
-- The function first confirms that a campaign with the provided CampaignId is available in the state.
 - It ensures that the caller, identified by the Owner address, is indeed the owner of the 
-campaign. This is a security measure to prevent unauthorized deletions.
+campaign
 - It checks the campaign's data to confirm the presence of a claim record associated with the 
 provided UserAddress.
 - Calculates the total amount linked with the claim record to be deleted. The amount is derived 
@@ -490,7 +524,7 @@ the deleted claim record. This ensures the campaign's financial data remains acc
 details of the deletion, including the involved addresses and the amount associated with the deleted claim record.
 
 
-# Events
+## Events
 
 ### Handlers for `MsgCreateCampaign`
 
@@ -592,7 +626,7 @@ details of the deletion, including the involved addresses and the amount associa
 | message           | sender              | {sender_address}                                     |
 
 
-# Queries
+## Queries
 
 ### User Entry Query
 Queries a specific user entry by the address.
@@ -784,7 +818,7 @@ Endpoint: `/c4e/claim/v1beta1/campaigns`
 }
 ```
 
-# Invariants Documentation
+## Invariants
 
 ## Campaign Current Amount Sum Invariant
 
@@ -828,13 +862,11 @@ check returns true.
 the claims left sum is equal to the cfeclaim module account balance, and the check
 returns false.
 
-# Genesis Initialization and Validation
+## Genesis Initialization and Validation
 
 The genesis initialization and validation process ensures a consistent and 
 predefined initial state. This documentation breaks down the purpose and
 workings of various functions involved.
-
-## 1. **InitGenesis**
 
 `InitGenesis` initializes the module's state from a provided genesis state,
 encompassing campaigns, missions, and user entries.
