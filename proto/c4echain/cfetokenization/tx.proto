@@ -33,6 +33,7 @@ message MsgAcceptDevice {
   string user_address = 1;
   string device_address = 2;
   string device_name = 3;
+  string device_location = 4;
 }
 
 message MsgAcceptDeviceResponse {}
@@ -55,6 +56,7 @@ message MsgAddMeasurement {
   ];
   uint64 active_power = 3;
   uint64 reverse_power = 4;
+  string metadata = 5;
 }
 
 message MsgAddMeasurementResponse {}

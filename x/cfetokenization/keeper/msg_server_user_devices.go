@@ -64,6 +64,7 @@ func (k msgServer) AddMeasurement(goCtx context.Context, msg *types.MsgAddMeasur
 		Timestamp:    *msg.Timestamp,
 		ActivePower:  msg.ActivePower,
 		ReversePower: msg.ReversePower,
+		Metadata:     msg.Metadata,
 	})
 	device.ActivePowerSum += msg.ActivePower
 	device.ReversePowerSum += msg.ReversePower
