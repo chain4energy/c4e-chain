@@ -28,6 +28,7 @@ message Device {
   uint64 active_power_sum = 3;
   uint64 reverse_power_sum = 4;
   uint64 used_active_power = 5;
+  uint64 fulfilled_reverse_power = 6;
 }
 
 message Measurement {

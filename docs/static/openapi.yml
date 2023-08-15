@@ -2354,6 +2354,9 @@ paths:
                   used_active_power:
                     type: string
                     format: uint64
+                  fulfilled_reverse_power:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -2418,6 +2421,9 @@ paths:
                       type: string
                       format: uint64
                     used_active_power:
+                      type: string
+                      format: uint64
+                    fulfilled_reverse_power:
                       type: string
                       format: uint64
               pagination:
@@ -2815,6 +2821,11 @@ paths:
                             format: uint64
                           device_address:
                             type: string
+                          measurements:
+                            type: array
+                            items:
+                              type: string
+                              format: uint64
                           allowed_authorities:
                             type: array
                             items:
@@ -2830,6 +2841,9 @@ paths:
                               - ON_MARKETPLACE
                               - BURNED
                             default: UNKNOWN_CERTIFICATE_STATUS
+                          valid_until:
+                            type: string
+                            format: date-time
               pagination:
                 type: object
                 properties:
@@ -2966,6 +2980,11 @@ paths:
                           format: uint64
                         device_address:
                           type: string
+                        measurements:
+                          type: array
+                          items:
+                            type: string
+                            format: uint64
                         allowed_authorities:
                           type: array
                           items:
@@ -2981,6 +3000,9 @@ paths:
                             - ON_MARKETPLACE
                             - BURNED
                           default: UNKNOWN_CERTIFICATE_STATUS
+                        valid_until:
+                          type: string
+                          format: date-time
         default:
           description: An unexpected error response.
           schema:
@@ -50803,6 +50825,11 @@ definitions:
         format: uint64
       device_address:
         type: string
+      measurements:
+        type: array
+        items:
+          type: string
+          format: uint64
       allowed_authorities:
         type: array
         items:
@@ -50818,6 +50845,9 @@ definitions:
           - ON_MARKETPLACE
           - BURNED
         default: UNKNOWN_CERTIFICATE_STATUS
+      valid_until:
+        type: string
+        format: date-time
   chain4energy.c4echain.cfetokenization.CertificateOffer:
     type: object
     properties:
@@ -50897,6 +50927,9 @@ definitions:
         type: string
         format: uint64
       used_active_power:
+        type: string
+        format: uint64
+      fulfilled_reverse_power:
         type: string
         format: uint64
   chain4energy.c4echain.cfetokenization.Measurement:
@@ -50999,6 +51032,11 @@ definitions:
                     format: uint64
                   device_address:
                     type: string
+                  measurements:
+                    type: array
+                    items:
+                      type: string
+                      format: uint64
                   allowed_authorities:
                     type: array
                     items:
@@ -51014,6 +51052,9 @@ definitions:
                       - ON_MARKETPLACE
                       - BURNED
                     default: UNKNOWN_CERTIFICATE_STATUS
+                  valid_until:
+                    type: string
+                    format: date-time
       pagination:
         type: object
         properties:
@@ -51122,6 +51163,9 @@ definitions:
             used_active_power:
               type: string
               format: uint64
+            fulfilled_reverse_power:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -51181,6 +51225,9 @@ definitions:
           used_active_power:
             type: string
             format: uint64
+          fulfilled_reverse_power:
+            type: string
+            format: uint64
   chain4energy.c4echain.cfetokenization.QueryGetCertificateTypeResponse:
     type: object
     properties:
@@ -51218,6 +51265,11 @@ definitions:
                   format: uint64
                 device_address:
                   type: string
+                measurements:
+                  type: array
+                  items:
+                    type: string
+                    format: uint64
                 allowed_authorities:
                   type: array
                   items:
@@ -51233,6 +51285,9 @@ definitions:
                     - ON_MARKETPLACE
                     - BURNED
                   default: UNKNOWN_CERTIFICATE_STATUS
+                valid_until:
+                  type: string
+                  format: date-time
   chain4energy.c4echain.cfetokenization.QueryGetUserDevicesResponse:
     type: object
     properties:
@@ -51384,6 +51439,11 @@ definitions:
               format: uint64
             device_address:
               type: string
+            measurements:
+              type: array
+              items:
+                type: string
+                format: uint64
             allowed_authorities:
               type: array
               items:
@@ -51399,6 +51459,9 @@ definitions:
                 - ON_MARKETPLACE
                 - BURNED
               default: UNKNOWN_CERTIFICATE_STATUS
+            valid_until:
+              type: string
+              format: date-time
   chain4energy.c4echain.cfetokenization.UserDevice:
     type: object
     properties:

@@ -3,6 +3,7 @@ package chain4energy.c4echain.cfetokenization;
 
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfetokenization/types";
 
@@ -16,9 +17,14 @@ message Certificate {
   uint64 certyficate_type_id = 2;
   uint64 power = 3;
   string device_address = 4;
-  repeated string allowed_authorities = 5;
-  string authority = 6;
-  CertificateStatus certificate_status = 7;
+  repeated uint64 measurements = 5;
+  repeated string allowed_authorities = 6;
+  string authority = 7;
+  CertificateStatus certificate_status = 8;
+  google.protobuf.Timestamp valid_until = 9 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
 }
 
 enum CertificateStatus {

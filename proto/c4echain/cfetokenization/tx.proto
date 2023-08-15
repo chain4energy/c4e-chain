@@ -82,6 +82,7 @@ message MsgBuyCertificateResponse {}
 message MsgBurnCertificate {
   string owner = 1;
   uint64 certificate_id = 2;
+  string device_address = 3;
 }
 
 message MsgBurnCertificateResponse {}
@@ -90,6 +91,10 @@ message MsgAuthorizeCertificate {
   string authorizer = 1;
   string user_address = 2;
   uint64 certificate_id = 3;
+  google.protobuf.Timestamp valid_until = 4 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
 }
 
 message MsgAuthorizeCertificateResponse {}

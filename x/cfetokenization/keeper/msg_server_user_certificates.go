@@ -48,6 +48,7 @@ func (k msgServer) CreateUserCertificate(goCtx context.Context, msg *types.MsgCr
 		AllowedAuthorities: msg.AllowedAuthorities,
 		Authority:          "",
 		CertificateStatus:  types.CertificateStatus_INVALID,
+		ValidUntil:         nil,
 	})
 
 	k.SetUserCertificates(ctx, userCertificates)
@@ -75,6 +76,7 @@ func (k msgServer) AuthorizeCertificate(goCtx context.Context, msg *types.MsgAut
 	}
 	certificate.CertificateStatus = types.CertificateStatus_VALID
 	certificate.Authority = msg.Authorizer
+	certificate.ValidUntil = msg.ValidUntil
 
 	k.SetUserCertificates(ctx, userCertificates)
 
@@ -134,6 +136,23 @@ func (k msgServer) BurnCertificate(goCtx context.Context, msg *types.MsgBurnCert
 	certificate.CertificateStatus = types.CertificateStatus_BURNED
 
 	k.SetUserCertificates(ctx, userCertificates)
+
+	userDevices, found := k.GetUserDevices(ctx, msg.Owner)
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "user not found")
+	}
+	found = false
+	for _, device := range userDevices.Devices {
+		if device.DeviceAddress == msg.DeviceAddress {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "device not found")
+	}
+	device, found := k.GetDevice(ctx, msg.DeviceAddress)
+	device.FulfilledReversePower += certificate.Power
 
 	return &types.MsgBurnCertificateResponse{}, nil
 }
