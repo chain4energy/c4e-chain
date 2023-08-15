@@ -44,6 +44,7 @@ func (k msgServer) AcceptDevice(goCtx context.Context, msg *types.MsgAcceptDevic
 	userDevices.Devices = append(userDevices.Devices, &types.UserDevice{
 		DeviceAddress: pendingDevice.DeviceAddress,
 		Name:          msg.DeviceName,
+		Location:      msg.DeviceLocation,
 	})
 
 	k.SetUserDevices(ctx, userDevices)

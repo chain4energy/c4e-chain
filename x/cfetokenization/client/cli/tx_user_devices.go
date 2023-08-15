@@ -41,7 +41,7 @@ func CmdAddMeasurement() *cobra.Command {
 			}
 
 			msg := types.NewMsgAddMeasurement(clientCtx.GetFromAddress().String(), &argTimestamp,
-				argActivePower, argReversePower, args[4])
+				argActivePower, argReversePower, args[3])
 			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
