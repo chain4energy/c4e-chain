@@ -2337,13 +2337,19 @@ paths:
                         timestamp:
                           type: string
                           format: date-time
-                        power:
+                        active_power:
                           type: string
                           format: uint64
-                  power_sum:
+                        reverse_power:
+                          type: string
+                          format: uint64
+                  active_power_sum:
                     type: string
                     format: uint64
-                  used_power:
+                  reverse_power_sum:
+                    type: string
+                    format: uint64
+                  used_active_power:
                     type: string
                     format: uint64
         default:
@@ -2395,13 +2401,19 @@ paths:
                           timestamp:
                             type: string
                             format: date-time
-                          power:
+                          active_power:
                             type: string
                             format: uint64
-                    power_sum:
+                          reverse_power:
+                            type: string
+                            format: uint64
+                    active_power_sum:
                       type: string
                       format: uint64
-                    used_power:
+                    reverse_power_sum:
+                      type: string
+                      format: uint64
+                    used_active_power:
                       type: string
                       format: uint64
               pagination:
@@ -50862,13 +50874,19 @@ definitions:
             timestamp:
               type: string
               format: date-time
-            power:
+            active_power:
               type: string
               format: uint64
-      power_sum:
+            reverse_power:
+              type: string
+              format: uint64
+      active_power_sum:
         type: string
         format: uint64
-      used_power:
+      reverse_power_sum:
+        type: string
+        format: uint64
+      used_active_power:
         type: string
         format: uint64
   chain4energy.c4echain.cfetokenization.Measurement:
@@ -50877,7 +50895,10 @@ definitions:
       timestamp:
         type: string
         format: date-time
-      power:
+      active_power:
+        type: string
+        format: uint64
+      reverse_power:
         type: string
         format: uint64
   chain4energy.c4echain.cfetokenization.MsgAcceptDeviceResponse:
@@ -51070,13 +51091,19 @@ definitions:
                   timestamp:
                     type: string
                     format: date-time
-                  power:
+                  active_power:
                     type: string
                     format: uint64
-            power_sum:
+                  reverse_power:
+                    type: string
+                    format: uint64
+            active_power_sum:
               type: string
               format: uint64
-            used_power:
+            reverse_power_sum:
+              type: string
+              format: uint64
+            used_active_power:
               type: string
               format: uint64
       pagination:
@@ -51121,13 +51148,19 @@ definitions:
                 timestamp:
                   type: string
                   format: date-time
-                power:
+                active_power:
                   type: string
                   format: uint64
-          power_sum:
+                reverse_power:
+                  type: string
+                  format: uint64
+          active_power_sum:
             type: string
             format: uint64
-          used_power:
+          reverse_power_sum:
+            type: string
+            format: uint64
+          used_active_power:
             type: string
             format: uint64
   chain4energy.c4echain.cfetokenization.QueryGetCertificateTypeResponse:

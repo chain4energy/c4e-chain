@@ -35,11 +35,11 @@ func (k msgServer) CreateUserCertificate(goCtx context.Context, msg *types.MsgCr
 	if !found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "device not found")
 	}
-	if device.PowerSum-device.UsedPower < msg.Power {
+	if device.ActivePowerSum-device.UsedActivePower < msg.Power {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not enough power")
 	}
 
-	device.UsedPower += msg.Power
+	device.UsedActivePower += msg.Power
 	userCertificates.Certificates = append(userCertificates.Certificates, &types.Certificate{
 		Id:                 uint64(len(userCertificates.Certificates)),
 		CertyficateTypeId:  msg.CertyficateTypeId,

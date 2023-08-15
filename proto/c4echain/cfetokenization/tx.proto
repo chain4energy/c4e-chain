@@ -53,7 +53,8 @@ message MsgAddMeasurement {
     (gogoproto.nullable) = true,
     (gogoproto.stdtime) = true
   ];
-  uint64 power = 3;
+  uint64 active_power = 3;
+  uint64 reverse_power = 4;
 }
 
 message MsgAddMeasurementResponse {}

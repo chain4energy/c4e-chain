@@ -16,16 +16,21 @@ const (
 
 func CmdAddMeasurement() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-measurement [timestamp] [power]",
+		Use:   "add-measurement [timestamp] [active-power] [reverse-power]",
 		Short: "Create a new UserDevices",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argTimestamp, err := time.Parse(TimeLayout, args[0])
 			if err != nil {
 				return err
 			}
 
-			argPower, err := cast.ToUint64E(args[1])
+			argActivePower, err := cast.ToUint64E(args[1])
+			if err != nil {
+				return err
+			}
+
+			argReversePower, err := cast.ToUint64E(args[2])
 			if err != nil {
 				return err
 			}
@@ -35,7 +40,8 @@ func CmdAddMeasurement() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAddMeasurement(clientCtx.GetFromAddress().String(), &argTimestamp, argPower)
+			msg := types.NewMsgAddMeasurement(clientCtx.GetFromAddress().String(), &argTimestamp,
+				argActivePower, argReversePower)
 			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}

@@ -105,11 +105,12 @@ func (msg *MsgAcceptDevice) ValidateBasic() error {
 
 var _ sdk.Msg = &MsgAddMeasurement{}
 
-func NewMsgAddMeasurement(deviceAddress string, timestamp *time.Time, power uint64) *MsgAddMeasurement {
+func NewMsgAddMeasurement(deviceAddress string, timestamp *time.Time, activePower uint64, reversePower uint64) *MsgAddMeasurement {
 	return &MsgAddMeasurement{
 		DeviceAddress: deviceAddress,
 		Timestamp:     timestamp,
-		Power:         power,
+		ActivePower:   activePower,
+		ReversePower:  reversePower,
 	}
 }
 
