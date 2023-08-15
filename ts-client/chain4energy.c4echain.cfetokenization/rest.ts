@@ -76,11 +76,15 @@ export interface CfetokenizationDevice {
 }
 
 export interface CfetokenizationMeasurement {
+  /** @format uint64 */
+  id?: string;
+
   /** @format date-time */
   timestamp?: string;
 
   /** @format uint64 */
   active_power?: string;
+  used_for_certificate?: boolean;
 
   /** @format uint64 */
   reverse_power?: string;

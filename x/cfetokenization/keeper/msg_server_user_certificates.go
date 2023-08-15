@@ -35,11 +35,8 @@ func (k msgServer) CreateUserCertificate(goCtx context.Context, msg *types.MsgCr
 	if !found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "device not found")
 	}
-	if device.ActivePowerSum-device.UsedActivePower < msg.Power {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not enough power")
-	}
 
-	device.UsedActivePower += msg.Power
+	powerSum := uint64(0)
 	for _, measurementId := range msg.Measurements {
 		measurement, err := device.GetMeasurement(measurementId)
 		if err != nil {
@@ -48,14 +45,17 @@ func (k msgServer) CreateUserCertificate(goCtx context.Context, msg *types.MsgCr
 		if measurement.UsedForCertificate {
 			return nil, sdkerrors.Wrap(c4eerrors.ErrParam, "measurement already used for certificate")
 		}
+		powerSum += measurement.ActivePower
 		measurement.UsedForCertificate = true
 	}
+	device.UsedActivePower += powerSum
 	userCertificates.Certificates = append(userCertificates.Certificates, &types.Certificate{
 		Id:                 uint64(len(userCertificates.Certificates)),
 		CertyficateTypeId:  msg.CertyficateTypeId,
-		Power:              msg.Power,
+		Power:              powerSum,
 		DeviceAddress:      msg.DeviceAddress,
 		AllowedAuthorities: msg.AllowedAuthorities,
+		Measurements:       msg.Measurements,
 		Authority:          "",
 		CertificateStatus:  types.CertificateStatus_INVALID,
 		ValidUntil:         nil,
@@ -162,8 +162,11 @@ func (k msgServer) BurnCertificate(goCtx context.Context, msg *types.MsgBurnCert
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "device not found")
 	}
 	device, found := k.GetDevice(ctx, msg.DeviceAddress)
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "device not found")
+	}
 	device.FulfilledReversePower += certificate.Power
-
+	k.SetDevice(ctx, device)
 	return &types.MsgBurnCertificateResponse{}, nil
 }
 

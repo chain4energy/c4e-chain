@@ -27,9 +27,9 @@ export interface MsgAcceptDeviceResponse {
 export interface MsgCreateUserCertificates {
   owner: string;
   deviceAddress: string;
-  power: number;
   allowedAuthorities: string[];
   certyficateTypeId: number;
+  measurements: number[];
 }
 
 export interface MsgCreateUserCertificatesResponse {
@@ -295,7 +295,7 @@ export const MsgAcceptDeviceResponse = {
 };
 
 function createBaseMsgCreateUserCertificates(): MsgCreateUserCertificates {
-  return { owner: "", deviceAddress: "", power: 0, allowedAuthorities: [], certyficateTypeId: 0 };
+  return { owner: "", deviceAddress: "", allowedAuthorities: [], certyficateTypeId: 0, measurements: [] };
 }
 
 export const MsgCreateUserCertificates = {
@@ -306,15 +306,17 @@ export const MsgCreateUserCertificates = {
     if (message.deviceAddress !== "") {
       writer.uint32(18).string(message.deviceAddress);
     }
-    if (message.power !== 0) {
-      writer.uint32(24).uint64(message.power);
-    }
     for (const v of message.allowedAuthorities) {
       writer.uint32(34).string(v!);
     }
     if (message.certyficateTypeId !== 0) {
       writer.uint32(40).uint64(message.certyficateTypeId);
     }
+    writer.uint32(50).fork();
+    for (const v of message.measurements) {
+      writer.uint64(v);
+    }
+    writer.ldelim();
     return writer;
   },
 
@@ -331,14 +333,21 @@ export const MsgCreateUserCertificates = {
         case 2:
           message.deviceAddress = reader.string();
           break;
-        case 3:
-          message.power = longToNumber(reader.uint64() as Long);
-          break;
         case 4:
           message.allowedAuthorities.push(reader.string());
           break;
         case 5:
           message.certyficateTypeId = longToNumber(reader.uint64() as Long);
+          break;
+        case 6:
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.measurements.push(longToNumber(reader.uint64() as Long));
+            }
+          } else {
+            message.measurements.push(longToNumber(reader.uint64() as Long));
+          }
           break;
         default:
           reader.skipType(tag & 7);
@@ -352,11 +361,11 @@ export const MsgCreateUserCertificates = {
     return {
       owner: isSet(object.owner) ? String(object.owner) : "",
       deviceAddress: isSet(object.deviceAddress) ? String(object.deviceAddress) : "",
-      power: isSet(object.power) ? Number(object.power) : 0,
       allowedAuthorities: Array.isArray(object?.allowedAuthorities)
         ? object.allowedAuthorities.map((e: any) => String(e))
         : [],
       certyficateTypeId: isSet(object.certyficateTypeId) ? Number(object.certyficateTypeId) : 0,
+      measurements: Array.isArray(object?.measurements) ? object.measurements.map((e: any) => Number(e)) : [],
     };
   },
 
@@ -364,13 +373,17 @@ export const MsgCreateUserCertificates = {
     const obj: any = {};
     message.owner !== undefined && (obj.owner = message.owner);
     message.deviceAddress !== undefined && (obj.deviceAddress = message.deviceAddress);
-    message.power !== undefined && (obj.power = Math.round(message.power));
     if (message.allowedAuthorities) {
       obj.allowedAuthorities = message.allowedAuthorities.map((e) => e);
     } else {
       obj.allowedAuthorities = [];
     }
     message.certyficateTypeId !== undefined && (obj.certyficateTypeId = Math.round(message.certyficateTypeId));
+    if (message.measurements) {
+      obj.measurements = message.measurements.map((e) => Math.round(e));
+    } else {
+      obj.measurements = [];
+    }
     return obj;
   },
 
@@ -378,9 +391,9 @@ export const MsgCreateUserCertificates = {
     const message = createBaseMsgCreateUserCertificates();
     message.owner = object.owner ?? "";
     message.deviceAddress = object.deviceAddress ?? "";
-    message.power = object.power ?? 0;
     message.allowedAuthorities = object.allowedAuthorities?.map((e) => e) || [];
     message.certyficateTypeId = object.certyficateTypeId ?? 0;
+    message.measurements = object.measurements?.map((e) => e) || [];
     return message;
   },
 };

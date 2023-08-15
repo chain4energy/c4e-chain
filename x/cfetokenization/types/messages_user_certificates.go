@@ -11,11 +11,10 @@ const (
 
 var _ sdk.Msg = &MsgCreateUserCertificates{}
 
-func NewMsgCreateUserCertificates(owner string, deviceAddress string, power uint64, allowedAuthorities []string, certificateTypeId uint64) *MsgCreateUserCertificates {
+func NewMsgCreateUserCertificates(owner string, deviceAddress string, allowedAuthorities []string, certificateTypeId uint64) *MsgCreateUserCertificates {
 	return &MsgCreateUserCertificates{
 		Owner:              owner,
 		DeviceAddress:      deviceAddress,
-		Power:              power,
 		AllowedAuthorities: allowedAuthorities,
 		CertyficateTypeId:  certificateTypeId,
 	}
