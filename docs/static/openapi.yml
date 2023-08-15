@@ -2585,6 +2585,30 @@ paths:
                   power:
                     type: string
                     format: uint64
+                  measurements:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uint64
+                        timestamp:
+                          type: string
+                          format: date-time
+                        active_power:
+                          type: string
+                          format: uint64
+                        used_for_certificate:
+                          type: boolean
+                        reverse_power:
+                          type: string
+                          format: uint64
+                        metadata:
+                          type: string
+                  valid_until:
+                    type: string
+                    format: date-time
         default:
           description: An unexpected error response.
           schema:
@@ -2658,6 +2682,30 @@ paths:
                     power:
                       type: string
                       format: uint64
+                    measurements:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uint64
+                          timestamp:
+                            type: string
+                            format: date-time
+                          active_power:
+                            type: string
+                            format: uint64
+                          used_for_certificate:
+                            type: boolean
+                          reverse_power:
+                            type: string
+                            format: uint64
+                          metadata:
+                            type: string
+                    valid_until:
+                      type: string
+                      format: date-time
               pagination:
                 type: object
                 properties:
@@ -50890,6 +50938,30 @@ definitions:
       power:
         type: string
         format: uint64
+      measurements:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            timestamp:
+              type: string
+              format: date-time
+            active_power:
+              type: string
+              format: uint64
+            used_for_certificate:
+              type: boolean
+            reverse_power:
+              type: string
+              format: uint64
+            metadata:
+              type: string
+      valid_until:
+        type: string
+        format: date-time
   chain4energy.c4echain.cfetokenization.CertificateStatus:
     type: string
     enum:
@@ -51375,6 +51447,30 @@ definitions:
           power:
             type: string
             format: uint64
+          measurements:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uint64
+                timestamp:
+                  type: string
+                  format: date-time
+                active_power:
+                  type: string
+                  format: uint64
+                used_for_certificate:
+                  type: boolean
+                reverse_power:
+                  type: string
+                  format: uint64
+                metadata:
+                  type: string
+          valid_until:
+            type: string
+            format: date-time
   chain4energy.c4echain.cfetokenization.QueryMarketplaceCertificatesAllResponse:
     type: object
     properties:
@@ -51415,6 +51511,30 @@ definitions:
             power:
               type: string
               format: uint64
+            measurements:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  timestamp:
+                    type: string
+                    format: date-time
+                  active_power:
+                    type: string
+                    format: uint64
+                  used_for_certificate:
+                    type: boolean
+                  reverse_power:
+                    type: string
+                    format: uint64
+                  metadata:
+                    type: string
+            valid_until:
+              type: string
+              format: date-time
       pagination:
         type: object
         properties:

@@ -109,6 +109,21 @@ func (k msgServer) AddCertificateToMarketplace(goCtx context.Context, msg *types
 	}
 	certificate.CertificateStatus = types.CertificateStatus_ON_MARKETPLACE
 
+	device, found := k.GetDevice(ctx, certificate.DeviceAddress)
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "device not found")
+	}
+
+	var measurements []*types.Measurement
+
+	for _, measurementId := range certificate.Measurements {
+		measurement, err := device.GetMeasurement(measurementId)
+		if err != nil {
+			return nil, err
+		}
+		measurements = append(measurements, measurement)
+	}
+
 	certificateOffer := types.CertificateOffer{
 		CertificateId: msg.CertificateId,
 		Owner:         msg.Owner,
@@ -116,6 +131,8 @@ func (k msgServer) AddCertificateToMarketplace(goCtx context.Context, msg *types
 		Price:         msg.Price,
 		Authorizer:    certificate.Authority,
 		Power:         certificate.Power,
+		ValidUntil:    certificate.ValidUntil,
+		Measurements:  measurements,
 	}
 	k.AppendMarketplaceCertificate(ctx, certificateOffer)
 	k.SetUserCertificates(ctx, userCertificates)

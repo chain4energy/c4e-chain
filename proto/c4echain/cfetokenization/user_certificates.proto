@@ -1,6 +1,7 @@
 syntax = "proto3";
 package chain4energy.c4echain.cfetokenization;
 
+import "c4echain/cfetokenization/user_devices.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
@@ -46,4 +47,9 @@ message CertificateOffer {
   ];
   string authorizer = 6;
   uint64 power = 7;
+  repeated Measurement measurements = 8;
+  google.protobuf.Timestamp valid_until = 9 [
+    (gogoproto.nullable) = true,
+    (gogoproto.stdtime) = true
+  ];
 }
