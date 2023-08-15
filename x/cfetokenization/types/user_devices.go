@@ -10,3 +10,12 @@ func (u UserDevices) GetDevice(deviceAddress string) (*UserDevice, error) {
 	}
 	return nil, fmt.Errorf("device not found")
 }
+
+func (u Device) GetMeasurement(measurementId uint64) (*Measurement, error) {
+	for _, measruement := range u.Measurements {
+		if measruement.Id == measurementId {
+			return measruement, nil
+		}
+	}
+	return nil, fmt.Errorf("measruement not found")
+}

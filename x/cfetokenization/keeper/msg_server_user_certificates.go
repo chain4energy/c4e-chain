@@ -40,6 +40,16 @@ func (k msgServer) CreateUserCertificate(goCtx context.Context, msg *types.MsgCr
 	}
 
 	device.UsedActivePower += msg.Power
+	for _, measurementId := range msg.Measurements {
+		measurement, err := device.GetMeasurement(measurementId)
+		if err != nil {
+			return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, err.Error())
+		}
+		if measurement.UsedForCertificate {
+			return nil, sdkerrors.Wrap(c4eerrors.ErrParam, "measurement already used for certificate")
+		}
+		measurement.UsedForCertificate = true
+	}
 	userCertificates.Certificates = append(userCertificates.Certificates, &types.Certificate{
 		Id:                 uint64(len(userCertificates.Certificates)),
 		CertyficateTypeId:  msg.CertyficateTypeId,

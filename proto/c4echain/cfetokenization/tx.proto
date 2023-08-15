@@ -44,6 +44,7 @@ message MsgCreateUserCertificates {
   uint64 power = 3;
   repeated string allowed_authorities = 4;
   uint64 certyficate_type_id = 5;
+  repeated uint64 measurements = 6;
 }
 
 message MsgCreateUserCertificatesResponse {}

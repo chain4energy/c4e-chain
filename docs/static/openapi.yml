@@ -2334,12 +2334,17 @@ paths:
                     items:
                       type: object
                       properties:
+                        id:
+                          type: string
+                          format: uint64
                         timestamp:
                           type: string
                           format: date-time
                         active_power:
                           type: string
                           format: uint64
+                        used_for_certificate:
+                          type: boolean
                         reverse_power:
                           type: string
                           format: uint64
@@ -2403,12 +2408,17 @@ paths:
                       items:
                         type: object
                         properties:
+                          id:
+                            type: string
+                            format: uint64
                           timestamp:
                             type: string
                             format: date-time
                           active_power:
                             type: string
                             format: uint64
+                          used_for_certificate:
+                            type: boolean
                           reverse_power:
                             type: string
                             format: uint64
@@ -50909,12 +50919,17 @@ definitions:
         items:
           type: object
           properties:
+            id:
+              type: string
+              format: uint64
             timestamp:
               type: string
               format: date-time
             active_power:
               type: string
               format: uint64
+            used_for_certificate:
+              type: boolean
             reverse_power:
               type: string
               format: uint64
@@ -50935,12 +50950,17 @@ definitions:
   chain4energy.c4echain.cfetokenization.Measurement:
     type: object
     properties:
+      id:
+        type: string
+        format: uint64
       timestamp:
         type: string
         format: date-time
       active_power:
         type: string
         format: uint64
+      used_for_certificate:
+        type: boolean
       reverse_power:
         type: string
         format: uint64
@@ -51143,12 +51163,17 @@ definitions:
               items:
                 type: object
                 properties:
+                  id:
+                    type: string
+                    format: uint64
                   timestamp:
                     type: string
                     format: date-time
                   active_power:
                     type: string
                     format: uint64
+                  used_for_certificate:
+                    type: boolean
                   reverse_power:
                     type: string
                     format: uint64
@@ -51205,12 +51230,17 @@ definitions:
             items:
               type: object
               properties:
+                id:
+                  type: string
+                  format: uint64
                 timestamp:
                   type: string
                   format: date-time
                 active_power:
                   type: string
                   format: uint64
+                used_for_certificate:
+                  type: boolean
                 reverse_power:
                   type: string
                   format: uint64

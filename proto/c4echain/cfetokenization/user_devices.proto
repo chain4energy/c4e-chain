@@ -32,11 +32,13 @@ message Device {
 }
 
 message Measurement {
-  google.protobuf.Timestamp timestamp = 1 [
+  uint64 id = 1;
+  google.protobuf.Timestamp timestamp = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
-  uint64 active_power = 2;
-  uint64 reverse_power = 3;
-  string metadata = 4;
+  uint64 active_power = 3;
+  bool used_for_certificate = 4;
+  uint64 reverse_power = 5;
+  string metadata = 6;
 }
