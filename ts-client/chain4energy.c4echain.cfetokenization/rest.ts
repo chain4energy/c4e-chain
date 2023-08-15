@@ -19,9 +19,13 @@ export interface CfetokenizationCertificate {
   /** @format uint64 */
   power?: string;
   device_address?: string;
+  measurements?: string[];
   allowed_authorities?: string[];
   authority?: string;
   certificate_status?: CfetokenizationCertificateStatus;
+
+  /** @format date-time */
+  valid_until?: string;
 }
 
 export interface CfetokenizationCertificateOffer {
@@ -33,12 +37,17 @@ export interface CfetokenizationCertificateOffer {
   owner?: string;
   buyer?: string;
   price?: V1Beta1Coin[];
+  authorizer?: string;
+
+  /** @format uint64 */
+  power?: string;
 }
 
 export enum CfetokenizationCertificateStatus {
   UNKNOWN_CERTIFICATE_STATUS = "UNKNOWN_CERTIFICATE_STATUS",
   VALID = "VALID",
   INVALID = "INVALID",
+  ON_MARKETPLACE = "ON_MARKETPLACE",
   BURNED = "BURNED",
 }
 
@@ -54,10 +63,16 @@ export interface CfetokenizationDevice {
   measurements?: CfetokenizationMeasurement[];
 
   /** @format uint64 */
-  power_sum?: string;
+  active_power_sum?: string;
 
   /** @format uint64 */
-  used_power?: string;
+  reverse_power_sum?: string;
+
+  /** @format uint64 */
+  used_active_power?: string;
+
+  /** @format uint64 */
+  fulfilled_reverse_power?: string;
 }
 
 export interface CfetokenizationMeasurement {
@@ -65,7 +80,11 @@ export interface CfetokenizationMeasurement {
   timestamp?: string;
 
   /** @format uint64 */
-  power?: string;
+  active_power?: string;
+
+  /** @format uint64 */
+  reverse_power?: string;
+  metadata?: string;
 }
 
 export type CfetokenizationMsgAcceptDeviceResponse = object;
@@ -200,6 +219,7 @@ export interface CfetokenizationUserCertificates {
 export interface CfetokenizationUserDevice {
   device_address?: string;
   name?: string;
+  location?: string;
 }
 
 export interface CfetokenizationUserDevices {

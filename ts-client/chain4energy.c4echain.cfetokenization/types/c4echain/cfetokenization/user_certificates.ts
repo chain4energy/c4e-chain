@@ -2,6 +2,7 @@
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { Coin } from "../../cosmos/base/v1beta1/coin";
+import { Timestamp } from "../../google/protobuf/timestamp";
 
 export const protobufPackage = "chain4energy.c4echain.cfetokenization";
 
@@ -9,7 +10,8 @@ export enum CertificateStatus {
   UNKNOWN_CERTIFICATE_STATUS = 0,
   VALID = 1,
   INVALID = 2,
-  BURNED = 3,
+  ON_MARKETPLACE = 3,
+  BURNED = 4,
   UNRECOGNIZED = -1,
 }
 
@@ -25,6 +27,9 @@ export function certificateStatusFromJSON(object: any): CertificateStatus {
     case "INVALID":
       return CertificateStatus.INVALID;
     case 3:
+    case "ON_MARKETPLACE":
+      return CertificateStatus.ON_MARKETPLACE;
+    case 4:
     case "BURNED":
       return CertificateStatus.BURNED;
     case -1:
@@ -42,6 +47,8 @@ export function certificateStatusToJSON(object: CertificateStatus): string {
       return "VALID";
     case CertificateStatus.INVALID:
       return "INVALID";
+    case CertificateStatus.ON_MARKETPLACE:
+      return "ON_MARKETPLACE";
     case CertificateStatus.BURNED:
       return "BURNED";
     case CertificateStatus.UNRECOGNIZED:
@@ -60,9 +67,11 @@ export interface Certificate {
   certyficateTypeId: number;
   power: number;
   deviceAddress: string;
+  measurements: number[];
   allowedAuthorities: string[];
   authority: string;
   certificateStatus: CertificateStatus;
+  validUntil: Date | undefined;
 }
 
 export interface CertificateOffer {
@@ -71,6 +80,8 @@ export interface CertificateOffer {
   owner: string;
   buyer: string;
   price: Coin[];
+  authorizer: string;
+  power: number;
 }
 
 function createBaseUserCertificates(): UserCertificates {
@@ -143,9 +154,11 @@ function createBaseCertificate(): Certificate {
     certyficateTypeId: 0,
     power: 0,
     deviceAddress: "",
+    measurements: [],
     allowedAuthorities: [],
     authority: "",
     certificateStatus: 0,
+    validUntil: undefined,
   };
 }
 
@@ -163,14 +176,22 @@ export const Certificate = {
     if (message.deviceAddress !== "") {
       writer.uint32(34).string(message.deviceAddress);
     }
+    writer.uint32(42).fork();
+    for (const v of message.measurements) {
+      writer.uint64(v);
+    }
+    writer.ldelim();
     for (const v of message.allowedAuthorities) {
-      writer.uint32(42).string(v!);
+      writer.uint32(50).string(v!);
     }
     if (message.authority !== "") {
-      writer.uint32(50).string(message.authority);
+      writer.uint32(58).string(message.authority);
     }
     if (message.certificateStatus !== 0) {
-      writer.uint32(56).int32(message.certificateStatus);
+      writer.uint32(64).int32(message.certificateStatus);
+    }
+    if (message.validUntil !== undefined) {
+      Timestamp.encode(toTimestamp(message.validUntil), writer.uint32(74).fork()).ldelim();
     }
     return writer;
   },
@@ -195,13 +216,26 @@ export const Certificate = {
           message.deviceAddress = reader.string();
           break;
         case 5:
-          message.allowedAuthorities.push(reader.string());
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.measurements.push(longToNumber(reader.uint64() as Long));
+            }
+          } else {
+            message.measurements.push(longToNumber(reader.uint64() as Long));
+          }
           break;
         case 6:
-          message.authority = reader.string();
+          message.allowedAuthorities.push(reader.string());
           break;
         case 7:
+          message.authority = reader.string();
+          break;
+        case 8:
           message.certificateStatus = reader.int32() as any;
+          break;
+        case 9:
+          message.validUntil = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -217,11 +251,13 @@ export const Certificate = {
       certyficateTypeId: isSet(object.certyficateTypeId) ? Number(object.certyficateTypeId) : 0,
       power: isSet(object.power) ? Number(object.power) : 0,
       deviceAddress: isSet(object.deviceAddress) ? String(object.deviceAddress) : "",
+      measurements: Array.isArray(object?.measurements) ? object.measurements.map((e: any) => Number(e)) : [],
       allowedAuthorities: Array.isArray(object?.allowedAuthorities)
         ? object.allowedAuthorities.map((e: any) => String(e))
         : [],
       authority: isSet(object.authority) ? String(object.authority) : "",
       certificateStatus: isSet(object.certificateStatus) ? certificateStatusFromJSON(object.certificateStatus) : 0,
+      validUntil: isSet(object.validUntil) ? fromJsonTimestamp(object.validUntil) : undefined,
     };
   },
 
@@ -231,6 +267,11 @@ export const Certificate = {
     message.certyficateTypeId !== undefined && (obj.certyficateTypeId = Math.round(message.certyficateTypeId));
     message.power !== undefined && (obj.power = Math.round(message.power));
     message.deviceAddress !== undefined && (obj.deviceAddress = message.deviceAddress);
+    if (message.measurements) {
+      obj.measurements = message.measurements.map((e) => Math.round(e));
+    } else {
+      obj.measurements = [];
+    }
     if (message.allowedAuthorities) {
       obj.allowedAuthorities = message.allowedAuthorities.map((e) => e);
     } else {
@@ -239,6 +280,7 @@ export const Certificate = {
     message.authority !== undefined && (obj.authority = message.authority);
     message.certificateStatus !== undefined
       && (obj.certificateStatus = certificateStatusToJSON(message.certificateStatus));
+    message.validUntil !== undefined && (obj.validUntil = message.validUntil.toISOString());
     return obj;
   },
 
@@ -248,15 +290,17 @@ export const Certificate = {
     message.certyficateTypeId = object.certyficateTypeId ?? 0;
     message.power = object.power ?? 0;
     message.deviceAddress = object.deviceAddress ?? "";
+    message.measurements = object.measurements?.map((e) => e) || [];
     message.allowedAuthorities = object.allowedAuthorities?.map((e) => e) || [];
     message.authority = object.authority ?? "";
     message.certificateStatus = object.certificateStatus ?? 0;
+    message.validUntil = object.validUntil ?? undefined;
     return message;
   },
 };
 
 function createBaseCertificateOffer(): CertificateOffer {
-  return { id: 0, certificateId: 0, owner: "", buyer: "", price: [] };
+  return { id: 0, certificateId: 0, owner: "", buyer: "", price: [], authorizer: "", power: 0 };
 }
 
 export const CertificateOffer = {
@@ -275,6 +319,12 @@ export const CertificateOffer = {
     }
     for (const v of message.price) {
       Coin.encode(v!, writer.uint32(42).fork()).ldelim();
+    }
+    if (message.authorizer !== "") {
+      writer.uint32(50).string(message.authorizer);
+    }
+    if (message.power !== 0) {
+      writer.uint32(56).uint64(message.power);
     }
     return writer;
   },
@@ -301,6 +351,12 @@ export const CertificateOffer = {
         case 5:
           message.price.push(Coin.decode(reader, reader.uint32()));
           break;
+        case 6:
+          message.authorizer = reader.string();
+          break;
+        case 7:
+          message.power = longToNumber(reader.uint64() as Long);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -316,6 +372,8 @@ export const CertificateOffer = {
       owner: isSet(object.owner) ? String(object.owner) : "",
       buyer: isSet(object.buyer) ? String(object.buyer) : "",
       price: Array.isArray(object?.price) ? object.price.map((e: any) => Coin.fromJSON(e)) : [],
+      authorizer: isSet(object.authorizer) ? String(object.authorizer) : "",
+      power: isSet(object.power) ? Number(object.power) : 0,
     };
   },
 
@@ -330,6 +388,8 @@ export const CertificateOffer = {
     } else {
       obj.price = [];
     }
+    message.authorizer !== undefined && (obj.authorizer = message.authorizer);
+    message.power !== undefined && (obj.power = Math.round(message.power));
     return obj;
   },
 
@@ -340,6 +400,8 @@ export const CertificateOffer = {
     message.owner = object.owner ?? "";
     message.buyer = object.buyer ?? "";
     message.price = object.price?.map((e) => Coin.fromPartial(e)) || [];
+    message.authorizer = object.authorizer ?? "";
+    message.power = object.power ?? 0;
     return message;
   },
 };
@@ -373,6 +435,28 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = date.getTime() / 1_000;
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = t.seconds * 1_000;
+  millis += t.nanos / 1_000_000;
+  return new Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
+}
 
 function longToNumber(long: Long): number {
   if (long.gt(Number.MAX_SAFE_INTEGER)) {

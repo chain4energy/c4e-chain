@@ -13,6 +13,7 @@ export interface UserDevices {
 export interface UserDevice {
   deviceAddress: string;
   name: string;
+  location: string;
 }
 
 export interface PendingDevice {
@@ -23,13 +24,17 @@ export interface PendingDevice {
 export interface Device {
   deviceAddress: string;
   measurements: Measurement[];
-  powerSum: number;
-  usedPower: number;
+  activePowerSum: number;
+  reversePowerSum: number;
+  usedActivePower: number;
+  fulfilledReversePower: number;
 }
 
 export interface Measurement {
   timestamp: Date | undefined;
-  power: number;
+  activePower: number;
+  reversePower: number;
+  metadata: string;
 }
 
 function createBaseUserDevices(): UserDevices {
@@ -95,7 +100,7 @@ export const UserDevices = {
 };
 
 function createBaseUserDevice(): UserDevice {
-  return { deviceAddress: "", name: "" };
+  return { deviceAddress: "", name: "", location: "" };
 }
 
 export const UserDevice = {
@@ -105,6 +110,9 @@ export const UserDevice = {
     }
     if (message.name !== "") {
       writer.uint32(18).string(message.name);
+    }
+    if (message.location !== "") {
+      writer.uint32(26).string(message.location);
     }
     return writer;
   },
@@ -122,6 +130,9 @@ export const UserDevice = {
         case 2:
           message.name = reader.string();
           break;
+        case 3:
+          message.location = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -134,6 +145,7 @@ export const UserDevice = {
     return {
       deviceAddress: isSet(object.deviceAddress) ? String(object.deviceAddress) : "",
       name: isSet(object.name) ? String(object.name) : "",
+      location: isSet(object.location) ? String(object.location) : "",
     };
   },
 
@@ -141,6 +153,7 @@ export const UserDevice = {
     const obj: any = {};
     message.deviceAddress !== undefined && (obj.deviceAddress = message.deviceAddress);
     message.name !== undefined && (obj.name = message.name);
+    message.location !== undefined && (obj.location = message.location);
     return obj;
   },
 
@@ -148,6 +161,7 @@ export const UserDevice = {
     const message = createBaseUserDevice();
     message.deviceAddress = object.deviceAddress ?? "";
     message.name = object.name ?? "";
+    message.location = object.location ?? "";
     return message;
   },
 };
@@ -211,7 +225,14 @@ export const PendingDevice = {
 };
 
 function createBaseDevice(): Device {
-  return { deviceAddress: "", measurements: [], powerSum: 0, usedPower: 0 };
+  return {
+    deviceAddress: "",
+    measurements: [],
+    activePowerSum: 0,
+    reversePowerSum: 0,
+    usedActivePower: 0,
+    fulfilledReversePower: 0,
+  };
 }
 
 export const Device = {
@@ -222,11 +243,17 @@ export const Device = {
     for (const v of message.measurements) {
       Measurement.encode(v!, writer.uint32(18).fork()).ldelim();
     }
-    if (message.powerSum !== 0) {
-      writer.uint32(24).uint64(message.powerSum);
+    if (message.activePowerSum !== 0) {
+      writer.uint32(24).uint64(message.activePowerSum);
     }
-    if (message.usedPower !== 0) {
-      writer.uint32(32).uint64(message.usedPower);
+    if (message.reversePowerSum !== 0) {
+      writer.uint32(32).uint64(message.reversePowerSum);
+    }
+    if (message.usedActivePower !== 0) {
+      writer.uint32(40).uint64(message.usedActivePower);
+    }
+    if (message.fulfilledReversePower !== 0) {
+      writer.uint32(48).uint64(message.fulfilledReversePower);
     }
     return writer;
   },
@@ -245,10 +272,16 @@ export const Device = {
           message.measurements.push(Measurement.decode(reader, reader.uint32()));
           break;
         case 3:
-          message.powerSum = longToNumber(reader.uint64() as Long);
+          message.activePowerSum = longToNumber(reader.uint64() as Long);
           break;
         case 4:
-          message.usedPower = longToNumber(reader.uint64() as Long);
+          message.reversePowerSum = longToNumber(reader.uint64() as Long);
+          break;
+        case 5:
+          message.usedActivePower = longToNumber(reader.uint64() as Long);
+          break;
+        case 6:
+          message.fulfilledReversePower = longToNumber(reader.uint64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -264,8 +297,10 @@ export const Device = {
       measurements: Array.isArray(object?.measurements)
         ? object.measurements.map((e: any) => Measurement.fromJSON(e))
         : [],
-      powerSum: isSet(object.powerSum) ? Number(object.powerSum) : 0,
-      usedPower: isSet(object.usedPower) ? Number(object.usedPower) : 0,
+      activePowerSum: isSet(object.activePowerSum) ? Number(object.activePowerSum) : 0,
+      reversePowerSum: isSet(object.reversePowerSum) ? Number(object.reversePowerSum) : 0,
+      usedActivePower: isSet(object.usedActivePower) ? Number(object.usedActivePower) : 0,
+      fulfilledReversePower: isSet(object.fulfilledReversePower) ? Number(object.fulfilledReversePower) : 0,
     };
   },
 
@@ -277,8 +312,11 @@ export const Device = {
     } else {
       obj.measurements = [];
     }
-    message.powerSum !== undefined && (obj.powerSum = Math.round(message.powerSum));
-    message.usedPower !== undefined && (obj.usedPower = Math.round(message.usedPower));
+    message.activePowerSum !== undefined && (obj.activePowerSum = Math.round(message.activePowerSum));
+    message.reversePowerSum !== undefined && (obj.reversePowerSum = Math.round(message.reversePowerSum));
+    message.usedActivePower !== undefined && (obj.usedActivePower = Math.round(message.usedActivePower));
+    message.fulfilledReversePower !== undefined
+      && (obj.fulfilledReversePower = Math.round(message.fulfilledReversePower));
     return obj;
   },
 
@@ -286,14 +324,16 @@ export const Device = {
     const message = createBaseDevice();
     message.deviceAddress = object.deviceAddress ?? "";
     message.measurements = object.measurements?.map((e) => Measurement.fromPartial(e)) || [];
-    message.powerSum = object.powerSum ?? 0;
-    message.usedPower = object.usedPower ?? 0;
+    message.activePowerSum = object.activePowerSum ?? 0;
+    message.reversePowerSum = object.reversePowerSum ?? 0;
+    message.usedActivePower = object.usedActivePower ?? 0;
+    message.fulfilledReversePower = object.fulfilledReversePower ?? 0;
     return message;
   },
 };
 
 function createBaseMeasurement(): Measurement {
-  return { timestamp: undefined, power: 0 };
+  return { timestamp: undefined, activePower: 0, reversePower: 0, metadata: "" };
 }
 
 export const Measurement = {
@@ -301,8 +341,14 @@ export const Measurement = {
     if (message.timestamp !== undefined) {
       Timestamp.encode(toTimestamp(message.timestamp), writer.uint32(10).fork()).ldelim();
     }
-    if (message.power !== 0) {
-      writer.uint32(16).uint64(message.power);
+    if (message.activePower !== 0) {
+      writer.uint32(16).uint64(message.activePower);
+    }
+    if (message.reversePower !== 0) {
+      writer.uint32(24).uint64(message.reversePower);
+    }
+    if (message.metadata !== "") {
+      writer.uint32(34).string(message.metadata);
     }
     return writer;
   },
@@ -318,7 +364,13 @@ export const Measurement = {
           message.timestamp = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
         case 2:
-          message.power = longToNumber(reader.uint64() as Long);
+          message.activePower = longToNumber(reader.uint64() as Long);
+          break;
+        case 3:
+          message.reversePower = longToNumber(reader.uint64() as Long);
+          break;
+        case 4:
+          message.metadata = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -331,21 +383,27 @@ export const Measurement = {
   fromJSON(object: any): Measurement {
     return {
       timestamp: isSet(object.timestamp) ? fromJsonTimestamp(object.timestamp) : undefined,
-      power: isSet(object.power) ? Number(object.power) : 0,
+      activePower: isSet(object.activePower) ? Number(object.activePower) : 0,
+      reversePower: isSet(object.reversePower) ? Number(object.reversePower) : 0,
+      metadata: isSet(object.metadata) ? String(object.metadata) : "",
     };
   },
 
   toJSON(message: Measurement): unknown {
     const obj: any = {};
     message.timestamp !== undefined && (obj.timestamp = message.timestamp.toISOString());
-    message.power !== undefined && (obj.power = Math.round(message.power));
+    message.activePower !== undefined && (obj.activePower = Math.round(message.activePower));
+    message.reversePower !== undefined && (obj.reversePower = Math.round(message.reversePower));
+    message.metadata !== undefined && (obj.metadata = message.metadata);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<Measurement>, I>>(object: I): Measurement {
     const message = createBaseMeasurement();
     message.timestamp = object.timestamp ?? undefined;
-    message.power = object.power ?? 0;
+    message.activePower = object.activePower ?? 0;
+    message.reversePower = object.reversePower ?? 0;
+    message.metadata = object.metadata ?? "";
     return message;
   },
 };

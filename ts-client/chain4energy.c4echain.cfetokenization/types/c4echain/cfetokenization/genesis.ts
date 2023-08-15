@@ -3,8 +3,8 @@ import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { CertificateType } from "./certificate_type";
 import { Params } from "./params";
-import { UserCertificates } from "./user_certificates";
-import { UserDevices } from "./user_devices";
+import { CertificateOffer, UserCertificates } from "./user_certificates";
+import { Device, UserDevices } from "./user_devices";
 
 export const protobufPackage = "chain4energy.c4echain.cfetokenization";
 
@@ -14,9 +14,9 @@ export interface GenesisState {
   certificateTypeList: CertificateType[];
   certificateTypeCount: number;
   userDevicesList: UserDevices[];
-  userDevicesCount: number;
   userCertificatesList: UserCertificates[];
-  userCertificatesCount: number;
+  devicesList: Device[];
+  certificates: CertificateOffer[];
 }
 
 function createBaseGenesisState(): GenesisState {
@@ -25,9 +25,9 @@ function createBaseGenesisState(): GenesisState {
     certificateTypeList: [],
     certificateTypeCount: 0,
     userDevicesList: [],
-    userDevicesCount: 0,
     userCertificatesList: [],
-    userCertificatesCount: 0,
+    devicesList: [],
+    certificates: [],
   };
 }
 
@@ -45,14 +45,14 @@ export const GenesisState = {
     for (const v of message.userDevicesList) {
       UserDevices.encode(v!, writer.uint32(34).fork()).ldelim();
     }
-    if (message.userDevicesCount !== 0) {
-      writer.uint32(40).uint64(message.userDevicesCount);
-    }
     for (const v of message.userCertificatesList) {
-      UserCertificates.encode(v!, writer.uint32(50).fork()).ldelim();
+      UserCertificates.encode(v!, writer.uint32(42).fork()).ldelim();
     }
-    if (message.userCertificatesCount !== 0) {
-      writer.uint32(56).uint64(message.userCertificatesCount);
+    for (const v of message.devicesList) {
+      Device.encode(v!, writer.uint32(50).fork()).ldelim();
+    }
+    for (const v of message.certificates) {
+      CertificateOffer.encode(v!, writer.uint32(58).fork()).ldelim();
     }
     return writer;
   },
@@ -77,13 +77,13 @@ export const GenesisState = {
           message.userDevicesList.push(UserDevices.decode(reader, reader.uint32()));
           break;
         case 5:
-          message.userDevicesCount = longToNumber(reader.uint64() as Long);
-          break;
-        case 6:
           message.userCertificatesList.push(UserCertificates.decode(reader, reader.uint32()));
           break;
+        case 6:
+          message.devicesList.push(Device.decode(reader, reader.uint32()));
+          break;
         case 7:
-          message.userCertificatesCount = longToNumber(reader.uint64() as Long);
+          message.certificates.push(CertificateOffer.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -103,11 +103,13 @@ export const GenesisState = {
       userDevicesList: Array.isArray(object?.userDevicesList)
         ? object.userDevicesList.map((e: any) => UserDevices.fromJSON(e))
         : [],
-      userDevicesCount: isSet(object.userDevicesCount) ? Number(object.userDevicesCount) : 0,
       userCertificatesList: Array.isArray(object?.userCertificatesList)
         ? object.userCertificatesList.map((e: any) => UserCertificates.fromJSON(e))
         : [],
-      userCertificatesCount: isSet(object.userCertificatesCount) ? Number(object.userCertificatesCount) : 0,
+      devicesList: Array.isArray(object?.devicesList) ? object.devicesList.map((e: any) => Device.fromJSON(e)) : [],
+      certificates: Array.isArray(object?.certificates)
+        ? object.certificates.map((e: any) => CertificateOffer.fromJSON(e))
+        : [],
     };
   },
 
@@ -125,14 +127,21 @@ export const GenesisState = {
     } else {
       obj.userDevicesList = [];
     }
-    message.userDevicesCount !== undefined && (obj.userDevicesCount = Math.round(message.userDevicesCount));
     if (message.userCertificatesList) {
       obj.userCertificatesList = message.userCertificatesList.map((e) => e ? UserCertificates.toJSON(e) : undefined);
     } else {
       obj.userCertificatesList = [];
     }
-    message.userCertificatesCount !== undefined
-      && (obj.userCertificatesCount = Math.round(message.userCertificatesCount));
+    if (message.devicesList) {
+      obj.devicesList = message.devicesList.map((e) => e ? Device.toJSON(e) : undefined);
+    } else {
+      obj.devicesList = [];
+    }
+    if (message.certificates) {
+      obj.certificates = message.certificates.map((e) => e ? CertificateOffer.toJSON(e) : undefined);
+    } else {
+      obj.certificates = [];
+    }
     return obj;
   },
 
@@ -144,9 +153,9 @@ export const GenesisState = {
     message.certificateTypeList = object.certificateTypeList?.map((e) => CertificateType.fromPartial(e)) || [];
     message.certificateTypeCount = object.certificateTypeCount ?? 0;
     message.userDevicesList = object.userDevicesList?.map((e) => UserDevices.fromPartial(e)) || [];
-    message.userDevicesCount = object.userDevicesCount ?? 0;
     message.userCertificatesList = object.userCertificatesList?.map((e) => UserCertificates.fromPartial(e)) || [];
-    message.userCertificatesCount = object.userCertificatesCount ?? 0;
+    message.devicesList = object.devicesList?.map((e) => Device.fromPartial(e)) || [];
+    message.certificates = object.certificates?.map((e) => CertificateOffer.fromPartial(e)) || [];
     return message;
   },
 };
