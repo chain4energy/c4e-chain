@@ -172,12 +172,7 @@ func genesisStateWithValSet(
 		Coins:   sdk.Coins{sdk.NewCoin(bondDenom, bondAmt)},
 	})
 
-	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{}, []banktypes.SendEnabled{
-		{
-			Denom:   testenv.DefaultTestDenom,
-			Enabled: true,
-		},
-	})
+	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{}, []banktypes.SendEnabled{})
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
 
 	vestingGenesis := cfevestingtypes.DefaultGenesis()

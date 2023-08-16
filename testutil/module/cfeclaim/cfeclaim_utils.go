@@ -290,6 +290,9 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 	require.Nil(h.t, allowance)
 
 	campaignBefore.CampaignCurrentAmount = campaignBefore.CampaignCurrentAmount.Sub(expectedAmount...)
+	if campaignBefore.CampaignCurrentAmount.IsZero() {
+		campaignBefore.CampaignCurrentAmount = sdk.Coins(nil)
+	}
 	require.EqualValues(h.t, campaignBefore, campaignAfter)
 
 	h.BankUtils.VerifyAccountAllBalances(ctx, claimer, claimerBalanceBefore.Add(expectedAmount...))
