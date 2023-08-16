@@ -1,5 +1,5 @@
 syntax = "proto3";
-package chain4energy.c4echain.cfedistributor;
+package c4echain.cfedistributor;
 
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package chain4energy.c4echain.cfedistributor;
+package c4echain.cfedistributor;
 
 import "gogoproto/gogo.proto";
 import "c4echain/cfedistributor/params.proto";

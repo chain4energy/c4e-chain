@@ -1,5 +1,5 @@
 syntax = "proto3";
-package chain4energy.c4echain.cfeclaim;
+package c4echain.cfeclaim;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";

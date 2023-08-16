@@ -1,5 +1,5 @@
 syntax = "proto3";
-package chain4energy.c4echain.cfevesting;
+package c4echain.cfevesting;
 
 option go_package = "github.com/chain4energy/c4e-chain/x/cfevesting/types";
 
