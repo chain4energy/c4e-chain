@@ -71,3 +71,10 @@ func RandomCollectorName(r *rand.Rand) subdistributortestutils.DestinationType {
 	}
 	return subdistributortestutils.MainCollector
 }
+
+// ProposalMsgs returns msgs used for governance proposals for simulations.
+func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.WeightedProposalMsg {
+	return []simtypes.WeightedProposalMsg{
+		// this line is used by starport scaffolding # simapp/module/OpMsg
+	}
+}

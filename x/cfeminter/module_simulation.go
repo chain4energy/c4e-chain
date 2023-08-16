@@ -68,3 +68,10 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 
 	return operations
 }
+
+// ProposalMsgs returns msgs used for governance proposals for simulations.
+func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.WeightedProposalMsg {
+	return []simtypes.WeightedProposalMsg{
+		// this line is used by starport scaffolding # simapp/module/OpMsg
+	}
+}
