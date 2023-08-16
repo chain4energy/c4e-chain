@@ -3,7 +3,7 @@ package upgrades
 import (
 	cfeclaimkeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
-	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/proto/tendermint/types"
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -24,8 +24,8 @@ type AppKeepers interface {
 // BaseAppParamManager defines an interrace that BaseApp is expected to fullfil
 // that allows upgrade handlers to modify BaseApp parameters.
 type BaseAppParamManager interface {
-	GetConsensusParams(ctx sdk.Context) *abci.ConsensusParams
-	StoreConsensusParams(ctx sdk.Context, cp *abci.ConsensusParams)
+	GetConsensusParams(ctx sdk.Context) *types.ConsensusParams
+	StoreConsensusParams(ctx sdk.Context, cp *types.ConsensusParams)
 }
 
 // Upgrade defines a struct containing necessary fields that a SoftwareUpgradeProposal

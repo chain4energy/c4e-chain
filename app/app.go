@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	solomachine "github.com/cosmos/ibc-go/v7/modules/light-clients/06-solomachine"
@@ -16,7 +17,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
-	"github.com/cosmos/ibc-go/v7/testing/simapp"
 	"io"
 	"os"
 	"path/filepath"
@@ -212,7 +212,7 @@ var (
 
 var (
 	_ servertypes.Application = (*App)(nil)
-	_ simapp.App              = (*App)(nil)
+	_ runtime.AppI            = (*App)(nil)
 
 	Upgrades = []upgrades.Upgrade{v110.Upgrade, v120.Upgrade, v130.Upgrade}
 )
