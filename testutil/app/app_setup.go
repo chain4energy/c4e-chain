@@ -3,8 +3,9 @@ package app
 import (
 	"cosmossdk.io/math"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
-	"github.com/cosmos/cosmos-sdk/simapp"
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
+	"github.com/cosmos/cosmos-sdk/testutil/sims"
+	"github.com/cosmos/ibc-go/v7/testing/simapp"
 	"time"
 
 	"encoding/json"
@@ -15,12 +16,13 @@ import (
 	c4eapp "github.com/chain4energy/c4e-chain/app"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	tmtypes "github.com/cometbft/cometbft/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -28,7 +30,6 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 // Setup initializes a new chainforenergyApp
@@ -57,7 +58,7 @@ func BaseSetup() (*c4eapp.App, c4eapp.GenesisState) {
 		c4eapp.DefaultNodeHome,
 		0,
 		appparams.EncodingConfig(encoding),
-		simapp.EmptyAppOptions{},
+		sims.EmptyAppOptions{},
 	)
 	genesisState := c4eapp.NewDefaultGenesisState(encoding.Codec)
 
@@ -171,7 +172,12 @@ func genesisStateWithValSet(
 		Coins:   sdk.Coins{sdk.NewCoin(bondDenom, bondAmt)},
 	})
 
-	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{})
+	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{}, []banktypes.SendEnabled{
+		{
+			Denom:   testenv.DefaultTestDenom,
+			Enabled: true,
+		},
+	})
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
 
 	vestingGenesis := cfevestingtypes.DefaultGenesis()

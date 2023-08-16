@@ -3,10 +3,10 @@ package utils
 import (
 	"cosmossdk.io/math"
 	"errors"
+	"github.com/cometbft/cometbft/crypto"
+	"github.com/cometbft/cometbft/crypto/ed25519"
+	cmtrand "github.com/cometbft/cometbft/libs/rand"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	cmtrand "github.com/tendermint/tendermint/libs/rand"
 	"math/big"
 	"math/rand"
 	"time"

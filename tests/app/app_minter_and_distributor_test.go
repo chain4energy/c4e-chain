@@ -5,7 +5,7 @@ import (
 	testgenesis "github.com/chain4energy/c4e-chain/tests/app/genesis"
 	"github.com/chain4energy/c4e-chain/testutil/app"
 	distributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
-	abci "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/cometbft/cometbft/abci/types"
 	"testing"
 	"time"
 )

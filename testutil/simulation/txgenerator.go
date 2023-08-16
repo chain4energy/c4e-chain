@@ -2,9 +2,10 @@ package simulation
 
 import (
 	"cosmossdk.io/errors"
+	"cosmossdk.io/simapp/params"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	helpers2 "github.com/cosmos/cosmos-sdk/simapp/helpers"
-	"github.com/cosmos/cosmos-sdk/simapp/params"
+	"github.com/cosmos/cosmos-sdk/testutil/sims"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -46,7 +47,7 @@ func sendMessage(ctx sdk.Context, r *rand.Rand, ak authkeeper.AccountKeeper, app
 	}
 
 	txConfig := params.MakeTestEncodingConfig().TxConfig
-	tx, err := helpers2.GenSignedMockTx(r, params.MakeTestEncodingConfig().TxConfig, []sdk.Msg{msg}, fees, helpers2.DefaultGenTxGas, chainID, []uint64{account.GetAccountNumber()}, []uint64{account.GetSequence()},
+	tx, err := sims.GenSignedMockTx(r, params.MakeTestEncodingConfig().TxConfig, []sdk.Msg{msg}, fees, sims.DefaultGenTxGas, chainID, []uint64{account.GetAccountNumber()}, []uint64{account.GetSequence()},
 		simAccount.PrivKey,
 	)
 	if err != nil {

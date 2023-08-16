@@ -3,8 +3,8 @@ package e2e
 import (
 	"fmt"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
+	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/stretchr/testify/suite"
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 	"os"
 	"path/filepath"
 	"testing"

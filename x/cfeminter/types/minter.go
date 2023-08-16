@@ -3,8 +3,8 @@ package types
 import (
 	"cosmossdk.io/math"
 	"fmt"
+	"github.com/cometbft/cometbft/libs/log"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/log"
 	"gopkg.in/yaml.v2"
 	"sort"
 	"time"
