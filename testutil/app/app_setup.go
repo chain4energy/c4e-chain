@@ -189,7 +189,6 @@ func genesisStateWithValSet(
 	genesisState[cfedistributortypes.ModuleName] = app.AppCodec().MustMarshalJSON(distributorGenesis)
 
 	govGenesis := govv1types.DefaultGenesisState()
-	govGenesis.DepositParams.MinDeposit = sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, govv1types.DefaultMinDepositTokens))
 	genesisState[govtypes.ModuleName] = app.AppCodec().MustMarshalJSON(govGenesis)
 
 	return genesisState, delegationsSum
