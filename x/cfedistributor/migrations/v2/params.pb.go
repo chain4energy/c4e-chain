@@ -6,8 +6,8 @@ package v2
 import (
 	fmt "fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	_ "github.com/cosmos/gogoproto/gogoproto"
-	proto "github.com/cosmos/gogoproto/proto"
+	_ "github.com/gogo/protobuf/gogoproto"
+	proto "github.com/gogo/protobuf/proto"
 	"gopkg.in/yaml.v2"
 	io "io"
 	math "math"
