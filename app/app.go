@@ -12,6 +12,11 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	solomachine "github.com/cosmos/ibc-go/v7/modules/light-clients/06-solomachine"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
+	"github.com/chain4energy/c4e-chain/app/upgrades"
+	v110 "github.com/chain4energy/c4e-chain/app/upgrades/v110"
+	v120 "github.com/chain4energy/c4e-chain/app/upgrades/v120"
 	v130 "github.com/chain4energy/c4e-chain/app/upgrades/v130"
 	cfeclaimmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	cfeclaimmoduletypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
@@ -21,11 +26,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-
-	appparams "github.com/chain4energy/c4e-chain/app/params"
-	"github.com/chain4energy/c4e-chain/app/upgrades"
-	v110 "github.com/chain4energy/c4e-chain/app/upgrades/v110"
-	v120 "github.com/chain4energy/c4e-chain/app/upgrades/v120"
 
 	"github.com/chain4energy/c4e-chain/docs"
 	cfeclaimmodule "github.com/chain4energy/c4e-chain/x/cfeclaim"
@@ -176,6 +176,7 @@ var (
 		slashing.AppModuleBasic{},
 		feegrantmodule.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
+		wasm.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		ibctm.AppModuleBasic{},
 		solomachine.AppModuleBasic{},
