@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"errors"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/chain4energy/c4e-chain/app"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
+	"github.com/prometheus/client_golang/prometheus"
 	"io"
 	"os"
 	"path/filepath"
@@ -272,17 +274,23 @@ func (a appCreator) newApp(
 		cast.ToUint64(appOpts.Get(server.FlagStateSyncSnapshotInterval)),
 		cast.ToUint32(appOpts.Get(server.FlagStateSyncSnapshotKeepRecent)),
 	)
+	var wasmOpts []wasmkeeper.Option
+	if cast.ToBool(appOpts.Get("telemetry.enabled")) {
+		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
+	}
 
 	return app.New(
 		logger,
 		db,
 		traceStore,
 		true,
+		app.GetEnabledProposals(),
 		skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		a.encodingConfig,
 		appOpts,
+		wasmOpts,
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
 		baseapp.SetHaltHeight(cast.ToUint64(appOpts.Get(server.FlagHaltHeight))),
@@ -314,16 +322,20 @@ func (a appCreator) appExport(
 		return servertypes.ExportedApp{}, errors.New("application home not set")
 	}
 
+	var emptyWasmOpts []wasmkeeper.Option
+
 	app := app.New(
 		logger,
 		db,
 		traceStore,
 		height == -1, // -1: no height provided
+		app.GetEnabledProposals(),
 		map[int64]bool{},
 		homePath,
 		uint(1),
 		a.encodingConfig,
 		appOpts,
+		emptyWasmOpts,
 	)
 
 	if height != -1 {

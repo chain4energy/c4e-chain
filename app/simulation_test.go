@@ -3,6 +3,8 @@ package app_test
 import (
 	"encoding/json"
 	"fmt"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/chain4energy/c4e-chain/app"
 	"math/rand"
 	"os"
@@ -37,6 +39,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 )
+
+var emptyWasmOpts []wasmkeeper.Option
 
 type storeKeysPrefixes struct {
 	A        storetypes.StoreKey
@@ -91,11 +95,13 @@ func BenchmarkSimulation(b *testing.B) {
 		db,
 		nil,
 		true,
+		wasmtypes.EnableAllProposals,
 		map[int64]bool{},
 		app.DefaultNodeHome,
 		0,
 		app.MakeEncodingConfig(),
 		appOptions,
+		emptyWasmOpts,
 		baseapp.SetChainID(config.ChainID),
 	)
 	require.Equal(b, app.Name, bApp.Name())
@@ -167,11 +173,13 @@ func TestAppStateDeterminism(t *testing.T) {
 				db,
 				nil,
 				true,
+				wasmtypes.EnableAllProposals,
 				map[int64]bool{},
 				app.DefaultNodeHome,
 				simcli.FlagPeriodValue,
 				app.MakeEncodingConfig(),
 				appOptions,
+				emptyWasmOpts,
 				fauxMerkleModeOpt,
 				baseapp.SetChainID(chainID),
 			)
@@ -245,11 +253,13 @@ func TestAppImportExport(t *testing.T) {
 		db,
 		nil,
 		true,
+		wasmtypes.EnableAllProposals,
 		map[int64]bool{},
 		app.DefaultNodeHome,
 		0,
 		app.MakeEncodingConfig(),
 		appOptions,
+		emptyWasmOpts,
 		baseapp.SetChainID(config.ChainID),
 	)
 	require.Equal(t, app.Name, bApp.Name())
@@ -306,11 +316,13 @@ func TestAppImportExport(t *testing.T) {
 		newDB,
 		nil,
 		true,
+		wasmtypes.EnableAllProposals,
 		map[int64]bool{},
 		app.DefaultNodeHome,
 		0,
 		app.MakeEncodingConfig(),
 		appOptions,
+		emptyWasmOpts,
 		baseapp.SetChainID(config.ChainID),
 	)
 	require.Equal(t, app.Name, bApp.Name())
@@ -399,11 +411,13 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		db,
 		nil,
 		true,
+		wasmtypes.EnableAllProposals,
 		map[int64]bool{},
 		app.DefaultNodeHome,
 		0,
 		app.MakeEncodingConfig(),
 		appOptions,
+		emptyWasmOpts,
 		fauxMerkleModeOpt,
 		baseapp.SetChainID(config.ChainID),
 	)
@@ -466,11 +480,13 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		newDB,
 		nil,
 		true,
+		wasmtypes.EnableAllProposals,
 		map[int64]bool{},
 		app.DefaultNodeHome,
 		0,
 		app.MakeEncodingConfig(),
 		appOptions,
+		emptyWasmOpts,
 		fauxMerkleModeOpt,
 		baseapp.SetChainID(config.ChainID),
 	)

@@ -2,6 +2,8 @@ package network
 
 import (
 	"fmt"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/store/pruning/types"
 	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -46,6 +48,8 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 	return net
 }
 
+var emptyWasmOpts []wasmkeeper.Option
+
 // DefaultConfig will initialize config for the network with custom application,
 // genesis and single validator. All other parameters are inherited from cosmos-sdk/testutil/network.DefaultConfig
 func DefaultConfig() network.Config {
@@ -65,11 +69,13 @@ func DefaultConfig() network.Config {
 				tmdb.NewMemDB(),
 				nil,
 				true,
+				wasmtypes.EnableAllProposals,
 				map[int64]bool{},
 				val.GetCtx().Config.RootDir,
 				0,
 				encoding,
 				simtestutil.EmptyAppOptions{},
+				emptyWasmOpts,
 				baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
 				baseapp.SetMinGasPrices(val.GetAppConfig().MinGasPrices),
 				baseapp.SetChainID(chainID),
