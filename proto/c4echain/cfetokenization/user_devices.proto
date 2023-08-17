@@ -25,10 +25,10 @@ message PendingDevice {
 message Device {
   string device_address = 1;
   repeated Measurement measurements = 2;
-  uint64 active_power_sum = 3;
-  uint64 reverse_power_sum = 4;
-  uint64 used_active_power = 5;
-  uint64 fulfilled_reverse_power = 6;
+  uint64 energy_consumed_sum = 3;
+  uint64 energy_produced_sum = 4;
+  uint64 used_energy_produced = 5;
+  uint64 fulfilled_energy_consumed = 6;
 }
 
 message Measurement {

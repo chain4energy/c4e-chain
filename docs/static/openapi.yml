@@ -2350,16 +2350,16 @@ paths:
                           format: uint64
                         metadata:
                           type: string
-                  active_power_sum:
+                  energy_consumed_sum:
                     type: string
                     format: uint64
-                  reverse_power_sum:
+                  energy_produced_sum:
                     type: string
                     format: uint64
-                  used_active_power:
+                  used_energy_produced:
                     type: string
                     format: uint64
-                  fulfilled_reverse_power:
+                  fulfilled_energy_consumed:
                     type: string
                     format: uint64
         default:
@@ -2424,16 +2424,16 @@ paths:
                             format: uint64
                           metadata:
                             type: string
-                    active_power_sum:
+                    energy_consumed_sum:
                       type: string
                       format: uint64
-                    reverse_power_sum:
+                    energy_produced_sum:
                       type: string
                       format: uint64
-                    used_active_power:
+                    used_energy_produced:
                       type: string
                       format: uint64
-                    fulfilled_reverse_power:
+                    fulfilled_energy_consumed:
                       type: string
                       format: uint64
               pagination:
@@ -51007,16 +51007,16 @@ definitions:
               format: uint64
             metadata:
               type: string
-      active_power_sum:
+      energy_consumed_sum:
         type: string
         format: uint64
-      reverse_power_sum:
+      energy_produced_sum:
         type: string
         format: uint64
-      used_active_power:
+      used_energy_produced:
         type: string
         format: uint64
-      fulfilled_reverse_power:
+      fulfilled_energy_consumed:
         type: string
         format: uint64
   chain4energy.c4echain.cfetokenization.Measurement:
@@ -51251,16 +51251,16 @@ definitions:
                     format: uint64
                   metadata:
                     type: string
-            active_power_sum:
+            energy_consumed_sum:
               type: string
               format: uint64
-            reverse_power_sum:
+            energy_produced_sum:
               type: string
               format: uint64
-            used_active_power:
+            used_energy_produced:
               type: string
               format: uint64
-            fulfilled_reverse_power:
+            fulfilled_energy_consumed:
               type: string
               format: uint64
       pagination:
@@ -51318,16 +51318,16 @@ definitions:
                   format: uint64
                 metadata:
                   type: string
-          active_power_sum:
+          energy_consumed_sum:
             type: string
             format: uint64
-          reverse_power_sum:
+          energy_produced_sum:
             type: string
             format: uint64
-          used_active_power:
+          used_energy_produced:
             type: string
             format: uint64
-          fulfilled_reverse_power:
+          fulfilled_energy_consumed:
             type: string
             format: uint64
   chain4energy.c4echain.cfetokenization.QueryGetCertificateTypeResponse:

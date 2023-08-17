@@ -69,8 +69,8 @@ func (k msgServer) AddMeasurement(goCtx context.Context, msg *types.MsgAddMeasur
 		ReversePower:       msg.ReversePower,
 		Metadata:           msg.Metadata,
 	})
-	device.ActivePowerSum += msg.ActivePower
-	device.ReversePowerSum += msg.ReversePower
+	device.EnergyConsumedSum += msg.ActivePower
+	device.EnergyProducedSum += msg.ReversePower
 
 	k.SetDevice(ctx, device)
 
