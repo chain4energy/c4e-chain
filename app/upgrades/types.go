@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	paramsKeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
@@ -19,6 +20,8 @@ type AppKeepers interface {
 	GetParamKeeper() *paramsKeeper.Keeper
 	GetC4eVestingKeeper() *cfevestingkeeper.Keeper
 	GetC4eClaimKeeper() *cfeclaimkeeper.Keeper
+	GetC4eParamsKeeper() *paramsKeeper.Keeper
+	GetC4eConsensurParamsKeeper() *consensusparamkeeper.Keeper
 }
 
 // BaseAppParamManager defines an interrace that BaseApp is expected to fullfil

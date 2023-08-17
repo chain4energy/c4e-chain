@@ -2,8 +2,9 @@ package v200
 
 import (
 	"github.com/chain4energy/c4e-chain/app/upgrades"
-	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	store "github.com/cosmos/cosmos-sdk/store/types"
+	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
+	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 )
 
 const UpgradeName = "v2.0.0"
@@ -12,6 +13,12 @@ var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,
 	CreateUpgradeHandler: CreateUpgradeHandler,
 	StoreUpgrades: store.StoreUpgrades{
-		Added: []string{cfeclaimtypes.ModuleName},
+		Added: []string{
+			consensusparamtypes.ModuleName,
+			crisistypes.ModuleName,
+		},
+		Deleted: []string{
+			"cfesignature",
+		},
 	},
 }
