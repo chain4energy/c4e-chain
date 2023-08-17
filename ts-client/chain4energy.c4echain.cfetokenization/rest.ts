@@ -41,6 +41,10 @@ export interface CfetokenizationCertificateOffer {
 
   /** @format uint64 */
   power?: string;
+  measurements?: CfetokenizationMeasurement[];
+
+  /** @format date-time */
+  valid_until?: string;
 }
 
 export enum CfetokenizationCertificateStatus {
@@ -63,16 +67,16 @@ export interface CfetokenizationDevice {
   measurements?: CfetokenizationMeasurement[];
 
   /** @format uint64 */
-  active_power_sum?: string;
+  energy_consumed_sum?: string;
 
   /** @format uint64 */
-  reverse_power_sum?: string;
+  energy_produced_sum?: string;
 
   /** @format uint64 */
-  used_active_power?: string;
+  used_energy_produced?: string;
 
   /** @format uint64 */
-  fulfilled_reverse_power?: string;
+  fulfilled_energy_consumed?: string;
 }
 
 export interface CfetokenizationMeasurement {

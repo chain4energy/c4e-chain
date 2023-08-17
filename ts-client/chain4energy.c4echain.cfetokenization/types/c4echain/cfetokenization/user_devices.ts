@@ -24,10 +24,10 @@ export interface PendingDevice {
 export interface Device {
   deviceAddress: string;
   measurements: Measurement[];
-  activePowerSum: number;
-  reversePowerSum: number;
-  usedActivePower: number;
-  fulfilledReversePower: number;
+  energyConsumedSum: number;
+  energyProducedSum: number;
+  usedEnergyProduced: number;
+  fulfilledEnergyConsumed: number;
 }
 
 export interface Measurement {
@@ -230,10 +230,10 @@ function createBaseDevice(): Device {
   return {
     deviceAddress: "",
     measurements: [],
-    activePowerSum: 0,
-    reversePowerSum: 0,
-    usedActivePower: 0,
-    fulfilledReversePower: 0,
+    energyConsumedSum: 0,
+    energyProducedSum: 0,
+    usedEnergyProduced: 0,
+    fulfilledEnergyConsumed: 0,
   };
 }
 
@@ -245,17 +245,17 @@ export const Device = {
     for (const v of message.measurements) {
       Measurement.encode(v!, writer.uint32(18).fork()).ldelim();
     }
-    if (message.activePowerSum !== 0) {
-      writer.uint32(24).uint64(message.activePowerSum);
+    if (message.energyConsumedSum !== 0) {
+      writer.uint32(24).uint64(message.energyConsumedSum);
     }
-    if (message.reversePowerSum !== 0) {
-      writer.uint32(32).uint64(message.reversePowerSum);
+    if (message.energyProducedSum !== 0) {
+      writer.uint32(32).uint64(message.energyProducedSum);
     }
-    if (message.usedActivePower !== 0) {
-      writer.uint32(40).uint64(message.usedActivePower);
+    if (message.usedEnergyProduced !== 0) {
+      writer.uint32(40).uint64(message.usedEnergyProduced);
     }
-    if (message.fulfilledReversePower !== 0) {
-      writer.uint32(48).uint64(message.fulfilledReversePower);
+    if (message.fulfilledEnergyConsumed !== 0) {
+      writer.uint32(48).uint64(message.fulfilledEnergyConsumed);
     }
     return writer;
   },
@@ -274,16 +274,16 @@ export const Device = {
           message.measurements.push(Measurement.decode(reader, reader.uint32()));
           break;
         case 3:
-          message.activePowerSum = longToNumber(reader.uint64() as Long);
+          message.energyConsumedSum = longToNumber(reader.uint64() as Long);
           break;
         case 4:
-          message.reversePowerSum = longToNumber(reader.uint64() as Long);
+          message.energyProducedSum = longToNumber(reader.uint64() as Long);
           break;
         case 5:
-          message.usedActivePower = longToNumber(reader.uint64() as Long);
+          message.usedEnergyProduced = longToNumber(reader.uint64() as Long);
           break;
         case 6:
-          message.fulfilledReversePower = longToNumber(reader.uint64() as Long);
+          message.fulfilledEnergyConsumed = longToNumber(reader.uint64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -299,10 +299,10 @@ export const Device = {
       measurements: Array.isArray(object?.measurements)
         ? object.measurements.map((e: any) => Measurement.fromJSON(e))
         : [],
-      activePowerSum: isSet(object.activePowerSum) ? Number(object.activePowerSum) : 0,
-      reversePowerSum: isSet(object.reversePowerSum) ? Number(object.reversePowerSum) : 0,
-      usedActivePower: isSet(object.usedActivePower) ? Number(object.usedActivePower) : 0,
-      fulfilledReversePower: isSet(object.fulfilledReversePower) ? Number(object.fulfilledReversePower) : 0,
+      energyConsumedSum: isSet(object.energyConsumedSum) ? Number(object.energyConsumedSum) : 0,
+      energyProducedSum: isSet(object.energyProducedSum) ? Number(object.energyProducedSum) : 0,
+      usedEnergyProduced: isSet(object.usedEnergyProduced) ? Number(object.usedEnergyProduced) : 0,
+      fulfilledEnergyConsumed: isSet(object.fulfilledEnergyConsumed) ? Number(object.fulfilledEnergyConsumed) : 0,
     };
   },
 
@@ -314,11 +314,11 @@ export const Device = {
     } else {
       obj.measurements = [];
     }
-    message.activePowerSum !== undefined && (obj.activePowerSum = Math.round(message.activePowerSum));
-    message.reversePowerSum !== undefined && (obj.reversePowerSum = Math.round(message.reversePowerSum));
-    message.usedActivePower !== undefined && (obj.usedActivePower = Math.round(message.usedActivePower));
-    message.fulfilledReversePower !== undefined
-      && (obj.fulfilledReversePower = Math.round(message.fulfilledReversePower));
+    message.energyConsumedSum !== undefined && (obj.energyConsumedSum = Math.round(message.energyConsumedSum));
+    message.energyProducedSum !== undefined && (obj.energyProducedSum = Math.round(message.energyProducedSum));
+    message.usedEnergyProduced !== undefined && (obj.usedEnergyProduced = Math.round(message.usedEnergyProduced));
+    message.fulfilledEnergyConsumed !== undefined
+      && (obj.fulfilledEnergyConsumed = Math.round(message.fulfilledEnergyConsumed));
     return obj;
   },
 
@@ -326,10 +326,10 @@ export const Device = {
     const message = createBaseDevice();
     message.deviceAddress = object.deviceAddress ?? "";
     message.measurements = object.measurements?.map((e) => Measurement.fromPartial(e)) || [];
-    message.activePowerSum = object.activePowerSum ?? 0;
-    message.reversePowerSum = object.reversePowerSum ?? 0;
-    message.usedActivePower = object.usedActivePower ?? 0;
-    message.fulfilledReversePower = object.fulfilledReversePower ?? 0;
+    message.energyConsumedSum = object.energyConsumedSum ?? 0;
+    message.energyProducedSum = object.energyProducedSum ?? 0;
+    message.usedEnergyProduced = object.usedEnergyProduced ?? 0;
+    message.fulfilledEnergyConsumed = object.fulfilledEnergyConsumed ?? 0;
     return message;
   },
 };

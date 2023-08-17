@@ -3,6 +3,7 @@ import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { Coin } from "../../cosmos/base/v1beta1/coin";
 import { Timestamp } from "../../google/protobuf/timestamp";
+import { Measurement } from "./user_devices";
 
 export const protobufPackage = "chain4energy.c4echain.cfetokenization";
 
@@ -82,6 +83,8 @@ export interface CertificateOffer {
   price: Coin[];
   authorizer: string;
   power: number;
+  measurements: Measurement[];
+  validUntil: Date | undefined;
 }
 
 function createBaseUserCertificates(): UserCertificates {
@@ -300,7 +303,17 @@ export const Certificate = {
 };
 
 function createBaseCertificateOffer(): CertificateOffer {
-  return { id: 0, certificateId: 0, owner: "", buyer: "", price: [], authorizer: "", power: 0 };
+  return {
+    id: 0,
+    certificateId: 0,
+    owner: "",
+    buyer: "",
+    price: [],
+    authorizer: "",
+    power: 0,
+    measurements: [],
+    validUntil: undefined,
+  };
 }
 
 export const CertificateOffer = {
@@ -325,6 +338,12 @@ export const CertificateOffer = {
     }
     if (message.power !== 0) {
       writer.uint32(56).uint64(message.power);
+    }
+    for (const v of message.measurements) {
+      Measurement.encode(v!, writer.uint32(66).fork()).ldelim();
+    }
+    if (message.validUntil !== undefined) {
+      Timestamp.encode(toTimestamp(message.validUntil), writer.uint32(74).fork()).ldelim();
     }
     return writer;
   },
@@ -357,6 +376,12 @@ export const CertificateOffer = {
         case 7:
           message.power = longToNumber(reader.uint64() as Long);
           break;
+        case 8:
+          message.measurements.push(Measurement.decode(reader, reader.uint32()));
+          break;
+        case 9:
+          message.validUntil = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -374,6 +399,10 @@ export const CertificateOffer = {
       price: Array.isArray(object?.price) ? object.price.map((e: any) => Coin.fromJSON(e)) : [],
       authorizer: isSet(object.authorizer) ? String(object.authorizer) : "",
       power: isSet(object.power) ? Number(object.power) : 0,
+      measurements: Array.isArray(object?.measurements)
+        ? object.measurements.map((e: any) => Measurement.fromJSON(e))
+        : [],
+      validUntil: isSet(object.validUntil) ? fromJsonTimestamp(object.validUntil) : undefined,
     };
   },
 
@@ -390,6 +419,12 @@ export const CertificateOffer = {
     }
     message.authorizer !== undefined && (obj.authorizer = message.authorizer);
     message.power !== undefined && (obj.power = Math.round(message.power));
+    if (message.measurements) {
+      obj.measurements = message.measurements.map((e) => e ? Measurement.toJSON(e) : undefined);
+    } else {
+      obj.measurements = [];
+    }
+    message.validUntil !== undefined && (obj.validUntil = message.validUntil.toISOString());
     return obj;
   },
 
@@ -402,6 +437,8 @@ export const CertificateOffer = {
     message.price = object.price?.map((e) => Coin.fromPartial(e)) || [];
     message.authorizer = object.authorizer ?? "";
     message.power = object.power ?? 0;
+    message.measurements = object.measurements?.map((e) => Measurement.fromPartial(e)) || [];
+    message.validUntil = object.validUntil ?? undefined;
     return message;
   },
 };

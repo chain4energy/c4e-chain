@@ -7,9 +7,9 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
+import { MsgBurn } from "./types/c4echain/cfeminter/tx";
 import { MsgUpdateParams } from "./types/c4echain/cfeminter/tx";
 import { MsgUpdateMintersParams } from "./types/c4echain/cfeminter/tx";
-import { MsgBurn } from "./types/c4echain/cfeminter/tx";
 
 import { EventMint as typeEventMint} from "./types"
 import { Minter as typeMinter} from "./types"
@@ -19,7 +19,13 @@ import { ExponentialStepMinting as typeExponentialStepMinting} from "./types"
 import { MinterState as typeMinterState} from "./types"
 import { Params as typeParams} from "./types"
 
-export { MsgUpdateParams, MsgUpdateMintersParams, MsgBurn };
+export { MsgBurn, MsgUpdateParams, MsgUpdateMintersParams };
+
+type sendMsgBurnParams = {
+  value: MsgBurn,
+  fee?: StdFee,
+  memo?: string
+};
 
 type sendMsgUpdateParamsParams = {
   value: MsgUpdateParams,
@@ -33,12 +39,10 @@ type sendMsgUpdateMintersParamsParams = {
   memo?: string
 };
 
-type sendMsgBurnParams = {
-  value: MsgBurn,
-  fee?: StdFee,
-  memo?: string
-};
 
+type msgBurnParams = {
+  value: MsgBurn,
+};
 
 type msgUpdateParamsParams = {
   value: MsgUpdateParams,
@@ -46,10 +50,6 @@ type msgUpdateParamsParams = {
 
 type msgUpdateMintersParamsParams = {
   value: MsgUpdateMintersParams,
-};
-
-type msgBurnParams = {
-  value: MsgBurn,
 };
 
 
@@ -82,6 +82,20 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
+		async sendMsgBurn({ value, fee, memo }: sendMsgBurnParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgBurn: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgBurn({ value: MsgBurn.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgBurn: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
 		async sendMsgUpdateParams({ value, fee, memo }: sendMsgUpdateParamsParams): Promise<DeliverTxResponse> {
 			if (!signer) {
 					throw new Error('TxClient:sendMsgUpdateParams: Unable to sign Tx. Signer is not present.')
@@ -110,20 +124,14 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		async sendMsgBurn({ value, fee, memo }: sendMsgBurnParams): Promise<DeliverTxResponse> {
-			if (!signer) {
-					throw new Error('TxClient:sendMsgBurn: Unable to sign Tx. Signer is not present.')
-			}
-			try {			
-				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgBurn({ value: MsgBurn.fromPartial(value) })
-				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+		
+		msgBurn({ value }: msgBurnParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfeminter.MsgBurn", value: MsgBurn.fromPartial( value ) }  
 			} catch (e: any) {
-				throw new Error('TxClient:sendMsgBurn: Could not broadcast Tx: '+ e.message)
+				throw new Error('TxClient:MsgBurn: Could not create message: ' + e.message)
 			}
 		},
-		
 		
 		msgUpdateParams({ value }: msgUpdateParamsParams): EncodeObject {
 			try {
@@ -138,14 +146,6 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 				return { typeUrl: "/chain4energy.c4echain.cfeminter.MsgUpdateMintersParams", value: MsgUpdateMintersParams.fromPartial( value ) }  
 			} catch (e: any) {
 				throw new Error('TxClient:MsgUpdateMintersParams: Could not create message: ' + e.message)
-			}
-		},
-		
-		msgBurn({ value }: msgBurnParams): EncodeObject {
-			try {
-				return { typeUrl: "/chain4energy.c4echain.cfeminter.MsgBurn", value: MsgBurn.fromPartial( value ) }  
-			} catch (e: any) {
-				throw new Error('TxClient:MsgBurn: Could not create message: ' + e.message)
 			}
 		},
 		
