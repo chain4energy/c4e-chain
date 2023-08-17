@@ -14,7 +14,17 @@ RUN apk add linux-headers
 WORKDIR /chain4energy
 COPY . /chain4energy
 RUN rm -rf /chain4energy/build
+
+RUN ARCH=$(uname -m) && WASMVM_VERSION=$(go list -m github.com/CosmWasm/wasmvm | sed 's/.* //') && \
+    wget https://github.com/CosmWasm/wasmvm/releases/download/$WASMVM_VERSION/libwasmvm_muslc.$ARCH.a \
+        -O /lib/libwasmvm_muslc.a && \
+    # verify checksum
+    wget https://github.com/CosmWasm/wasmvm/releases/download/$WASMVM_VERSION/checksums.txt -O /tmp/checksums.txt && \
+    sha256sum /lib/libwasmvm_muslc.a | grep $(cat /tmp/checksums.txt | grep libwasmvm_muslc.$ARCH | cut -d ' ' -f 1)
+
+
 RUN BUILD_TAGS=muslc LINK_STATICALLY=true make build
+
 
 # --------------------------------------------------------
 # Runner

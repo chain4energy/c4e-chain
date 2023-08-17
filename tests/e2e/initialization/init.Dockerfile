@@ -11,7 +11,7 @@ RUN apk add git
 RUN apk add linux-headers
 
 WORKDIR /chain4energy
-RUN git clone -b master-1.2.0 https://github.com/chain4energy/c4e-chain.git /chain4energy
+RUN git clone -b master-1.3.0 https://github.com/chain4energy/c4e-chain.git /chain4energy
 
 RUN BUILD_TAGS=muslc LINK_STATICALLY=true E2E_SCRIPT_NAME=${E2E_SCRIPT_NAME} make build-e2e-script
 

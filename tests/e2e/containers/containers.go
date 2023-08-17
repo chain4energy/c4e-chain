@@ -65,7 +65,7 @@ func (m *Manager) ExecTxCmd(t *testing.T, chainId string, containerName string, 
 // namely adding flags `--chain-id={chain-id} -b=block --yes --keyring-backend=test "--log_format=json"`,
 // and searching for `successStr`
 func (m *Manager) ExecCmdWithResponseString(t *testing.T, chainId string, containerName string, command []string, successStr string) (bytes.Buffer, bytes.Buffer, error) {
-	allTxArgs := []string{"--gas=auto", fmt.Sprintf("--chain-id=%s", chainId), "-b=block", "--yes", "--keyring-backend=test", "--log_format=json", fmt.Sprintf("--sign-mode=%s", m.signMode)}
+	allTxArgs := []string{fmt.Sprintf("--chain-id=%s", chainId), "--yes", "--keyring-backend=test", "--gas=auto", "--gas-adjustment=1.15", "--log_format=json", fmt.Sprintf("--sign-mode=%s", m.signMode)}
 	txCommand := append(command, allTxArgs...)
 	return m.ExecCmd(t, containerName, txCommand, successStr)
 }
