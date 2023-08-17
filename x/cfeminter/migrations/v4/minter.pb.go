@@ -269,11 +269,11 @@ func (m *MinterState) GetLastMintBlockTime() time.Time {
 }
 
 func init() {
-	proto.RegisterType((*Minter)(nil), "c4echain.cfeminter.Minter")
-	proto.RegisterType((*NoMinting)(nil), "c4echain.cfeminter.NoMinting")
-	proto.RegisterType((*LinearMinting)(nil), "c4echain.cfeminter.LinearMinting")
-	proto.RegisterType((*ExponentialStepMinting)(nil), "c4echain.cfeminter.ExponentialStepMinting")
-	proto.RegisterType((*MinterState)(nil), "c4echain.cfeminter.MinterState")
+	proto.RegisterType((*Minter)(nil), "c4echain.cfeminter.v4.Minter")
+	proto.RegisterType((*NoMinting)(nil), "c4echain.cfeminter.v4.NoMinting")
+	proto.RegisterType((*LinearMinting)(nil), "c4echain.cfeminter.v4.LinearMinting")
+	proto.RegisterType((*ExponentialStepMinting)(nil), "c4echain.cfeminter.v4.ExponentialStepMinting")
+	proto.RegisterType((*MinterState)(nil), "c4echain.cfeminter.v4.MinterState")
 }
 
 func init() { proto.RegisterFile("c4echain/cfeminter/minter.proto", fileDescriptor_7b192c5e4cd70467) }

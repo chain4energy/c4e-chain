@@ -89,7 +89,7 @@ func (m *Params) GetMinters() []*Minter {
 }
 
 func init() {
-	proto.RegisterType((*Params)(nil), "c4echain.cfeminter.Params")
+	proto.RegisterType((*Params)(nil), "c4echain.cfeminter.v4.Params")
 }
 
 func init() { proto.RegisterFile("c4echain/cfeminter/params.proto", fileDescriptor_44b10d1aea1c51d9) }
