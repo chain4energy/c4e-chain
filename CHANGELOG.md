@@ -48,11 +48,169 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Misc Improvements
 
+## [v1.3.0](https://github.com/chain4energy/c4e-chain/releases/tag/v1.3.0) - 2023-08-21
+
+**Upgrades**
+
+- Bumped ibc-go to `v5.2.1` (Huckleberry patch)
+
+**Improvements**
+- added a new **[`cfeclaim`](./x/cfeclaim)** module that provides the functionality to create campaigns, add missions, and claim tokens based on pre-set conditions
+- introduced a new migrations handling logic that allows chaining multiple migrations in one update
+- added new simulation tests and updated the existing ones for all modules, so now they use the tx builder instead of direct keeper methods
+- added MsgBurn to the cfeminter module
+- introduced a new periodic continuous vesting account type to the cfevesting module
+- renamed all events for consistency
+- for error wrapping, replaced the deprecated package `github.com/cosmos/cosmos-sdk/types/errors` with `cosmossdk.io/errors`
+- removed unnecessary c4e errors
+- enhanced the ValidateBasic functions of messages with additional validations
+- updated all Docker files used to build the chain
+- implemented new E2E tests for the cfeclaim module
+- conducted code clean-ups using Sonar
+- introduced a reservations mechanism for vesting pools
+- registered a c4e micro unit that can be used to properly parse the amount of C4E tokens in the CLI
+- created Fairdrop vesting pool.
+    - Name: Fairdrop
+    - Vesting Type: Fairdrop
+    - Lock Start: 2023-06-01 23:59:59 UTC
+    - Lock End: 2026-06-01 23:59:59 UTC
+    - Genesis Pool: true
+- created Moondrop vesting pool.
+    - Name: Moondrop
+    - Vesting Type: Moondrop
+    - Lock Start: 2024-09-26 02:00:00 UTC
+    - Lock End: 2026-09-25 02:00:00 UTC
+    - Genesis Pool: true
+- added Fairdrop vesting type.
+    - Name: Fairdrop
+    - Free Percentage: 1%
+    - Lockup Period: 183 days
+    - Vesting Period: 91 days
+- added Moondrop vesting type.
+    - Name: Moondrop
+    - Free Percentage: 0%
+    - Lockup Period: 730 days
+    - Vesting Period: 730 days
+- migrated airdrop module account (`fairdrop`).
+    - source Address: `fairdrop` (previous module account)
+    - destination address: `c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54`
+    - coins were migrated from module account to new vesting pool (`Fairdrop`)
+- migrated Moondrop vesting account (`c4e1dsm96gwcv35m4rqd93pzcsztpkrqe0ev7getj8`).
+    - source Address: `c4e1dsm96gwcv35m4rqd93pzcsztpkrqe0ev7getj8`
+    - destination address: `c4e1dsm96gwcv35m4rqd93pzcsztpkrqe0ev7getj8`
+    - coins were migrated from module account to new vesting pool (`Moondrop`)
+- modified Early-bird round vesting type.
+    - Name: Early-bird round
+    - Free Percentage: 15%
+    - Lockup Period: 0 days
+    - Vesting Period: 274 days
+- modified Public round vesting type.
+    - Name: Public round
+    - Free Percentage: 20%
+    - Lockup Period: 0 days
+    - Vesting Period: 183 days
+- created Moondrop campaign.
+    - Name: Moon Drop
+    - Description: ""
+    - Type: Vesting Pool Campaign
+    - Is Continuous: true
+    - Max Claimers: 0
+    - Min Claim Amount: 0
+    - Claim Percentage: 1%
+    - Start Time: 2030-01-01 00:00:00 UTC
+    - End Time: 2031-01-01 00:00:00 UTC
+    - Lockup Period: 730 days
+    - Vesting Period: 730 days
+    - Vesting Pool: Moondrop
+- created Stake Drop campaign.
+    - Name: Stake Drop
+    - Description: Stake Drop is the airdrop aimed to spread knowledge about the C4E ecosystem among the Cosmos $ATOM stakers community. The airdrop snapshot has been taken on September 28th, 2022 at 9:30 PM UTC (during the ATOM 2.0 roadmap announcement at the Cosmoverse Conference).
+    - Type: Vesting Pool Campaign
+    - Is Continuous: false
+    - Max Claimers: 0
+    - Min Claim Amount: 0
+    - Claim Percentage: 1%
+    - Start Time: 2030-01-01 00:00:00 UTC
+    - End Time: 2031-01-01 00:00:00 UTC
+    - Lockup Period: 183 days
+    - Vesting Period: 91 days
+    - Vesting Pool: Fairdrop
+- created Santa Drop campaign.
+    - Name: Santa Drop
+    - Description: Santa Drop prize pool for was 10.000 C4E Tokens, with 10 lucky winners getting 1000 tokens per each. The participants had to complete the tasks to get a chance to be among lucky winners.
+    - Type: Vesting Pool Campaign
+    - Is Continuous: false
+    - Max Claimers: 0
+    - Min Claim Amount: 0
+    - Claim Percentage: 1%
+    - Start Time: 2030-01-01 00:00:00 UTC
+    - End Time: 2031-01-01 00:00:00 UTC
+    - Lockup Period: 183 days
+    - Vesting Period: 91 days
+    - Vesting Pool: Fairdrop
+- created Green Drop campaign.
+    - Name: Green Drop
+    - Description: It was the first airdrop competition aimed at spreading knowledge about the C4E ecosystem. The Prize Pool was 1.000.000 C4E tokens and what is best — all the participants who completed the tasks are eligible for the c4e tokens from it!
+    - Type: Vesting Pool Campaign
+    - Is Continuous: false
+    - Max Claimers: 0
+    - Min Claim Amount: 0
+    - Claim Percentage: 1%
+    - Start Time: 2030-01-01 00:00:00 UTC
+    - End Time: 2031-01-01 00:00:00 UTC
+    - Lockup Period: 183 days
+    - Vesting Period: 91 days
+    - Vesting Pool: Fairdrop
+- created Incentived Testnet I campaign.
+    - Name: Incentived Testnet I
+    - Description: Incentivized Testnet Zealy campaign, is an innovative approach designed to foster engagement and bolster network security. Community members are rewarded for participating in testnet and marketing tasks, receiving C4E tokens as a result of their contributions.
+    - Type: Vesting Pool Campaign
+    - Is Continuous: false
+    - Max Claimers: 0
+    - Min Claim Amount: 0
+    - Claim Percentage: 1%
+    - Start Time: 2030-01-01 00:00:00 UTC
+    - End Time: 2031-01-01 00:00:00 UTC
+    - Lockup Period: 183 days
+    - Vesting Period: 91 days
+    - Vesting Pool: Fairdrop
+- created AMA Drop campaign.
+    - Name: AMA Drop
+    - Description: Have you been active at our AMA sessions and won C4E prizes? This Drop belongs to you.
+    - Type: Vesting Pool Campaign
+    - Is Continuous: false
+    - Max Claimers: 0
+    - Min Claim Amount: 0
+    - Claim Percentage: 1%
+    - Start Time: 2030-01-01 00:00:00 UTC
+    - End Time: 2031-01-01 00:00:00 UTC
+    - Lockup Period: 183 days
+    - Vesting Period: 91 days
+    - Vesting Pool: Fairdrop
+
+**Tests that have been carried out**
+
+- Simulation tests
+- Performance/stability tests
+- Manual E2E tests
+- Automatic E2E tests
+- Unit tests
+
+## [v1.2.1](https://github.com/chain4energy/c4e-chain/releases/tag/v1.2.1) - 2023-06-14
+
+**State Machine Breaking**
+
+Release version with State Machine Breaking from v1.2.0 Please upgrade according to the team's notice
+
+**Bug Fixes**
+
+Apply Barberry patch & Bump SDK to v0.46.13
+
 ## [v1.2.0](https://github.com/chain4energy/c4e-chain/releases/tag/v1.2.0) - 2023-04-03
 
 **Upgrades**
 
- - Bumped cosmos-sdk version to v0.46.10
+- Bumped cosmos-sdk version to v0.46.10
 - Bumped tendermint version to v0.34.26
 - Bumped go version to v1.19
 - Bumped ibc-go to v5.2.0
