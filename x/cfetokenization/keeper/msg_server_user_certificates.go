@@ -171,6 +171,13 @@ func (k msgServer) BurnCertificate(goCtx context.Context, msg *types.MsgBurnCert
 	if !found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "device not found")
 	}
+
+	powerLeft := device.EnergyConsumedSum - device.FulfilledEnergyConsumed
+	if powerLeft <= certificate.Power {
+		device.FulfilledEnergyConsumed = device.EnergyConsumedSum
+	} else {
+		device.FulfilledEnergyConsumed += certificate.Power
+	}
 	device.FulfilledEnergyConsumed += certificate.Power
 	for _, certificateMeasurement := range certificate.Measurements {
 		reversePowerLeft := certificateMeasurement.ReversePower
@@ -182,7 +189,7 @@ func (k msgServer) BurnCertificate(goCtx context.Context, msg *types.MsgBurnCert
 					diff = -diff
 				}
 				if diff <= k.ActionTimeWindow(ctx) {
-					powerLeft := deviceMeasurement.ActivePower - fulfiledActivePowerSum
+					powerLeft = deviceMeasurement.ActivePower - fulfiledActivePowerSum
 					if powerLeft <= reversePowerLeft {
 						deviceMeasurement.FulfilledActivePower = append(deviceMeasurement.FulfilledActivePower, &types.FulfilledActivePower{
 							CertificateId: certificate.Id,
