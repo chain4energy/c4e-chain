@@ -159,6 +159,8 @@ genesis:
           sequence_id: 1
         start_time: "2022-07-05T00:00:00.00000000Z"
     cfetokenization:
+      params:
+        action_time_window: 900s
       certificateTypeCount: 2
       certificateTypeList:
         - id: 0

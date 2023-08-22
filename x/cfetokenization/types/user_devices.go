@@ -19,3 +19,11 @@ func (u Device) GetMeasurement(measurementId uint64) (*Measurement, error) {
 	}
 	return nil, fmt.Errorf("measruement not found")
 }
+
+func (u Measurement) GetFulfilledActivePowerSum() uint64 {
+	fulfilledActivePowerSum := uint64(0)
+	for _, fulfiledActivePower := range u.FulfilledActivePower {
+		fulfilledActivePowerSum += fulfiledActivePower.Amount
+	}
+	return fulfilledActivePowerSum
+}

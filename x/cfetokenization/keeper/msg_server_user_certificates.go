@@ -37,6 +37,9 @@ func (k msgServer) CreateUserCertificate(goCtx context.Context, msg *types.MsgCr
 	}
 
 	powerSum := uint64(0)
+
+	var measurements []*types.Measurement
+
 	for _, measurementId := range msg.Measurements {
 		measurement, err := device.GetMeasurement(measurementId)
 		if err != nil {
@@ -47,6 +50,7 @@ func (k msgServer) CreateUserCertificate(goCtx context.Context, msg *types.MsgCr
 		}
 		powerSum += measurement.ReversePower
 		measurement.UsedForCertificate = true
+		measurements = append(measurements, measurement)
 	}
 	device.UsedEnergyProduced += powerSum
 	userCertificates.Certificates = append(userCertificates.Certificates, &types.Certificate{
@@ -55,7 +59,7 @@ func (k msgServer) CreateUserCertificate(goCtx context.Context, msg *types.MsgCr
 		Power:              powerSum,
 		DeviceAddress:      msg.DeviceAddress,
 		AllowedAuthorities: msg.AllowedAuthorities,
-		Measurements:       msg.Measurements,
+		Measurements:       measurements,
 		Authority:          "",
 		CertificateStatus:  types.CertificateStatus_INVALID,
 		ValidUntil:         nil,
@@ -109,21 +113,6 @@ func (k msgServer) AddCertificateToMarketplace(goCtx context.Context, msg *types
 	}
 	certificate.CertificateStatus = types.CertificateStatus_ON_MARKETPLACE
 
-	device, found := k.GetDevice(ctx, certificate.DeviceAddress)
-	if !found {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "device not found")
-	}
-
-	var measurements []*types.Measurement
-
-	for _, measurementId := range certificate.Measurements {
-		measurement, err := device.GetMeasurement(measurementId)
-		if err != nil {
-			return nil, err
-		}
-		measurements = append(measurements, measurement)
-	}
-
 	certificateOffer := types.CertificateOffer{
 		CertificateId: msg.CertificateId,
 		Owner:         msg.Owner,
@@ -132,7 +121,7 @@ func (k msgServer) AddCertificateToMarketplace(goCtx context.Context, msg *types
 		Authorizer:    certificate.Authority,
 		Power:         certificate.Power,
 		ValidUntil:    certificate.ValidUntil,
-		Measurements:  measurements,
+		Measurements:  certificate.Measurements,
 	}
 	k.AppendMarketplaceCertificate(ctx, certificateOffer)
 	k.SetUserCertificates(ctx, userCertificates)
@@ -183,6 +172,35 @@ func (k msgServer) BurnCertificate(goCtx context.Context, msg *types.MsgBurnCert
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "device not found")
 	}
 	device.FulfilledEnergyConsumed += certificate.Power
+	for _, certificateMeasurement := range certificate.Measurements {
+		reversePowerLeft := certificateMeasurement.ReversePower
+		for _, deviceMeasurement := range device.Measurements {
+			fulfiledActivePowerSum := deviceMeasurement.GetFulfilledActivePowerSum()
+			if deviceMeasurement.GetFulfilledActivePowerSum() != deviceMeasurement.ActivePower {
+				diff := deviceMeasurement.Timestamp.Sub(certificateMeasurement.Timestamp)
+				if diff < 0 {
+					diff = -diff
+				}
+				if diff <= k.ActionTimeWindow(ctx) {
+					powerLeft := deviceMeasurement.ActivePower - fulfiledActivePowerSum
+					if powerLeft <= reversePowerLeft {
+						deviceMeasurement.FulfilledActivePower = append(deviceMeasurement.FulfilledActivePower, &types.FulfilledActivePower{
+							CertificateId: certificate.Id,
+							Amount:        powerLeft,
+						})
+						reversePowerLeft -= powerLeft
+					} else {
+						deviceMeasurement.FulfilledActivePower = append(deviceMeasurement.FulfilledActivePower, &types.FulfilledActivePower{
+							CertificateId: certificate.Id,
+							Amount:        reversePowerLeft,
+						})
+						reversePowerLeft = 0
+						break
+					}
+				}
+			}
+		}
+	}
 
 	k.SetDevice(ctx, device)
 	return &types.MsgBurnCertificateResponse{}, nil

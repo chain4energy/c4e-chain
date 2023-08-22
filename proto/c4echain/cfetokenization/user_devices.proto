@@ -40,6 +40,11 @@ message Measurement {
   uint64 active_power = 3;
   bool used_for_certificate = 4;
   uint64 reverse_power = 5;
-  uint64 fulfiled_active_power = 6;
+  repeated FulfilledActivePower fulfilled_active_power = 6;
   string metadata = 7;
+}
+
+message FulfilledActivePower {
+  uint64 certificateId = 1;
+  uint64 amount = 2;
 }

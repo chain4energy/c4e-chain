@@ -2349,8 +2349,16 @@ paths:
                           type: string
                           format: uint64
                         fulfiled_active_power:
-                          type: string
-                          format: uint64
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              certificateId:
+                                type: string
+                                format: uint64
+                              amount:
+                                type: string
+                                format: uint64
                         metadata:
                           type: string
                   energy_consumed_sum:
@@ -2426,8 +2434,16 @@ paths:
                             type: string
                             format: uint64
                           fulfiled_active_power:
-                            type: string
-                            format: uint64
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                certificateId:
+                                  type: string
+                                  format: uint64
+                                amount:
+                                  type: string
+                                  format: uint64
                           metadata:
                             type: string
                     energy_consumed_sum:
@@ -2611,8 +2627,16 @@ paths:
                           type: string
                           format: uint64
                         fulfiled_active_power:
-                          type: string
-                          format: uint64
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              certificateId:
+                                type: string
+                                format: uint64
+                              amount:
+                                type: string
+                                format: uint64
                         metadata:
                           type: string
                   valid_until:
@@ -2711,8 +2735,16 @@ paths:
                             type: string
                             format: uint64
                           fulfiled_active_power:
-                            type: string
-                            format: uint64
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                certificateId:
+                                  type: string
+                                  format: uint64
+                                amount:
+                                  type: string
+                                  format: uint64
                           metadata:
                             type: string
                     valid_until:
@@ -2897,8 +2929,35 @@ paths:
                           measurements:
                             type: array
                             items:
-                              type: string
-                              format: uint64
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  format: uint64
+                                timestamp:
+                                  type: string
+                                  format: date-time
+                                active_power:
+                                  type: string
+                                  format: uint64
+                                used_for_certificate:
+                                  type: boolean
+                                reverse_power:
+                                  type: string
+                                  format: uint64
+                                fulfiled_active_power:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      certificateId:
+                                        type: string
+                                        format: uint64
+                                      amount:
+                                        type: string
+                                        format: uint64
+                                metadata:
+                                  type: string
                           allowed_authorities:
                             type: array
                             items:
@@ -3056,8 +3115,35 @@ paths:
                         measurements:
                           type: array
                           items:
-                            type: string
-                            format: uint64
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uint64
+                              timestamp:
+                                type: string
+                                format: date-time
+                              active_power:
+                                type: string
+                                format: uint64
+                              used_for_certificate:
+                                type: boolean
+                              reverse_power:
+                                type: string
+                                format: uint64
+                              fulfiled_active_power:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    certificateId:
+                                      type: string
+                                      format: uint64
+                                    amount:
+                                      type: string
+                                      format: uint64
+                              metadata:
+                                type: string
                         allowed_authorities:
                           type: array
                           items:
@@ -50901,8 +50987,35 @@ definitions:
       measurements:
         type: array
         items:
-          type: string
-          format: uint64
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            timestamp:
+              type: string
+              format: date-time
+            active_power:
+              type: string
+              format: uint64
+            used_for_certificate:
+              type: boolean
+            reverse_power:
+              type: string
+              format: uint64
+            fulfiled_active_power:
+              type: array
+              items:
+                type: object
+                properties:
+                  certificateId:
+                    type: string
+                    format: uint64
+                  amount:
+                    type: string
+                    format: uint64
+            metadata:
+              type: string
       allowed_authorities:
         type: array
         items:
@@ -50973,8 +51086,16 @@ definitions:
               type: string
               format: uint64
             fulfiled_active_power:
-              type: string
-              format: uint64
+              type: array
+              items:
+                type: object
+                properties:
+                  certificateId:
+                    type: string
+                    format: uint64
+                  amount:
+                    type: string
+                    format: uint64
             metadata:
               type: string
       valid_until:
@@ -51024,8 +51145,16 @@ definitions:
               type: string
               format: uint64
             fulfiled_active_power:
-              type: string
-              format: uint64
+              type: array
+              items:
+                type: object
+                properties:
+                  certificateId:
+                    type: string
+                    format: uint64
+                  amount:
+                    type: string
+                    format: uint64
             metadata:
               type: string
       energy_consumed_sum:
@@ -51038,6 +51167,15 @@ definitions:
         type: string
         format: uint64
       fulfilled_energy_consumed:
+        type: string
+        format: uint64
+  chain4energy.c4echain.cfetokenization.FlfiledActivePower:
+    type: object
+    properties:
+      certificateId:
+        type: string
+        format: uint64
+      amount:
         type: string
         format: uint64
   chain4energy.c4echain.cfetokenization.Measurement:
@@ -51058,8 +51196,16 @@ definitions:
         type: string
         format: uint64
       fulfiled_active_power:
-        type: string
-        format: uint64
+        type: array
+        items:
+          type: object
+          properties:
+            certificateId:
+              type: string
+              format: uint64
+            amount:
+              type: string
+              format: uint64
       metadata:
         type: string
   chain4energy.c4echain.cfetokenization.MsgAcceptDeviceResponse:
@@ -51154,8 +51300,35 @@ definitions:
                   measurements:
                     type: array
                     items:
-                      type: string
-                      format: uint64
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uint64
+                        timestamp:
+                          type: string
+                          format: date-time
+                        active_power:
+                          type: string
+                          format: uint64
+                        used_for_certificate:
+                          type: boolean
+                        reverse_power:
+                          type: string
+                          format: uint64
+                        fulfiled_active_power:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              certificateId:
+                                type: string
+                                format: uint64
+                              amount:
+                                type: string
+                                format: uint64
+                        metadata:
+                          type: string
                   allowed_authorities:
                     type: array
                     items:
@@ -51277,8 +51450,16 @@ definitions:
                     type: string
                     format: uint64
                   fulfiled_active_power:
-                    type: string
-                    format: uint64
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        certificateId:
+                          type: string
+                          format: uint64
+                        amount:
+                          type: string
+                          format: uint64
                   metadata:
                     type: string
             energy_consumed_sum:
@@ -51347,8 +51528,16 @@ definitions:
                   type: string
                   format: uint64
                 fulfiled_active_power:
-                  type: string
-                  format: uint64
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      certificateId:
+                        type: string
+                        format: uint64
+                      amount:
+                        type: string
+                        format: uint64
                 metadata:
                   type: string
           energy_consumed_sum:
@@ -51403,8 +51592,35 @@ definitions:
                 measurements:
                   type: array
                   items:
-                    type: string
-                    format: uint64
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uint64
+                      timestamp:
+                        type: string
+                        format: date-time
+                      active_power:
+                        type: string
+                        format: uint64
+                      used_for_certificate:
+                        type: boolean
+                      reverse_power:
+                        type: string
+                        format: uint64
+                      fulfiled_active_power:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            certificateId:
+                              type: string
+                              format: uint64
+                            amount:
+                              type: string
+                              format: uint64
+                      metadata:
+                        type: string
                 allowed_authorities:
                   type: array
                   items:
@@ -51500,8 +51716,16 @@ definitions:
                   type: string
                   format: uint64
                 fulfiled_active_power:
-                  type: string
-                  format: uint64
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      certificateId:
+                        type: string
+                        format: uint64
+                      amount:
+                        type: string
+                        format: uint64
                 metadata:
                   type: string
           valid_until:
@@ -51567,8 +51791,16 @@ definitions:
                     type: string
                     format: uint64
                   fulfiled_active_power:
-                    type: string
-                    format: uint64
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        certificateId:
+                          type: string
+                          format: uint64
+                        amount:
+                          type: string
+                          format: uint64
                   metadata:
                     type: string
             valid_until:
@@ -51634,8 +51866,35 @@ definitions:
             measurements:
               type: array
               items:
-                type: string
-                format: uint64
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  timestamp:
+                    type: string
+                    format: date-time
+                  active_power:
+                    type: string
+                    format: uint64
+                  used_for_certificate:
+                    type: boolean
+                  reverse_power:
+                    type: string
+                    format: uint64
+                  fulfiled_active_power:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        certificateId:
+                          type: string
+                          format: uint64
+                        amount:
+                          type: string
+                          format: uint64
+                  metadata:
+                    type: string
             allowed_authorities:
               type: array
               items:

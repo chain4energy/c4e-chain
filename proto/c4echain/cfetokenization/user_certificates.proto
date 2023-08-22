@@ -18,7 +18,7 @@ message Certificate {
   uint64 certyficate_type_id = 2;
   uint64 power = 3;
   string device_address = 4;
-  repeated uint64 measurements = 5;
+  repeated Measurement measurements = 5;
   repeated string allowed_authorities = 6;
   string authority = 7;
   CertificateStatus certificate_status = 8;

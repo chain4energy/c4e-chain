@@ -39,13 +39,9 @@ func (p Params) String() string {
 
 // validateDenom validates the ActionTimeWindow param
 func validateDenom(v interface{}) error {
-	denom, ok := v.(string)
+	_, ok := v.(time.Duration)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", v)
-	}
-
-	if len(denom) == 0 {
-		return fmt.Errorf("denom cannot be empty")
 	}
 
 	return nil
