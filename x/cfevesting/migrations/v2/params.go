@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	KeyDenom            = []byte("Denom")
+	KeyDenom            = []byte("ActionTimeWindow")
 	DefaultDenom string = "uc4e"
 ) //
 

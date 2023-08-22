@@ -40,5 +40,6 @@ message Measurement {
   uint64 active_power = 3;
   bool used_for_certificate = 4;
   uint64 reverse_power = 5;
-  string metadata = 6;
+  uint64 fulfiled_active_power = 6;
+  string metadata = 7;
 }

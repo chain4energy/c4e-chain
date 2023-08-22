@@ -36,7 +36,7 @@ func (p Params) String() string {
 	return string(out)
 }
 
-// validateDenom validates the Denom param
+// validateDenom validates the ActionTimeWindow param
 func validateDenom(v interface{}) error {
 	denom, ok := v.(string)
 	if !ok {

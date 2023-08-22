@@ -2348,6 +2348,9 @@ paths:
                         reverse_power:
                           type: string
                           format: uint64
+                        fulfiled_active_power:
+                          type: string
+                          format: uint64
                         metadata:
                           type: string
                   energy_consumed_sum:
@@ -2420,6 +2423,9 @@ paths:
                           used_for_certificate:
                             type: boolean
                           reverse_power:
+                            type: string
+                            format: uint64
+                          fulfiled_active_power:
                             type: string
                             format: uint64
                           metadata:
@@ -2604,6 +2610,9 @@ paths:
                         reverse_power:
                           type: string
                           format: uint64
+                        fulfiled_active_power:
+                          type: string
+                          format: uint64
                         metadata:
                           type: string
                   valid_until:
@@ -2699,6 +2708,9 @@ paths:
                           used_for_certificate:
                             type: boolean
                           reverse_power:
+                            type: string
+                            format: uint64
+                          fulfiled_active_power:
                             type: string
                             format: uint64
                           metadata:
@@ -2824,6 +2836,9 @@ paths:
               params:
                 description: params holds all the parameters of this module.
                 type: object
+                properties:
+                  action_time_window:
+                    type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -50957,6 +50972,9 @@ definitions:
             reverse_power:
               type: string
               format: uint64
+            fulfiled_active_power:
+              type: string
+              format: uint64
             metadata:
               type: string
       valid_until:
@@ -51005,6 +51023,9 @@ definitions:
             reverse_power:
               type: string
               format: uint64
+            fulfiled_active_power:
+              type: string
+              format: uint64
             metadata:
               type: string
       energy_consumed_sum:
@@ -51036,6 +51057,9 @@ definitions:
       reverse_power:
         type: string
         format: uint64
+      fulfiled_active_power:
+        type: string
+        format: uint64
       metadata:
         type: string
   chain4energy.c4echain.cfetokenization.MsgAcceptDeviceResponse:
@@ -51056,6 +51080,9 @@ definitions:
     type: object
   chain4energy.c4echain.cfetokenization.Params:
     type: object
+    properties:
+      action_time_window:
+        type: string
     description: Params defines the parameters for the module.
   chain4energy.c4echain.cfetokenization.QueryAllCertificateTypeResponse:
     type: object
@@ -51249,6 +51276,9 @@ definitions:
                   reverse_power:
                     type: string
                     format: uint64
+                  fulfiled_active_power:
+                    type: string
+                    format: uint64
                   metadata:
                     type: string
             energy_consumed_sum:
@@ -51314,6 +51344,9 @@ definitions:
                 used_for_certificate:
                   type: boolean
                 reverse_power:
+                  type: string
+                  format: uint64
+                fulfiled_active_power:
                   type: string
                   format: uint64
                 metadata:
@@ -51466,6 +51499,9 @@ definitions:
                 reverse_power:
                   type: string
                   format: uint64
+                fulfiled_active_power:
+                  type: string
+                  format: uint64
                 metadata:
                   type: string
           valid_until:
@@ -51530,6 +51566,9 @@ definitions:
                   reverse_power:
                     type: string
                     format: uint64
+                  fulfiled_active_power:
+                    type: string
+                    format: uint64
                   metadata:
                     type: string
             valid_until:
@@ -51567,6 +51606,9 @@ definitions:
       params:
         description: params holds all the parameters of this module.
         type: object
+        properties:
+          action_time_window:
+            type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   chain4energy.c4echain.cfetokenization.UserCertificates:
     type: object
