@@ -19,7 +19,7 @@ export interface CfetokenizationCertificate {
   /** @format uint64 */
   power?: string;
   device_address?: string;
-  measurements?: string[];
+  measurements?: CfetokenizationMeasurement[];
   allowed_authorities?: string[];
   authority?: string;
   certificate_status?: CfetokenizationCertificateStatus;
@@ -79,6 +79,14 @@ export interface CfetokenizationDevice {
   fulfilled_energy_consumed?: string;
 }
 
+export interface CfetokenizationFulfilledActivePower {
+  /** @format uint64 */
+  certificateId?: string;
+
+  /** @format uint64 */
+  amount?: string;
+}
+
 export interface CfetokenizationMeasurement {
   /** @format uint64 */
   id?: string;
@@ -92,6 +100,7 @@ export interface CfetokenizationMeasurement {
 
   /** @format uint64 */
   reverse_power?: string;
+  fulfilled_active_power?: CfetokenizationFulfilledActivePower[];
   metadata?: string;
 }
 
@@ -114,7 +123,9 @@ export type CfetokenizationMsgCreateUserCertificatesResponse = object;
 /**
  * Params defines the parameters for the module.
  */
-export type CfetokenizationParams = object;
+export interface CfetokenizationParams {
+  action_time_window?: string;
+}
 
 export interface CfetokenizationQueryAllCertificateTypeResponse {
   CertificateType?: CfetokenizationCertificateType[];

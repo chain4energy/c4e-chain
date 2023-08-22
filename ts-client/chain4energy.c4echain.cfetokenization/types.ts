@@ -8,6 +8,7 @@ import { UserDevice } from "./types/c4echain/cfetokenization/user_devices"
 import { PendingDevice } from "./types/c4echain/cfetokenization/user_devices"
 import { Device } from "./types/c4echain/cfetokenization/user_devices"
 import { Measurement } from "./types/c4echain/cfetokenization/user_devices"
+import { FulfilledActivePower } from "./types/c4echain/cfetokenization/user_devices"
 
 
 export {     
@@ -21,5 +22,6 @@ export {
     PendingDevice,
     Device,
     Measurement,
+    FulfilledActivePower,
     
  }

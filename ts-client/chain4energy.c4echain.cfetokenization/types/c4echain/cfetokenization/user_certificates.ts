@@ -68,7 +68,7 @@ export interface Certificate {
   certyficateTypeId: number;
   power: number;
   deviceAddress: string;
-  measurements: number[];
+  measurements: Measurement[];
   allowedAuthorities: string[];
   authority: string;
   certificateStatus: CertificateStatus;
@@ -179,11 +179,9 @@ export const Certificate = {
     if (message.deviceAddress !== "") {
       writer.uint32(34).string(message.deviceAddress);
     }
-    writer.uint32(42).fork();
     for (const v of message.measurements) {
-      writer.uint64(v);
+      Measurement.encode(v!, writer.uint32(42).fork()).ldelim();
     }
-    writer.ldelim();
     for (const v of message.allowedAuthorities) {
       writer.uint32(50).string(v!);
     }
@@ -219,14 +217,7 @@ export const Certificate = {
           message.deviceAddress = reader.string();
           break;
         case 5:
-          if ((tag & 7) === 2) {
-            const end2 = reader.uint32() + reader.pos;
-            while (reader.pos < end2) {
-              message.measurements.push(longToNumber(reader.uint64() as Long));
-            }
-          } else {
-            message.measurements.push(longToNumber(reader.uint64() as Long));
-          }
+          message.measurements.push(Measurement.decode(reader, reader.uint32()));
           break;
         case 6:
           message.allowedAuthorities.push(reader.string());
@@ -254,7 +245,9 @@ export const Certificate = {
       certyficateTypeId: isSet(object.certyficateTypeId) ? Number(object.certyficateTypeId) : 0,
       power: isSet(object.power) ? Number(object.power) : 0,
       deviceAddress: isSet(object.deviceAddress) ? String(object.deviceAddress) : "",
-      measurements: Array.isArray(object?.measurements) ? object.measurements.map((e: any) => Number(e)) : [],
+      measurements: Array.isArray(object?.measurements)
+        ? object.measurements.map((e: any) => Measurement.fromJSON(e))
+        : [],
       allowedAuthorities: Array.isArray(object?.allowedAuthorities)
         ? object.allowedAuthorities.map((e: any) => String(e))
         : [],
@@ -271,7 +264,7 @@ export const Certificate = {
     message.power !== undefined && (obj.power = Math.round(message.power));
     message.deviceAddress !== undefined && (obj.deviceAddress = message.deviceAddress);
     if (message.measurements) {
-      obj.measurements = message.measurements.map((e) => Math.round(e));
+      obj.measurements = message.measurements.map((e) => e ? Measurement.toJSON(e) : undefined);
     } else {
       obj.measurements = [];
     }
@@ -293,7 +286,7 @@ export const Certificate = {
     message.certyficateTypeId = object.certyficateTypeId ?? 0;
     message.power = object.power ?? 0;
     message.deviceAddress = object.deviceAddress ?? "";
-    message.measurements = object.measurements?.map((e) => e) || [];
+    message.measurements = object.measurements?.map((e) => Measurement.fromPartial(e)) || [];
     message.allowedAuthorities = object.allowedAuthorities?.map((e) => e) || [];
     message.authority = object.authority ?? "";
     message.certificateStatus = object.certificateStatus ?? 0;

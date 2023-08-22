@@ -36,7 +36,13 @@ export interface Measurement {
   activePower: number;
   usedForCertificate: boolean;
   reversePower: number;
+  fulfilledActivePower: FulfilledActivePower[];
   metadata: string;
+}
+
+export interface FulfilledActivePower {
+  certificateId: number;
+  amount: number;
 }
 
 function createBaseUserDevices(): UserDevices {
@@ -335,7 +341,15 @@ export const Device = {
 };
 
 function createBaseMeasurement(): Measurement {
-  return { id: 0, timestamp: undefined, activePower: 0, usedForCertificate: false, reversePower: 0, metadata: "" };
+  return {
+    id: 0,
+    timestamp: undefined,
+    activePower: 0,
+    usedForCertificate: false,
+    reversePower: 0,
+    fulfilledActivePower: [],
+    metadata: "",
+  };
 }
 
 export const Measurement = {
@@ -355,8 +369,11 @@ export const Measurement = {
     if (message.reversePower !== 0) {
       writer.uint32(40).uint64(message.reversePower);
     }
+    for (const v of message.fulfilledActivePower) {
+      FulfilledActivePower.encode(v!, writer.uint32(50).fork()).ldelim();
+    }
     if (message.metadata !== "") {
-      writer.uint32(50).string(message.metadata);
+      writer.uint32(58).string(message.metadata);
     }
     return writer;
   },
@@ -384,6 +401,9 @@ export const Measurement = {
           message.reversePower = longToNumber(reader.uint64() as Long);
           break;
         case 6:
+          message.fulfilledActivePower.push(FulfilledActivePower.decode(reader, reader.uint32()));
+          break;
+        case 7:
           message.metadata = reader.string();
           break;
         default:
@@ -401,6 +421,9 @@ export const Measurement = {
       activePower: isSet(object.activePower) ? Number(object.activePower) : 0,
       usedForCertificate: isSet(object.usedForCertificate) ? Boolean(object.usedForCertificate) : false,
       reversePower: isSet(object.reversePower) ? Number(object.reversePower) : 0,
+      fulfilledActivePower: Array.isArray(object?.fulfilledActivePower)
+        ? object.fulfilledActivePower.map((e: any) => FulfilledActivePower.fromJSON(e))
+        : [],
       metadata: isSet(object.metadata) ? String(object.metadata) : "",
     };
   },
@@ -412,6 +435,13 @@ export const Measurement = {
     message.activePower !== undefined && (obj.activePower = Math.round(message.activePower));
     message.usedForCertificate !== undefined && (obj.usedForCertificate = message.usedForCertificate);
     message.reversePower !== undefined && (obj.reversePower = Math.round(message.reversePower));
+    if (message.fulfilledActivePower) {
+      obj.fulfilledActivePower = message.fulfilledActivePower.map((e) =>
+        e ? FulfilledActivePower.toJSON(e) : undefined
+      );
+    } else {
+      obj.fulfilledActivePower = [];
+    }
     message.metadata !== undefined && (obj.metadata = message.metadata);
     return obj;
   },
@@ -423,7 +453,66 @@ export const Measurement = {
     message.activePower = object.activePower ?? 0;
     message.usedForCertificate = object.usedForCertificate ?? false;
     message.reversePower = object.reversePower ?? 0;
+    message.fulfilledActivePower = object.fulfilledActivePower?.map((e) => FulfilledActivePower.fromPartial(e)) || [];
     message.metadata = object.metadata ?? "";
+    return message;
+  },
+};
+
+function createBaseFulfilledActivePower(): FulfilledActivePower {
+  return { certificateId: 0, amount: 0 };
+}
+
+export const FulfilledActivePower = {
+  encode(message: FulfilledActivePower, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.certificateId !== 0) {
+      writer.uint32(8).uint64(message.certificateId);
+    }
+    if (message.amount !== 0) {
+      writer.uint32(16).uint64(message.amount);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): FulfilledActivePower {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFulfilledActivePower();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.certificateId = longToNumber(reader.uint64() as Long);
+          break;
+        case 2:
+          message.amount = longToNumber(reader.uint64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): FulfilledActivePower {
+    return {
+      certificateId: isSet(object.certificateId) ? Number(object.certificateId) : 0,
+      amount: isSet(object.amount) ? Number(object.amount) : 0,
+    };
+  },
+
+  toJSON(message: FulfilledActivePower): unknown {
+    const obj: any = {};
+    message.certificateId !== undefined && (obj.certificateId = Math.round(message.certificateId));
+    message.amount !== undefined && (obj.amount = Math.round(message.amount));
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<FulfilledActivePower>, I>>(object: I): FulfilledActivePower {
+    const message = createBaseFulfilledActivePower();
+    message.certificateId = object.certificateId ?? 0;
+    message.amount = object.amount ?? 0;
     return message;
   },
 };
