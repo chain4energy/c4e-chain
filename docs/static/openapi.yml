@@ -2348,7 +2348,7 @@ paths:
                         reverse_power:
                           type: string
                           format: uint64
-                        fulfiled_active_power:
+                        fulfilled_active_power:
                           type: array
                           items:
                             type: object
@@ -2433,7 +2433,7 @@ paths:
                           reverse_power:
                             type: string
                             format: uint64
-                          fulfiled_active_power:
+                          fulfilled_active_power:
                             type: array
                             items:
                               type: object
@@ -2626,7 +2626,7 @@ paths:
                         reverse_power:
                           type: string
                           format: uint64
-                        fulfiled_active_power:
+                        fulfilled_active_power:
                           type: array
                           items:
                             type: object
@@ -2734,7 +2734,7 @@ paths:
                           reverse_power:
                             type: string
                             format: uint64
-                          fulfiled_active_power:
+                          fulfilled_active_power:
                             type: array
                             items:
                               type: object
@@ -2945,7 +2945,7 @@ paths:
                                 reverse_power:
                                   type: string
                                   format: uint64
-                                fulfiled_active_power:
+                                fulfilled_active_power:
                                   type: array
                                   items:
                                     type: object
@@ -3131,7 +3131,7 @@ paths:
                               reverse_power:
                                 type: string
                                 format: uint64
-                              fulfiled_active_power:
+                              fulfilled_active_power:
                                 type: array
                                 items:
                                   type: object
@@ -51003,7 +51003,7 @@ definitions:
             reverse_power:
               type: string
               format: uint64
-            fulfiled_active_power:
+            fulfilled_active_power:
               type: array
               items:
                 type: object
@@ -51085,7 +51085,7 @@ definitions:
             reverse_power:
               type: string
               format: uint64
-            fulfiled_active_power:
+            fulfilled_active_power:
               type: array
               items:
                 type: object
@@ -51144,7 +51144,7 @@ definitions:
             reverse_power:
               type: string
               format: uint64
-            fulfiled_active_power:
+            fulfilled_active_power:
               type: array
               items:
                 type: object
@@ -51169,7 +51169,7 @@ definitions:
       fulfilled_energy_consumed:
         type: string
         format: uint64
-  chain4energy.c4echain.cfetokenization.FlfiledActivePower:
+  chain4energy.c4echain.cfetokenization.FulfilledActivePower:
     type: object
     properties:
       certificateId:
@@ -51195,7 +51195,7 @@ definitions:
       reverse_power:
         type: string
         format: uint64
-      fulfiled_active_power:
+      fulfilled_active_power:
         type: array
         items:
           type: object
@@ -51316,7 +51316,7 @@ definitions:
                         reverse_power:
                           type: string
                           format: uint64
-                        fulfiled_active_power:
+                        fulfilled_active_power:
                           type: array
                           items:
                             type: object
@@ -51449,7 +51449,7 @@ definitions:
                   reverse_power:
                     type: string
                     format: uint64
-                  fulfiled_active_power:
+                  fulfilled_active_power:
                     type: array
                     items:
                       type: object
@@ -51527,7 +51527,7 @@ definitions:
                 reverse_power:
                   type: string
                   format: uint64
-                fulfiled_active_power:
+                fulfilled_active_power:
                   type: array
                   items:
                     type: object
@@ -51608,7 +51608,7 @@ definitions:
                       reverse_power:
                         type: string
                         format: uint64
-                      fulfiled_active_power:
+                      fulfilled_active_power:
                         type: array
                         items:
                           type: object
@@ -51715,7 +51715,7 @@ definitions:
                 reverse_power:
                   type: string
                   format: uint64
-                fulfiled_active_power:
+                fulfilled_active_power:
                   type: array
                   items:
                     type: object
@@ -51790,7 +51790,7 @@ definitions:
                   reverse_power:
                     type: string
                     format: uint64
-                  fulfiled_active_power:
+                  fulfilled_active_power:
                     type: array
                     items:
                       type: object
@@ -51882,7 +51882,7 @@ definitions:
                   reverse_power:
                     type: string
                     format: uint64
-                  fulfiled_active_power:
+                  fulfilled_active_power:
                     type: array
                     items:
                       type: object

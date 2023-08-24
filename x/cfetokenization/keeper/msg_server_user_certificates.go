@@ -178,7 +178,6 @@ func (k msgServer) BurnCertificate(goCtx context.Context, msg *types.MsgBurnCert
 	} else {
 		device.FulfilledEnergyConsumed += certificate.Power
 	}
-	device.FulfilledEnergyConsumed += certificate.Power
 	for _, certificateMeasurement := range certificate.Measurements {
 		reversePowerLeft := certificateMeasurement.ReversePower
 		for _, deviceMeasurement := range device.Measurements {
