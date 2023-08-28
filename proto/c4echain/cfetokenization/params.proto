@@ -13,4 +13,13 @@ message Params {
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
+  string marketplace_fee = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string authority_fee = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+  string marketplace_owner_address = 4;
 }

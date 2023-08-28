@@ -161,6 +161,9 @@ genesis:
     cfetokenization:
       params:
         action_time_window: 900s
+        marketplace_fee: "0.05"
+        authority_fee: "0.01"
+        marketplace_owner_address: "c4e1yd97thfrcftqcd8htn2v8z90h502xl3f6rf6p7"
       certificateTypeCount: 2
       certificateTypeList:
         - id: 0

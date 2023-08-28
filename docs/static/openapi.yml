@@ -2871,6 +2871,12 @@ paths:
                 properties:
                   action_time_window:
                     type: string
+                  marketplace_fee:
+                    type: string
+                  authority_fee:
+                    type: string
+                  marketplace_owner_address:
+                    type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -51229,6 +51235,12 @@ definitions:
     properties:
       action_time_window:
         type: string
+      marketplace_fee:
+        type: string
+      authority_fee:
+        type: string
+      marketplace_owner_address:
+        type: string
     description: Params defines the parameters for the module.
   chain4energy.c4echain.cfetokenization.QueryAllCertificateTypeResponse:
     type: object
@@ -51840,6 +51852,12 @@ definitions:
         type: object
         properties:
           action_time_window:
+            type: string
+          marketplace_fee:
+            type: string
+          authority_fee:
+            type: string
+          marketplace_owner_address:
             type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   chain4energy.c4echain.cfetokenization.UserCertificates:

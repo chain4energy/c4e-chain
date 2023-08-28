@@ -229,7 +229,25 @@ func (k msgServer) BuyCertificate(goCtx context.Context, msg *types.MsgBuyCertif
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not enough coins")
 	}
 	ownerAccAddr, err := sdk.AccAddressFromBech32(marketplaceCertificate.Owner)
-	err = k.bankKeeper.SendCoins(ctx, buyerAccAddr, ownerAccAddr, marketplaceCertificate.Price)
+	params := k.GetParams(ctx)
+	amountOfPrice := marketplaceCertificate.Price.AmountOf("uc4e")
+	marketplacePrice := params.AuthorityFee.MulInt(amountOfPrice).TruncateInt()
+	authorityPrice := params.AuthorityFee.MulInt(amountOfPrice).TruncateInt()
+	ownerPrice := amountOfPrice.Sub(marketplacePrice).Sub(authorityPrice)
+
+	err = k.bankKeeper.SendCoins(ctx, buyerAccAddr, ownerAccAddr, sdk.NewCoins(sdk.NewCoin("uc4e", ownerPrice)))
+	if err != nil {
+		return nil, sdkerrors.Wrapf(c4eerrors.ErrAmount, "send coins error (%v)", err)
+	}
+
+	marketplaceAccAddress, err := sdk.AccAddressFromBech32(params.MarketplaceOwnerAddress)
+	err = k.bankKeeper.SendCoins(ctx, buyerAccAddr, marketplaceAccAddress, sdk.NewCoins(sdk.NewCoin("uc4e", marketplacePrice)))
+	if err != nil {
+		return nil, sdkerrors.Wrapf(c4eerrors.ErrAmount, "send coins error (%v)", err)
+	}
+
+	authorityAccAddress, err := sdk.AccAddressFromBech32(marketplaceCertificate.Authorizer)
+	err = k.bankKeeper.SendCoins(ctx, buyerAccAddr, authorityAccAddress, sdk.NewCoins(sdk.NewCoin("uc4e", authorityPrice)))
 	if err != nil {
 		return nil, sdkerrors.Wrapf(c4eerrors.ErrAmount, "send coins error (%v)", err)
 	}

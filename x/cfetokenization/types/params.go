@@ -2,24 +2,37 @@ package types
 
 import (
 	fmt "fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"time"
 
 	"gopkg.in/yaml.v2"
 )
 
 var (
-	DefaultActionTimeWindow time.Duration = 1 * time.Hour
+	DefaultActionTimeWindow        time.Duration = 1 * time.Hour
+	DefaultMarketplaceFee          sdk.Dec       = sdk.MustNewDecFromStr("0.05")
+	DefaultAuthorityFee            sdk.Dec       = sdk.MustNewDecFromStr("0.05")
+	DefaultMarketplaceOwnerAddress string        = "c4e1yd97thfrcftqcd8htn2v8z90h502xl3f6rf6p7"
 ) //
 
 // NewParams creates a new Params instance
-func NewParams(actionTimeWindow time.Duration) Params {
-	return Params{ActionTimeWindow: actionTimeWindow}
+func NewParams(actionTimeWindow time.Duration, marketplaceFee sdk.Dec, authorityFee sdk.Dec, marketplaceOwner string) Params {
+	return Params{
+		ActionTimeWindow:        actionTimeWindow,
+		MarketplaceFee:          marketplaceFee,
+		AuthorityFee:            authorityFee,
+		MarketplaceOwnerAddress: marketplaceOwner,
+	}
+
 }
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
 	return NewParams(
 		DefaultActionTimeWindow,
+		DefaultMarketplaceFee,
+		DefaultAuthorityFee,
+		DefaultMarketplaceOwnerAddress,
 	)
 }
 
