@@ -9,6 +9,7 @@ COPY . .
 
 RUN curl https://get.ignite.com/cli@v0.26.1 | bash
 RUN mv ignite /usr/local/bin/
+RUN ["apt-get", "-y", "install", "vim"]
 # Open the required ports for the blockchain.
 EXPOSE 26657 1317
 

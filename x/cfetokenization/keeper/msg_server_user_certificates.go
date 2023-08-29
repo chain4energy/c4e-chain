@@ -231,7 +231,7 @@ func (k msgServer) BuyCertificate(goCtx context.Context, msg *types.MsgBuyCertif
 	ownerAccAddr, err := sdk.AccAddressFromBech32(marketplaceCertificate.Owner)
 	params := k.GetParams(ctx)
 	amountOfPrice := marketplaceCertificate.Price.AmountOf("uc4e")
-	marketplacePrice := params.AuthorityFee.MulInt(amountOfPrice).TruncateInt()
+	marketplacePrice := params.MarketplaceFee.MulInt(amountOfPrice).TruncateInt()
 	authorityPrice := params.AuthorityFee.MulInt(amountOfPrice).TruncateInt()
 	ownerPrice := amountOfPrice.Sub(marketplacePrice).Sub(authorityPrice)
 
