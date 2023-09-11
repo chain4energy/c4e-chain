@@ -3,8 +3,8 @@ package keeper_test
 import (
 	"testing"
 
-	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	testkeeper "github.com/chain4energy/c4e-chain/v2/testutil/keeper"
+	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )

@@ -2,7 +2,7 @@ package types
 
 import (
 	"cosmossdk.io/errors"
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
+	c4eerrors "github.com/chain4energy/c4e-chain/v2/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )

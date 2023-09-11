@@ -2,9 +2,9 @@ package cfeclaim_test
 
 import (
 	"cosmossdk.io/math"
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	testapp "github.com/chain4energy/c4e-chain/v2/testutil/app"
+	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/require"

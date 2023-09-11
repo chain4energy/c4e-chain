@@ -4,8 +4,8 @@ import (
 	"context"
 	"cosmossdk.io/errors"
 	metrics "github.com/armon/go-metrics"
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	c4eerrors "github.com/chain4energy/c4e-chain/v2/types/errors"
+	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

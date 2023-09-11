@@ -2,8 +2,8 @@ package v2
 
 import (
 	"fmt"
-	"github.com/chain4energy/c4e-chain/types/subspace"
-	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v1"
+	"github.com/chain4energy/c4e-chain/v2/types/subspace"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeminter/migrations/v1"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"time"

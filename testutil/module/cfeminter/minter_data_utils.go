@@ -1,7 +1,7 @@
 package cfeminter
 
 import (
-	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeminter/types"
 	"github.com/stretchr/testify/require"
 )
 

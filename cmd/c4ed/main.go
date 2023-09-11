@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/chain4energy/c4e-chain/cmd/c4ed/cmd"
+	"github.com/chain4energy/c4e-chain/v2/cmd/c4ed/cmd"
 	"github.com/cosmos/cosmos-sdk/server"
 	"os"
 
-	"github.com/chain4energy/c4e-chain/app"
+	"github.com/chain4energy/c4e-chain/v2/app"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 )
 

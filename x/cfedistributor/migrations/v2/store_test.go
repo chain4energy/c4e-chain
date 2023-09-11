@@ -4,15 +4,15 @@ import (
 	"cosmossdk.io/math"
 	"testing"
 
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
 
-	v1 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v1"
-	v2 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v2"
+	v1 "github.com/chain4energy/c4e-chain/v2/x/cfedistributor/migrations/v1"
+	v2 "github.com/chain4energy/c4e-chain/v2/x/cfedistributor/migrations/v2"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/stretchr/testify/require"
 
-	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
+	testkeeper "github.com/chain4energy/c4e-chain/v2/testutil/keeper"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

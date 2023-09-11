@@ -3,14 +3,14 @@ package types_test
 import (
 	"cosmossdk.io/math"
 	"fmt"
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
-	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	c4eerrors "github.com/chain4energy/c4e-chain/v2/types/errors"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/testutil/sample"
+	"github.com/chain4energy/c4e-chain/v2/testutil/sample"
 
 	"github.com/stretchr/testify/require"
 )

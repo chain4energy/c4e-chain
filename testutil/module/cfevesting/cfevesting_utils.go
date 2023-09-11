@@ -6,16 +6,16 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
-	"github.com/chain4energy/c4e-chain/testutil/nullify"
+	"github.com/chain4energy/c4e-chain/v2/testutil/nullify"
 
-	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/chain4energy/c4e-chain/x/cfevesting"
-	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	"github.com/chain4energy/c4e-chain/v2/x/cfevesting"
+	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/v2/x/cfevesting/keeper"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
 
 	"github.com/stretchr/testify/require"
 

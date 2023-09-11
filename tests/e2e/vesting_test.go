@@ -3,9 +3,9 @@ package e2e
 import (
 	"cosmossdk.io/math"
 	"fmt"
-	appparams "github.com/chain4energy/c4e-chain/app/params"
-	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/chain"
-	"github.com/chain4energy/c4e-chain/testutil/utils"
+	appparams "github.com/chain4energy/c4e-chain/v2/app/params"
+	"github.com/chain4energy/c4e-chain/v2/tests/e2e/configurer/chain"
+	"github.com/chain4energy/c4e-chain/v2/testutil/utils"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/stretchr/testify/suite"

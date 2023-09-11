@@ -6,8 +6,8 @@ import (
 
 	math "cosmossdk.io/math"
 
-	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	cfeupgradetypes "github.com/chain4energy/c4e-chain/v2/app/upgrades"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

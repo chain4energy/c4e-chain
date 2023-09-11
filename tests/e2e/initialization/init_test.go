@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
+	"github.com/chain4energy/c4e-chain/v2/tests/e2e/initialization"
 )
 
 const forkHeight = 10

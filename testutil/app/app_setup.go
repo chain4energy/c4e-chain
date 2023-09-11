@@ -4,7 +4,7 @@ import (
 	"cosmossdk.io/math"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	appparams "github.com/chain4energy/c4e-chain/app/params"
+	appparams "github.com/chain4energy/c4e-chain/v2/app/params"
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	"github.com/cosmos/ibc-go/v7/testing/simapp"
@@ -15,15 +15,15 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 
-	c4eapp "github.com/chain4energy/c4e-chain/app"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	c4eapp "github.com/chain4energy/c4e-chain/v2/app"
+	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
-	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	cfedistributortypes "github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
 	tmtypes "github.com/cometbft/cometbft/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"

@@ -3,7 +3,7 @@ package v120
 import (
 	"time"
 
-	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
+	cfeupgradetypes "github.com/chain4energy/c4e-chain/v2/app/upgrades"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 )

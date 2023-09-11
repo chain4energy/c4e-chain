@@ -10,9 +10,9 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	testapp "github.com/chain4energy/c4e-chain/v2/testutil/app"
+	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
 )
 
 var TestDenomPrefix = "denom"

@@ -7,7 +7,7 @@ import (
 
 	"cosmossdk.io/math"
 
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"

@@ -2,8 +2,8 @@ package cfeclaim
 
 import (
 	"cosmossdk.io/errors"
-	"github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
-	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/keeper"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

@@ -3,15 +3,15 @@ package keeper_test
 import (
 	"cosmossdk.io/math"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/testutil/app"
+	"github.com/chain4energy/c4e-chain/v2/testutil/app"
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
 )
 
 func TestSendVestingAccount(t *testing.T) {

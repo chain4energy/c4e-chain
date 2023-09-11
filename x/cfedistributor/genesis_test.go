@@ -1,11 +1,11 @@
 package cfedistributor_test
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/app"
+	"github.com/chain4energy/c4e-chain/v2/testutil/app"
 	"testing"
 
-	subdistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor/subdistributor"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	subdistributortestutils "github.com/chain4energy/c4e-chain/v2/testutil/module/cfedistributor/subdistributor"
+	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
 )
 
 func TestGenesis(t *testing.T) {
