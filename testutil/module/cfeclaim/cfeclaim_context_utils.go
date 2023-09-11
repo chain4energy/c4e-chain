@@ -2,12 +2,12 @@ package cfeclaim
 
 import (
 	"cosmossdk.io/math"
-	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-	cfeclaimmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
-	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
-	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
+	cfeclaimmodulekeeper "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/keeper"
+	cfeclaimtypes "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
+	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/v2/x/cfevesting/keeper"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	"github.com/stretchr/testify/require"

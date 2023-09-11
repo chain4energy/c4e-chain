@@ -2,20 +2,20 @@ package v2_test
 
 import (
 	"cosmossdk.io/math"
-	"github.com/chain4energy/c4e-chain/testutil/utils"
+	"github.com/chain4energy/c4e-chain/v2/testutil/utils"
 	"math/rand"
 	"strconv"
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v1"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v2"
+	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/migrations/v1"
+	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/migrations/v2"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 
-	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
-	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
+	testkeeper "github.com/chain4energy/c4e-chain/v2/testutil/keeper"
+	testutils "github.com/chain4energy/c4e-chain/v2/testutil/module/cfevesting"
+	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"

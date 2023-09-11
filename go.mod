@@ -1,6 +1,6 @@
-module github.com/chain4energy/c4e-chain
+module github.com/chain4energy/c4e-chain/v2
 
-go 1.19
+go 1.20
 
 require (
 	cosmossdk.io/api v0.3.1
@@ -15,7 +15,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.47.5
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.4.10
-	github.com/cosmos/ibc-go/v7 v7.2.0
+	github.com/cosmos/ibc-go/v7 v7.3.0
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.0

@@ -3,7 +3,7 @@ package sample
 import (
 	"cosmossdk.io/math"
 	"fmt"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

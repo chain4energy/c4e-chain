@@ -8,7 +8,7 @@ import (
 
 	"github.com/cometbft/cometbft/libs/log"
 
-	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

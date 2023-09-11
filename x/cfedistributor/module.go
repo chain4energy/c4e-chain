@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/types/subspace"
+	"github.com/chain4energy/c4e-chain/v2/types/subspace"
 
 	// this line is used by starport scaffolding # 1
 
@@ -14,9 +14,9 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/client/cli"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/keeper"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/client/cli"
+	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/keeper"
+	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"

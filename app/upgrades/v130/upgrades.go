@@ -1,8 +1,8 @@
 package v130
 
 import (
-	"github.com/chain4energy/c4e-chain/app/upgrades"
-	"github.com/chain4energy/c4e-chain/app/upgrades/v130/claim"
+	"github.com/chain4energy/c4e-chain/v2/app/upgrades"
+	"github.com/chain4energy/c4e-chain/v2/app/upgrades/v130/claim"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"

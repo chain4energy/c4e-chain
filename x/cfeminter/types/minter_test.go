@@ -2,8 +2,8 @@ package types_test
 
 import (
 	"cosmossdk.io/math"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeminter/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"testing"
 	"time"

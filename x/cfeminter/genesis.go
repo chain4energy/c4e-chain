@@ -1,8 +1,8 @@
 package cfeminter
 
 import (
-	"github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
-	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeminter/keeper"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

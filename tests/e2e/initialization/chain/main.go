@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
+	"github.com/chain4energy/c4e-chain/v2/tests/e2e/initialization"
 )
 
 func main() {

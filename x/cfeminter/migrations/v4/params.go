@@ -1,7 +1,7 @@
 package v4
 
 import (
-	v3 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v3"
+	v3 "github.com/chain4energy/c4e-chain/v2/x/cfeminter/migrations/v3"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"

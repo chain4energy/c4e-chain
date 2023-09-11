@@ -2,9 +2,9 @@ package keeper
 
 import (
 	"cosmossdk.io/errors"
-	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
-	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	c4eerrors "github.com/chain4energy/c4e-chain/v2/types/errors"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )

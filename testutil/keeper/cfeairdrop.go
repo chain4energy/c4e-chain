@@ -1,16 +1,16 @@
 package keeper
 
 import (
-	appparams "github.com/chain4energy/c4e-chain/app/params"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	appparams "github.com/chain4energy/c4e-chain/v2/app/params"
+	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
-	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/keeper"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
 	tmdb "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -23,8 +23,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
 
-	commontestutils "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	cfeclaimtestutils "github.com/chain4energy/c4e-chain/testutil/module/cfeclaim"
+	commontestutils "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
+	cfeclaimtestutils "github.com/chain4energy/c4e-chain/v2/testutil/module/cfeclaim"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )

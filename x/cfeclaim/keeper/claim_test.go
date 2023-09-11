@@ -3,9 +3,9 @@ package keeper_test
 import (
 	"cosmossdk.io/math"
 	"fmt"
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	testapp "github.com/chain4energy/c4e-chain/v2/testutil/app"
+	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
+	cfeclaimtypes "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"testing"

@@ -12,8 +12,8 @@ import (
 	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/chain4energy/c4e-chain/tests/e2e/containers"
-	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
+	"github.com/chain4energy/c4e-chain/v2/tests/e2e/containers"
+	"github.com/chain4energy/c4e-chain/v2/tests/e2e/initialization"
 )
 
 type NodeConfig struct {
