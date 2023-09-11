@@ -18,8 +18,8 @@ message ClaimRecord {
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
-  repeated uint64 completedMissions = 4;
-  repeated uint64 claimedMissions = 5;
+  repeated uint64 completed_missions = 4;
+  repeated uint64 claimed_missions = 5;
 }
 
 message ClaimRecordEntry {

@@ -644,12 +644,12 @@ paths:
                               the custom method
 
                               signatures required by gogoproto.
-                        completedMissions:
+                        completed_missions:
                           type: array
                           items:
                             type: string
                             format: uint64
-                        claimedMissions:
+                        claimed_missions:
                           type: array
                           items:
                             type: string
@@ -724,12 +724,12 @@ paths:
                                 implements the custom method
 
                                 signatures required by gogoproto.
-                          completedMissions:
+                          completed_missions:
                             type: array
                             items:
                               type: string
                               format: uint64
-                          claimedMissions:
+                          claimed_missions:
                             type: array
                             items:
                               type: string
@@ -52477,12 +52477,12 @@ definitions:
 
             NOTE: The amount field is an Int which implements the custom method
             signatures required by gogoproto.
-      completedMissions:
+      completed_missions:
         type: array
         items:
           type: string
           format: uint64
-      claimedMissions:
+      claimed_missions:
         type: array
         items:
           type: string
@@ -52955,12 +52955,12 @@ definitions:
                       custom method
 
                       signatures required by gogoproto.
-                completedMissions:
+                completed_missions:
                   type: array
                   items:
                     type: string
                     format: uint64
-                claimedMissions:
+                claimed_missions:
                   type: array
                   items:
                     type: string
@@ -53002,12 +53002,12 @@ definitions:
                         custom method
 
                         signatures required by gogoproto.
-                  completedMissions:
+                  completed_missions:
                     type: array
                     items:
                       type: string
                       format: uint64
-                  claimedMissions:
+                  claimed_missions:
                     type: array
                     items:
                       type: string
@@ -53070,12 +53070,12 @@ definitions:
                   method
 
                   signatures required by gogoproto.
-            completedMissions:
+            completed_missions:
               type: array
               items:
                 type: string
                 format: uint64
-            claimedMissions:
+            claimed_missions:
               type: array
               items:
                 type: string
