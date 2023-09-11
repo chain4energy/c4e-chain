@@ -103,7 +103,7 @@ func TestCreateAccountBlockedAddress(t *testing.T) {
 	blockedAccounts := testHelper.App.ModuleAccountAddrs()
 	blockedAccounts[acountsAddresses[0].String()] = true
 	testHelper.App.BankKeeper = bankkeeper.NewBaseKeeper(
-		testHelper.App.AppCodec(), testHelper.App.GetKey(banktypes.StoreKey), testHelper.App.AccountKeeper, testHelper.App.GetSubspace(banktypes.ModuleName), blockedAccounts,
+		testHelper.App.AppCodec(), testHelper.App.GetKey(banktypes.StoreKey), testHelper.App.AccountKeeper, blockedAccounts, appparams.GetAuthority(),
 	)
 
 	testHelper.App.CfevestingKeeper = *cfevestingmodulekeeper.NewKeeper(

@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"time"
 
+	tmjson "github.com/cometbft/cometbft/libs/json"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -17,10 +18,8 @@ import (
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/gogo/protobuf/proto"
-	tmjson "github.com/tendermint/tendermint/libs/json"
 )
 
 // NodeConfig is a confiuration for the node supplied from the test runner
@@ -199,27 +198,27 @@ func initGenesis(chain *internalChain, votingPeriod time.Duration, forkHeight in
 	if err != nil {
 		return err
 	}
-
+	//
 	err = updateModuleGenesis(appGenState, staketypes.ModuleName, &staketypes.GenesisState{}, updateStakeGenesis)
 	if err != nil {
 		return err
 	}
-
-	err = updateModuleGenesis(appGenState, crisistypes.ModuleName, &crisistypes.GenesisState{}, updateCrisisGenesis)
-	if err != nil {
-		return err
-	}
-
-	err = updateModuleGenesis(appGenState, govtypes.ModuleName, &govv1.GenesisState{}, updateGovGenesis(votingPeriod))
-	if err != nil {
-		return err
-	}
-
-	err = updateModuleGenesis(appGenState, vestingTypes.ModuleName, &vestingTypes.GenesisState{}, updateVestingGenesis)
-	if err != nil {
-		return err
-	}
-
+	//
+	//err = updateModuleGenesis(appGenState, crisistypes.ModuleName, &crisistypes.GenesisState{}, updateCrisisGenesis)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//err = updateModuleGenesis(appGenState, govtypes.ModuleName, &govv1.GenesisState{}, updateGovGenesis(votingPeriod))
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//err = updateModuleGenesis(appGenState, vestingTypes.ModuleName, &vestingTypes.GenesisState{}, updateVestingGenesis)
+	//if err != nil {
+	//	return err
+	//}
+	//
 	err = updateModuleGenesis(appGenState, genutiltypes.ModuleName, &genutiltypes.GenesisState{}, updateGenUtilGenesis(chain))
 	if err != nil {
 		return err
@@ -299,10 +298,10 @@ func updateCrisisGenesis(crisisGenState *crisistypes.GenesisState) {
 
 func updateGovGenesis(votingPeriod time.Duration) func(*govv1.GenesisState) {
 	return func(govGenState *govv1.GenesisState) {
-		govGenState.VotingParams = &govv1.VotingParams{
-			VotingPeriod: &votingPeriod,
-		}
-		govGenState.DepositParams.MinDeposit = tenC4e
+		params := govv1.DefaultParams()
+		govGenState.Params = &params
+		govGenState.Params.VotingPeriod = &votingPeriod
+		govGenState.Params.MinDeposit = tenC4e
 	}
 }
 

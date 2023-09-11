@@ -1,5 +1,5 @@
 syntax = "proto3";
-package chain4energy.c4echain.cfeminter;
+package c4echain.cfeminter;
 
 import "google/protobuf/any.proto";
 import "gogoproto/gogo.proto";

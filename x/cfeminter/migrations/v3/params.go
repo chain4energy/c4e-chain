@@ -40,19 +40,19 @@ func MigrateParams(ctx sdk.Context, storeKey storetypes.StoreKey, legacySubspace
 		var err error
 		if oldMinter.Type == v2.ExponentialStepMintingType {
 			config, err = codectypes.NewAnyWithValue(oldMinter.ExponentialStepMinting)
-			config.TypeUrl = "/chain4energy.c4echain.cfeminter.ExponentialStepMinting"
+			config.TypeUrl = "/c4echain.cfeminter.ExponentialStepMinting"
 			if err != nil {
 				return err
 			}
 		} else if oldMinter.Type == v2.LinearMintingType {
 			config, err = codectypes.NewAnyWithValue(oldMinter.LinearMinting)
-			config.TypeUrl = "/chain4energy.c4echain.cfeminter.LinearMinting"
+			config.TypeUrl = "/c4echain.cfeminter.LinearMinting"
 			if err != nil {
 				return err
 			}
 		} else {
 			config, err = codectypes.NewAnyWithValue(&NoMinting{})
-			config.TypeUrl = "/chain4energy.c4echain.cfeminter.NoMinting"
+			config.TypeUrl = "/c4echain.cfeminter.NoMinting"
 			if err != nil {
 				return err
 			}

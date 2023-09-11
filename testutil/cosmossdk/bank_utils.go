@@ -2,7 +2,6 @@ package cosmossdk
 
 import (
 	"cosmossdk.io/math"
-
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -184,7 +183,13 @@ func (bu *BankUtils) VerifyDefultDenomTotalSupply(ctx sdk.Context, expectedAmoun
 func (bu *BankUtils) DisableSend(ctx sdk.Context) {
 	params := bu.helperBankKeeper.GetParams(ctx)
 	params.DefaultSendEnabled = false
-	bu.helperBankKeeper.SetParams(ctx, params)
+
+	err := bu.helperBankKeeper.SetParams(ctx, params)
+	params = bu.helperBankKeeper.GetParams(ctx)
+	//actual := bu.helperBankKeeper.IsSendEnabledDenom(ctx, "uc4e")
+	//require.False(bu.t, actual)
+	require.False(bu.t, params.DefaultSendEnabled)
+	require.NoError(bu.t, err)
 }
 
 type ContextBankUtils struct {
@@ -265,5 +270,4 @@ func (bu *ContextBankUtils) GetAccountLockedCoins(addr sdk.AccAddress) sdk.Coins
 
 func (bu *ContextBankUtils) DisableSend() {
 	bu.BankUtils.DisableSend(bu.testContext.GetContext())
-
 }

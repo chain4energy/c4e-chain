@@ -36,6 +36,6 @@ func (params Params) String() string {
 
 func LinearMintingConfig() *codectypes.Any {
 	config, _ := codectypes.NewAnyWithValue(&NoMinting{})
-	config.TypeUrl = "/chain4energy.c4echain.cfeminter.NoMinting"
+	config.TypeUrl = "/c4echain.cfeminter.NoMinting"
 	return config
 }

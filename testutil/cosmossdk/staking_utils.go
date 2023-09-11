@@ -24,7 +24,7 @@ func NewStakingUtils(t require.TestingT, helperStakingkeeper stakingkeeper.Keepe
 
 func (su *StakingUtils) CreateValidator(ctx sdk.Context, addr sdk.ValAddress, pk cryptotypes.PubKey, coin sdk.Coin, commisions stakingtypes.CommissionRates) {
 	msg, err := stakingtypes.NewMsgCreateValidator(addr, pk, coin, stakingtypes.Description{}, commisions, sdk.OneInt())
-	msgSrvr := stakingkeeper.NewMsgServerImpl(su.helperStakingkeeper)
+	msgSrvr := stakingkeeper.NewMsgServerImpl(&su.helperStakingkeeper)
 	require.NoError(su.t, err)
 	res, err := msgSrvr.CreateValidator(sdk.WrapSDKContext(ctx), msg)
 	require.NoError(su.t, err)

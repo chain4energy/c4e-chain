@@ -29,7 +29,7 @@ func TestParamsChangeSuite(t *testing.T) {
 }
 
 func (s *ParamsSetupSuite) SetupSuite() {
-	s.BaseSetupSuite.SetupSuite(false, false, false)
+	s.BaseSetupSuite.SetupSuite(true, false, false)
 }
 
 func (s *ParamsSetupSuite) TestMinterAndDistributorCustom() {

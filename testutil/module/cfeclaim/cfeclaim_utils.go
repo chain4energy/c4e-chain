@@ -290,6 +290,9 @@ func (h *C4eClaimUtils) ClaimInitial(ctx sdk.Context, campaignId uint64, claimer
 	require.Nil(h.t, allowance)
 
 	campaignBefore.CampaignCurrentAmount = campaignBefore.CampaignCurrentAmount.Sub(expectedAmount...)
+	if campaignBefore.CampaignCurrentAmount.IsZero() {
+		campaignBefore.CampaignCurrentAmount = sdk.Coins(nil)
+	}
 	require.EqualValues(h.t, campaignBefore, campaignAfter)
 
 	h.BankUtils.VerifyAccountAllBalances(ctx, claimer, claimerBalanceBefore.Add(expectedAmount...))
@@ -412,12 +415,13 @@ func (h *C4eClaimUtils) CompleteDelegationMission(ctx sdk.Context, expectedAmoun
 
 func (h *C4eClaimUtils) CompleteVoteMission(ctx sdk.Context, campaignId uint64, missionId uint64, claimer sdk.AccAddress) {
 	action := func() error {
-		depParams := h.GovUtils.GovKeeper.GetDepositParams(ctx)
-		depositAmount := depParams.MinDeposit
+		params := h.GovUtils.GovKeeper.GetParams(ctx)
+		depositAmount := params.MinDeposit
 		h.BankUtils.AddCoinsToAccount(ctx, depositAmount, claimer)
 
 		testProposal := &cfevestingtypes.MsgUpdateDenomParam{Authority: appparams.GetAuthority(), Denom: testenv.DefaultTestDenom}
-		proposal, err := h.GovUtils.GovKeeper.SubmitProposal(ctx, []sdk.Msg{testProposal}, "=abc")
+		proposal, err := h.GovUtils.GovKeeper.SubmitProposal(ctx, []sdk.Msg{testProposal}, "=abc", "Proposal",
+			"description of proposal", claimer)
 		if err != nil {
 			return err
 		}

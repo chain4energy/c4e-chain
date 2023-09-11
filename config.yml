@@ -152,7 +152,7 @@ genesis:
         mint_denom: uc4e
         minters:
         - config:
-            '@type': /chain4energy.c4echain.cfeminter.ExponentialStepMinting
+            '@type': /c4echain.cfeminter.ExponentialStepMinting
             amount: "160000000000000"
             amount_multiplier: "0.5"
             step_duration: 126144000s
@@ -225,14 +225,6 @@ genesis:
       constant_fee:
         amount: "1000"
         denom: uc4e
-    gov:
-      deposit_params:
-        max_deposit_period: 50s
-        min_deposit:
-        - amount: "10000000"
-          denom: uc4e
-      voting_params:
-        voting_period: 10s
     staking:
       params:
         bond_denom: uc4e

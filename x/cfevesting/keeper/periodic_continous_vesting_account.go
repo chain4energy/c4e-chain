@@ -42,7 +42,7 @@ func (k Keeper) SendToPeriodicContinuousVestingAccountFromModule(ctx sdk.Context
 		vestingPeriodCoins = vestingPeriodCoins.Add(sdk.NewCoin(coin.Denom, vestingPeriodAmount))
 	}
 
-	if vestingPeriodCoins != nil {
+	if vestingPeriodCoins != nil && len(vestingPeriodCoins) > 0 {
 		periodId = periodicContinousVestingAccount.AddNewContinousVestingPeriod(startTime, endTime, vestingPeriodCoins)
 		periodExists = true
 	}

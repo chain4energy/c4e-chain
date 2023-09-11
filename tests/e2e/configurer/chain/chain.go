@@ -9,9 +9,9 @@ import (
 	"github.com/chain4energy/c4e-chain/tests/e2e/containers"
 	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 
+	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 )
 
 type Config struct {

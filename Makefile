@@ -163,7 +163,7 @@ open-memory-profiler-result:
 
 PACKAGES_E2E=./tests/e2e
 BUILDDIR ?= $(CURDIR)/build
-E2E_UPGRADE_VERSION="v1.3.0"
+E2E_UPGRADE_VERSION="v2.0.0"
 E2E_SCRIPT_NAME=chain
 C4E_E2E_SIGN_MODE = "direct"
 
@@ -190,8 +190,8 @@ test-e2e-migration: e2e-setup
 test-e2e-migration-chaining: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationChainingSuite"
 
-SPECIFIC_TEST_NAME=TestMainnetVestingsMigration
-SPECIFIC_TESTING_SUITE_NAME=TestMainnetMigrationSuite
+SPECIFIC_TEST_NAME=TestSendToVestingAccount
+SPECIFIC_TESTING_SUITE_NAME=TestVestingSuite
 test-e2e-run-specific-test: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=true go test -mod=readonly -timeout=25m -v $ -run $(SPECIFIC_TESTING_SUITE_NAME) $(PACKAGES_E2E) -testify.m $(SPECIFIC_TEST_NAME)
 
@@ -213,6 +213,10 @@ build-e2e-script:
 docker-build-debug:
 	@docker build -t chain4energy:debug --build-arg BASE_IMG_TAG=debug -f dockerfiles/Dockerfile .
 
+docker-build-v1.3.0-chain:
+	@docker build -t chain4energy-old-chain-init:v1.3.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.3.0.init.Dockerfile .
+	@docker build -t chain4energy-old-dev:v1.3.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.3.0.Dockerfile .
+
 docker-build-v1.2.0-chain:
 	@docker build -t chain4energy-old-chain-init:v1.2.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.2.0.init.Dockerfile .
 	@docker build -t chain4energy-old-dev:v1.2.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.2.0.Dockerfile .
@@ -225,5 +229,5 @@ docker-build-v1.0.0-chain:
 	@docker build -t chain4energy-old-chain-init:v1.0.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.0.0.init.Dockerfile .
 	@docker build -t chain4energy-old-dev:v1.0.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.0.0.Dockerfile .
 
-docker-build-all: docker-build-old-chain docker-build-debug
+docker-build-all: docker-build-v1.3.0-chain docker-build-debug
 
