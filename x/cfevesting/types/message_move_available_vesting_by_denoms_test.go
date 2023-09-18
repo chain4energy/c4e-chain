@@ -3,9 +3,9 @@ package types_test
 import (
 	"testing"
 
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
 
-	"github.com/chain4energy/c4e-chain/testutil/sample"
+	"github.com/chain4energy/c4e-chain/v2/testutil/sample"
 	"github.com/stretchr/testify/require"
 )
 

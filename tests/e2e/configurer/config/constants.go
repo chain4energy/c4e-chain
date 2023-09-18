@@ -2,7 +2,7 @@ package config
 
 import (
 	"cosmossdk.io/math"
-	appparams "github.com/chain4energy/c4e-chain/app/params"
+	appparams "github.com/chain4energy/c4e-chain/v2/app/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 )

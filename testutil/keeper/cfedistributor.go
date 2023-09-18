@@ -1,13 +1,13 @@
 package keeper
 
 import (
-	appparams "github.com/chain4energy/c4e-chain/app/params"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v2"
+	appparams "github.com/chain4energy/c4e-chain/v2/app/params"
+	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/migrations/v2"
 	"testing"
 
-	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/keeper"
-	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	cfedistributortestutils "github.com/chain4energy/c4e-chain/v2/testutil/module/cfedistributor"
+	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/keeper"
+	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
 	tmdb "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"

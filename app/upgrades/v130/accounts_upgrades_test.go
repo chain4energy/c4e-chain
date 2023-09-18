@@ -2,10 +2,10 @@ package v130_test
 
 import (
 	"cosmossdk.io/math"
-	v130 "github.com/chain4energy/c4e-chain/app/upgrades/v130"
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	v130 "github.com/chain4energy/c4e-chain/v2/app/upgrades/v130"
+	testapp "github.com/chain4energy/c4e-chain/v2/testutil/app"
+	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"

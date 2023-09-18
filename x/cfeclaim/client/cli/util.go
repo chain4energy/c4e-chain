@@ -2,7 +2,7 @@ package cli
 
 import (
 	"encoding/json"
-	claimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	claimtypes "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
 	"os"
 )
 

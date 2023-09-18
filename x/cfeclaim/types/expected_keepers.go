@@ -2,7 +2,7 @@ package types
 
 import (
 	"cosmossdk.io/math"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"

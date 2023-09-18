@@ -2,12 +2,12 @@ package keeper_test
 
 import (
 	"fmt"
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	keepertest "github.com/chain4energy/c4e-chain/testutil/keeper"
-	"github.com/chain4energy/c4e-chain/testutil/nullify"
-	"github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
-	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	testapp "github.com/chain4energy/c4e-chain/v2/testutil/app"
+	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
+	keepertest "github.com/chain4energy/c4e-chain/v2/testutil/keeper"
+	"github.com/chain4energy/c4e-chain/v2/testutil/nullify"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/keeper"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"testing"

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/chain4energy/c4e-chain/app"
+	"github.com/chain4energy/c4e-chain/v2/app"
 	"math/rand"
 	"os"
 	"runtime/debug"

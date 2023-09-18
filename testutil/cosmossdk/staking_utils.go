@@ -2,7 +2,7 @@ package cosmossdk
 
 import (
 	"cosmossdk.io/math"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/stretchr/testify/require"
 

@@ -2,18 +2,18 @@ package v2_test
 
 import (
 	"cosmossdk.io/math"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
-	v1 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v1"
-	v2 "github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v2"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeminter/keeper"
+	v1 "github.com/chain4energy/c4e-chain/v2/x/cfeminter/migrations/v1"
+	v2 "github.com/chain4energy/c4e-chain/v2/x/cfeminter/migrations/v2"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/stretchr/testify/require"
 
 	"testing"
 
-	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
+	testkeeper "github.com/chain4energy/c4e-chain/v2/testutil/keeper"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

@@ -1,10 +1,10 @@
 package cfeclaim
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/nullify"
-	"github.com/chain4energy/c4e-chain/x/cfeclaim"
-	"github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
-	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	"github.com/chain4energy/c4e-chain/v2/testutil/nullify"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/keeper"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )

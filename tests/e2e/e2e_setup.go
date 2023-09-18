@@ -3,8 +3,8 @@ package e2e
 import (
 	"cosmossdk.io/errors"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/tests/e2e/configurer"
-	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/chain"
+	"github.com/chain4energy/c4e-chain/v2/tests/e2e/configurer"
+	"github.com/chain4energy/c4e-chain/v2/tests/e2e/configurer/chain"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/suite"

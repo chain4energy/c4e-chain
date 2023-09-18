@@ -2,11 +2,11 @@ package v130_test
 
 import (
 	"cosmossdk.io/math"
-	v130 "github.com/chain4energy/c4e-chain/app/upgrades/v130"
-	"github.com/chain4energy/c4e-chain/app/upgrades/v130/claim"
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	v130 "github.com/chain4energy/c4e-chain/v2/app/upgrades/v130"
+	"github.com/chain4energy/c4e-chain/v2/app/upgrades/v130/claim"
+	testapp "github.com/chain4energy/c4e-chain/v2/testutil/app"
+	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
+	cfeclaimtypes "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"testing"

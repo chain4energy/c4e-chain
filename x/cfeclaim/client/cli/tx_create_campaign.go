@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"

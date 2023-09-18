@@ -1,9 +1,9 @@
 package app
 
 import (
-	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
-	cfeclaimkeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
-	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
+	cfeupgradetypes "github.com/chain4energy/c4e-chain/v2/app/upgrades"
+	cfeclaimkeeper "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/keeper"
+	cfevestingkeeper "github.com/chain4energy/c4e-chain/v2/x/cfevesting/keeper"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"

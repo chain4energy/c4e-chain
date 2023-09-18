@@ -3,8 +3,8 @@ package keeper_test
 import (
 	"cosmossdk.io/math"
 	"fmt"
-	testapp "github.com/chain4energy/c4e-chain/testutil/app"
-	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testapp "github.com/chain4energy/c4e-chain/v2/testutil/app"
+	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 	"time"

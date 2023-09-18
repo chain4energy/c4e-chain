@@ -1,8 +1,8 @@
 package v130
 
 import (
-	"github.com/chain4energy/c4e-chain/app/upgrades"
-	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	"github.com/chain4energy/c4e-chain/v2/app/upgrades"
+	cfeclaimtypes "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
 	store "github.com/cosmos/cosmos-sdk/store/types"
 )
 

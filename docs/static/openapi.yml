@@ -7,7 +7,7 @@ paths:
   /c4e/claim/v1beta1/campaign/{campaign_id}:
     get:
       summary: Queries a Campaign by id.
-      operationId: C4EchainCfeclaimCampaign
+      operationId: Chain4EnergyC4EchainCfeclaimCampaign
       responses:
         '200':
           description: A successful response.
@@ -124,7 +124,7 @@ paths:
   /c4e/claim/v1beta1/campaigns:
     get:
       summary: Queries a list of all Campaigns items.
-      operationId: C4EchainCfeclaimCampaigns
+      operationId: Chain4EnergyC4EchainCfeclaimCampaigns
       responses:
         '200':
           description: A successful response.
@@ -324,7 +324,7 @@ paths:
   /c4e/claim/v1beta1/mission/{campaign_id}/{mission_id}:
     get:
       summary: Queries a Mission by campaign id and mission id.
-      operationId: C4EchainCfeclaimMission
+      operationId: Chain4EnergyC4EchainCfeclaimMission
       responses:
         '200':
           description: A successful response.
@@ -393,7 +393,7 @@ paths:
   /c4e/claim/v1beta1/missions:
     get:
       summary: Queries a list of all Missions items.
-      operationId: C4EchainCfeclaimMissions
+      operationId: Chain4EnergyC4EchainCfeclaimMissions
       responses:
         '200':
           description: A successful response.
@@ -538,7 +538,7 @@ paths:
   /c4e/claim/v1beta1/missions/{campaign_id}:
     get:
       summary: Queries a list of Mission items for a given campaign.
-      operationId: C4EchainCfeclaimCampaignMissions
+      operationId: Chain4EnergyC4EchainCfeclaimCampaignMissions
       responses:
         '200':
           description: A successful response.
@@ -604,7 +604,7 @@ paths:
   /c4e/claim/v1beta1/user_entry/{address}:
     get:
       summary: Queries a UserEntry by index.
-      operationId: C4EchainCfeclaimUserEntry
+      operationId: Chain4EnergyC4EchainCfeclaimUserEntry
       responses:
         '200':
           description: A successful response.
@@ -682,7 +682,7 @@ paths:
   /c4e/claim/v1beta1/users_entries:
     get:
       summary: Queries a list of all UserEntry items.
-      operationId: C4EchainCfeclaimUsersEntries
+      operationId: Chain4EnergyC4EchainCfeclaimUsersEntries
       responses:
         '200':
           description: A successful response.
@@ -842,7 +842,7 @@ paths:
   /c4e/distributor/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
-      operationId: C4EchainCfedistributorParams
+      operationId: Chain4EnergyC4EchainCfedistributorParams
       responses:
         '200':
           description: A successful response.
@@ -923,7 +923,7 @@ paths:
   /c4e/distributor/v1beta1/states:
     get:
       summary: Queries a list of States items.
-      operationId: C4EchainCfedistributorStates
+      operationId: Chain4EnergyC4EchainCfedistributorStates
       responses:
         '200':
           description: A successful response.
@@ -1002,7 +1002,7 @@ paths:
   /c4e/minter/v1beta1/inflation:
     get:
       summary: Queries a list of Inflation items.
-      operationId: C4EchainCfeminterInflation
+      operationId: Chain4EnergyC4EchainCfeminterInflation
       responses:
         '200':
           description: A successful response.
@@ -1201,7 +1201,7 @@ paths:
   /c4e/minter/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
-      operationId: C4EchainCfeminterParams
+      operationId: Chain4EnergyC4EchainCfeminterParams
       responses:
         '200':
           description: A successful response.
@@ -1597,7 +1597,7 @@ paths:
   /c4e/minter/v1beta1/state:
     get:
       summary: Queries a list of State items.
-      operationId: C4EchainCfeminterState
+      operationId: Chain4EnergyC4EchainCfeminterState
       responses:
         '200':
           description: A successful response.
@@ -1826,7 +1826,7 @@ paths:
   /c4e/vesting/v1beta1/genesis_summary:
     get:
       summary: Queries a list of GenesisVestingsSummary items.
-      operationId: C4EchainCfevestingGenesisVestingsSummary
+      operationId: Chain4EnergyC4EchainCfevestingGenesisVestingsSummary
       responses:
         '200':
           description: A successful response.
@@ -2031,7 +2031,7 @@ paths:
   /c4e/vesting/v1beta1/params:
     get:
       summary: Parameters queries the parameters of the module.
-      operationId: C4EchainCfevestingParams
+      operationId: Chain4EnergyC4EchainCfevestingParams
       responses:
         '200':
           description: A successful response.
@@ -2237,7 +2237,7 @@ paths:
   /c4e/vesting/v1beta1/summary:
     get:
       summary: Queries a summary of the entire vesting.
-      operationId: C4EchainCfevestingVestingsSummary
+      operationId: Chain4EnergyC4EchainCfevestingVestingsSummary
       responses:
         '200':
           description: A successful response.
@@ -2442,7 +2442,7 @@ paths:
   /c4e/vesting/v1beta1/vesting_pools/{owner}:
     get:
       summary: Queries a list of Vesting items.
-      operationId: C4EchainCfevestingVestingPools
+      operationId: Chain4EnergyC4EchainCfevestingVestingPools
       responses:
         '200':
           description: A successful response.
@@ -2690,7 +2690,7 @@ paths:
   /c4e/vesting/v1beta1/vesting_type:
     get:
       summary: Queries a list of VestingType items.
-      operationId: C4EchainCfevestingVestingType
+      operationId: Chain4EnergyC4EchainCfevestingVestingType
       responses:
         '200':
           description: A successful response.
@@ -52371,7 +52371,7 @@ paths:
       tags:
         - Query
 definitions:
-  c4echain.cfeclaim.Campaign:
+  chain4energy.c4echain.cfeclaim.Campaign:
     type: object
     properties:
       id:
@@ -52445,7 +52445,7 @@ definitions:
 
             NOTE: The amount field is an Int which implements the custom method
             signatures required by gogoproto.
-  c4echain.cfeclaim.CampaignType:
+  chain4energy.c4echain.cfeclaim.CampaignType:
     type: string
     enum:
       - CAMPAIGN_TYPE_UNSPECIFIED
@@ -52455,7 +52455,7 @@ definitions:
     title: |-
       - DEFAULT: campaign must be enabled to add new claim records
        - VESTING_POOL: campaign don't have to be enabled (started) to add new claim records and it is
-  c4echain.cfeclaim.ClaimRecord:
+  chain4energy.c4echain.cfeclaim.ClaimRecord:
     type: object
     properties:
       campaign_id:
@@ -52487,7 +52487,7 @@ definitions:
         items:
           type: string
           format: uint64
-  c4echain.cfeclaim.ClaimRecordEntry:
+  chain4energy.c4echain.cfeclaim.ClaimRecordEntry:
     type: object
     properties:
       campaign_id:
@@ -52509,7 +52509,7 @@ definitions:
 
             NOTE: The amount field is an Int which implements the custom method
             signatures required by gogoproto.
-  c4echain.cfeclaim.Mission:
+  chain4energy.c4echain.cfeclaim.Mission:
     type: object
     properties:
       id:
@@ -52537,7 +52537,7 @@ definitions:
       claim_start_date:
         type: string
         format: date-time
-  c4echain.cfeclaim.MissionType:
+  chain4energy.c4echain.cfeclaim.MissionType:
     type: string
     enum:
       - MISSION_TYPE_UNSPECIFIED
@@ -52547,15 +52547,15 @@ definitions:
       - CLAIM
       - TO_DEFINE
     default: MISSION_TYPE_UNSPECIFIED
-  c4echain.cfeclaim.MsgAddClaimRecordsResponse:
+  chain4energy.c4echain.cfeclaim.MsgAddClaimRecordsResponse:
     type: object
-  c4echain.cfeclaim.MsgAddMissionResponse:
+  chain4energy.c4echain.cfeclaim.MsgAddMissionResponse:
     type: object
     properties:
       mission_id:
         type: string
         format: uint64
-  c4echain.cfeclaim.MsgClaimResponse:
+  chain4energy.c4echain.cfeclaim.MsgClaimResponse:
     type: object
     properties:
       amount:
@@ -52572,19 +52572,19 @@ definitions:
 
             NOTE: The amount field is an Int which implements the custom method
             signatures required by gogoproto.
-  c4echain.cfeclaim.MsgCloseCampaignResponse:
+  chain4energy.c4echain.cfeclaim.MsgCloseCampaignResponse:
     type: object
-  c4echain.cfeclaim.MsgCreateCampaignResponse:
+  chain4energy.c4echain.cfeclaim.MsgCreateCampaignResponse:
     type: object
     properties:
       campaign_id:
         type: string
         format: uint64
-  c4echain.cfeclaim.MsgDeleteClaimRecordResponse:
+  chain4energy.c4echain.cfeclaim.MsgDeleteClaimRecordResponse:
     type: object
-  c4echain.cfeclaim.MsgEnableCampaignResponse:
+  chain4energy.c4echain.cfeclaim.MsgEnableCampaignResponse:
     type: object
-  c4echain.cfeclaim.MsgInitialClaimResponse:
+  chain4energy.c4echain.cfeclaim.MsgInitialClaimResponse:
     type: object
     properties:
       amount:
@@ -52601,9 +52601,9 @@ definitions:
 
             NOTE: The amount field is an Int which implements the custom method
             signatures required by gogoproto.
-  c4echain.cfeclaim.MsgRemoveCampaignResponse:
+  chain4energy.c4echain.cfeclaim.MsgRemoveCampaignResponse:
     type: object
-  c4echain.cfeclaim.QueryCampaignMissionsResponse:
+  chain4energy.c4echain.cfeclaim.QueryCampaignMissionsResponse:
     type: object
     properties:
       missions:
@@ -52636,7 +52636,7 @@ definitions:
             claim_start_date:
               type: string
               format: date-time
-  c4echain.cfeclaim.QueryCampaignResponse:
+  chain4energy.c4echain.cfeclaim.QueryCampaignResponse:
     type: object
     properties:
       campaign:
@@ -52719,7 +52719,7 @@ definitions:
                 method
 
                 signatures required by gogoproto.
-  c4echain.cfeclaim.QueryCampaignsResponse:
+  chain4energy.c4echain.cfeclaim.QueryCampaignsResponse:
     type: object
     properties:
       campaigns:
@@ -52830,7 +52830,7 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  c4echain.cfeclaim.QueryMissionResponse:
+  chain4energy.c4echain.cfeclaim.QueryMissionResponse:
     type: object
     properties:
       mission:
@@ -52861,7 +52861,7 @@ definitions:
           claim_start_date:
             type: string
             format: date-time
-  c4echain.cfeclaim.QueryMissionsResponse:
+  chain4energy.c4echain.cfeclaim.QueryMissionsResponse:
     type: object
     properties:
       missions:
@@ -52920,7 +52920,7 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  c4echain.cfeclaim.QueryUserEntryResponse:
+  chain4energy.c4echain.cfeclaim.QueryUserEntryResponse:
     type: object
     properties:
       user_entry:
@@ -52965,7 +52965,7 @@ definitions:
                   items:
                     type: string
                     format: uint64
-  c4echain.cfeclaim.QueryUsersEntriesResponse:
+  chain4energy.c4echain.cfeclaim.QueryUsersEntriesResponse:
     type: object
     properties:
       users_entries:
@@ -53038,7 +53038,7 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  c4echain.cfeclaim.UserEntry:
+  chain4energy.c4echain.cfeclaim.UserEntry:
     type: object
     properties:
       address:
@@ -53492,14 +53492,14 @@ definitions:
                   "@type": "type.googleapis.com/google.protobuf.Duration",
                   "value": "1.212s"
                 }
-  c4echain.cfedistributor.Account:
+  chain4energy.c4echain.cfedistributor.Account:
     type: object
     properties:
       id:
         type: string
       type:
         type: string
-  c4echain.cfedistributor.DestinationShare:
+  chain4energy.c4echain.cfedistributor.DestinationShare:
     type: object
     properties:
       name:
@@ -53513,7 +53513,7 @@ definitions:
             type: string
           type:
             type: string
-  c4echain.cfedistributor.Destinations:
+  chain4energy.c4echain.cfedistributor.Destinations:
     type: object
     properties:
       primary_share:
@@ -53541,15 +53541,15 @@ definitions:
                   type: string
                 type:
                   type: string
-  c4echain.cfedistributor.MsgUpdateParamsResponse:
+  chain4energy.c4echain.cfedistributor.MsgUpdateParamsResponse:
     type: object
-  c4echain.cfedistributor.MsgUpdateSubDistributorBurnShareParamResponse:
+  chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorBurnShareParamResponse:
     type: object
-  c4echain.cfedistributor.MsgUpdateSubDistributorDestinationShareParamResponse:
+  chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorDestinationShareParamResponse:
     type: object
-  c4echain.cfedistributor.MsgUpdateSubDistributorParamResponse:
+  chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorParamResponse:
     type: object
-  c4echain.cfedistributor.Params:
+  chain4energy.c4echain.cfedistributor.Params:
     type: object
     properties:
       sub_distributors:
@@ -53597,7 +53597,7 @@ definitions:
                           type:
                             type: string
     description: Params defines the parameters for the module.
-  c4echain.cfedistributor.QueryParamsResponse:
+  chain4energy.c4echain.cfedistributor.QueryParamsResponse:
     type: object
     properties:
       params:
@@ -53649,7 +53649,7 @@ definitions:
                               type:
                                 type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  c4echain.cfedistributor.QueryStatesResponse:
+  chain4energy.c4echain.cfedistributor.QueryStatesResponse:
     type: object
     properties:
       states:
@@ -53698,7 +53698,7 @@ definitions:
 
             NOTE: The amount field is an Int which implements the custom method
             signatures required by gogoproto.
-  c4echain.cfedistributor.State:
+  chain4energy.c4echain.cfedistributor.State:
     type: object
     properties:
       account:
@@ -53724,7 +53724,7 @@ definitions:
 
             NOTE: The amount field is an Dec which implements the custom method
             signatures required by gogoproto.
-  c4echain.cfedistributor.SubDistributor:
+  chain4energy.c4echain.cfedistributor.SubDistributor:
     type: object
     properties:
       name:
@@ -53778,7 +53778,7 @@ definitions:
 
       NOTE: The amount field is an Dec which implements the custom method
       signatures required by gogoproto.
-  c4echain.cfeminter.Minter:
+  chain4energy.c4echain.cfeminter.Minter:
     type: object
     properties:
       sequence_id:
@@ -53944,7 +53944,7 @@ definitions:
                 "@type": "type.googleapis.com/google.protobuf.Duration",
                 "value": "1.212s"
               }
-  c4echain.cfeminter.MinterState:
+  chain4energy.c4echain.cfeminter.MinterState:
     type: object
     properties:
       sequence_id:
@@ -53959,13 +53959,13 @@ definitions:
         format: date-time
       remainder_from_previous_minter:
         type: string
-  c4echain.cfeminter.MsgBurnResponse:
+  chain4energy.c4echain.cfeminter.MsgBurnResponse:
     type: object
-  c4echain.cfeminter.MsgUpdateMintersParamsResponse:
+  chain4energy.c4echain.cfeminter.MsgUpdateMintersParamsResponse:
     type: object
-  c4echain.cfeminter.MsgUpdateParamsResponse:
+  chain4energy.c4echain.cfeminter.MsgUpdateParamsResponse:
     type: object
-  c4echain.cfeminter.Params:
+  chain4energy.c4echain.cfeminter.Params:
     type: object
     properties:
       mint_denom:
@@ -54152,12 +54152,12 @@ definitions:
                       "value": "1.212s"
                     }
     description: Params defines the parameters for the module.
-  c4echain.cfeminter.QueryInflationResponse:
+  chain4energy.c4echain.cfeminter.QueryInflationResponse:
     type: object
     properties:
       inflation:
         type: string
-  c4echain.cfeminter.QueryParamsResponse:
+  chain4energy.c4echain.cfeminter.QueryParamsResponse:
     type: object
     properties:
       params:
@@ -54354,7 +54354,7 @@ definitions:
                           "value": "1.212s"
                         }
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  c4echain.cfeminter.QueryStateResponse:
+  chain4energy.c4echain.cfeminter.QueryStateResponse:
     type: object
     properties:
       minter_state:
@@ -54389,7 +54389,7 @@ definitions:
               format: date-time
             remainder_from_previous_minter:
               type: string
-  c4echain.cfevesting.GenesisVestingType:
+  chain4energy.c4echain.cfevesting.GenesisVestingType:
     type: object
     properties:
       name:
@@ -54415,32 +54415,32 @@ definitions:
            hours
            minutes
            seconds
-  c4echain.cfevesting.MsgCreateVestingAccountResponse:
+  chain4energy.c4echain.cfevesting.MsgCreateVestingAccountResponse:
     type: object
-  c4echain.cfevesting.MsgCreateVestingPoolResponse:
+  chain4energy.c4echain.cfevesting.MsgCreateVestingPoolResponse:
     type: object
-  c4echain.cfevesting.MsgMoveAvailableVestingByDenomsResponse:
+  chain4energy.c4echain.cfevesting.MsgMoveAvailableVestingByDenomsResponse:
     type: object
-  c4echain.cfevesting.MsgMoveAvailableVestingResponse:
+  chain4energy.c4echain.cfevesting.MsgMoveAvailableVestingResponse:
     type: object
-  c4echain.cfevesting.MsgSendToVestingAccountResponse:
+  chain4energy.c4echain.cfevesting.MsgSendToVestingAccountResponse:
     type: object
-  c4echain.cfevesting.MsgSplitVestingResponse:
+  chain4energy.c4echain.cfevesting.MsgSplitVestingResponse:
     type: object
-  c4echain.cfevesting.MsgUpdateDenomParamResponse:
+  chain4energy.c4echain.cfevesting.MsgUpdateDenomParamResponse:
     type: object
-  c4echain.cfevesting.MsgWithdrawAllAvailableResponse:
+  chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailableResponse:
     type: object
     properties:
       withdrawn:
         type: string
-  c4echain.cfevesting.Params:
+  chain4energy.c4echain.cfevesting.Params:
     type: object
     properties:
       denom:
         type: string
     description: Params defines the parameters for the module.
-  c4echain.cfevesting.QueryGenesisVestingsSummaryResponse:
+  chain4energy.c4echain.cfevesting.QueryGenesisVestingsSummaryResponse:
     type: object
     properties:
       vesting_all_amount:
@@ -54451,7 +54451,7 @@ definitions:
         type: string
       delegated_vesting_amount:
         type: string
-  c4echain.cfevesting.QueryParamsResponse:
+  chain4energy.c4echain.cfevesting.QueryParamsResponse:
     type: object
     properties:
       params:
@@ -54461,7 +54461,7 @@ definitions:
           denom:
             type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  c4echain.cfevesting.QueryVestingPoolsResponse:
+  chain4energy.c4echain.cfevesting.QueryVestingPoolsResponse:
     type: object
     properties:
       vesting_pools:
@@ -54510,7 +54510,7 @@ definitions:
                     format: uint64
                   amount:
                     type: string
-  c4echain.cfevesting.QueryVestingTypeResponse:
+  chain4energy.c4echain.cfevesting.QueryVestingTypeResponse:
     type: object
     properties:
       vesting_types:
@@ -54541,7 +54541,7 @@ definitions:
                  hours
                  minutes
                  seconds
-  c4echain.cfevesting.QueryVestingsSummaryResponse:
+  chain4energy.c4echain.cfevesting.QueryVestingsSummaryResponse:
     type: object
     properties:
       vesting_all_amount:
@@ -54552,7 +54552,7 @@ definitions:
         type: string
       delegated_vesting_amount:
         type: string
-  c4echain.cfevesting.VestingPoolInfo:
+  chain4energy.c4echain.cfevesting.VestingPoolInfo:
     type: object
     properties:
       name:
@@ -54593,7 +54593,7 @@ definitions:
               format: uint64
             amount:
               type: string
-  c4echain.cfevesting.VestingPoolReservation:
+  chain4energy.c4echain.cfevesting.VestingPoolReservation:
     type: object
     properties:
       id:

@@ -19,7 +19,7 @@ run_simulation(){
     go test -run=^$ -bench ^BenchmarkSimulation $SIMAPP -Seed="$SEED" -NumBlocks="$SIM_NUM_BLOCKS" -BlockSize="$SIM_BLOCK_SIZE" \
     -Commit=true -Verbose=true -Enabled=true -PrintAllInvariants -timeout 24h >> "$simulationResultFile"
 
-    if grep -E "FAIL   github.com/chain4energy/c4e-chain/app|panic|exit status" "$simulationResultFile"
+    if grep -E "FAIL   github.com/chain4energy/c4e-chain/v2/app|panic|exit status" "$simulationResultFile"
     then
         simulationResultFileError=$simulationResultFile."ERROR"
         mv "$simulationResultFile" "$simulationResultFileError"
