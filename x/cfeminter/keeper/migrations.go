@@ -4,7 +4,6 @@ import (
 	"github.com/chain4energy/c4e-chain/v2/types/subspace"
 	v110cfeminter "github.com/chain4energy/c4e-chain/v2/x/cfeminter/migrations/v2"
 	v3 "github.com/chain4energy/c4e-chain/v2/x/cfeminter/migrations/v3"
-	v4 "github.com/chain4energy/c4e-chain/v2/x/cfeminter/migrations/v4"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -31,9 +30,4 @@ func (m Migrator) Migrate1to2(ctx sdk.Context) error {
 // Migrate2to3 migrates from version 2 to 3.
 func (m Migrator) Migrate2to3(ctx sdk.Context) error {
 	return v3.MigrateParams(ctx, m.keeper.storeKey, m.legacySubspace, m.keeper.cdc)
-}
-
-// Migrate3to4 migrates from version 3 to 4.
-func (m Migrator) Migrate3to4(ctx sdk.Context) error {
-	return v4.MigrateParams(ctx, m.keeper.storeKey, m.keeper.cdc)
 }
