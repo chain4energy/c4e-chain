@@ -46,6 +46,18 @@ func NewImageConfig(startUpgrade bool, migrationChaining bool) ImageConfig {
 		RelayerRepository: relayerRepository,
 		RelayerTag:        relayerTag,
 	}
+	// If upgrade is tested, we need to utilize InitRepository and InitTag
+	// to initialize older state with Docker
+	config.InitRepository = previousVersionInitRepository
+	config.InitTag = previousVersionInitTag
+
+	// Upgrades are run at the time when upgrade height is reached
+	// and are submitted via a governance proposal. Thefore, we
+	// must start running the previous Chain4Energy version. Then, the node
+	// should auto-upgrade, at which point we can restart the updated
+	// Chain4Energy validator container.
+	config.C4eRepository = previousVersionC4eRepository
+	config.C4eTag = previousVersionC4eTag
 
 	if !startUpgrade {
 		// If upgrade is not tested, we do not need InitRepository and InitTag
@@ -64,19 +76,6 @@ func NewImageConfig(startUpgrade bool, migrationChaining bool) ImageConfig {
 		config.InitTag = penultimateVersionInitTag
 		return config
 	}
-
-	// If upgrade is tested, we need to utilize InitRepository and InitTag
-	// to initialize older state with Docker
-	config.InitRepository = previousVersionInitRepository
-	config.InitTag = previousVersionInitTag
-
-	// Upgrades are run at the time when upgrade height is reached
-	// and are submitted via a governance proposal. Thefore, we
-	// must start running the previous Chain4Energy version. Then, the node
-	// should auto-upgrade, at which point we can restart the updated
-	// Chain4Energy validator container.
-	config.C4eRepository = previousVersionC4eRepository
-	config.C4eTag = previousVersionC4eTag
 
 	return config
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/chain4energy/c4e-chain/v2/tests/e2e/util"
 	vestingTypes "github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"path/filepath"
 	"time"
@@ -198,27 +199,27 @@ func initGenesis(chain *internalChain, votingPeriod time.Duration, forkHeight in
 	if err != nil {
 		return err
 	}
-	//
+
 	err = updateModuleGenesis(appGenState, staketypes.ModuleName, &staketypes.GenesisState{}, updateStakeGenesis)
 	if err != nil {
 		return err
 	}
-	//
-	//err = updateModuleGenesis(appGenState, crisistypes.ModuleName, &crisistypes.GenesisState{}, updateCrisisGenesis)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//err = updateModuleGenesis(appGenState, govtypes.ModuleName, &govv1.GenesisState{}, updateGovGenesis(votingPeriod))
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//err = updateModuleGenesis(appGenState, vestingTypes.ModuleName, &vestingTypes.GenesisState{}, updateVestingGenesis)
-	//if err != nil {
-	//	return err
-	//}
-	//
+
+	err = updateModuleGenesis(appGenState, crisistypes.ModuleName, &crisistypes.GenesisState{}, updateCrisisGenesis)
+	if err != nil {
+		return err
+	}
+
+	err = updateModuleGenesis(appGenState, govtypes.ModuleName, &govv1.GenesisState{}, updateGovGenesis(votingPeriod))
+	if err != nil {
+		return err
+	}
+
+	err = updateModuleGenesis(appGenState, vestingTypes.ModuleName, &vestingTypes.GenesisState{}, updateVestingGenesis)
+	if err != nil {
+		return err
+	}
+
 	err = updateModuleGenesis(appGenState, genutiltypes.ModuleName, &genutiltypes.GenesisState{}, updateGenUtilGenesis(chain))
 	if err != nil {
 		return err
