@@ -15,9 +15,9 @@ import (
 func (n *NodeConfig) SubmitDepositAndVoteOnProposal(proposalJson, from string, chainConfig *Config) {
 	n.SubmitParamChangeProposal(proposalJson, from)
 	chainConfig.LatestProposalNumber += 1
-	n.DepositProposal(chainConfig.LatestProposalNumber)
+	n.DepositProposalNew(chainConfig.LatestProposalNumber)
 	for _, n := range chainConfig.NodeConfigs {
-		n.VoteYesProposal(initialization.ValidatorWalletName, chainConfig.LatestProposalNumber)
+		n.VoteYesProposalNew(initialization.ValidatorWalletName, chainConfig.LatestProposalNumber)
 	}
 }
 
@@ -33,7 +33,7 @@ func (n *NodeConfig) SubmitParamChangeProposal(proposalJson, from string) {
 
 	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", ".c4e-chain/param_change_proposal.json", formatFromFlag(from)}
 
-	_, _, err = n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	_, _, err = n.containerManager.ExecTxCmdNew(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	err = os.Remove(localProposalFile)
 	require.NoError(n.t, err)
@@ -53,7 +53,7 @@ func (n *NodeConfig) SubmitParamChangeNotValidProposal(proposalJson, from, error
 
 	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", ".c4e-chain/param_change_proposal.json", formatFromFlag(from)}
 
-	_, _, err = n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, errorMessage)
+	_, _, err = n.containerManager.ExecCmdWithResponseStringNew(n.t, n.chainId, n.Name, cmd, errorMessage)
 	require.NoError(n.t, err)
 	err = os.Remove(localProposalFile)
 	require.NoError(n.t, err)

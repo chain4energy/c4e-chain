@@ -29,7 +29,7 @@ func TestParamsChangeSuite(t *testing.T) {
 }
 
 func (s *ParamsSetupSuite) SetupSuite() {
-	s.BaseSetupSuite.SetupSuite(true, false, false)
+	s.BaseSetupSuite.SetupSuite(false, false, false)
 }
 
 func (s *ParamsSetupSuite) TestMinterAndDistributorCustom() {
@@ -202,9 +202,9 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenomAndWhenVestingPoolExists() {
 	s.NoError(err)
 	node.SubmitParamChangeProposal(proposalJSON, initialization.ValidatorWalletName)
 	chainA.LatestProposalNumber += 1
-	node.DepositProposal(chainA.LatestProposalNumber)
+	node.DepositProposalNew(chainA.LatestProposalNumber)
 	for _, n := range chainA.NodeConfigs {
-		n.VoteYesProposal(initialization.ValidatorWalletName, chainA.LatestProposalNumber)
+		n.VoteYesProposalNew(initialization.ValidatorWalletName, chainA.LatestProposalNumber)
 	}
 
 	s.Eventually(

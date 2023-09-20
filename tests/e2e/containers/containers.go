@@ -141,8 +141,6 @@ func (m *Manager) ExecCmd(t *testing.T, containerName string, command []string, 
 			if (errRegex.MatchString(errBufString) || m.isDebugLogEnabled) && maxDebugLogTriesLeft > 0 {
 				t.Log("\nstderr:")
 				t.Log(errBufString)
-				fmt.Println(errBufString)
-				fmt.Println(outBuf.String())
 				t.Log("\nstdout:")
 				t.Log(outBuf.String())
 
@@ -183,8 +181,11 @@ func (m *Manager) ExecCmdNew(t *testing.T, containerName string, command []strin
 		t.Logf("\n\nRunning: \"%s\", success condition is \"%s\"", command, success)
 	}
 	maxDebugLogTriesLeft := maxDebugLogsPerCommand
-
-	shellCommandSequence := fmt.Sprintf("tx_response=$(%s) && txhash=$(echo $tx_response | jq -r '.txhash') && c4ed event-query-tx-for $txhash", strings.Join(command, " "))
+	quotedCommand := make([]string, len(command))
+	for i, arg := range command {
+		quotedCommand[i] = quoteIfNecessary(arg)
+	}
+	shellCommandSequence := fmt.Sprintf("tx_response=$(%s) && txhash=$(echo $tx_response | jq -r '.txhash') && c4ed event-query-tx-for $txhash", strings.Join(quotedCommand, " "))
 	// We use the `Eventually` function because it is only allowed to do one transaction per block without
 	// sequence numbers. For simplicity, we avoid keeping track of the sequence number and just use the `require.Eventually`.
 	err := util.Eventually(
@@ -213,8 +214,6 @@ func (m *Manager) ExecCmdNew(t *testing.T, containerName string, command []strin
 			if (errRegex.MatchString(errBufString) || m.isDebugLogEnabled) && maxDebugLogTriesLeft > 0 {
 				t.Log("\nstderr:")
 				t.Log(errBufString)
-				fmt.Println(errBufString)
-				fmt.Println(outBuf.String())
 				t.Log("\nstdout:")
 				t.Log(outBuf.String())
 
@@ -235,6 +234,13 @@ func (m *Manager) ExecCmdNew(t *testing.T, containerName string, command []strin
 	}
 
 	return outBuf, errBuf, nil
+}
+
+func quoteIfNecessary(arg string) string {
+	if strings.Contains(arg, " ") || arg == "" {
+		return fmt.Sprintf("\"%s\"", arg)
+	}
+	return arg
 }
 
 // RunHermesResource runs a Hermes container. Returns the container resource and error if any.
@@ -295,9 +301,6 @@ func (m *Manager) RunNodeResource(containerName, valCondifDir string) (*dockerte
 		Mounts: []string{
 			fmt.Sprintf("%s/:/chain4energy/.c4e-chain", valCondifDir),
 		},
-		ExposedPorts: []string{
-			"1317",
-		},
 	}
 
 	resource, err := m.pool.RunWithOptions(runOpts, noRestart)
@@ -336,9 +339,6 @@ func (m *Manager) RunChainInitResource(chainId string, chainVotingPeriod, chainE
 			User: rootUser,
 			Mounts: []string{
 				fmt.Sprintf("%s:%s", mountDir, mountDir),
-			},
-			ExposedPorts: []string{
-				"1317",
 			},
 		},
 		noRestart,

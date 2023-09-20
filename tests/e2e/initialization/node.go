@@ -117,6 +117,7 @@ func (n *internalNode) createAppConfig(nodeConfig *NodeConfig) {
 	appConfig.BaseConfig.PruningKeepRecent = nodeConfig.PruningKeepRecent
 	appConfig.BaseConfig.PruningInterval = nodeConfig.PruningInterval
 	appConfig.API.Enable = true
+	appConfig.API.Address = "tcp://0.0.0.0:1317"
 	appConfig.MinGasPrices = fmt.Sprintf("%s%s", MinGasPrice, C4eDenom)
 	appConfig.StateSync.SnapshotInterval = nodeConfig.SnapshotInterval
 	appConfig.StateSync.SnapshotKeepRecent = nodeConfig.SnapshotKeepRecent
