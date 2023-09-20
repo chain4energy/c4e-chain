@@ -17,6 +17,8 @@ func NewProposalJSON(messages []sdk.Msg) (string, error) {
 	}
 
 	proposal.Messages = anys
+	proposal.Summary = "test proposal"
+	proposal.Title = "test proposal"
 	proposalJSON, err := Cdc.MarshalJSON(&proposal)
 	return string(proposalJSON), nil
 }
