@@ -231,8 +231,7 @@ func (n *NodeConfig) QueryAccountNotFound(address string) {
 
 	_, err := n.QueryGRPCGateway(path)
 	require.Error(n.t, err)
-	require.EqualError(n.t, err, "unexpected status code: 404, body: {\n  \"code\": 5,\n  \"message\": \"account "+address+" not found\",\n  \"details\": [\n  ]\n}")
-
+	require.EqualError(n.t, err, "unexpected status code: 404, body: {\"code\":5,\"message\":\"account "+address+" not found\",\"details\":[]}")
 }
 
 func (n *NodeConfig) QueryCampaign(campaignId string) cfeclaimmoduletypes.Campaign {

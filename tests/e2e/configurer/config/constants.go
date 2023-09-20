@@ -19,7 +19,7 @@ const (
 	// number of blocks used as a calculation buffer
 	PropBufferBlocks float32 = 6
 	// number of blocks used as a calculation buffer after an upgrade
-	UpgradeBufferBlocks int64 = 30
+	UpgradeBufferBlocks int64 = 1
 	// max retries for json unmarshalling
 	MaxRetries = 60
 )

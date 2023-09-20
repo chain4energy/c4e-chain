@@ -4,7 +4,7 @@ ARG BASE_IMG_TAG=nonroot
 # Build
 # --------------------------------------------------------
 
-FROM golang:1.20-alpine as build
+FROM golang:1.19-alpine as build
 
 RUN set -eux; apk add --no-cache ca-certificates build-base wget;
 RUN apk add git
@@ -30,7 +30,9 @@ RUN BUILD_TAGS=muslc LINK_STATICALLY=true make build
 # Runner
 # --------------------------------------------------------
 
-FROM ubuntu:22.10
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y jq && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /chain4energy/build/c4ed /bin/c4ed
 

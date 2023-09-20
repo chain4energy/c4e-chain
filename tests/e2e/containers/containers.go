@@ -61,6 +61,11 @@ func (m *Manager) ExecTxCmd(t *testing.T, chainId string, containerName string, 
 	return m.ExecCmdWithResponseString(t, chainId, containerName, command, "code: 0")
 }
 
+// ExecTxCmd Runs ExecCmdWithResponseString searching for `code: 0`
+func (m *Manager) ExecTxCmdNew(t *testing.T, chainId string, containerName string, command []string) (outBuff bytes.Buffer, errBuff bytes.Buffer, err error) {
+	return m.ExecCmdWithResponseStringNew(t, chainId, containerName, command, "code: 0")
+}
+
 // ExecCmdWithResponseString Runs ExecCmd, with flags for txs added.
 // namely adding flags `--chain-id={chain-id} -b=block --yes --keyring-backend=test "--log_format=json"`,
 // and searching for `successStr`
@@ -68,6 +73,15 @@ func (m *Manager) ExecCmdWithResponseString(t *testing.T, chainId string, contai
 	allTxArgs := []string{fmt.Sprintf("--chain-id=%s", chainId), "--yes", "--keyring-backend=test", "--gas=auto", "--gas-adjustment=1.15", "--log_format=json", fmt.Sprintf("--sign-mode=%s", m.signMode)}
 	txCommand := append(command, allTxArgs...)
 	return m.ExecCmd(t, containerName, txCommand, successStr)
+}
+
+// ExecCmdWithResponseString Runs ExecCmd, with flags for txs added.
+// namely adding flags `--chain-id={chain-id} -b=block --yes --keyring-backend=test "--log_format=json"`,
+// and searching for `successStr`
+func (m *Manager) ExecCmdWithResponseStringNew(t *testing.T, chainId string, containerName string, command []string, successStr string) (bytes.Buffer, bytes.Buffer, error) {
+	allTxArgs := []string{fmt.Sprintf("--chain-id=%s", chainId), "--yes", "--keyring-backend=test", "--gas=auto", "--gas-adjustment=1.15", "--log_format=json", "--output=json", fmt.Sprintf("--sign-mode=%s", m.signMode)}
+	txCommand := append(command, allTxArgs...)
+	return m.ExecCmdNew(t, containerName, txCommand, successStr)
 }
 
 // ExecHermesCmd executes command on the hermes relaer container.
@@ -110,6 +124,78 @@ func (m *Manager) ExecCmd(t *testing.T, containerName string, command []string, 
 				Container:    containerId,
 				User:         "root",
 				Cmd:          command,
+			})
+			if err != nil {
+				return false
+			}
+
+			err = m.pool.Client.StartExec(exec.ID, docker.StartExecOptions{
+				Context:      ctx,
+				Detach:       false,
+				OutputStream: &outBuf,
+				ErrorStream:  &errBuf,
+			})
+
+			errBufString := errBuf.String()
+
+			if (errRegex.MatchString(errBufString) || m.isDebugLogEnabled) && maxDebugLogTriesLeft > 0 {
+				t.Log("\nstderr:")
+				t.Log(errBufString)
+				fmt.Println(errBufString)
+				fmt.Println(outBuf.String())
+				t.Log("\nstdout:")
+				t.Log(outBuf.String())
+
+				maxDebugLogTriesLeft--
+			}
+
+			if success != "" {
+				return strings.Contains(outBuf.String(), success) || strings.Contains(errBufString, success)
+			}
+
+			return true
+		},
+		time.Minute,
+		1*time.Second,
+	)
+	if err != nil {
+		return bytes.Buffer{}, bytes.Buffer{}, err
+	}
+
+	return outBuf, errBuf, nil
+}
+
+func (m *Manager) ExecCmdNew(t *testing.T, containerName string, command []string, success string) (bytes.Buffer, bytes.Buffer, error) {
+	if _, ok := m.resources[containerName]; !ok {
+		return bytes.Buffer{}, bytes.Buffer{}, fmt.Errorf("no resource %s found", containerName)
+	}
+	containerId := m.resources[containerName].Container.ID
+
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
+	defer cancel()
+
+	if m.isDebugLogEnabled {
+		t.Logf("\n\nRunning: \"%s\", success condition is \"%s\"", command, success)
+	}
+	maxDebugLogTriesLeft := maxDebugLogsPerCommand
+
+	shellCommandSequence := fmt.Sprintf("tx_response=$(%s) && txhash=$(echo $tx_response | jq -r '.txhash') && c4ed event-query-tx-for $txhash", strings.Join(command, " "))
+	// We use the `Eventually` function because it is only allowed to do one transaction per block without
+	// sequence numbers. For simplicity, we avoid keeping track of the sequence number and just use the `require.Eventually`.
+	err := util.Eventually(
+		func() bool {
+			exec, err := m.pool.Client.CreateExec(docker.CreateExecOptions{
+				Context:      ctx,
+				AttachStdout: true,
+				AttachStderr: true,
+				Container:    containerId,
+				User:         "root",
+				Cmd:          []string{"bash", "-c", shellCommandSequence},
 			})
 			if err != nil {
 				return false
