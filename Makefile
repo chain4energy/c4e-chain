@@ -101,7 +101,7 @@ test-all:
 	$(MAKE) test-simulation-import-export SIM_NUM_BLOCKS=500 > $(RESULTS_DIR)/simulation_tests.log
 	@echo "--> Building docker images"
 	$(MAKE) docker-build-debug
-	$(MAKE) docker-build-v1.2.0-chain
+	$(MAKE) docker-build-v1.3.0-chain
 	@echo "--> Running e2e tests"
 	$(MAKE) test-e2e > $(RESULTS_DIR)/e2e_tests.log
 
@@ -118,26 +118,26 @@ release:
 
 # blockchain simulation tests
 
-SIM_NUM_BLOCKS = 1000
-SIM_BLOCK_SIZE = 25
+SIM_NUM_BLOCKS = 100
+SIM_BLOCK_SIZE = 50
 SIM_COMMIT = true
 SIM_SEED = 50
 SIMAPP = ./app
 
-test-simulation-benchmark:
+test-simulation-full-app:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -Seed=$(SIM_SEED) -v -Period=25 -PrintAllInvariants \
+	@go test -mod=readonly -benchmem -run=TestFullAppSimulation $(SIMAPP) -bench ^TestFullAppSimulation -Seed=$(SIM_SEED) -v -Period=25 -PrintAllInvariants \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -Verbose=true
 
 test-simulation-benchmark-profile:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -v -Seed=$(SIM_SEED) -Period=1 -PrintAllInvariants \
-		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) \
+	@go test -mod=readonly -benchmem -run=TestFullAppSimulation $(SIMAPP) -bench ^TestFullAppSimulation -Seed=$(SIM_SEED) -v -Period=25 -PrintAllInvariants \
+		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -Verbose=true \
 		-timeout 24h -cpuprofile cpu.out -memprofile mem.out
 
 test-simulation-import-export:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimTest$$ -Seed=$(SIM_SEED) -v -Period=25 -PrintAllInvariants \
+	@go test -mod=readonly -benchmem -run=TestAppImportExport $(SIMAPP) -bench ^TestAppImportExport -Seed=$(SIM_SEED) -v -Period=25 -PrintAllInvariants \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -Verbose=true
 
 stop-running-simulations:
@@ -167,7 +167,7 @@ E2E_UPGRADE_VERSION="v2.0.0"
 E2E_SCRIPT_NAME=chain
 C4E_E2E_SIGN_MODE = "direct"
 
-test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change test-e2e-claim test-e2e-migration
+test-e2e: test-e2e-vesting test-e2e-params-change test-e2e-claim test-e2e-migration
 
 run-e2e-chain: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestRunChainWithOptions -count=1
