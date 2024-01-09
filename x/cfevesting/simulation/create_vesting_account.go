@@ -1,51 +1,50 @@
 package simulation
 
 import (
-	"math/rand"
-	"time"
-
-	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	"github.com/chain4energy/c4e-chain/testutil/simulation"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	"math/rand"
 )
 
 func SimulateMsgCreateVestingAccount(
-	_ types.AccountKeeper,
-	_ types.BankKeeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
 	k keeper.Keeper,
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		randInt := helpers.RandomInt(r, 100000)
-		simAccount2Address := testcosmos.CreateRandomAccAddressNoBalance(randInt)
-
-		randCoinsAmount := sdk.NewInt(helpers.RandomInt(r, 1000))
-		coin := sdk.NewCoin(sdk.DefaultBondDenom, randCoinsAmount)
-		coins := sdk.NewCoins(coin)
-		randomStartDurationAdd := time.Duration(helpers.RandomInt(r, 1000000))
-		randomStartDurationEnd := time.Duration(helpers.RandIntBetween(r, 1000000, 10000000))
-
-		msg := &types.MsgCreateVestingAccount{
-			FromAddress: simAccount.Address.String(),
-			ToAddress:   simAccount2Address,
-			StartTime:   time.Now().Add(randomStartDurationAdd).Unix(),
-			EndTime:     time.Now().Add(randomStartDurationEnd).Unix(),
-			Amount:      coins,
+		spendable := bk.SpendableCoins(ctx, simAccount.Address)
+		if !spendable.IsAllPositive() {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateVestingAccount, "balance is negative"), nil, nil
 		}
 
-		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-		_, err := msgServer.CreateVestingAccount(msgServerCtx, msg)
+		amount, err := simtypes.RandPositiveInt(r, spendable.AmountOf(sdk.DefaultBondDenom))
 		if err != nil {
-			k.Logger(ctx).Error("SIMULATION: Create vesting account error", err.Error())
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), ""), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateVestingAccount, "balance is negative"), nil, nil
 		}
+		createVestingAccCoin := sdk.NewCoin(sdk.DefaultBondDenom, amount)
+		createVestingAccountCoins := sdk.NewCoins(createVestingAccCoin)
+		startTime := ctx.BlockTime().Add(-utils.RandDurationBetween(r, 1, 10))
+		endTime := ctx.BlockTime().Add(utils.RandDurationBetween(r, 1, 10))
+		simAccount2 := simtypes.RandomAccounts(r, 1)[0]
 
-		k.Logger(ctx).Debug("SIMULATION: Create vesting account - CREATED")
-		return simtypes.NewOperationMsg(msg, true, "Create vesting account simulation completed", nil), nil, nil
+		msgCreateVestingAccount := &types.MsgCreateVestingAccount{
+			FromAddress: simAccount.Address.String(),
+			ToAddress:   simAccount2.Address.String(),
+			StartTime:   startTime.Unix(),
+			EndTime:     endTime.Unix(),
+			Amount:      createVestingAccountCoins,
+		}
+		if err = simulation.SendMessageWithFees(ctx, r, ak.(authkeeper.AccountKeeper), app, simAccount, msgCreateVestingAccount, spendable.Sub(sdk.NewCoin(sdk.DefaultBondDenom, amount)), chainID); err != nil {
+			return simtypes.NewOperationMsg(msgCreateVestingAccount, false, "", nil), nil, nil
+		}
+		return simtypes.NewOperationMsg(msgCreateVestingAccount, true, "", nil), nil, nil
 	}
 }

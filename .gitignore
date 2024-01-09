@@ -16,3 +16,5 @@ app.test
 *.iml
 tests/e2e/scripts/.ash_history
 tests/e2e/scripts/.c4e
+simulation_results/
+test_results

@@ -20,14 +20,20 @@ const (
 	// This image should be pre-built with `make docker-build-debug` either in CI or locally.
 	CurrentBranchC4eRepository = "chain4energy"
 	CurrentBranchC4eTag        = "debug"
-	// Pre-upgrade osmosis repo/tag to pull.
+	// Pre-upgrade c4e-chain repo/tag to pull.
 	// It must be built from previous branch.  startUpgrade in test suite should be unset
 	// for this functionality to be used.
 	previousVersionC4eRepository = "chain4energy-old-dev"
-	previousVersionC4eTag        = "v1.1.0"
+	previousVersionC4eTag        = "v1.2.0"
 	// Pre-upgrade repo/tag for c4e-chain initialization (this should be one version below upgradeVersion)
 	previousVersionInitRepository = "chain4energy-old-chain-init"
-	previousVersionInitTag        = "v1.1.0"
+	previousVersionInitTag        = "v1.2.0"
+	// If migration chain is used, we need to set the repo/tag for migration chain initialization to the penultimate version
+	penultimateVersionC4eRepository = "chain4energy-old-dev"
+	penultimateVersionC4eTag        = "v1.0.0"
+	// Pre-upgrade repo/tag for c4e-chain initialization (this should be one version below upgradeVersion)
+	penultimateVersionInitRepository = "chain4energy-old-chain-init"
+	penultimateVersionInitTag        = "v1.0.0"
 	// Hermes repo/version for relayer
 	relayerRepository = "osmolabs/hermes"
 	relayerTag        = "0.13.0"
@@ -35,18 +41,27 @@ const (
 
 // NewImageConfig returns ImageConfig needed for running e2e test.
 // If startUpgrade is true, returns images for running the upgrade
-func NewImageConfig(isUpgrade bool) ImageConfig {
+func NewImageConfig(startUpgrade bool, migrationChaining bool) ImageConfig {
 	config := ImageConfig{
 		RelayerRepository: relayerRepository,
 		RelayerTag:        relayerTag,
 	}
 
-	if !isUpgrade {
+	if !startUpgrade {
 		// If upgrade is not tested, we do not need InitRepository and InitTag
 		// because we directly call the initialization logic without
 		// the need for Docker.
 		config.C4eRepository = CurrentBranchC4eRepository
 		config.C4eTag = CurrentBranchC4eTag
+		return config
+	}
+	// If migration chain is used, we need to set the repo/tag for migration chain initialization to the penultimate version.
+	// This is because the migration chain is initialized with the penultimate version and then upgraded to the current version
+	if migrationChaining {
+		config.C4eRepository = penultimateVersionC4eRepository
+		config.C4eTag = penultimateVersionC4eTag
+		config.InitRepository = penultimateVersionInitRepository
+		config.InitTag = penultimateVersionInitTag
 		return config
 	}
 

@@ -1,6 +1,7 @@
 package util
 
 import (
+	"cosmossdk.io/errors"
 	"crypto"
 	"crypto/x509"
 	"encoding/pem"
@@ -26,7 +27,7 @@ func GetSignatureAlgorithmFromString(name string) (x509.SignatureAlgorithm, erro
 			return details.algo, nil
 		}
 	}
-	return -1, sdkerrors.Wrap(sdkerrors.ErrNotSupported, "signature algorithm not supported")
+	return -1, errors.Wrap(sdkerrors.ErrNotSupported, "signature algorithm not supported")
 
 }
 
@@ -34,13 +35,13 @@ func GetUserCertificateFromString(inputCert []byte) (*x509.Certificate, error) {
 
 	block, _ := pem.Decode(inputCert)
 	if block == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrNotSupported, "failed to find certificate - PEM formatted block")
+		return nil, errors.Wrap(sdkerrors.ErrNotSupported, "failed to find certificate - PEM formatted block")
 
 	}
 	// try to extract a single cert from ASN.1 DER data
 	cert, err := x509.ParseCertificate(block.Bytes)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrNotSupported, "failed to parse certificate")
+		return nil, errors.Wrap(sdkerrors.ErrNotSupported, "failed to parse certificate")
 
 	}
 

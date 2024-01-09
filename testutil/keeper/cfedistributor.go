@@ -2,6 +2,7 @@ package keeper
 
 import (
 	appparams "github.com/chain4energy/c4e-chain/app/params"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v2"
 	"testing"
 
 	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
@@ -70,7 +71,6 @@ func CfedistributorKeeper(t testing.TB) (*keeper.Keeper, sdk.Context, Additional
 		cdc,
 		storeKey,
 		memStoreKey,
-		paramsStore,
 		nil,
 		nil,
 		appparams.GetAuthority(),
@@ -104,7 +104,7 @@ func CfedistributorKeeperTestUtilWithCdc(t *testing.T) (*ExtendedC4eDistributorK
 		subDistributorKeeperData.KVStoreKey,
 		subDistributorKeeperData.Subspace,
 	)
-	keyTable := types.ParamKeyTable() //nolint:staticcheck
+	keyTable := v2.ParamKeyTable() //nolint:staticcheck
 	utils.Subspace.WithKeyTable(keyTable)
 
 	return &utils, ctx

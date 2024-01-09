@@ -1,6 +1,6 @@
 #!/bin/bash
-PARALLEL_SIMULATIONS_NUMBER=5
-SIMULATION_RESULT_DIRECTORY=simulationResults
+PARALLEL_SIMULATIONS_NUMBER=3
+SIMULATION_RESULT_DIRECTORY=simulation_results
 mkdir -p $SIMULATION_RESULT_DIRECTORY
 
 run_simulation(){
@@ -10,7 +10,7 @@ run_simulation(){
     echo "Running simulation $i.. Current date: $START_TIME"
     SEED=$(shuf -i 0-6500 -n 1)
     SIM_NUM_BLOCKS=$(shuf -i 200-20000 -n 1)
-    SIM_BLOCK_SIZE=$(shuf -i 200-400 -n 1)
+    SIM_BLOCK_SIZE=$(shuf -i 100-200 -n 1)
     SIMAPP=./app
     simulationResultFile=$SIMULATION_RESULT_DIRECTORY/.simulation-result.$i.$START_TIME
 
@@ -24,7 +24,9 @@ run_simulation(){
         simulationResultFileError=$simulationResultFile."ERROR"
         mv "$simulationResultFile" "$simulationResultFileError"
         echo "Error while running simulation"
-        curl -F file=@"$simulationResultFileError" -F "initial_comment=Error while running simulation $i at $START_TIME" -F channels=C049DAHR884 -H "Authorization: Bearer $SLACK_BOT_BEARER_TOKEN" https://slack.com/api/files.upload
+        if ! grep -zoPq  "from x\/staking:.*\n.*out of gas in location" "$simulationResultFileError" && ! grep -zoPq  "panic: group policies: unique constraint violation" "$simulationResultFileError"; then
+          curl -F file=@"$simulationResultFileError" -F "initial_comment=Error while running simulation $i at $START_TIME" -F channels=C049DAHR884 -H "Authorization: Bearer $SLACK_BOT_BEARER_TOKEN" https://slack.com/api/files.upload
+        fi
     fi
     done
 }

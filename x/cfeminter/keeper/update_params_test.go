@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"testing"
@@ -13,7 +14,7 @@ import (
 func TestCorrectUpdateParams(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	testHelper := prepareApp(t, startTime, startTime, createLinearMintings(startTime))
-	testHelper.C4eMinterUtils.SetMinterState(1, sdk.ZeroInt(), sdk.ZeroDec(), startTime, sdk.ZeroDec())
+	testHelper.C4eMinterUtils.SetMinterState(1, math.ZeroInt(), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
 	params := types.Params{
 		MintDenom: testenv.DefaultTestDenom,
@@ -26,7 +27,7 @@ func TestCorrectUpdateParams(t *testing.T) {
 func TestUpdateParamsWrongMInter(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	testHelper := prepareApp(t, startTime, startTime, createLinearMintings(startTime))
-	testHelper.C4eMinterUtils.SetMinterState(1, sdk.ZeroInt(), sdk.ZeroDec(), startTime, sdk.ZeroDec())
+	testHelper.C4eMinterUtils.SetMinterState(1, math.ZeroInt(), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
 	params := types.Params{
 		MintDenom: testenv.DefaultTestDenom,
@@ -39,7 +40,7 @@ func TestUpdateParamsWrongMInter(t *testing.T) {
 func TestUpdateParamsWrongMinterSequenceId(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	testHelper := prepareApp(t, startTime, startTime, createLinearMintings(startTime))
-	testHelper.C4eMinterUtils.SetMinterState(10, sdk.ZeroInt(), sdk.ZeroDec(), startTime, sdk.ZeroDec())
+	testHelper.C4eMinterUtils.SetMinterState(10, math.ZeroInt(), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
 	params := types.Params{
 		MintDenom: testenv.DefaultTestDenom,
@@ -52,7 +53,7 @@ func TestUpdateParamsWrongMinterSequenceId(t *testing.T) {
 func TestUpdateParamsWrongAuthority(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	testHelper := prepareApp(t, startTime, startTime, createLinearMintings(startTime))
-	testHelper.C4eMinterUtils.SetMinterState(2, sdk.ZeroInt(), sdk.ZeroDec(), startTime, sdk.ZeroDec())
+	testHelper.C4eMinterUtils.SetMinterState(2, math.ZeroInt(), sdk.ZeroDec(), startTime, sdk.ZeroDec())
 
 	params := types.Params{
 		MintDenom: testenv.DefaultTestDenom,

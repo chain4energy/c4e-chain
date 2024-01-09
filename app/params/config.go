@@ -1,6 +1,7 @@
 package params
 
 import (
+	"cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -10,7 +11,9 @@ import (
 )
 
 const (
-	CoinDenom           = "uc4e"
+	C4eUnit             = "c4e"
+	MicroC4eUnit        = "uc4e"
+	c4eExponent         = 6
 	Bech32PrefixAccAddr = "c4e"
 )
 
@@ -29,7 +32,11 @@ func init() {
 }
 
 func RegisterDenoms() {
-	err := sdk.RegisterDenom(CoinDenom, sdk.OneDec())
+	err := sdk.RegisterDenom(C4eUnit, sdk.OneDec())
+	if err != nil {
+		panic(err)
+	}
+	err = sdk.RegisterDenom(MicroC4eUnit, sdk.NewDecWithPrec(1, c4eExponent))
 	if err != nil {
 		panic(err)
 	}
@@ -46,11 +53,11 @@ func SetAddressPrefixes() {
 
 	config.SetAddressVerifier(func(bytes []byte) error {
 		if len(bytes) == 0 {
-			return sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, "addresses cannot be empty")
+			return errors.Wrap(sdkerrors.ErrUnknownAddress, "addresses cannot be empty")
 		}
 
 		if len(bytes) > address.MaxAddrLen {
-			return sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "address max length is %d, got %d", address.MaxAddrLen, len(bytes))
+			return errors.Wrapf(sdkerrors.ErrUnknownAddress, "address max length is %d, got %d", address.MaxAddrLen, len(bytes))
 		}
 
 		return nil

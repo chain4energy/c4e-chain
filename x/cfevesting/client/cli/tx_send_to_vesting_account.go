@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	"fmt"
 	"strconv"
 	"strings"
@@ -57,15 +59,15 @@ $ %s tx %s create-vesting-account %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj my_v
 			}
 
 			if argVestingPoolName == "" {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "vesting-pool name cannot be empty")
+				return errors.Wrap(sdkerrors.ErrInvalidRequest, "vesting-pool name cannot be empty")
 			}
-			amountInt, ok := sdk.NewIntFromString(argAmount)
-			if !ok || amountInt.LTE(sdk.ZeroInt()) {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "amount must be a positive integer")
+			amountInt, ok := math.NewIntFromString(argAmount)
+			if !ok || amountInt.LTE(math.ZeroInt()) {
+				return errors.Wrap(sdkerrors.ErrInvalidRequest, "amount must be a positive integer")
 			}
 			restartVestingBool, err := strconv.ParseBool(argRestartVesting)
 			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "restart-vesting must be a boolean [1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False]")
+				return errors.Wrap(sdkerrors.ErrInvalidRequest, "restart-vesting must be a boolean [1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False]")
 			}
 
 			msg := types.NewMsgSendToVestingAccount(

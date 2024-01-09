@@ -252,7 +252,7 @@ func (m *Minter) CalculateInflation(totalSupply math.Int, startTime time.Time, b
 }
 
 func (m *LinearMinting) CalculateInflation(totalSupply math.Int, minterStart time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
-	if totalSupply.LTE(sdk.ZeroInt()) {
+	if totalSupply.LTE(math.ZeroInt()) {
 		return sdk.ZeroDec()
 	}
 
@@ -262,7 +262,7 @@ func (m *LinearMinting) CalculateInflation(totalSupply math.Int, minterStart tim
 }
 
 func (m *ExponentialStepMinting) CalculateInflation(totalSupply math.Int, startTime time.Time, endTime *time.Time, blockTime time.Time) sdk.Dec {
-	if totalSupply.LTE(sdk.ZeroInt()) {
+	if totalSupply.LTE(math.ZeroInt()) {
 		return sdk.ZeroDec()
 	}
 

@@ -9,9 +9,10 @@ Chain4Energy minter module provides functionality of controlled token emissions.
 1. **[Concept](#concepts)**
 2. **[Params](#parameters)**
 3. **[State](#state)**
-4. **[Events](#events)**
-5. **[Queries](#queries)**
-6. **[Genesis validations](#genesis-validations)**
+4. **[Messages](#messages)**
+5. **[Events](#events)**
+6. **[Queries](#queries)**
+7. **[Genesis validations](#genesis-validations)**
 
 ## Concepts
 
@@ -27,6 +28,8 @@ module configuration params.
 Simply, minting process configuration is a list of ordered minters,
 where each minter has its own start and end time. Last minter cannot have end time because it
 must be defined to work infinitely.
+
+### Periodic continous vesting account
 
 ### Minters 
 
@@ -248,22 +251,60 @@ Module state contains following data:
 }
 ```
 
+## Messages
+
+### Burn Tokens
+Burns a specified amount of tokens from the given address. This process permanently reduces the total supply of the tokens.
+
+MsgBurn Message
+Represents a message to burn tokens from an account.
+
+#### Structure
+```go
+type MsgBurn struct {
+Address string
+Amount  sdk.Coins
+}
+```
+
+#### Parameters
+
+#### State Modifications
+* Validates if the Address is a valid bech32 account address.
+* Validates if the Amount is positive and not nil.
+* Ensures that the Address has a balance greater than or equal to the Amount.
+* Sends the Amount from the Address to the `types.ModuleName` module account.
+* Burns the Amount from the `types.ModuleName` module account, thereby reducing the total supply of those tokens.
+
 ## Events
 
 Chain4Energy minter module emits the following events:
 
 ### BeginBlockers
 
-#### Mint
+#### EventMint
 
-| Type           | Attribute Key | Attribute Value               |
-|----------------|---------------|-------------------------------|
-| bonded_ratio   | Dec           |                               |
-| inflation      | sdk.Dec       | Minting block inflation level |
-| amount         | math.Int      | Amount minted in block        |
-
+| Type      | Attribute Key | Attribute Value                 |
+|-----------|---------------|---------------------------------|
+| EventMint | bonded_ratio  | {tokens_boneded_ratio}          |
+| EventMint | inflation     | {minting_block_inflation_level} |
+| EventMint | amount        | {amount_minted_in_block}        |
 [//]: # (TODO remove bonded_ratio )
 [//]: # (TODO add minter period id)
+
+### Handlers for `MsgBurn`
+
+| Type               | Attribute Key     | Attribute Value                         |
+|--------------------|-------------------|-----------------------------------------|
+| burn               | burner            | {sender_address}                        |
+| burn               | amount            | {amount}                                |
+| message            | action            | /chain4energy.c4echain.cfeclaim.MsgBurn |
+| message            | sender            | {sender_address}                        |
+| transfer           | recipient         | {module_account}                        |
+| transfer           | sender            | {creator}                               |
+| transfer           | amount            | {amount}                                |
+
+
 
 ## Queries
 

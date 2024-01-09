@@ -13,8 +13,6 @@ import (
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func AssertAccountVestingPools(t require.TestingT, expected types.AccountVestingPools, actual types.AccountVestingPools) {
@@ -46,6 +44,8 @@ func AssertAccountVestingPools(t require.TestingT, expected types.AccountVesting
 		require.EqualValues(t, expectedVesting.Sent, actualVesting.Sent)
 		j++
 		require.EqualValues(t, expectedVesting.GenesisPool, actualVesting.GenesisPool)
+		j++
+		require.EqualValues(t, expectedVesting.Reservations, actualVesting.Reservations)
 		j++
 		require.EqualValues(t, numOfFields, j)
 
@@ -125,10 +125,10 @@ func generateRandomVestingPool(accuntId int, vestingId int) types.VestingPool {
 		VestingType:     "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		LockStart:       CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
 		LockEnd:         CreateTimeFromNumOfHours(int64(rgen.Intn(100000))),
-		InitiallyLocked: sdk.NewInt(int64(initiallyLocked)),
-		Withdrawn:       sdk.NewInt(int64(withdrawn)),
-		Sent:            sdk.NewInt(int64(sent)),
-		GenesisPool:      rgen.Int()%2 == 0,
+		InitiallyLocked: math.NewInt(int64(initiallyLocked)),
+		Withdrawn:       math.NewInt(int64(withdrawn)),
+		Sent:            math.NewInt(int64(sent)),
+		GenesisPool:     rgen.Int()%2 == 0,
 	}
 }
 
@@ -138,10 +138,10 @@ func generate10BasedVestingPool(accuntId int, vestingId int) types.VestingPool {
 		VestingType:     "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		LockStart:       CreateTimeFromNumOfHours(1000),
 		LockEnd:         CreateTimeFromNumOfHours(110000),
-		InitiallyLocked: sdk.NewInt(1000000),
-		Withdrawn:       sdk.ZeroInt(),
-		Sent:            sdk.ZeroInt(),
-		GenesisPool:      true,
+		InitiallyLocked: math.NewInt(1000000),
+		Withdrawn:       math.ZeroInt(),
+		Sent:            math.ZeroInt(),
+		GenesisPool:     true,
 	}
 }
 
@@ -155,8 +155,8 @@ func ToAccountVestingPoolsPointersArray(src []types.AccountVestingPools) []*type
 
 func GetExpectedWithdrawableForVesting(vestingPool types.VestingPool, current time.Time) math.Int {
 	result := GetExpectedWithdrawable(vestingPool.LockEnd, current, vestingPool.InitiallyLocked.Sub(vestingPool.Sent).Sub(vestingPool.Withdrawn))
-	if result.LT(sdk.ZeroInt()) {
-		return sdk.ZeroInt()
+	if result.LT(math.ZeroInt()) {
+		return math.ZeroInt()
 	}
 	return result
 }
@@ -165,7 +165,7 @@ func GetExpectedWithdrawable(lockEnd time.Time, current time.Time, amount math.I
 	if current.Equal(lockEnd) || current.After(lockEnd) {
 		return amount
 	}
-	return sdk.ZeroInt()
+	return math.ZeroInt()
 }
 
 func CreateTimeFromNumOfHours(numOfHours int64) time.Time {

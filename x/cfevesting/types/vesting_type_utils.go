@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	"time"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -16,7 +17,7 @@ const (
 )
 
 func ConvertVestingTypesToGenesisVestingTypes(vestingTypes *VestingTypes) []GenesisVestingType {
-	gVestingTypes := []GenesisVestingType{}
+	var gVestingTypes []GenesisVestingType
 
 	for _, vestingType := range vestingTypes.VestingTypes {
 		lockupPeriodUnit, lockupPeriod := UnitsFromDuration(vestingType.LockupPeriod)
@@ -47,7 +48,7 @@ func DurationFromUnits(unit PeriodUnit, value int64) (time.Duration, error) {
 	case Second:
 		return time.Second * time.Duration(value), nil
 	}
-	return time.Duration(0), sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "Unknown PeriodUnit: %s", unit)
+	return time.Duration(0), errors.Wrapf(sdkerrors.ErrInvalidType, "Unknown PeriodUnit: %s", unit)
 }
 
 func UnitsFromDuration(duration time.Duration) (unit PeriodUnit, value int64) {

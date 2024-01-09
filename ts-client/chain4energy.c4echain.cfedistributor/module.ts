@@ -7,6 +7,10 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
+import { MsgUpdateParams } from "./types/c4echain/cfedistributor/tx";
+import { MsgUpdateSubDistributorBurnShareParam } from "./types/c4echain/cfedistributor/tx";
+import { MsgUpdateSubDistributorParam } from "./types/c4echain/cfedistributor/tx";
+import { MsgUpdateSubDistributorDestinationShareParam } from "./types/c4echain/cfedistributor/tx";
 
 import { Distribution as typeDistribution} from "./types"
 import { DistributionBurn as typeDistributionBurn} from "./types"
@@ -17,8 +21,48 @@ import { Destinations as typeDestinations} from "./types"
 import { DestinationShare as typeDestinationShare} from "./types"
 import { Account as typeAccount} from "./types"
 
-export {  };
+export { MsgUpdateParams, MsgUpdateSubDistributorBurnShareParam, MsgUpdateSubDistributorParam, MsgUpdateSubDistributorDestinationShareParam };
 
+type sendMsgUpdateParamsParams = {
+  value: MsgUpdateParams,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgUpdateSubDistributorBurnShareParamParams = {
+  value: MsgUpdateSubDistributorBurnShareParam,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgUpdateSubDistributorParamParams = {
+  value: MsgUpdateSubDistributorParam,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgUpdateSubDistributorDestinationShareParamParams = {
+  value: MsgUpdateSubDistributorDestinationShareParam,
+  fee?: StdFee,
+  memo?: string
+};
+
+
+type msgUpdateParamsParams = {
+  value: MsgUpdateParams,
+};
+
+type msgUpdateSubDistributorBurnShareParamParams = {
+  value: MsgUpdateSubDistributorBurnShareParam,
+};
+
+type msgUpdateSubDistributorParamParams = {
+  value: MsgUpdateSubDistributorParam,
+};
+
+type msgUpdateSubDistributorDestinationShareParamParams = {
+  value: MsgUpdateSubDistributorDestinationShareParam,
+};
 
 
 export const registry = new Registry(msgTypes);
@@ -50,6 +94,94 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
+		async sendMsgUpdateParams({ value, fee, memo }: sendMsgUpdateParamsParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgUpdateParams: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgUpdateParams({ value: MsgUpdateParams.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgUpdateParams: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgUpdateSubDistributorBurnShareParam({ value, fee, memo }: sendMsgUpdateSubDistributorBurnShareParamParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgUpdateSubDistributorBurnShareParam: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgUpdateSubDistributorBurnShareParam({ value: MsgUpdateSubDistributorBurnShareParam.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgUpdateSubDistributorBurnShareParam: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgUpdateSubDistributorParam({ value, fee, memo }: sendMsgUpdateSubDistributorParamParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgUpdateSubDistributorParam: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgUpdateSubDistributorParam({ value: MsgUpdateSubDistributorParam.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgUpdateSubDistributorParam: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgUpdateSubDistributorDestinationShareParam({ value, fee, memo }: sendMsgUpdateSubDistributorDestinationShareParamParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgUpdateSubDistributorDestinationShareParam: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgUpdateSubDistributorDestinationShareParam({ value: MsgUpdateSubDistributorDestinationShareParam.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgUpdateSubDistributorDestinationShareParam: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		
+		msgUpdateParams({ value }: msgUpdateParamsParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfedistributor.MsgUpdateParams", value: MsgUpdateParams.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgUpdateParams: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgUpdateSubDistributorBurnShareParam({ value }: msgUpdateSubDistributorBurnShareParamParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorBurnShareParam", value: MsgUpdateSubDistributorBurnShareParam.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgUpdateSubDistributorBurnShareParam: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgUpdateSubDistributorParam({ value }: msgUpdateSubDistributorParamParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorParam", value: MsgUpdateSubDistributorParam.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgUpdateSubDistributorParam: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgUpdateSubDistributorDestinationShareParam({ value }: msgUpdateSubDistributorDestinationShareParamParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfedistributor.MsgUpdateSubDistributorDestinationShareParam", value: MsgUpdateSubDistributorDestinationShareParam.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgUpdateSubDistributorDestinationShareParam: Could not create message: ' + e.message)
+			}
+		},
 		
 	}
 };

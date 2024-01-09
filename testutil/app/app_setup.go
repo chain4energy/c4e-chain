@@ -1,11 +1,11 @@
 package app
 
 import (
+	"cosmossdk.io/math"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
-	"time"
-
 	"github.com/cosmos/cosmos-sdk/simapp"
 	dbm "github.com/tendermint/tm-db"
+	"time"
 
 	"encoding/json"
 
@@ -25,6 +25,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
@@ -40,7 +42,7 @@ func SetupWithValidatorsAmount(isCheckTx bool, bondDenom string, validatorsAmoun
 		coin := AddValidatorsToAppGenesis(app, genesisState, bondDenom, createValidatorSet(validatorsAmount), balances...)
 		return app, coin
 	}
-	return app, sdk.NewCoin(bondDenom, sdk.ZeroInt())
+	return app, sdk.NewCoin(bondDenom, math.ZeroInt())
 }
 
 func BaseSetup() (*c4eapp.App, c4eapp.GenesisState) {
@@ -57,7 +59,7 @@ func BaseSetup() (*c4eapp.App, c4eapp.GenesisState) {
 		appparams.EncodingConfig(encoding),
 		simapp.EmptyAppOptions{},
 	)
-	genesisState := c4eapp.NewDefaultGenesisState(encoding.Marshaler)
+	genesisState := c4eapp.NewDefaultGenesisState(encoding.Codec)
 
 	return app, genesisState
 }
@@ -83,7 +85,7 @@ func createValidatorSet(validatorsAmount int) *tmtypes.ValidatorSet {
 func AddValidatorsToAppGenesis(app *c4eapp.App, genesisState c4eapp.GenesisState, bondDenom string, valSet *tmtypes.ValidatorSet, balances ...banktypes.Balance) sdk.Coin {
 	senderPrivKey := secp256k1.GenPrivKey()
 	acc := authtypes.NewBaseAccount(senderPrivKey.PubKey().Address().Bytes(), senderPrivKey.PubKey(), 0, 0)
-	senderCoin := sdk.NewCoin(bondDenom, sdk.NewInt(1000000))
+	senderCoin := sdk.NewCoin(bondDenom, math.NewInt(1000000))
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),
 		Coins:   sdk.NewCoins(senderCoin),
@@ -141,7 +143,7 @@ func genesisStateWithValSet(
 			UnbondingHeight:   int64(0),
 			UnbondingTime:     time.Unix(0, 0).UTC(),
 			Commission:        stakingtypes.NewCommission(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
-			MinSelfDelegation: sdk.ZeroInt(),
+			MinSelfDelegation: math.ZeroInt(),
 		}
 
 		validators = append(validators, validator)
@@ -157,7 +159,7 @@ func genesisStateWithValSet(
 		totalSupply = totalSupply.Add(b.Coins...)
 	}
 
-	delegationsSum := sdk.NewCoin(bondDenom, sdk.ZeroInt())
+	delegationsSum := sdk.NewCoin(bondDenom, math.ZeroInt())
 	for range delegations {
 		totalSupply = totalSupply.Add(sdk.NewCoin(bondDenom, bondAmt))
 		delegationsSum = delegationsSum.Add(sdk.NewCoin(bondDenom, bondAmt))
@@ -179,6 +181,10 @@ func genesisStateWithValSet(
 	distributorGenesis := cfedistributortypes.DefaultGenesis()
 	distributorGenesis.Params.SubDistributors[0].Destinations.PrimaryShare.Id = testenv.DefaultDistributionDestination
 	genesisState[cfedistributortypes.ModuleName] = app.AppCodec().MustMarshalJSON(distributorGenesis)
+
+	govGenesis := govv1types.DefaultGenesisState()
+	govGenesis.DepositParams.MinDeposit = sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, govv1types.DefaultMinDepositTokens))
+	genesisState[govtypes.ModuleName] = app.AppCodec().MustMarshalJSON(govGenesis)
 
 	return genesisState, delegationsSum
 }

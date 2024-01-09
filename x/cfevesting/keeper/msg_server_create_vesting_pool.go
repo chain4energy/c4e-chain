@@ -2,17 +2,18 @@ package keeper
 
 import (
 	"context"
+	"cosmossdk.io/errors"
 	metrics "github.com/armon/go-metrics"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k msgServer) CreateVestingPool(goCtx context.Context, msg *types.MsgCreateVestingPool) (*types.MsgCreateVestingPoolResponse, error) {
 	defer telemetry.IncrCounter(1, types.ModuleName, "create vesting pool message")
 	if msg.Amount.IsNil() {
-		return nil, sdkerrors.Wrap(types.ErrParam, "add vesting pool - amount is nil")
+		return nil, errors.Wrap(c4eerrors.ErrParam, "add vesting pool - amount is nil")
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -33,7 +34,7 @@ func (k msgServer) CreateVestingPool(goCtx context.Context, msg *types.MsgCreate
 		}()
 	}
 
-	event := &types.NewVestingPool{
+	event := &types.EventNewVestingPool{
 		Owner:       msg.Owner,
 		Name:        msg.Name,
 		Amount:      msg.Amount.String() + denom,

@@ -1,6 +1,7 @@
 package initialization
 
 import (
+	"cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
@@ -55,9 +56,9 @@ const (
 )
 
 var (
-	StakeAmountIntA  = sdk.NewInt(StakeAmountA)
+	StakeAmountIntA  = math.NewInt(StakeAmountA)
 	StakeAmountCoinA = sdk.NewCoin(C4eDenom, StakeAmountIntA)
-	StakeAmountIntB  = sdk.NewInt(StakeAmountB)
+	StakeAmountIntB  = math.NewInt(StakeAmountB)
 	StakeAmountCoinB = sdk.NewCoin(C4eDenom, StakeAmountIntB)
 
 	InitBalanceStrA = fmt.Sprintf("%d%s", C4eBalanceA+StakeBalanceA, C4eDenom)

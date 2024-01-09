@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
 	"testing"
 	"time"
 
@@ -33,17 +34,17 @@ func TestMoveAvailableVesting(t *testing.T) {
 		vAccStartTime        time.Time
 		vestingDuration      time.Duration
 	}{
-		{desc: "before vesting start - one denom", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), blockTime: startTime.Add(-duration),
+		{desc: "before vesting start - one denom", initialVestingAmount: createDenomCoins([]math.Int{math.NewInt(8999999999999999999)}), blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration},
-		{desc: "vesting start - one denom", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), blockTime: startTime,
+		{desc: "vesting start - one denom", initialVestingAmount: createDenomCoins([]math.Int{math.NewInt(8999999999999999999)}), blockTime: startTime,
 			vAccStartTime: startTime, vestingDuration: duration},
-		{desc: "after vesting start - one denom", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), blockTime: startTime.Add(duration / 2),
+		{desc: "after vesting start - one denom", initialVestingAmount: createDenomCoins([]math.Int{math.NewInt(8999999999999999999)}), blockTime: startTime.Add(duration / 2),
 			vAccStartTime: startTime, vestingDuration: duration},
-		{desc: "before vesting start - many denoms", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999), sdk.NewInt(300000), sdk.NewInt(700000)}), blockTime: startTime.Add(-duration),
+		{desc: "before vesting start - many denoms", initialVestingAmount: createDenomCoins([]math.Int{math.NewInt(8999999999999999999), math.NewInt(300000), math.NewInt(700000)}), blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration},
-		{desc: "vesting start - many denoms", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999), sdk.NewInt(300000), sdk.NewInt(700000)}), blockTime: startTime,
+		{desc: "vesting start - many denoms", initialVestingAmount: createDenomCoins([]math.Int{math.NewInt(8999999999999999999), math.NewInt(300000), math.NewInt(700000)}), blockTime: startTime,
 			vAccStartTime: startTime, vestingDuration: duration},
-		{desc: "after vesting start - many denoms", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999), sdk.NewInt(300000), sdk.NewInt(700000)}), blockTime: startTime.Add(duration / 2),
+		{desc: "after vesting start - many denoms", initialVestingAmount: createDenomCoins([]math.Int{math.NewInt(8999999999999999999), math.NewInt(300000), math.NewInt(700000)}), blockTime: startTime.Add(duration / 2),
 			vAccStartTime: startTime, vestingDuration: duration},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -97,17 +98,17 @@ func TestMoveAvailableVestingError(t *testing.T) {
 		disableSend                       bool
 		createToAddressAccountBeforeSplit bool
 	}{
-		{desc: "wrong src addr", srcAddr: "invalid", dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), blockTime: startTime.Add(-duration),
+		{desc: "wrong src addr", srcAddr: "invalid", dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]math.Int{math.NewInt(8999999999999999999)}), blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting: from acc address error: decoding bech32 failed: invalid bech32 string length 7: failed to parse"},
-		{desc: "wrong dst addr", srcAddr: srcAccAddr.String(), dstAddr: "invalid", initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(8999999999999999999)}), blockTime: startTime.Add(-duration),
+		{desc: "wrong dst addr", srcAddr: srcAccAddr.String(), dstAddr: "invalid", initialVestingAmount: createDenomCoins([]math.Int{math.NewInt(8999999999999999999)}), blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting: to acc address error: decoding bech32 failed: invalid bech32 string length 7: failed to parse"},
-		{desc: "send disabled", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(12), sdk.NewInt(12), sdk.NewInt(12)}), blockTime: startTime.Add(-duration),
+		{desc: "send disabled", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]math.Int{math.NewInt(12), math.NewInt(12), math.NewInt(12)}), blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting: send is disabled: wrong param value", disableSend: true},
-		{desc: "destination not allowed to received funds", srcAddr: srcAccAddr.String(), dstAddr: blockedAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(12), sdk.NewInt(12), sdk.NewInt(12)}), blockTime: startTime.Add(-duration),
+		{desc: "destination not allowed to received funds", srcAddr: srcAccAddr.String(), dstAddr: blockedAddr.String(), initialVestingAmount: createDenomCoins([]math.Int{math.NewInt(12), math.NewInt(12), math.NewInt(12)}), blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting: " + blockedAddr.String() + " is not allowed to receive funds: unauthorized"},
-		{desc: "destination account already exists", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(12), sdk.NewInt(12), sdk.NewInt(12)}), blockTime: startTime.Add(-duration),
+		{desc: "destination account already exists", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]math.Int{math.NewInt(12), math.NewInt(12), math.NewInt(12)}), blockTime: startTime.Add(-duration),
 			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting: split vesting coins - account address: " + dstAccAddr.String() + ": entity already exists", createToAddressAccountBeforeSplit: true},
-		{desc: "nothing to share", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]sdk.Int{sdk.NewInt(12), sdk.NewInt(12), sdk.NewInt(12)}), blockTime: startTime.Add(duration),
+		{desc: "nothing to share", srcAddr: srcAccAddr.String(), dstAddr: dstAccAddr.String(), initialVestingAmount: createDenomCoins([]math.Int{math.NewInt(12), math.NewInt(12), math.NewInt(12)}), blockTime: startTime.Add(duration),
 			vAccStartTime: startTime, vestingDuration: duration, errorMessage: "move available vesting: split vesting coins - no coins to split : wrong param value"},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -124,7 +125,7 @@ func TestMoveAvailableVestingError(t *testing.T) {
 			}
 
 			if tc.createToAddressAccountBeforeSplit {
-				testHelper.AuthUtils.CreateDefaultDenomBaseAccount(tc.dstAddr, sdk.NewInt(1))
+				testHelper.AuthUtils.CreateDefaultDenomBaseAccount(tc.dstAddr, math.NewInt(1))
 			}
 
 			balancesBefore := testHelper.BankUtils.GetAccountAllBalances(srcAccAddr)

@@ -1,7 +1,8 @@
 package keeper
 
 import (
-	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
@@ -13,41 +14,41 @@ func (k Keeper) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, own
 	k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins", "ownerAddress", ownerAddress, "amountToUnlock", amountToUnlock)
 	if err := amountToUnlock.Validate(); err != nil {
 		k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins - amountToUnlock validation error", "error", err)
-		return nil, sdkerrors.Wrap(err, "amount to unlock validation error")
+		return nil, errors.Wrap(err, "amount to unlock validation error")
 
 	}
 
 	ownerAccount := k.account.GetAccount(ctx, ownerAddress)
 	if ownerAccount == nil {
 		k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins - account doesn't exist", "ownerAddress", ownerAddress)
-		return nil, sdkerrors.Wrapf(types.ErrNotExists, "account %s doesn't exist", ownerAddress)
+		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "account %s doesn't exist", ownerAddress)
 	}
 
 	vestingAcc, ok := ownerAccount.(*vestingtypes.ContinuousVestingAccount)
 	if !ok {
 		k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins - account is not ContinuousVestingAccount", "ownerAddress", ownerAddress)
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "account %s is not ContinuousVestingAccount", ownerAddress)
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidType, "account %s is not ContinuousVestingAccount", ownerAddress)
 	}
 
 	lockedCoins := vestingAcc.LockedCoins(ctx.BlockTime())
 
 	if !amountToUnlock.IsAllLTE(lockedCoins) {
 		k.Logger(ctx).Debug("unlock unbonded continuous vesting account coins - not enough to unlock", "account", ownerAccount, "lockedCoins", lockedCoins, "amountToUnlock", amountToUnlock)
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "account %s: not enough to unlock. locked: %s, to unlock: %s", ownerAddress, lockedCoins, amountToUnlock)
+		return nil, errors.Wrapf(sdkerrors.ErrInsufficientFunds, "account %s: not enough to unlock. locked: %s, to unlock: %s", ownerAddress, lockedCoins, amountToUnlock)
 	}
 
 	vestingCoins := vestingAcc.GetVestingCoins(ctx.BlockTime())
 	orignalVestings := vestingAcc.OriginalVesting
 
 	for _, coin := range amountToUnlock {
-		if coin.Amount.GT(sdk.ZeroInt()) {
+		if coin.Amount.IsPositive() {
 			orignalVesting := orignalVestings.AmountOf(coin.Denom)
 			vestingCoin := vestingCoins.AmountOf(coin.Denom)
 			originalVestingDiffDec := sdk.NewDecFromInt(coin.Amount).Mul(sdk.NewDecFromInt(orignalVesting)).Quo(sdk.NewDecFromInt(vestingCoin))
 			originalVestingDiff := originalVestingDiffDec.TruncateInt()
 			vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoin(coin.Denom, originalVestingDiff))
 			if vestingCoin.Sub(vestingAcc.GetVestingCoins(ctx.BlockTime()).AmountOf(coin.Denom)).LT(coin.Amount) {
-				vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoin(coin.Denom, sdk.NewInt(bankersRoundingCompensation)))
+				vestingAcc.OriginalVesting = vestingAcc.OriginalVesting.Sub(sdk.NewCoin(coin.Denom, math.NewInt(bankersRoundingCompensation)))
 				// Subtracting 1 is done to compensate bankers rounding of vesting coins calculation nad truncating of original vesting difference.
 				// TODO Some better explanation maybe?
 				// Variables used in the calculations are:

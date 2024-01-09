@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	"time"
 
@@ -16,12 +17,12 @@ func (k Keeper) Mint(ctx sdk.Context) (math.Int, error) {
 
 	if lastBlockTime.Before(params.StartTime) {
 		k.Logger(ctx).Info("minter start in the future", "minterStart", params.StartTime, "currentBlockTime", lastBlockTime)
-		return sdk.ZeroInt(), nil
+		return math.ZeroInt(), nil
 	}
 	if lastBlockTimeForMinter.After(lastBlockTime) || lastBlockTimeForMinter.Equal(lastBlockTime) {
 		k.Logger(ctx).Info("mint last mint block time is smaller than current block time - possible for first block after genesis init",
 			"lastBlockTime", lastBlockTimeForMinter, "currentBlockTime", lastBlockTime)
-		return sdk.ZeroInt(), nil
+		return math.ZeroInt(), nil
 	}
 	return k.mint(ctx, &params, 0)
 }
@@ -32,7 +33,7 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (math.Int
 
 	if currentMinter == nil {
 		k.Logger(ctx).Error("mint - current minter not found error", "lev", level, "SequenceId", minterState.SequenceId)
-		return sdk.ZeroInt(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter - mint - current minter for sequence id %d not found", minterState.SequenceId)
+		return math.ZeroInt(), errors.Wrapf(sdkerrors.ErrNotFound, "minter - mint - current minter for sequence id %d not found", minterState.SequenceId)
 	}
 
 	var startTime time.Time
@@ -49,7 +50,7 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (math.Int
 	if amount.IsNegative() {
 		k.Logger(ctx).Error("mint negative amount", "lev", level, "minterState", minterState, "startTime", startTime, "currentMinter", currentMinter.GetMinterJSON(),
 			"previousMinter", previousMinter.GetMinterJSON(), "expectedAmountToMint", expectedAmountToMint, "amount", amount)
-		return sdk.ZeroInt(), nil
+		return math.ZeroInt(), nil
 	}
 	k.Logger(ctx).Debug("mint", "lev", level, "minterState", minterState, "startTime", startTime, "currentMinter", currentMinter.GetMinterJSON(),
 		"previousMinter", previousMinter.GetMinterJSON(), "expectedAmountToMint", expectedAmountToMint, "amount", amount)
@@ -62,13 +63,13 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (math.Int
 	err := k.MintCoins(ctx, coins)
 	if err != nil {
 		k.Logger(ctx).Error("mint - mint coins error", "lev", level, "error", err.Error())
-		return sdk.ZeroInt(), sdkerrors.Wrap(err, "minter mint coins error")
+		return math.ZeroInt(), errors.Wrap(err, "minter mint coins error")
 	}
 
 	err = k.SendMintedCoins(ctx, coins)
 	if err != nil {
 		k.Logger(ctx).Error("mint - add collected fees error", "lev", level, "error", err.Error())
-		return sdk.ZeroInt(), sdkerrors.Wrap(err, "minter - mint - add collected fees error")
+		return math.ZeroInt(), errors.Wrap(err, "minter - mint - add collected fees error")
 	}
 
 	minterState.AmountMinted = minterState.AmountMinted.Add(amount)
@@ -84,7 +85,7 @@ func (k Keeper) mint(ctx sdk.Context, params *types.Params, level int) (math.Int
 		k.Logger(ctx).Debug("mint - set minter state history", "lev", level, "minterState", minterState.String())
 		minterState = types.MinterState{
 			SequenceId:                  minterState.SequenceId + 1,
-			AmountMinted:                sdk.ZeroInt(),
+			AmountMinted:                math.ZeroInt(),
 			RemainderToMint:             sdk.ZeroDec(),
 			RemainderFromPreviousMinter: remainder,
 			LastMintBlockTime:           ctx.BlockTime(),

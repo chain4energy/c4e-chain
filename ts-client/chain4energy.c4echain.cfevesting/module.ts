@@ -7,44 +7,42 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
-import { MsgSendToVestingAccount } from "./types/c4echain/cfevesting/tx";
-import { MsgSplitVesting } from "./types/c4echain/cfevesting/tx";
 import { MsgWithdrawAllAvailable } from "./types/c4echain/cfevesting/tx";
+import { MsgUpdateDenomParam } from "./types/c4echain/cfevesting/tx";
 import { MsgCreateVestingAccount } from "./types/c4echain/cfevesting/tx";
 import { MsgMoveAvailableVestingByDenoms } from "./types/c4echain/cfevesting/tx";
-import { MsgMoveAvailableVesting } from "./types/c4echain/cfevesting/tx";
+import { MsgSendToVestingAccount } from "./types/c4echain/cfevesting/tx";
+import { MsgSplitVesting } from "./types/c4echain/cfevesting/tx";
 import { MsgCreateVestingPool } from "./types/c4echain/cfevesting/tx";
+import { MsgMoveAvailableVesting } from "./types/c4echain/cfevesting/tx";
 
 import { AccountVestingPools as typeAccountVestingPools} from "./types"
 import { VestingPool as typeVestingPool} from "./types"
+import { VestingPoolReservation as typeVestingPoolReservation} from "./types"
 import { NewVestingAccount as typeNewVestingAccount} from "./types"
 import { NewVestingPool as typeNewVestingPool} from "./types"
-import { NewVestingAccountFromVestingPool as typeNewVestingAccountFromVestingPool} from "./types"
+import { NewVestingPeriodFromVestingPool as typeNewVestingPeriodFromVestingPool} from "./types"
 import { WithdrawAvailable as typeWithdrawAvailable} from "./types"
 import { VestingSplit as typeVestingSplit} from "./types"
 import { GenesisVestingType as typeGenesisVestingType} from "./types"
 import { Params as typeParams} from "./types"
 import { VestingPoolInfo as typeVestingPoolInfo} from "./types"
 import { VestingAccountTrace as typeVestingAccountTrace} from "./types"
+import { ContinuousVestingPeriod as typeContinuousVestingPeriod} from "./types"
+import { PeriodicContinuousVestingAccount as typePeriodicContinuousVestingAccount} from "./types"
 import { VestingTypes as typeVestingTypes} from "./types"
 import { VestingType as typeVestingType} from "./types"
 
-export { MsgSendToVestingAccount, MsgSplitVesting, MsgWithdrawAllAvailable, MsgCreateVestingAccount, MsgMoveAvailableVestingByDenoms, MsgMoveAvailableVesting, MsgCreateVestingPool };
-
-type sendMsgSendToVestingAccountParams = {
-  value: MsgSendToVestingAccount,
-  fee?: StdFee,
-  memo?: string
-};
-
-type sendMsgSplitVestingParams = {
-  value: MsgSplitVesting,
-  fee?: StdFee,
-  memo?: string
-};
+export { MsgWithdrawAllAvailable, MsgUpdateDenomParam, MsgCreateVestingAccount, MsgMoveAvailableVestingByDenoms, MsgSendToVestingAccount, MsgSplitVesting, MsgCreateVestingPool, MsgMoveAvailableVesting };
 
 type sendMsgWithdrawAllAvailableParams = {
   value: MsgWithdrawAllAvailable,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgUpdateDenomParamParams = {
+  value: MsgUpdateDenomParam,
   fee?: StdFee,
   memo?: string
 };
@@ -61,8 +59,14 @@ type sendMsgMoveAvailableVestingByDenomsParams = {
   memo?: string
 };
 
-type sendMsgMoveAvailableVestingParams = {
-  value: MsgMoveAvailableVesting,
+type sendMsgSendToVestingAccountParams = {
+  value: MsgSendToVestingAccount,
+  fee?: StdFee,
+  memo?: string
+};
+
+type sendMsgSplitVestingParams = {
+  value: MsgSplitVesting,
   fee?: StdFee,
   memo?: string
 };
@@ -73,17 +77,19 @@ type sendMsgCreateVestingPoolParams = {
   memo?: string
 };
 
-
-type msgSendToVestingAccountParams = {
-  value: MsgSendToVestingAccount,
+type sendMsgMoveAvailableVestingParams = {
+  value: MsgMoveAvailableVesting,
+  fee?: StdFee,
+  memo?: string
 };
 
-type msgSplitVestingParams = {
-  value: MsgSplitVesting,
-};
 
 type msgWithdrawAllAvailableParams = {
   value: MsgWithdrawAllAvailable,
+};
+
+type msgUpdateDenomParamParams = {
+  value: MsgUpdateDenomParam,
 };
 
 type msgCreateVestingAccountParams = {
@@ -94,12 +100,20 @@ type msgMoveAvailableVestingByDenomsParams = {
   value: MsgMoveAvailableVestingByDenoms,
 };
 
-type msgMoveAvailableVestingParams = {
-  value: MsgMoveAvailableVesting,
+type msgSendToVestingAccountParams = {
+  value: MsgSendToVestingAccount,
+};
+
+type msgSplitVestingParams = {
+  value: MsgSplitVesting,
 };
 
 type msgCreateVestingPoolParams = {
   value: MsgCreateVestingPool,
+};
+
+type msgMoveAvailableVestingParams = {
+  value: MsgMoveAvailableVesting,
 };
 
 
@@ -132,34 +146,6 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
-		async sendMsgSendToVestingAccount({ value, fee, memo }: sendMsgSendToVestingAccountParams): Promise<DeliverTxResponse> {
-			if (!signer) {
-					throw new Error('TxClient:sendMsgSendToVestingAccount: Unable to sign Tx. Signer is not present.')
-			}
-			try {			
-				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgSendToVestingAccount({ value: MsgSendToVestingAccount.fromPartial(value) })
-				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
-			} catch (e: any) {
-				throw new Error('TxClient:sendMsgSendToVestingAccount: Could not broadcast Tx: '+ e.message)
-			}
-		},
-		
-		async sendMsgSplitVesting({ value, fee, memo }: sendMsgSplitVestingParams): Promise<DeliverTxResponse> {
-			if (!signer) {
-					throw new Error('TxClient:sendMsgSplitVesting: Unable to sign Tx. Signer is not present.')
-			}
-			try {			
-				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgSplitVesting({ value: MsgSplitVesting.fromPartial(value) })
-				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
-			} catch (e: any) {
-				throw new Error('TxClient:sendMsgSplitVesting: Could not broadcast Tx: '+ e.message)
-			}
-		},
-		
 		async sendMsgWithdrawAllAvailable({ value, fee, memo }: sendMsgWithdrawAllAvailableParams): Promise<DeliverTxResponse> {
 			if (!signer) {
 					throw new Error('TxClient:sendMsgWithdrawAllAvailable: Unable to sign Tx. Signer is not present.')
@@ -171,6 +157,20 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
 				throw new Error('TxClient:sendMsgWithdrawAllAvailable: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgUpdateDenomParam({ value, fee, memo }: sendMsgUpdateDenomParamParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgUpdateDenomParam: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgUpdateDenomParam({ value: MsgUpdateDenomParam.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgUpdateDenomParam: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
@@ -202,17 +202,31 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		async sendMsgMoveAvailableVesting({ value, fee, memo }: sendMsgMoveAvailableVestingParams): Promise<DeliverTxResponse> {
+		async sendMsgSendToVestingAccount({ value, fee, memo }: sendMsgSendToVestingAccountParams): Promise<DeliverTxResponse> {
 			if (!signer) {
-					throw new Error('TxClient:sendMsgMoveAvailableVesting: Unable to sign Tx. Signer is not present.')
+					throw new Error('TxClient:sendMsgSendToVestingAccount: Unable to sign Tx. Signer is not present.')
 			}
 			try {			
 				const { address } = (await signer.getAccounts())[0]; 
 				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgMoveAvailableVesting({ value: MsgMoveAvailableVesting.fromPartial(value) })
+				let msg = this.msgSendToVestingAccount({ value: MsgSendToVestingAccount.fromPartial(value) })
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:sendMsgMoveAvailableVesting: Could not broadcast Tx: '+ e.message)
+				throw new Error('TxClient:sendMsgSendToVestingAccount: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgSplitVesting({ value, fee, memo }: sendMsgSplitVestingParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgSplitVesting: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgSplitVesting({ value: MsgSplitVesting.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgSplitVesting: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
@@ -230,28 +244,34 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		
-		msgSendToVestingAccount({ value }: msgSendToVestingAccountParams): EncodeObject {
-			try {
-				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgSendToVestingAccount", value: MsgSendToVestingAccount.fromPartial( value ) }  
+		async sendMsgMoveAvailableVesting({ value, fee, memo }: sendMsgMoveAvailableVestingParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgMoveAvailableVesting: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgMoveAvailableVesting({ value: MsgMoveAvailableVesting.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
-				throw new Error('TxClient:MsgSendToVestingAccount: Could not create message: ' + e.message)
+				throw new Error('TxClient:sendMsgMoveAvailableVesting: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
-		msgSplitVesting({ value }: msgSplitVestingParams): EncodeObject {
-			try {
-				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgSplitVesting", value: MsgSplitVesting.fromPartial( value ) }  
-			} catch (e: any) {
-				throw new Error('TxClient:MsgSplitVesting: Could not create message: ' + e.message)
-			}
-		},
 		
 		msgWithdrawAllAvailable({ value }: msgWithdrawAllAvailableParams): EncodeObject {
 			try {
 				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgWithdrawAllAvailable", value: MsgWithdrawAllAvailable.fromPartial( value ) }  
 			} catch (e: any) {
 				throw new Error('TxClient:MsgWithdrawAllAvailable: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgUpdateDenomParam({ value }: msgUpdateDenomParamParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgUpdateDenomParam", value: MsgUpdateDenomParam.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgUpdateDenomParam: Could not create message: ' + e.message)
 			}
 		},
 		
@@ -271,11 +291,19 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 			}
 		},
 		
-		msgMoveAvailableVesting({ value }: msgMoveAvailableVestingParams): EncodeObject {
+		msgSendToVestingAccount({ value }: msgSendToVestingAccountParams): EncodeObject {
 			try {
-				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgMoveAvailableVesting", value: MsgMoveAvailableVesting.fromPartial( value ) }  
+				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgSendToVestingAccount", value: MsgSendToVestingAccount.fromPartial( value ) }  
 			} catch (e: any) {
-				throw new Error('TxClient:MsgMoveAvailableVesting: Could not create message: ' + e.message)
+				throw new Error('TxClient:MsgSendToVestingAccount: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgSplitVesting({ value }: msgSplitVestingParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgSplitVesting", value: MsgSplitVesting.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgSplitVesting: Could not create message: ' + e.message)
 			}
 		},
 		
@@ -284,6 +312,14 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgCreateVestingPool", value: MsgCreateVestingPool.fromPartial( value ) }  
 			} catch (e: any) {
 				throw new Error('TxClient:MsgCreateVestingPool: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgMoveAvailableVesting({ value }: msgMoveAvailableVestingParams): EncodeObject {
+			try {
+				return { typeUrl: "/chain4energy.c4echain.cfevesting.MsgMoveAvailableVesting", value: MsgMoveAvailableVesting.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgMoveAvailableVesting: Could not create message: ' + e.message)
 			}
 		},
 		
@@ -311,15 +347,18 @@ class SDKModule {
 		this.structure =  {
 						AccountVestingPools: getStructure(typeAccountVestingPools.fromPartial({})),
 						VestingPool: getStructure(typeVestingPool.fromPartial({})),
+						VestingPoolReservation: getStructure(typeVestingPoolReservation.fromPartial({})),
 						NewVestingAccount: getStructure(typeNewVestingAccount.fromPartial({})),
 						NewVestingPool: getStructure(typeNewVestingPool.fromPartial({})),
-						NewVestingAccountFromVestingPool: getStructure(typeNewVestingAccountFromVestingPool.fromPartial({})),
+						NewVestingPeriodFromVestingPool: getStructure(typeNewVestingPeriodFromVestingPool.fromPartial({})),
 						WithdrawAvailable: getStructure(typeWithdrawAvailable.fromPartial({})),
 						VestingSplit: getStructure(typeVestingSplit.fromPartial({})),
 						GenesisVestingType: getStructure(typeGenesisVestingType.fromPartial({})),
 						Params: getStructure(typeParams.fromPartial({})),
 						VestingPoolInfo: getStructure(typeVestingPoolInfo.fromPartial({})),
 						VestingAccountTrace: getStructure(typeVestingAccountTrace.fromPartial({})),
+						ContinuousVestingPeriod: getStructure(typeContinuousVestingPeriod.fromPartial({})),
+						PeriodicContinuousVestingAccount: getStructure(typePeriodicContinuousVestingAccount.fromPartial({})),
 						VestingTypes: getStructure(typeVestingTypes.fromPartial({})),
 						VestingType: getStructure(typeVestingType.fromPartial({})),
 						

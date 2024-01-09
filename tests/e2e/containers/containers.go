@@ -20,6 +20,7 @@ const (
 	// The maximum number of times debug logs are printed to console
 	// per CLI command.
 	maxDebugLogsPerCommand = 3
+	rootUser               = "root:root"
 )
 
 var errRegex = regexp.MustCompile(`(E|e)rror`)
@@ -32,15 +33,17 @@ type Manager struct {
 	network           *dockertest.Network
 	resources         map[string]*dockertest.Resource
 	isDebugLogEnabled bool
+	signMode          string
 }
 
 // NewManager creates a new Manager instance and initializes
 // all Docker specific utilies. Returns an error if initialiation fails.
-func NewManager(isUpgrade bool, isDebugLogEnabled bool) (docker *Manager, err error) {
+func NewManager(startUpgrade, migrationChainging bool, isDebugLogEnabled bool, signMode string) (docker *Manager, err error) {
 	docker = &Manager{
-		ImageConfig:       NewImageConfig(isUpgrade),
+		ImageConfig:       NewImageConfig(startUpgrade, migrationChainging),
 		resources:         make(map[string]*dockertest.Resource),
 		isDebugLogEnabled: isDebugLogEnabled,
+		signMode:          signMode,
 	}
 	docker.pool, err = dockertest.NewPool("")
 	if err != nil {
@@ -62,7 +65,7 @@ func (m *Manager) ExecTxCmd(t *testing.T, chainId string, containerName string, 
 // namely adding flags `--chain-id={chain-id} -b=block --yes --keyring-backend=test "--log_format=json"`,
 // and searching for `successStr`
 func (m *Manager) ExecCmdWithResponseString(t *testing.T, chainId string, containerName string, command []string, successStr string) (bytes.Buffer, bytes.Buffer, error) {
-	allTxArgs := []string{"--gas=auto", fmt.Sprintf("--chain-id=%s", chainId), "-b=block", "--yes", "--keyring-backend=test", "--log_format=json"}
+	allTxArgs := []string{"--gas=auto", fmt.Sprintf("--chain-id=%s", chainId), "-b=block", "--yes", "--keyring-backend=test", "--log_format=json", fmt.Sprintf("--sign-mode=%s", m.signMode)}
 	txCommand := append(command, allTxArgs...)
 	return m.ExecCmd(t, containerName, txCommand, successStr)
 }
@@ -160,7 +163,7 @@ func (m *Manager) RunHermesResource(chainAID, c4eARelayerNodeName, c4eAValMnemon
 			Cmd: []string{
 				"start",
 			},
-			User: "root:root",
+			User: rootUser,
 			Mounts: []string{
 				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),
 			},
@@ -201,7 +204,7 @@ func (m *Manager) RunNodeResource(containerName, valCondifDir string) (*dockerte
 		Repository: m.C4eRepository,
 		Tag:        m.C4eTag,
 		NetworkID:  m.network.Network.ID,
-		User:       "root:root",
+		User:       rootUser,
 		Cmd:        []string{"start"},
 		Mounts: []string{
 			fmt.Sprintf("%s/:/chain4energy/.c4e-chain", valCondifDir),
@@ -244,7 +247,7 @@ func (m *Manager) RunChainInitResource(chainId string, chainVotingPeriod, chainE
 				fmt.Sprintf("--voting-period=%v", votingPeriodDuration),
 				fmt.Sprintf("--app-state=%s", appStateBytes),
 			},
-			User: "root:root",
+			User: rootUser,
 			Mounts: []string{
 				fmt.Sprintf("%s:%s", mountDir, mountDir),
 			},

@@ -2,9 +2,13 @@ package cosmossdk
 
 import (
 	"bytes"
+	"cosmossdk.io/errors"
 	"encoding/hex"
 	"fmt"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"math/rand"
 	"strconv"
 	"strings"
@@ -13,21 +17,17 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // CreateTestPubKeys returns a total of numPubKeys public keys in ascending order.
 func CreateTestPubKeys(numPubKeys int) []cryptotypes.PubKey {
 	var publicKeys []cryptotypes.PubKey
-	var buffer bytes.Buffer
-
-	// start at 10 to avoid changing 1 to 01, 2 to 02, etc
-	for i := 100; i < (numPubKeys + 100); i++ {
-		numString := strconv.Itoa(i)
-		buffer.WriteString("0B485CFC0EECC619440448436F8FC9DF40566F2369E72400281454CB552AF") // base pubkey string
-		buffer.WriteString(numString)                                                       // adding on final two digits to make pubkeys unique
-		publicKeys = append(publicKeys, NewPubKeyFromHex(buffer.String()))
-		buffer.Reset()
+	src := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(src)
+	for i := 0; i < numPubKeys; i++ {
+		privkeySeed := make([]byte, 15)
+		r.Read(privkeySeed)
+		publicKeys = append(publicKeys, secp256k1.GenPrivKeyFromSecret(privkeySeed).PubKey())
 	}
 
 	return publicKeys
@@ -40,7 +40,7 @@ func NewPubKeyFromHex(pk string) (res cryptotypes.PubKey) {
 		panic(err)
 	}
 	if len(pkBytes) != ed25519.PubKeySize {
-		panic(errors.Wrap(errors.ErrInvalidPubKey, "invalid pubkey size"))
+		panic(errors.Wrap(sdkerrors.ErrInvalidPubKey, "invalid pubkey size"))
 	}
 	return &ed25519.PubKey{Key: pkBytes}
 }
@@ -61,7 +61,7 @@ func CreateIncrementalAccounts(accNum int, genInitNumber int) []sdk.AccAddress {
 
 	// start at 100 so we can make up to 999 test addresses with valid test addresses
 	for i := 100; i < (accNum + 100); i++ {
-		hex, bech := createRandomAccAddressHexAndBechNoBalance(int64(i + genInitNumber))
+		hex, bech := CreateRandomAccAddressHexAndBechNoBalance(int64(i + genInitNumber))
 		addr, _ := TestAddr(hex, bech)
 		addresses = append(addresses, addr)
 	}
@@ -69,7 +69,7 @@ func CreateIncrementalAccounts(accNum int, genInitNumber int) []sdk.AccAddress {
 	return addresses
 }
 
-func createRandomAccAddressHexAndBechNoBalance(i int64) (hex string, bech string) {
+func CreateRandomAccAddressHexAndBechNoBalance(i int64) (hex string, bech string) {
 	var buffer bytes.Buffer
 	numString := strconv.Itoa(int(i))
 	buffer.WriteString("A58856F0FD53BF058B4909A21AEC019107BA6") // base address string
@@ -78,15 +78,10 @@ func createRandomAccAddressHexAndBechNoBalance(i int64) (hex string, bech string
 	return buffer.String(), res.String()
 }
 
-func CreateRandomAccAddressNoBalance(i int64) string {
-	_, bech := createRandomAccAddressHexAndBechNoBalance(i)
-	return bech
-}
-
 func CreateRandomAccAddress() string {
 	src := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(src)
-	_, bech := createRandomAccAddressHexAndBechNoBalance(r.Int63())
+	_, bech := CreateRandomAccAddressHexAndBechNoBalance(r.Int63())
 	return bech
 }
 

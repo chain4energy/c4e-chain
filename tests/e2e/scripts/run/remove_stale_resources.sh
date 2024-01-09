@@ -2,7 +2,7 @@
 
 source $(dirname $0)/common.sh
 
-# Filtering by containers belonging to the "osmosis-testnet" network
+# Filtering by containers belonging to the "chain4energy-testnet" network
 LIST_CONTAINERS_CMD=$(docker ps -a --filter network=chain4energy-testnet --format {{.ID}})
 LIST_NETWORKS_CMD=$(docker network ls --filter name=chain4energy-testnet --format {{.ID}})
 

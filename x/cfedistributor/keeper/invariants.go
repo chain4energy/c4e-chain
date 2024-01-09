@@ -32,7 +32,7 @@ func NonNegativeCoinStateInvariant(k Keeper) sdk.Invariant {
 func StateSumBalanceCheckInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		states := k.GetAllStates(ctx)
-		err, remainsSum := types.StateSumIsInteger(states)
+		remainsSum, err := types.StateSumIsInteger(states)
 		if err != nil {
 			return sdk.FormatInvariant(types.ModuleName, "state sum balance check", err.Error()), true
 		}

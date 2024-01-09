@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
 	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
 
@@ -56,7 +57,7 @@ func TestStateSumBalanceCheckInvariantCorrect(t *testing.T) {
 	testHelper.C4eDistributorUtils.SetState(state)
 	state = types.State{Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testenv.DefaultTestDenom, Amount: sdk.NewDec(0)}}}
 	testHelper.C4eDistributorUtils.SetState(state)
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1524), types.DistributorMainAccount)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(1524), types.DistributorMainAccount)
 
 	testHelper.C4eDistributorUtils.CheckStateSumBalanceCheckInvariant(false,
 		"cfedistributor: state sum balance check invariant\n\tsum of states coins: 1524uc4e\n\tdistributor account balance: 1524uc4e\n")
@@ -71,7 +72,7 @@ func TestStateSumBalanceCheckInvariantSumNotInt(t *testing.T) {
 	testHelper.C4eDistributorUtils.SetState(state)
 	state = types.State{Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testenv.DefaultTestDenom, Amount: sdk.NewDec(0)}}}
 	testHelper.C4eDistributorUtils.SetState(state)
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1524), types.DistributorMainAccount)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(1524), types.DistributorMainAccount)
 
 	testHelper.C4eDistributorUtils.CheckStateSumBalanceCheckInvariant(true,
 		"cfedistributor: state sum balance check invariant\n\tthe sum of the states should be integer: sum: 212.132000000000000000uc4e\n")
@@ -86,7 +87,7 @@ func TestStateSumBalanceCheckInvariantSumDiffersFromModuleAccountBalance(t *test
 	testHelper.C4eDistributorUtils.SetState(state)
 	state = types.State{Burn: true, Remains: sdk.DecCoins{sdk.DecCoin{Denom: testenv.DefaultTestDenom, Amount: sdk.NewDec(0)}}}
 	testHelper.C4eDistributorUtils.SetState(state)
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(sdk.NewInt(1523), types.DistributorMainAccount)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(1523), types.DistributorMainAccount)
 
 	testHelper.C4eDistributorUtils.CheckStateSumBalanceCheckInvariant(true,
 		"cfedistributor: state sum balance check invariant\n\tsum of states coins: 1524uc4e\n\tdistributor account balance: 1523uc4e\n")

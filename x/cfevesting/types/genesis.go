@@ -118,7 +118,7 @@ func (gst GenesisVestingType) Validate() error {
 	}
 
 	if gst.Free.GT(sdk.NewDec(1)) || gst.Free.IsNegative() {
-		return fmt.Errorf("Free of veting type %s must be set between 0 and 1", gst.Name)
+		return fmt.Errorf("free of veting type %s must be set between 0 and 1", gst.Name)
 	}
 
 	return nil

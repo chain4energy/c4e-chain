@@ -9,6 +9,7 @@ import (
 	c4eapp "github.com/chain4energy/c4e-chain/app"
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	testcfeclaim "github.com/chain4energy/c4e-chain/testutil/module/cfeclaim"
 	testcfedistributor "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
 	testcfeminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
 	testcfevesting "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
@@ -68,9 +69,13 @@ type TestHelper struct {
 	BankUtils             *testcosmos.ContextBankUtils
 	AuthUtils             *testcosmos.ContextAuthUtils
 	StakingUtils          *testcosmos.ContextStakingUtils
+	GovUtils              *testcosmos.ContextGovUtils
+	DistributionUtils     *testcosmos.ContextDistributionUtils
+	FeegrantUtils         *testcosmos.ContextFeegrantUtils
 	C4eVestingUtils       *testcfevesting.ContextC4eVestingUtils
 	C4eMinterUtils        *testcfeminter.ContextC4eMinterUtils
 	C4eDistributorUtils   *testcfedistributor.ContextC4eDistributorUtils
+	C4eClaimUtils         *testcfeclaim.ContextC4eClaimUtils
 }
 
 func newTestHelper(t require.TestingT, ctx sdk.Context, app *c4eapp.App, initTime time.Time, initialValidatorsCoin sdk.Coin) *TestHelper {
@@ -99,11 +104,16 @@ func newTestHelper(t require.TestingT, ctx sdk.Context, app *c4eapp.App, initTim
 	bankUtils := testcosmos.NewContextBankUtils(t, testHelperP, &helperAk, helperBk)
 
 	testHelper.BankUtils = bankUtils
-	testHelper.AuthUtils = testcosmos.NewContextAuthUtils(t, testHelperP, &helperAk, &bankUtils.BankUtils)
-	testHelper.StakingUtils = testcosmos.NewContextStakingUtils(t, testHelperP, app.StakingKeeper, &bankUtils.BankUtils)
+	testHelper.AuthUtils = testcosmos.NewContextAuthUtils(t, testHelper, &helperAk, &bankUtils.BankUtils)
+	testHelper.StakingUtils = testcosmos.NewContextStakingUtils(t, testHelper, app.StakingKeeper, &bankUtils.BankUtils)
+	testHelper.GovUtils = testcosmos.NewContextGovUtils(t, &testHelper, &app.GovKeeper)
+	testHelper.FeegrantUtils = testcosmos.NewContextFeegrantUtils(t, &testHelper, &app.FeeGrantKeeper)
+	testHelper.DistributionUtils = testcosmos.NewContextDistributionUtils(t, &testHelper, &app.DistrKeeper)
+
 	testHelper.C4eVestingUtils = testcfevesting.NewContextC4eVestingUtils(t, testHelperP, &app.CfevestingKeeper, &app.AccountKeeper, &app.BankKeeper, &app.StakingKeeper, &bankUtils.BankUtils, &testHelper.AuthUtils.AuthUtils)
 	testHelper.C4eMinterUtils = testcfeminter.NewContextC4eMinterUtils(t, testHelperP, &app.CfeminterKeeper, &app.AccountKeeper, &bankUtils.BankUtils)
 	testHelper.C4eDistributorUtils = testcfedistributor.NewContextC4eDistributorUtils(t, testHelperP, &app.CfedistributorKeeper, &app.AccountKeeper, &bankUtils.BankUtils)
+	testHelper.C4eClaimUtils = testcfeclaim.NewContextC4eClaimUtils(t, &testHelper, &app.CfeclaimKeeper, &app.CfevestingKeeper, &app.AccountKeeper, &bankUtils.BankUtils, &testHelper.StakingUtils.StakingUtils, &testHelper.GovUtils.GovUtils, &testHelper.FeegrantUtils.FeegrantUtils, &testHelper.DistributionUtils.DistributionUtils)
 
 	return &testHelper
 }

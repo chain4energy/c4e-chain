@@ -24,7 +24,6 @@ func (k Keeper) VestingsSummary(goCtx context.Context, req *types.QueryVestingsS
 }
 
 func (k Keeper) createVestingsSummary(ctx sdk.Context, genesisOnly bool) (*Summary, error) {
-
 	mAcc := k.account.GetModuleAccount(ctx, types.ModuleName)
 	denom := k.GetParams(ctx).Denom
 	var vestingInPoolsAmount math.Int
@@ -37,8 +36,8 @@ func (k Keeper) createVestingsSummary(ctx sdk.Context, genesisOnly bool) (*Summa
 	}
 
 	allAcc := k.GetAllVestingAccountTrace(ctx)
-	allVestingInAccounts := sdk.ZeroInt()
-	allLockedNotDelegated := sdk.ZeroInt()
+	allVestingInAccounts := math.ZeroInt()
+	allLockedNotDelegated := math.ZeroInt()
 	for _, accFromList := range allAcc {
 		if genesisOnly && !accFromList.IsGenesisOrFromGenesis() {
 			continue
@@ -50,8 +49,13 @@ func (k Keeper) createVestingsSummary(ctx sdk.Context, genesisOnly bool) (*Summa
 
 		vestingAccount := k.account.GetAccount(ctx, accAddr)
 		if continuousVestingAccount, ok := vestingAccount.(*vestingtypes.ContinuousVestingAccount); ok {
-			lockedCoins := continuousVestingAccount.LockedCoins(ctx.BlockTime())
-			vestingCoins := continuousVestingAccount.GetVestingCoins(ctx.BlockTime()) // TODO ??? this should be reduced by amount of burned coins by jailing if burned amount before moment in time when thore burned vested
+			vestingCoins := continuousVestingAccount.GetVestingCoins(ctx.BlockTime())
+			lockedCoins := continuousVestingAccount.BaseVestingAccount.LockedCoinsFromVesting(vestingCoins)
+			allVestingInAccounts = allVestingInAccounts.Add(vestingCoins.AmountOf(denom))
+			allLockedNotDelegated = allLockedNotDelegated.Add(lockedCoins.AmountOf(denom))
+		} else if periodcVestingAccount, ok := vestingAccount.(*types.PeriodicContinuousVestingAccount); ok {
+			vestingCoins := periodcVestingAccount.GetVestingCoinsForSpecificPeriods(ctx.BlockTime(), accFromList.PeriodsToTrace)
+			lockedCoins := periodcVestingAccount.GetLockedCoins(vestingCoins)
 			allVestingInAccounts = allVestingInAccounts.Add(vestingCoins.AmountOf(denom))
 			allLockedNotDelegated = allLockedNotDelegated.Add(lockedCoins.AmountOf(denom))
 		}
@@ -66,8 +70,8 @@ func (k Keeper) createVestingsSummary(ctx sdk.Context, genesisOnly bool) (*Summa
 }
 
 type Summary struct {
-	VestingAllAmount        sdk.Int
-	VestingInPoolsAmount    sdk.Int
-	VestingInAccountsAmount sdk.Int
-	DelegatedVestingAmount  sdk.Int
+	VestingAllAmount        math.Int
+	VestingInPoolsAmount    math.Int
+	VestingInAccountsAmount math.Int
+	DelegatedVestingAmount  math.Int
 }

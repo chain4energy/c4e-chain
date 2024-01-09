@@ -1,8 +1,8 @@
 package types
 
 import (
+	"cosmossdk.io/math"
 	fmt "fmt"
-	"github.com/cosmos/cosmos-sdk/codec/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"time"
@@ -10,7 +10,7 @@ import (
 
 // this line is used by starport scaffolding # genesis/types/import
 
-var _ types.UnpackInterfacesMessage = GenesisState{}
+var _ codectypes.UnpackInterfacesMessage = GenesisState{}
 
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
@@ -19,7 +19,7 @@ func DefaultGenesis() *GenesisState {
 		Params: DefaultParams(),
 		MinterState: MinterState{
 			SequenceId:                  1,
-			AmountMinted:                sdk.ZeroInt(),
+			AmountMinted:                math.ZeroInt(),
 			RemainderToMint:             sdk.ZeroDec(),
 			LastMintBlockTime:           time.Now(),
 			RemainderFromPreviousMinter: sdk.ZeroDec(),

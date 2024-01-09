@@ -20,17 +20,17 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			continue
 		}
 
-		newStates, distributions, burn := k.StartDistributionProcess(ctx, &states, allCoinsToDistribute, subDistributor)
-		for _, distribution := range distributions {
-			err := ctx.EventManager().EmitTypedEvent(distribution)
+		newStates, distributionEvents, burnEvent := k.StartDistributionProcess(ctx, &states, allCoinsToDistribute, subDistributor)
+		for _, event := range distributionEvents {
+			err := ctx.EventManager().EmitTypedEvent(event)
 			if err != nil {
-				k.Logger(ctx).Error("distributions emit event error", "distribution", distribution, "error", err.Error())
+				k.Logger(ctx).Error("distributions emit event error", "event", event, "error", err.Error())
 			}
 		}
-		if burn != nil {
-			err := ctx.EventManager().EmitTypedEvent(burn)
+		if burnEvent != nil {
+			err := ctx.EventManager().EmitTypedEvent(burnEvent)
 			if err != nil {
-				k.Logger(ctx).Error("distributions emit event error", "distribution_burn", burn, "error", err.Error())
+				k.Logger(ctx).Error("distributions emit event error", "distribution_burn", burnEvent, "error", err.Error())
 			}
 		}
 		states = *newStates

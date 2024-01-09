@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/chain4energy/c4e-chain/x/cfevesting/exported"
+	"github.com/chain4energy/c4e-chain/types/subspace"
 	v2 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v2"
 	v3 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v3"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,11 +10,11 @@ import (
 // Migrator is a struct for handling in-place store migrations.
 type Migrator struct {
 	keeper         Keeper
-	legacySubspace exported.Subspace
+	legacySubspace subspace.Subspace
 }
 
 // NewMigrator returns a new Migrator.
-func NewMigrator(keeper Keeper, legacySubspace exported.Subspace) Migrator {
+func NewMigrator(keeper Keeper, legacySubspace subspace.Subspace) Migrator {
 	return Migrator{keeper: keeper, legacySubspace: legacySubspace}
 }
 

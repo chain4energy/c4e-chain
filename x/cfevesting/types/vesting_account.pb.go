@@ -5,6 +5,10 @@ package types
 
 import (
 	fmt "fmt"
+	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
+	types "github.com/cosmos/cosmos-sdk/types"
+	types1 "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	io "io"
 	math "math"
@@ -23,11 +27,12 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type VestingAccountTrace struct {
-	Id                 uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Address            string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	Genesis            bool   `protobuf:"varint,3,opt,name=genesis,proto3" json:"genesis,omitempty"`
-	FromGenesisPool    bool   `protobuf:"varint,4,opt,name=from_genesis_pool,json=fromGenesisPool,proto3" json:"from_genesis_pool,omitempty"`
-	FromGenesisAccount bool   `protobuf:"varint,5,opt,name=from_genesis_account,json=fromGenesisAccount,proto3" json:"from_genesis_account,omitempty"`
+	Id                 uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Address            string   `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+	PeriodsToTrace     []uint64 `protobuf:"varint,3,rep,packed,name=periods_to_trace,json=periodsToTrace,proto3" json:"periods_to_trace,omitempty"`
+	Genesis            bool     `protobuf:"varint,4,opt,name=genesis,proto3" json:"genesis,omitempty"`
+	FromGenesisPool    bool     `protobuf:"varint,5,opt,name=from_genesis_pool,json=fromGenesisPool,proto3" json:"from_genesis_pool,omitempty"`
+	FromGenesisAccount bool     `protobuf:"varint,6,opt,name=from_genesis_account,json=fromGenesisAccount,proto3" json:"from_genesis_account,omitempty"`
 }
 
 func (m *VestingAccountTrace) Reset()         { *m = VestingAccountTrace{} }
@@ -77,6 +82,13 @@ func (m *VestingAccountTrace) GetAddress() string {
 	return ""
 }
 
+func (m *VestingAccountTrace) GetPeriodsToTrace() []uint64 {
+	if m != nil {
+		return m.PeriodsToTrace
+	}
+	return nil
+}
+
 func (m *VestingAccountTrace) GetGenesis() bool {
 	if m != nil {
 		return m.Genesis
@@ -98,8 +110,110 @@ func (m *VestingAccountTrace) GetFromGenesisAccount() bool {
 	return false
 }
 
+// ContinuousVestingPeriod defines a length of time and amount of coins that will vest.
+type ContinuousVestingPeriod struct {
+	StartTime int64                                    `protobuf:"varint,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	EndTime   int64                                    `protobuf:"varint,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
+	Amount    github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=amount,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"amount"`
+}
+
+func (m *ContinuousVestingPeriod) Reset()      { *m = ContinuousVestingPeriod{} }
+func (*ContinuousVestingPeriod) ProtoMessage() {}
+func (*ContinuousVestingPeriod) Descriptor() ([]byte, []int) {
+	return fileDescriptor_785587b07f9ac0c9, []int{1}
+}
+func (m *ContinuousVestingPeriod) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ContinuousVestingPeriod) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ContinuousVestingPeriod.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ContinuousVestingPeriod) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ContinuousVestingPeriod.Merge(m, src)
+}
+func (m *ContinuousVestingPeriod) XXX_Size() int {
+	return m.Size()
+}
+func (m *ContinuousVestingPeriod) XXX_DiscardUnknown() {
+	xxx_messageInfo_ContinuousVestingPeriod.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ContinuousVestingPeriod proto.InternalMessageInfo
+
+func (m *ContinuousVestingPeriod) GetStartTime() int64 {
+	if m != nil {
+		return m.StartTime
+	}
+	return 0
+}
+
+func (m *ContinuousVestingPeriod) GetEndTime() int64 {
+	if m != nil {
+		return m.EndTime
+	}
+	return 0
+}
+
+func (m *ContinuousVestingPeriod) GetAmount() github_com_cosmos_cosmos_sdk_types.Coins {
+	if m != nil {
+		return m.Amount
+	}
+	return nil
+}
+
+// PeriodicContinuousVestingAccount implements the VestingAccount interface. It
+// periodically vests by unlocking coins during each specified period.
+type PeriodicContinuousVestingAccount struct {
+	*types1.BaseVestingAccount `protobuf:"bytes,1,opt,name=base_vesting_account,json=baseVestingAccount,proto3,embedded=base_vesting_account" json:"base_vesting_account,omitempty"`
+	StartTime                  int64                     `protobuf:"varint,2,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	VestingPeriods             []ContinuousVestingPeriod `protobuf:"bytes,3,rep,name=vesting_periods,json=vestingPeriods,proto3" json:"vesting_periods"`
+}
+
+func (m *PeriodicContinuousVestingAccount) Reset()      { *m = PeriodicContinuousVestingAccount{} }
+func (*PeriodicContinuousVestingAccount) ProtoMessage() {}
+func (*PeriodicContinuousVestingAccount) Descriptor() ([]byte, []int) {
+	return fileDescriptor_785587b07f9ac0c9, []int{2}
+}
+func (m *PeriodicContinuousVestingAccount) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *PeriodicContinuousVestingAccount) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_PeriodicContinuousVestingAccount.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *PeriodicContinuousVestingAccount) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PeriodicContinuousVestingAccount.Merge(m, src)
+}
+func (m *PeriodicContinuousVestingAccount) XXX_Size() int {
+	return m.Size()
+}
+func (m *PeriodicContinuousVestingAccount) XXX_DiscardUnknown() {
+	xxx_messageInfo_PeriodicContinuousVestingAccount.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PeriodicContinuousVestingAccount proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*VestingAccountTrace)(nil), "chain4energy.c4echain.cfevesting.VestingAccountTrace")
+	proto.RegisterType((*ContinuousVestingPeriod)(nil), "chain4energy.c4echain.cfevesting.ContinuousVestingPeriod")
+	proto.RegisterType((*PeriodicContinuousVestingAccount)(nil), "chain4energy.c4echain.cfevesting.PeriodicContinuousVestingAccount")
 }
 
 func init() {
@@ -107,24 +221,41 @@ func init() {
 }
 
 var fileDescriptor_785587b07f9ac0c9 = []byte{
-	// 259 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xd2, 0x4c, 0x36, 0x49, 0x4d,
-	0xce, 0x48, 0xcc, 0xcc, 0xd3, 0x4f, 0x4e, 0x4b, 0x2d, 0x4b, 0x2d, 0x2e, 0xc9, 0xcc, 0x4b, 0xd7,
-	0x87, 0xd2, 0xf1, 0x89, 0xc9, 0xc9, 0xf9, 0xa5, 0x79, 0x25, 0x7a, 0x05, 0x45, 0xf9, 0x25, 0xf9,
-	0x42, 0x0a, 0x60, 0x75, 0x26, 0xa9, 0x79, 0xa9, 0x45, 0xe9, 0x95, 0x7a, 0x30, 0x7d, 0x7a, 0x08,
-	0x7d, 0x4a, 0xdb, 0x19, 0xb9, 0x84, 0xc3, 0x20, 0x6c, 0x47, 0x88, 0xd6, 0x90, 0xa2, 0xc4, 0xe4,
-	0x54, 0x21, 0x3e, 0x2e, 0xa6, 0xcc, 0x14, 0x09, 0x46, 0x05, 0x46, 0x0d, 0x96, 0x20, 0xa6, 0xcc,
-	0x14, 0x21, 0x09, 0x2e, 0xf6, 0xc4, 0x94, 0x94, 0xa2, 0xd4, 0xe2, 0x62, 0x09, 0x26, 0x05, 0x46,
-	0x0d, 0xce, 0x20, 0x18, 0x17, 0x24, 0x93, 0x9e, 0x9a, 0x97, 0x5a, 0x9c, 0x59, 0x2c, 0xc1, 0xac,
-	0xc0, 0xa8, 0xc1, 0x11, 0x04, 0xe3, 0x0a, 0x69, 0x71, 0x09, 0xa6, 0x15, 0xe5, 0xe7, 0xc6, 0x43,
-	0xf9, 0xf1, 0x05, 0xf9, 0xf9, 0x39, 0x12, 0x2c, 0x60, 0x35, 0xfc, 0x20, 0x09, 0x77, 0x88, 0x78,
-	0x40, 0x7e, 0x7e, 0x8e, 0x90, 0x01, 0x97, 0x08, 0x8a, 0x5a, 0xa8, 0x3f, 0x24, 0x58, 0xc1, 0xca,
-	0x85, 0x90, 0x94, 0x43, 0x9d, 0xe9, 0xe4, 0x77, 0xe2, 0x91, 0x1c, 0xe3, 0x85, 0x47, 0x72, 0x8c,
-	0x0f, 0x1e, 0xc9, 0x31, 0x4e, 0x78, 0x2c, 0xc7, 0x70, 0xe1, 0xb1, 0x1c, 0xc3, 0x8d, 0xc7, 0x72,
-	0x0c, 0x51, 0x26, 0xe9, 0x99, 0x25, 0x19, 0xa5, 0x49, 0x7a, 0xc9, 0xf9, 0xb9, 0xfa, 0xc8, 0x01,
-	0xa0, 0x9f, 0x6c, 0x92, 0xaa, 0x0b, 0x09, 0xb9, 0x0a, 0xe4, 0xb0, 0x2b, 0xa9, 0x2c, 0x48, 0x2d,
-	0x4e, 0x62, 0x03, 0x07, 0x99, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0xae, 0xe5, 0xff, 0xda, 0x5f,
-	0x01, 0x00, 0x00,
+	// 535 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x53, 0x31, 0x6f, 0xdb, 0x3c,
+	0x10, 0x95, 0x64, 0x7d, 0xb6, 0xc3, 0x00, 0xce, 0x57, 0xd6, 0x40, 0x95, 0x00, 0x95, 0x05, 0xa3,
+	0x83, 0x1a, 0x20, 0x54, 0x92, 0x7a, 0x69, 0xb6, 0x3a, 0x43, 0xb7, 0x22, 0x10, 0x8c, 0x0e, 0x5d,
+	0x04, 0x89, 0x62, 0x64, 0xa2, 0x11, 0x69, 0x88, 0x74, 0xd0, 0xfc, 0x83, 0x8e, 0x1d, 0xdb, 0x2d,
+	0x73, 0x7f, 0x44, 0xe7, 0x8c, 0x1e, 0x3b, 0xa5, 0xad, 0xfd, 0x47, 0x0a, 0x91, 0x54, 0xea, 0x38,
+	0x28, 0x3a, 0x49, 0x77, 0xf7, 0xde, 0xdd, 0xbd, 0x47, 0x12, 0x3c, 0xc7, 0x23, 0x82, 0xa7, 0x29,
+	0x65, 0x11, 0x3e, 0x27, 0x97, 0x44, 0x48, 0xca, 0x8a, 0xc8, 0x7c, 0x93, 0x14, 0x63, 0x3e, 0x67,
+	0x12, 0xcd, 0x2a, 0x2e, 0x39, 0x0c, 0x14, 0x6e, 0x44, 0x18, 0xa9, 0x8a, 0x2b, 0xd4, 0xf0, 0xd0,
+	0x1f, 0xde, 0x5e, 0xbf, 0xe0, 0x05, 0x57, 0xe0, 0xa8, 0xfe, 0xd3, 0xbc, 0xbd, 0x67, 0x98, 0x8b,
+	0x92, 0x8b, 0xe8, 0xae, 0xfb, 0x51, 0x46, 0x64, 0x7a, 0xd4, 0xc4, 0x06, 0xe5, 0x1b, 0x54, 0x96,
+	0x0a, 0x72, 0x07, 0xc1, 0x9c, 0x32, 0x5d, 0x1f, 0xfe, 0xb2, 0xc1, 0xe3, 0xb7, 0x9a, 0xf1, 0x4a,
+	0xaf, 0x35, 0xa9, 0x52, 0x4c, 0x60, 0x0f, 0x38, 0x34, 0xf7, 0xec, 0xc0, 0x0e, 0xdd, 0xd8, 0xa1,
+	0x39, 0xf4, 0x40, 0x27, 0xcd, 0xf3, 0x8a, 0x08, 0xe1, 0x39, 0x81, 0x1d, 0x6e, 0xc5, 0x4d, 0x08,
+	0x43, 0xf0, 0xff, 0x8c, 0x54, 0x94, 0xe7, 0x22, 0x91, 0x3c, 0x91, 0x35, 0xdb, 0x6b, 0x05, 0xad,
+	0xd0, 0x8d, 0x7b, 0x26, 0x3f, 0xe1, 0xba, 0xa7, 0x07, 0x3a, 0x05, 0x61, 0x44, 0x50, 0xe1, 0xb9,
+	0x81, 0x1d, 0x76, 0xe3, 0x26, 0x84, 0xfb, 0xe0, 0xd1, 0x79, 0xc5, 0xcb, 0xc4, 0xc4, 0xc9, 0x8c,
+	0xf3, 0x0b, 0xef, 0x3f, 0x85, 0xd9, 0xa9, 0x0b, 0xaf, 0x75, 0xfe, 0x8c, 0xf3, 0x0b, 0x78, 0x08,
+	0xfa, 0xf7, 0xb0, 0xc6, 0x4d, 0xaf, 0xad, 0xe0, 0x70, 0x0d, 0x6e, 0x04, 0x0d, 0xbf, 0xd9, 0xe0,
+	0xc9, 0x29, 0x67, 0x92, 0xb2, 0x39, 0x9f, 0x0b, 0xa3, 0xf6, 0x4c, 0xed, 0x06, 0x9f, 0x02, 0x20,
+	0x64, 0x5a, 0xc9, 0x44, 0xd2, 0x92, 0x28, 0xbd, 0xad, 0x78, 0x4b, 0x65, 0x26, 0xb4, 0x24, 0x70,
+	0x17, 0x74, 0x09, 0xcb, 0x75, 0xd1, 0x51, 0xc5, 0x0e, 0x61, 0xb9, 0x2a, 0x61, 0xd0, 0x4e, 0x4b,
+	0x35, 0xb9, 0x56, 0xbb, 0x7d, 0xbc, 0x8b, 0xb4, 0xd5, 0xa8, 0xb6, 0x1a, 0x19, 0xab, 0xd1, 0x29,
+	0xa7, 0x6c, 0x7c, 0x78, 0x73, 0x3b, 0xb0, 0xbe, 0xfe, 0x18, 0x84, 0x05, 0x95, 0xd3, 0x79, 0x86,
+	0x30, 0x2f, 0x23, 0x73, 0x2e, 0xfa, 0x73, 0x20, 0xf2, 0xf7, 0x91, 0xbc, 0x9a, 0x11, 0xa1, 0x08,
+	0x22, 0x36, 0xad, 0x4f, 0xdc, 0xcf, 0xd7, 0x03, 0x6b, 0xf8, 0xc5, 0x01, 0x81, 0xde, 0x97, 0xe2,
+	0x07, 0x42, 0x8c, 0x4a, 0x98, 0x81, 0x7e, 0x3d, 0x39, 0xd9, 0xb8, 0x65, 0x4a, 0xd3, 0xf6, 0xf1,
+	0x7e, 0xb3, 0x5d, 0x73, 0x3d, 0x9a, 0x05, 0xc7, 0xa9, 0x20, 0xf7, 0x3b, 0x8d, 0xdd, 0xc5, 0xed,
+	0xc0, 0x8e, 0x61, 0xf6, 0xa0, 0xb2, 0xe1, 0x96, 0xb3, 0xe9, 0xd6, 0x14, 0xec, 0x34, 0xd3, 0xcd,
+	0xd1, 0x1b, 0x6f, 0x5e, 0xa2, 0x7f, 0x5d, 0x72, 0xf4, 0x97, 0x03, 0x1a, 0xbb, 0xb5, 0x77, 0x71,
+	0xef, 0x72, 0x3d, 0x29, 0x4e, 0xba, 0x1f, 0xaf, 0x07, 0x56, 0xed, 0xcd, 0xf8, 0xcd, 0xcd, 0xd2,
+	0xb7, 0x17, 0x4b, 0xdf, 0xfe, 0xb9, 0xf4, 0xed, 0x4f, 0x2b, 0xdf, 0x5a, 0xac, 0x7c, 0xeb, 0xfb,
+	0xca, 0xb7, 0xde, 0x8d, 0xd6, 0xdd, 0x5e, 0x1b, 0x1f, 0xe1, 0x11, 0x39, 0xd0, 0x8f, 0xf3, 0xc3,
+	0xfa, 0xf3, 0x54, 0xfe, 0x67, 0x6d, 0xf5, 0x2e, 0x5e, 0xfc, 0x0e, 0x00, 0x00, 0xff, 0xff, 0x79,
+	0x7b, 0xd5, 0x8b, 0xc2, 0x03, 0x00, 0x00,
 }
 
 func (m *VestingAccountTrace) Marshal() (dAtA []byte, err error) {
@@ -155,7 +286,7 @@ func (m *VestingAccountTrace) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x28
+		dAtA[i] = 0x30
 	}
 	if m.FromGenesisPool {
 		i--
@@ -165,7 +296,7 @@ func (m *VestingAccountTrace) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x28
 	}
 	if m.Genesis {
 		i--
@@ -175,7 +306,25 @@ func (m *VestingAccountTrace) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x18
+		dAtA[i] = 0x20
+	}
+	if len(m.PeriodsToTrace) > 0 {
+		dAtA2 := make([]byte, len(m.PeriodsToTrace)*10)
+		var j1 int
+		for _, num := range m.PeriodsToTrace {
+			for num >= 1<<7 {
+				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j1++
+			}
+			dAtA2[j1] = uint8(num)
+			j1++
+		}
+		i -= j1
+		copy(dAtA[i:], dAtA2[:j1])
+		i = encodeVarintVestingAccount(dAtA, i, uint64(j1))
+		i--
+		dAtA[i] = 0x1a
 	}
 	if len(m.Address) > 0 {
 		i -= len(m.Address)
@@ -188,6 +337,107 @@ func (m *VestingAccountTrace) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintVestingAccount(dAtA, i, uint64(m.Id))
 		i--
 		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ContinuousVestingPeriod) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ContinuousVestingPeriod) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ContinuousVestingPeriod) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Amount) > 0 {
+		for iNdEx := len(m.Amount) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Amount[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintVestingAccount(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if m.EndTime != 0 {
+		i = encodeVarintVestingAccount(dAtA, i, uint64(m.EndTime))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.StartTime != 0 {
+		i = encodeVarintVestingAccount(dAtA, i, uint64(m.StartTime))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *PeriodicContinuousVestingAccount) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *PeriodicContinuousVestingAccount) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *PeriodicContinuousVestingAccount) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.VestingPeriods) > 0 {
+		for iNdEx := len(m.VestingPeriods) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.VestingPeriods[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintVestingAccount(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if m.StartTime != 0 {
+		i = encodeVarintVestingAccount(dAtA, i, uint64(m.StartTime))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.BaseVestingAccount != nil {
+		{
+			size, err := m.BaseVestingAccount.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintVestingAccount(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -216,6 +466,13 @@ func (m *VestingAccountTrace) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovVestingAccount(uint64(l))
 	}
+	if len(m.PeriodsToTrace) > 0 {
+		l = 0
+		for _, e := range m.PeriodsToTrace {
+			l += sovVestingAccount(uint64(e))
+		}
+		n += 1 + sovVestingAccount(uint64(l)) + l
+	}
 	if m.Genesis {
 		n += 2
 	}
@@ -224,6 +481,49 @@ func (m *VestingAccountTrace) Size() (n int) {
 	}
 	if m.FromGenesisAccount {
 		n += 2
+	}
+	return n
+}
+
+func (m *ContinuousVestingPeriod) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.StartTime != 0 {
+		n += 1 + sovVestingAccount(uint64(m.StartTime))
+	}
+	if m.EndTime != 0 {
+		n += 1 + sovVestingAccount(uint64(m.EndTime))
+	}
+	if len(m.Amount) > 0 {
+		for _, e := range m.Amount {
+			l = e.Size()
+			n += 1 + l + sovVestingAccount(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *PeriodicContinuousVestingAccount) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.BaseVestingAccount != nil {
+		l = m.BaseVestingAccount.Size()
+		n += 1 + l + sovVestingAccount(uint64(l))
+	}
+	if m.StartTime != 0 {
+		n += 1 + sovVestingAccount(uint64(m.StartTime))
+	}
+	if len(m.VestingPeriods) > 0 {
+		for _, e := range m.VestingPeriods {
+			l = e.Size()
+			n += 1 + l + sovVestingAccount(uint64(l))
+		}
 	}
 	return n
 }
@@ -315,6 +615,82 @@ func (m *VestingAccountTrace) Unmarshal(dAtA []byte) error {
 			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowVestingAccount
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.PeriodsToTrace = append(m.PeriodsToTrace, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowVestingAccount
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthVestingAccount
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthVestingAccount
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.PeriodsToTrace) == 0 {
+					m.PeriodsToTrace = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowVestingAccount
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.PeriodsToTrace = append(m.PeriodsToTrace, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field PeriodsToTrace", wireType)
+			}
+		case 4:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Genesis", wireType)
 			}
@@ -334,7 +710,7 @@ func (m *VestingAccountTrace) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.Genesis = bool(v != 0)
-		case 4:
+		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field FromGenesisPool", wireType)
 			}
@@ -354,7 +730,7 @@ func (m *VestingAccountTrace) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.FromGenesisPool = bool(v != 0)
-		case 5:
+		case 6:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field FromGenesisAccount", wireType)
 			}
@@ -374,6 +750,267 @@ func (m *VestingAccountTrace) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.FromGenesisAccount = bool(v != 0)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipVestingAccount(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthVestingAccount
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ContinuousVestingPeriod) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowVestingAccount
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ContinuousVestingPeriod: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ContinuousVestingPeriod: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StartTime", wireType)
+			}
+			m.StartTime = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVestingAccount
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.StartTime |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field EndTime", wireType)
+			}
+			m.EndTime = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVestingAccount
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.EndTime |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVestingAccount
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthVestingAccount
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthVestingAccount
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Amount = append(m.Amount, types.Coin{})
+			if err := m.Amount[len(m.Amount)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipVestingAccount(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthVestingAccount
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *PeriodicContinuousVestingAccount) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowVestingAccount
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: PeriodicContinuousVestingAccount: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: PeriodicContinuousVestingAccount: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BaseVestingAccount", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVestingAccount
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthVestingAccount
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthVestingAccount
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.BaseVestingAccount == nil {
+				m.BaseVestingAccount = &types1.BaseVestingAccount{}
+			}
+			if err := m.BaseVestingAccount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StartTime", wireType)
+			}
+			m.StartTime = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVestingAccount
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.StartTime |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VestingPeriods", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowVestingAccount
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthVestingAccount
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthVestingAccount
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.VestingPeriods = append(m.VestingPeriods, ContinuousVestingPeriod{})
+			if err := m.VestingPeriods[len(m.VestingPeriods)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipVestingAccount(dAtA[iNdEx:])

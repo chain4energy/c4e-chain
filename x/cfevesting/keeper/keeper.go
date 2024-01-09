@@ -9,7 +9,6 @@ import (
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 type (
@@ -17,7 +16,6 @@ type (
 		cdc          codec.BinaryCodec
 		storeKey     storetypes.StoreKey
 		memKey       storetypes.StoreKey
-		paramstore   paramtypes.Subspace
 		bank         types.BankKeeper
 		staking      types.StakingKeeper
 		account      types.AccountKeeper
@@ -31,7 +29,6 @@ func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
-	ps paramtypes.Subspace,
 	bank types.BankKeeper,
 	staking types.StakingKeeper,
 	account types.AccountKeeper,
@@ -40,11 +37,9 @@ func NewKeeper(
 	authority string,
 ) *Keeper {
 	return &Keeper{
-
 		cdc:          cdc,
 		storeKey:     storeKey,
 		memKey:       memKey,
-		paramstore:   ps,
 		bank:         bank,
 		staking:      staking,
 		account:      account,

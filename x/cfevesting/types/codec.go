@@ -7,6 +7,8 @@ import (
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	vestexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 	authzcodec "github.com/cosmos/cosmos-sdk/x/authz/codec"
 )
 
@@ -20,7 +22,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	legacy.RegisterAminoMsg(cdc, &MsgSplitVesting{}, "cfevesting/SplitVesting")
 	legacy.RegisterAminoMsg(cdc, &MsgMoveAvailableVesting{}, "cfevesting/MoveAvailableVesting")
 	legacy.RegisterAminoMsg(cdc, &MsgMoveAvailableVestingByDenoms{}, "cfevesting/MoveAvailableVestingByDenoms")
-
+	cdc.RegisterConcrete(&PeriodicContinuousVestingAccount{}, "c4e/PeriodicContinuousVestingAccount", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -35,6 +37,21 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgSendToVestingAccount{},
+	)
+
+	registry.RegisterImplementations(
+		(*vestexported.VestingAccount)(nil),
+		&PeriodicContinuousVestingAccount{},
+	)
+
+	registry.RegisterImplementations(
+		(*authtypes.AccountI)(nil),
+		&PeriodicContinuousVestingAccount{},
+	)
+
+	registry.RegisterImplementations(
+		(*authtypes.GenesisAccount)(nil),
+		&PeriodicContinuousVestingAccount{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgSplitVesting{},

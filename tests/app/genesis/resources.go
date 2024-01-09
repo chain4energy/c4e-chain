@@ -1,6 +1,7 @@
 package genesis
 
 import (
+	"cosmossdk.io/math"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"time"
@@ -109,7 +110,7 @@ var CfeDistributorParams = distributortypes.Params{
 func CfeMinterrParams() mintertypes.Params {
 	exponentialStepMinting := &mintertypes.ExponentialStepMinting{
 		StepDuration:     time.Hour * 24 * 365 * 4, // 4 years
-		Amount:           sdk.NewInt(160000000000000),
+		Amount:           math.NewInt(160000000000000),
 		AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
 	}
 	config, _ := codectypes.NewAnyWithValue(exponentialStepMinting)

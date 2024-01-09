@@ -2,8 +2,13 @@ package chain
 
 import (
 	"context"
+	"cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
+	cfeclaimmoduletypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"io"
 	"net/http"
 	"time"
@@ -20,6 +25,8 @@ import (
 
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 )
+
+const outputJsonFlag = "--output=json"
 
 func (n *NodeConfig) QueryGRPCGateway(path string, parameters ...string) ([]byte, error) {
 	if len(parameters)%2 != 0 {
@@ -81,31 +88,31 @@ func (n *NodeConfig) QueryBalances(address string) (sdk.Coins, error) {
 	return balancesResp.GetBalances(), nil
 }
 
-func (n *NodeConfig) QuerySupplyOf(denom string) (sdk.Int, error) {
+func (n *NodeConfig) QuerySupplyOf(denom string) (math.Int, error) {
 	path := fmt.Sprintf("cosmos/bank/v1beta1/supply/by_denom?denom=%s", denom)
 	bz, err := n.QueryGRPCGateway(path)
 	require.NoError(n.t, err)
 
 	var supplyResp banktypes.QuerySupplyOfResponse
 	if err := util.Cdc.UnmarshalJSON(bz, &supplyResp); err != nil {
-		return sdk.NewInt(0), err
+		return math.NewInt(0), err
 	}
 	return supplyResp.Amount.Amount, nil
 }
 
-func (n *NodeConfig) QueryPropTally(proposalNumber int) (sdk.Int, sdk.Int, sdk.Int, sdk.Int, error) {
+func (n *NodeConfig) QueryPropTally(proposalNumber int) (math.Int, math.Int, math.Int, math.Int, error) {
 	path := fmt.Sprintf("cosmos/gov/v1beta1/proposals/%d/tally", proposalNumber)
 	bz, err := n.QueryGRPCGateway(path)
 	require.NoError(n.t, err)
 
 	var balancesResp govv1.QueryTallyResultResponse
 	if err := util.Cdc.UnmarshalJSON(bz, &balancesResp); err != nil {
-		return sdk.ZeroInt(), sdk.ZeroInt(), sdk.ZeroInt(), sdk.ZeroInt(), err
+		return math.ZeroInt(), math.ZeroInt(), math.ZeroInt(), math.ZeroInt(), err
 	}
-	noTotal, _ := sdk.NewIntFromString(balancesResp.Tally.NoCount)
-	yesTotal, _ := sdk.NewIntFromString(balancesResp.Tally.YesCount)
-	noWithVetoTotal, _ := sdk.NewIntFromString(balancesResp.Tally.NoWithVetoCount)
-	abstainTotal, _ := sdk.NewIntFromString(balancesResp.Tally.AbstainCount)
+	noTotal, _ := math.NewIntFromString(balancesResp.Tally.NoCount)
+	yesTotal, _ := math.NewIntFromString(balancesResp.Tally.YesCount)
+	noWithVetoTotal, _ := math.NewIntFromString(balancesResp.Tally.NoWithVetoCount)
+	abstainTotal, _ := math.NewIntFromString(balancesResp.Tally.AbstainCount)
 
 	return noTotal, yesTotal, noWithVetoTotal, abstainTotal, nil
 }
@@ -164,7 +171,7 @@ func (n *NodeConfig) QueryListSnapshots() ([]*tmabcitypes.Snapshot, error) {
 	return listSnapshots.Snapshots, nil
 }
 
-func (n *NodeConfig) QueryVestingPools(address string) []*cfevestingmoduletypes.VestingPoolInfo {
+func (n *NodeConfig) QueryVestingPoolsInfo(address string) []*cfevestingmoduletypes.VestingPoolInfo {
 	path := "/c4e/vesting/v1beta1/vesting_pools/" + address
 
 	bz, err := n.QueryGRPCGateway(path)
@@ -226,4 +233,132 @@ func (n *NodeConfig) QueryAccountNotFound(address string) {
 	require.Error(n.t, err)
 	require.EqualError(n.t, err, "unexpected status code: 404, body: {\n  \"code\": 5,\n  \"message\": \"account "+address+" not found\",\n  \"details\": [\n  ]\n}")
 
+}
+
+func (n *NodeConfig) QueryCampaign(campaignId string) cfeclaimmoduletypes.Campaign {
+	path := "/c4e/claim/v1beta1/campaign/" + campaignId
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeclaimmoduletypes.QueryCampaignResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.Campaign
+}
+
+func (n *NodeConfig) QueryCampaigns() []cfeclaimmoduletypes.Campaign {
+	path := "/c4e/claim/v1beta1/campaigns"
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeclaimmoduletypes.QueryCampaignsResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.Campaigns
+}
+
+func (n *NodeConfig) QueryLastCampaignsId() uint64 {
+	path := "/c4e/claim/v1beta1/campaigns"
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeclaimmoduletypes.QueryCampaignsResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.Campaigns[len(response.Campaigns)-1].Id
+}
+
+func (n *NodeConfig) QueryCampaignMission(campaignId, missionId string) cfeclaimmoduletypes.Mission {
+	path := "/c4e/claim/v1beta1/mission/" + campaignId + "/" + missionId
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeclaimmoduletypes.QueryMissionResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.Mission
+}
+
+func (n *NodeConfig) QueryUserEntry(address string) cfeclaimmoduletypes.UserEntry {
+	path := "/c4e/claim/v1beta1/user_entry/" + address
+
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var response cfeclaimmoduletypes.QueryUserEntryResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.UserEntry
+}
+
+func (n *NodeConfig) QueryUserEntries() []cfeclaimmoduletypes.UserEntry {
+	path := "/c4e/claim/v1beta1/users_entries"
+
+	bz, err := n.QueryGRPCGateway(path, "pagination.limit", "1000000000000")
+	require.NoError(n.t, err)
+
+	var response cfeclaimmoduletypes.QueryUsersEntriesResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	require.NoError(n.t, err)
+	return response.UsersEntries
+}
+
+func (n *NodeConfig) QueryCfevestingParams(moduleParams *cfevestingmoduletypes.QueryParamsResponse) {
+	cmd := []string{"c4ed", "query", "cfevesting", "params", outputJsonFlag}
+
+	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
+	require.NoError(n.t, err)
+	err = json.Unmarshal(out.Bytes(), &moduleParams)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) QueryCfeminterParams(moduleParams *cfemintermoduletypes.QueryParamsResponse) {
+	cmd := []string{"c4ed", "query", "cfeminter", "params", outputJsonFlag}
+
+	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
+	require.NoError(n.t, err)
+	err = util.Cdc.UnmarshalJSON(out.Bytes(), moduleParams)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) QueryCfedistributorParams(moduleParams *cfedistributormoduletypes.QueryParamsResponse) {
+	cmd := []string{"c4ed", "query", "cfedistributor", "params", outputJsonFlag}
+
+	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
+	require.NoError(n.t, err)
+	err = json.Unmarshal(out.Bytes(), &moduleParams)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) QueryFeegrant(granter, grantee string, feegrantResponse *feegrant.QueryAllowanceRequest) {
+	cmd := []string{"c4ed", "query", "feegrant", "grant", granter, grantee, outputJsonFlag}
+
+	out, _, err := n.containerManager.ExecCmd(n.t, n.Name, cmd, "")
+	require.NoError(n.t, err)
+	err = json.Unmarshal(out.Bytes(), &feegrantResponse)
+	require.NoError(n.t, err)
+}
+
+func (n *NodeConfig) QueryPropStatusTimed(proposalNumber int, desiredStatus string, totalTime chan time.Duration) {
+	start := time.Now()
+	require.Eventually(
+		n.t,
+		func() bool {
+			status, err := n.QueryPropStatus(proposalNumber)
+			if err != nil {
+				return false
+			}
+
+			return status == desiredStatus
+		},
+		1*time.Minute,
+		10*time.Millisecond,
+		"C4e node failed to retrieve prop tally",
+	)
+	elapsed := time.Since(start)
+	totalTime <- elapsed
 }

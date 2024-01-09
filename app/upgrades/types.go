@@ -1,6 +1,7 @@
 package upgrades
 
 import (
+	cfeclaimkeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,6 +18,7 @@ type AppKeepers interface {
 	GetBankKeeper() *bankkeeper.Keeper
 	GetParamKeeper() *paramsKeeper.Keeper
 	GetC4eVestingKeeper() *cfevestingkeeper.Keeper
+	GetC4eClaimKeeper() *cfeclaimkeeper.Keeper
 }
 
 // BaseAppParamManager defines an interrace that BaseApp is expected to fullfil

@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"github.com/chain4energy/c4e-chain/app/params"
 	"strconv"
 	"strings"
 
@@ -17,8 +18,6 @@ import (
 var _ = strconv.Itoa(0)
 
 func CmdCreateVestingAccount() *cobra.Command {
-	bech32PrefixAddr := sdk.GetConfig().GetBech32AccountAddrPrefix()
-
 	cmd := &cobra.Command{
 		Use:   "create-vesting-account [to-address] [amount] [start-time] [end-time]",
 		Short: "Create a new vesting account funded with an allocation of tokens.",
@@ -33,8 +32,7 @@ Arguments:
 
 Example:
 $ %s tx %s create-vesting-account %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 123000 1609455 1640991 --from mykey
-`, version.AppName, types.ModuleName, bech32PrefixAddr,
-		),
+`, version.AppName, types.ModuleName, params.Bech32PrefixAccAddr),
 		),
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {

@@ -80,7 +80,7 @@ func ModuleAccountInvariant(k Keeper) sdk.Invariant {
 
 func getLockedSum(k Keeper, ctx sdk.Context) math.Int {
 	allVestingPools := k.GetAllAccountVestingPools(ctx)
-	sum := sdk.ZeroInt()
+	sum := math.ZeroInt()
 	for _, accountVestingPools := range allVestingPools {
 		for _, vestingPool := range accountVestingPools.VestingPools {
 			sum = sum.Add(vestingPool.GetCurrentlyLocked())

@@ -1,6 +1,7 @@
 package initialization
 
 import (
+	"cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -33,6 +34,8 @@ import (
 	c4eapp "github.com/chain4energy/c4e-chain/app"
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 )
+
+const configTomlFile = "config.toml"
 
 type internalNode struct {
 	chain        *internalChain
@@ -83,7 +86,7 @@ func (n *internalNode) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error)
 	}
 
 	// get the initial validator min self delegation
-	minSelfDelegation, _ := sdk.NewIntFromString("1")
+	minSelfDelegation, _ := math.NewIntFromString("1")
 
 	valPubKey, err := cryptocodec.FromTmPubKeyInterface(n.consensusKey.PubKey)
 	if err != nil {
@@ -283,7 +286,7 @@ func (n *internalNode) init(appState map[string]json.RawMessage) error {
 		return fmt.Errorf("failed to export app genesis state: %w", err)
 	}
 
-	tmconfig.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
+	tmconfig.WriteConfigFile(filepath.Join(config.RootDir, "config", configTomlFile), config)
 	return nil
 }
 
@@ -302,7 +305,7 @@ func (n *internalNode) createMnemonic() (string, error) {
 }
 
 func (n *internalNode) initNodeConfigs(persistentPeers []string) error {
-	tmCfgPath := filepath.Join(n.configDir(), "config", "config.toml")
+	tmCfgPath := filepath.Join(n.configDir(), "config", configTomlFile)
 
 	vpr := viper.New()
 	vpr.SetConfigFile(tmCfgPath)
@@ -329,7 +332,7 @@ func (n *internalNode) initNodeConfigs(persistentPeers []string) error {
 }
 
 func (n *internalNode) initStateSyncConfig(trustHeight int64, trustHash string, stateSyncRPCServers []string) error {
-	tmCfgPath := filepath.Join(n.configDir(), "config", "config.toml")
+	tmCfgPath := filepath.Join(n.configDir(), "config", configTomlFile)
 
 	vpr := viper.New()
 	vpr.SetConfigFile(tmCfgPath)

@@ -1,17 +1,20 @@
 package simulation
 
 import (
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	"github.com/chain4energy/c4e-chain/testutil/simulation"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"math/rand"
 )
 
 func SimulateWithdrawAllAvailable(
-	_ types.AccountKeeper,
+	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	k keeper.Keeper,
 ) simtypes.Operation {
@@ -21,24 +24,17 @@ func SimulateWithdrawAllAvailable(
 		if len(allVestingAccounts) == 0 {
 			return simtypes.NewOperationMsg(&types.MsgWithdrawAllAvailable{}, false, "", nil), nil, nil
 		}
-		randInt := helpers.RandomInt(r, len(allVestingAccounts))
+		randInt := utils.RandInt64(r, len(allVestingAccounts))
 		accAddress := allVestingAccounts[randInt].Owner
+		sdkAccAddress := sdk.MustAccAddressFromBech32(accAddress)
+		simAccount, _ := simtypes.FindAccount(accs, sdkAccAddress)
 		msgWithdrawAllAvailable := &types.MsgWithdrawAllAvailable{
 			Owner: accAddress,
 		}
 
-		msgServer, msgServerCtx := keeper.NewMsgServerImpl(k), sdk.WrapSDKContext(ctx)
-		withdraw, err := msgServer.WithdrawAllAvailable(msgServerCtx, msgWithdrawAllAvailable)
-
-		if err != nil || withdraw.Withdrawn.Amount.Int64() == 0 {
-			if err != nil {
-				k.Logger(ctx).Error("SIMULATION: Withdraw all available error", err.Error())
-			}
-
+		if err := simulation.SendMessageWithRandomFees(ctx, r, ak.(authkeeper.AccountKeeper), bk.(bankkeeper.Keeper), app, simAccount, msgWithdrawAllAvailable, chainID); err != nil {
 			return simtypes.NewOperationMsg(msgWithdrawAllAvailable, false, "", nil), nil, nil
 		}
-
-		k.Logger(ctx).Debug("SIMULATION: Withdraw operations - FINISHED")
 		return simtypes.NewOperationMsg(msgWithdrawAllAvailable, true, "", nil), nil, nil
 	}
 }

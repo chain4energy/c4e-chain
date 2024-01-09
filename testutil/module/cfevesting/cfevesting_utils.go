@@ -108,13 +108,121 @@ func (h *C4eVestingUtils) MessageCreateGenesisVestingPool(ctx sdk.Context, addre
 
 }
 
+func (h *C4eVestingUtils) SendToPeriodicContinuousVestingAccount(ctx sdk.Context, toAddress sdk.AccAddress,
+	amount math.Int, free sdk.Dec, startTime int64, endTime int64) {
+	coins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amount))
+	moduleBalance := h.bankUtils.GetModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName)
+	accBalance := h.bankUtils.GetAccountDefultDenomBalance(ctx, toAddress)
+
+	accountBefore := h.helperAccountKeeper.GetAccount(ctx, toAddress)
+
+	previousOriginalVesting := sdk.NewCoins()
+	var previousPeriods []cfevestingtypes.ContinuousVestingPeriod
+	if accountBefore != nil {
+		if claimAccount, ok := accountBefore.(*cfevestingtypes.PeriodicContinuousVestingAccount); ok {
+			previousOriginalVesting = previousOriginalVesting.Add(claimAccount.OriginalVesting...)
+			previousPeriods = claimAccount.VestingPeriods
+		}
+	}
+	_, _, err := h.helperCfevestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, cfevestingtypes.ModuleName,
+		toAddress.String(),
+		coins,
+		free,
+		startTime,
+		endTime,
+	)
+	require.NoError(h.t, err)
+
+	h.bankUtils.VerifyAccountDefaultDenomBalance(ctx, toAddress, accBalance.Add(amount))
+	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleBalance.Sub(amount))
+
+	claimAccount, ok := h.helperAccountKeeper.GetAccount(ctx, toAddress).(*cfevestingtypes.PeriodicContinuousVestingAccount)
+	require.True(h.t, ok)
+	newPeriods := append(previousPeriods, cfevestingtypes.ContinuousVestingPeriod{StartTime: startTime, EndTime: endTime, Amount: coins})
+	h.VerifyPeriodicContinuousVestingAccount(ctx, toAddress, previousOriginalVesting.Add(coins...), startTime, endTime, newPeriods)
+	require.NoError(h.t, claimAccount.Validate())
+}
+
+func (h *C4eVestingUtils) AddReservationToVestingPool(ctx sdk.Context, address sdk.AccAddress, vestingPoolName string, reservationId uint64, amount math.Int) {
+	_, vestingPoolBefore, found := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, address.String(), vestingPoolName)
+	require.True(h.t, found)
+	reservationBefore := vestingPoolBefore.GetReservation(reservationId)
+	err := h.helperCfevestingKeeper.AddVestingPoolReservation(ctx, address.String(), vestingPoolName, reservationId, amount)
+	require.NoError(h.t, err)
+	_, vestingPoolAfter, found := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, address.String(), vestingPoolName)
+	require.True(h.t, found)
+	reservationAfter := vestingPoolAfter.GetReservation(reservationId)
+	amountAfter := amount
+	if reservationBefore != nil {
+		amountAfter = amountAfter.Add(reservationBefore.Amount)
+	}
+	require.True(h.t, amountAfter.Equal(reservationAfter.Amount))
+}
+
+func (h *C4eVestingUtils) RemoveVestingPoolReservation(ctx sdk.Context, address sdk.AccAddress, vestingPoolName string, reservationId uint64, amount math.Int) {
+	_, vestingPoolBefore, found := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, address.String(), vestingPoolName)
+	require.True(h.t, found)
+	reservationBefore := vestingPoolBefore.GetReservation(reservationId)
+	err := h.helperCfevestingKeeper.RemoveVestingPoolReservation(ctx, address.String(), vestingPoolName, reservationId, amount)
+	require.NoError(h.t, err)
+	_, vestingPoolAfter, found := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, address.String(), vestingPoolName)
+	require.True(h.t, found)
+	reservationAfter := vestingPoolAfter.GetReservation(reservationId)
+	if amount.Equal(reservationBefore.Amount) {
+		require.Nil(h.t, reservationAfter)
+	} else {
+		require.True(h.t, reservationAfter.Amount.Equal(reservationBefore.Amount.Sub(amount)))
+	}
+}
+
+func (h *C4eVestingUtils) SendToPeriodicContinuousVestingAccountError(ctx sdk.Context, toAddress sdk.AccAddress,
+	amount math.Int, free sdk.Dec, startTime int64, endTime int64, errorMessage string) {
+	coins := sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amount))
+	moduleBalance := h.bankUtils.GetModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName)
+	accBalance := h.bankUtils.GetAccountDefultDenomBalance(ctx, toAddress)
+	accountBefore := h.helperAccountKeeper.GetAccount(ctx, toAddress)
+
+	_, _, err := h.helperCfevestingKeeper.SendToPeriodicContinuousVestingAccountFromModule(ctx, cfevestingtypes.ModuleName,
+		toAddress.String(),
+		coins,
+		free,
+		startTime,
+		endTime,
+	)
+	require.EqualError(h.t, err, errorMessage)
+
+	h.bankUtils.VerifyAccountDefaultDenomBalance(ctx, toAddress, accBalance)
+	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleBalance)
+
+	accountAfter := h.helperAccountKeeper.GetAccount(ctx, toAddress)
+	require.EqualValues(h.t, accountBefore, accountAfter)
+}
+
+func (h *C4eVestingUtils) VerifyPeriodicContinuousVestingAccount(ctx sdk.Context, address sdk.AccAddress,
+	expectedOriginalVesting sdk.Coins, expectedStartTime int64, expectedEndTime int64, expectedPeriods []cfevestingtypes.ContinuousVestingPeriod) {
+
+	claimAccount, ok := h.helperAccountKeeper.GetAccount(ctx, address).(*cfevestingtypes.PeriodicContinuousVestingAccount)
+	require.True(h.t, ok)
+
+	require.EqualValues(h.t, len(expectedPeriods), len(claimAccount.VestingPeriods))
+	require.EqualValues(h.t, expectedStartTime, claimAccount.StartTime)
+	require.EqualValues(h.t, expectedEndTime, claimAccount.EndTime)
+	require.True(h.t, expectedOriginalVesting.IsEqual(claimAccount.OriginalVesting))
+	for i := 0; i < len(expectedPeriods); i++ {
+		require.EqualValues(h.t, expectedPeriods[i].StartTime, claimAccount.VestingPeriods[i].StartTime)
+		require.EqualValues(h.t, expectedPeriods[i].EndTime, claimAccount.VestingPeriods[i].EndTime)
+		require.EqualValues(h.t, expectedPeriods[i].Amount, claimAccount.VestingPeriods[i].Amount)
+	}
+	require.NoError(h.t, claimAccount.Validate())
+}
+
 func (h *C4eVestingUtils) MessageCreateVestingPoolWithGenesisParam(ctx sdk.Context, address sdk.AccAddress, accountVestingPoolsExistsBefore bool, accountVestingPoolsExistsAfter bool,
 	vestingPoolName string, lockupDuration time.Duration, vestingType cfevestingtypes.VestingType, amountToVest math.Int, accAmountBefore math.Int, moduleAmountBefore math.Int,
 	accAmountAfter math.Int, moduleAmountAfter math.Int, isGenesisPool bool) {
 	_, accFound := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, address.String())
 	require.EqualValues(h.t, accountVestingPoolsExistsBefore, accFound)
 
-	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, address, accAmountBefore)
+	h.bankUtils.VerifyAccountDefaultDenomBalance(ctx, address, accAmountBefore)
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleAmountBefore)
 
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
@@ -122,7 +230,7 @@ func (h *C4eVestingUtils) MessageCreateVestingPoolWithGenesisParam(ctx sdk.Conte
 	msg := cfevestingtypes.MsgCreateVestingPool{Owner: address.String(), Name: vestingPoolName,
 		Amount: amountToVest, Duration: lockupDuration, VestingType: vestingType.Name}
 	_, err := msgServer.CreateVestingPool(msgServerCtx, &msg)
-	require.EqualValues(h.t, nil, err)
+	require.NoError(h.t, err)
 
 	accVestingPools, accFound := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, address.String())
 	require.EqualValues(h.t, accountVestingPoolsExistsAfter, accFound)
@@ -152,9 +260,9 @@ func (h *C4eVestingUtils) MessageCreateVestingPoolWithGenesisParam(ctx sdk.Conte
 		}
 		require.NotNil(h.t, vestingPool)
 		h.VerifyVestingPool(ctx, vestingPool, vestingPoolName, vestingType.Name, ctx.BlockTime(), ctx.BlockTime().Add(lockupDuration),
-			amountToVest, sdk.ZeroInt(), sdk.ZeroInt())
+			amountToVest, math.ZeroInt(), math.ZeroInt())
 	}
-	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, address, accAmountAfter)
+	h.bankUtils.VerifyAccountDefaultDenomBalance(ctx, address, accAmountAfter)
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleAmountAfter)
 
 	if isGenesisPool && accountVestingPoolsExistsAfter {
@@ -229,7 +337,7 @@ func (h *C4eVestingUtils) VerifyAccountVestingPoolsWithModification(ctx sdk.Cont
 		found := false
 		// if vesting.Id == int32(i+1) {
 		h.VerifyVestingPool(ctx, vesting, vestingNames[i], vestingTypes[i].Name, startsTimes[i], startsTimes[i].Add(durations[i]),
-			vestedAmounts[i], withdrawnAmounts[i], sdk.NewInt(sentAmounts[i]))
+			vestedAmounts[i], withdrawnAmounts[i], math.NewInt(sentAmounts[i]))
 		found = true
 
 		// }
@@ -269,7 +377,7 @@ func (h *C4eVestingUtils) MessageWithdrawAllAvailable(ctx sdk.Context, address s
 	expectedWithdrawn math.Int) {
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
-	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, address, accountBalanceBefore)
+	h.bankUtils.VerifyAccountDefaultDenomBalance(ctx, address, accountBalanceBefore)
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleBalanceBefore)
 
 	msg := cfevestingtypes.MsgWithdrawAllAvailable{Owner: address.String()}
@@ -277,7 +385,7 @@ func (h *C4eVestingUtils) MessageWithdrawAllAvailable(ctx sdk.Context, address s
 	require.EqualValues(h.t, nil, err)
 	require.True(h.t, expectedWithdrawn.Equal(resp.Withdrawn.Amount))
 	require.EqualValues(h.t, h.helperCfevestingKeeper.GetParams(ctx).Denom, resp.Withdrawn.Denom)
-	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, address, accountBalanceBefore.Add(expectedWithdrawn))
+	h.bankUtils.VerifyAccountDefaultDenomBalance(ctx, address, accountBalanceBefore.Add(expectedWithdrawn))
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleBalanceBefore.Sub(expectedWithdrawn))
 }
 
@@ -368,7 +476,15 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 	vestingAccountCount := h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx)
 	accAmountBefore := h.bankUtils.GetAccountDefultDenomBalance(ctx, vestingAccAddress)
 	moduleAmountBefore := h.bankUtils.GetModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName)
+	accountBefore := h.helperAccountKeeper.GetAccount(ctx, vestingAccAddress)
+	newVestingAccountTraceId := vestingAccountCount
+	vaccFromListBefore, vaccFromListBeforeFound := h.helperCfevestingKeeper.GetVestingAccountTrace(ctx, vestingAccAddress.String())
 
+	if accountBefore != nil {
+		newVestingAccountTraceId = vestingAccountCount - 1
+	} else {
+		vestingAccountCount++
+	}
 	vestingPools, found := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, fromAddress.String())
 	require.Equal(h.t, true, found)
 	foundVPool, _ := GetVestingPoolByName(vestingPools.VestingPools, vestingPoolName)
@@ -377,20 +493,27 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 	msg := cfevestingtypes.MsgSendToVestingAccount{Owner: fromAddress.String(), ToAddress: vestingAccAddress.String(),
 		VestingPoolName: vestingPoolName, Amount: amount, RestartVesting: restartVesting}
 	_, err := msgServer.SendToVestingAccount(msgServerCtx, &msg)
-	require.EqualValues(h.t, nil, err)
+	require.NoError(h.t, err)
 
-	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, vestingAccAddress, accAmountBefore.Add(amount))
+	h.bankUtils.VerifyAccountDefaultDenomBalance(ctx, vestingAccAddress, accAmountBefore.Add(amount))
 	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleAmountBefore.Sub(amount))
+	require.Equal(h.t, vestingAccountCount, h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx))
 
-	require.Equal(h.t, uint64(vestingAccountCount+1), h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx))
-	vaccFromList, found := h.helperCfevestingKeeper.GetVestingAccountTraceById(ctx, uint64(vestingAccountCount))
+	vaccFromList, found := h.helperCfevestingKeeper.GetVestingAccountTraceById(ctx, newVestingAccountTraceId)
 	require.Equal(h.t, true, found)
 	expectedVestingAccountTrace := cfevestingtypes.VestingAccountTrace{
-		Id:                 uint64(vestingAccountCount),
+		Id:                 newVestingAccountTraceId,
 		Address:            vestingAccAddress.String(),
 		Genesis:            false,
 		FromGenesisPool:    foundVPool.GenesisPool,
 		FromGenesisAccount: false,
+	}
+	if foundVPool.GenesisPool {
+		if vaccFromListBeforeFound {
+			expectedVestingAccountTrace.PeriodsToTrace = append(vaccFromListBefore.PeriodsToTrace, uint64(len(vaccFromListBefore.PeriodsToTrace)))
+		} else {
+			expectedVestingAccountTrace.PeriodsToTrace = []uint64{0}
+		}
 	}
 	require.EqualValues(h.t, expectedVestingAccountTrace, vaccFromList)
 
@@ -401,8 +524,8 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 	require.NotNilf(h.t, foundVPool, "vesting pool no found. Name: %d", vestingPoolName)
 	require.Equal(h.t, sentBefore.Add(amount), foundVPool.Sent)
 
-	vestingType, err := h.helperCfevestingKeeper.GetVestingType(ctx, foundVPool.VestingType)
-	require.NoError(h.t, err, "GetVestingType error")
+	vestingType, err := h.helperCfevestingKeeper.MustGetVestingType(ctx, foundVPool.VestingType)
+	require.NoError(h.t, err, "MustGetVestingType error")
 
 	denom := h.helperCfevestingKeeper.Denom(ctx)
 
@@ -414,6 +537,87 @@ func (h *C4eVestingUtils) MessageSendToVestingAccount(ctx sdk.Context, fromAddre
 	}
 }
 
+func (h *C4eVestingUtils) SendReservedToVestingAccount(ctx sdk.Context, fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress,
+	vestingPoolName string, amount math.Int, reservationId uint64, free sdk.Dec, lockupPeriod time.Duration, vestingPeriod time.Duration, expectedLocked math.Int) {
+	vestingAccountCount := h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx)
+	accAmountBefore := h.bankUtils.GetAccountDefultDenomBalance(ctx, vestingAccAddress)
+	moduleAmountBefore := h.bankUtils.GetModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName)
+	accountBefore := h.helperAccountKeeper.GetAccount(ctx, vestingAccAddress)
+	newVestingAccountTraceId := vestingAccountCount
+	vaccFromListBefore, vaccFromListBeforeFound := h.helperCfevestingKeeper.GetVestingAccountTrace(ctx, vestingAccAddress.String())
+	if accountBefore != nil {
+		newVestingAccountTraceId = vestingAccountCount - 1
+	} else {
+		vestingAccountCount++
+	}
+	_, vestingPoolBefore, found := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, fromAddress.String(), vestingPoolName)
+	reservationBefore := vestingPoolBefore.GetReservation(reservationId)
+	require.NotNil(h.t, reservationBefore)
+	require.Equal(h.t, true, found)
+	require.NotNilf(h.t, vestingPoolBefore, "vesting pool no found. Name: %s", vestingPoolBefore.Name)
+	sentBefore := vestingPoolBefore.Sent
+	err := h.helperCfevestingKeeper.SendReservedToNewVestingAccount(ctx, fromAddress.String(), vestingAccAddress.String(), vestingPoolName,
+		amount, reservationId, free, lockupPeriod, vestingPeriod)
+	require.NoError(h.t, err)
+
+	h.bankUtils.VerifyAccountDefaultDenomBalance(ctx, vestingAccAddress, accAmountBefore.Add(amount))
+	h.bankUtils.VerifyModuleAccountDefultDenomBalance(ctx, cfevestingtypes.ModuleName, moduleAmountBefore.Sub(amount))
+	require.Equal(h.t, vestingAccountCount, h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx))
+
+	vaccFromList, found := h.helperCfevestingKeeper.GetVestingAccountTraceById(ctx, newVestingAccountTraceId)
+	require.Equal(h.t, true, found)
+	expectedVestingAccountTrace := cfevestingtypes.VestingAccountTrace{
+		Id:                 newVestingAccountTraceId,
+		Address:            vestingAccAddress.String(),
+		Genesis:            false,
+		FromGenesisPool:    vestingPoolBefore.GenesisPool,
+		FromGenesisAccount: false,
+	}
+	if vestingPoolBefore.GenesisPool {
+		if vaccFromListBeforeFound {
+			expectedVestingAccountTrace.PeriodsToTrace = append(vaccFromListBefore.PeriodsToTrace, uint64(len(vaccFromListBefore.PeriodsToTrace)))
+		} else {
+			expectedVestingAccountTrace.PeriodsToTrace = []uint64{0}
+		}
+	}
+	require.EqualValues(h.t, expectedVestingAccountTrace, vaccFromList)
+
+	_, vestingPoolAfter, found := h.helperCfevestingKeeper.GetAccountVestingPool(ctx, fromAddress.String(), vestingPoolName)
+	reservationAfter := vestingPoolAfter.GetReservation(reservationId)
+	if amount.Equal(reservationBefore.Amount) {
+		require.Nil(h.t, reservationAfter)
+	} else {
+		require.True(h.t, reservationAfter.Amount.Equal(reservationBefore.Amount.Sub(amount)))
+	}
+	require.Equal(h.t, true, found)
+
+	require.NotNilf(h.t, vestingPoolAfter, "vesting pool no found. Name: %d", vestingPoolAfter.Name)
+	require.Equal(h.t, sentBefore.Add(amount), vestingPoolAfter.Sent)
+
+	vestingType, err := h.helperCfevestingKeeper.MustGetVestingType(ctx, vestingPoolAfter.VestingType)
+	require.NoError(h.t, err, "MustGetVestingType error")
+
+	denom := h.helperCfevestingKeeper.Denom(ctx)
+
+	lockedAmount := sdk.NewCoins(sdk.NewCoin(denom, expectedLocked))
+	h.authUtils.VerifyVestingAccount(ctx, vestingAccAddress, lockedAmount, ctx.BlockTime().Add(vestingType.LockupPeriod), ctx.BlockTime().Add(vestingType.LockupPeriod).Add(vestingType.VestingPeriod))
+
+}
+
+func (h *C4eVestingUtils) SendToVestingAccountError(ctx sdk.Context, fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string,
+	amount math.Int, reservationId uint64, free sdk.Dec, lockupPeriod time.Duration, vestingPeriod time.Duration, errorMessage string) {
+	vestingAccountCount := h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx)
+
+	err := h.helperCfevestingKeeper.SendReservedToNewVestingAccount(ctx, fromAddress.String(), vestingAccAddress.String(), vestingPoolName,
+		amount, reservationId, free, lockupPeriod, vestingPeriod)
+	require.EqualError(h.t, err, errorMessage)
+	require.Equal(h.t, vestingAccountCount, h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx))
+}
+
+func (h *C4eVestingUtils) GetVestingDenom(ctx sdk.Context) string {
+	return h.helperCfevestingKeeper.Denom(ctx)
+}
+
 func (h *C4eVestingUtils) MessageSendToVestingAccountError(ctx sdk.Context, fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount math.Int, restartVesting bool, errorMessage string) {
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
@@ -423,7 +627,7 @@ func (h *C4eVestingUtils) MessageSendToVestingAccountError(ctx sdk.Context, from
 		VestingPoolName: vestingPoolName, Amount: amount, RestartVesting: restartVesting}
 	_, err := msgServer.SendToVestingAccount(msgServerCtx, &msg)
 	require.EqualError(h.t, err, errorMessage)
-	require.Equal(h.t, uint64(vestingAccountCount), h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx))
+	require.Equal(h.t, vestingAccountCount, h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx))
 }
 
 func (h *C4eVestingUtils) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountsToUnlock sdk.Coins, expectedAccountBalances sdk.Coins, expectedLockedBalancesBefore sdk.Coins) {
@@ -439,7 +643,7 @@ func (h *C4eVestingUtils) UnlockUnbondedContinuousVestingAccountCoins(ctx sdk.Co
 	require.Truef(h.t, expectedLockedBalancesBefore.Sub(amountsToUnlock...).IsEqual(locked), "expectedLockedBalances %s <> locked %s", expectedLockedBalancesBefore.Sub(amountsToUnlock...), locked)
 }
 
-func (h *C4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Int, expectedAccountBalance sdk.Int, expectedLockedBalanceBefore sdk.Int) {
+func (h *C4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock math.Int, expectedAccountBalance math.Int, expectedLockedBalanceBefore math.Int) {
 	h.UnlockUnbondedContinuousVestingAccountCoins(ctx, ownerAddress,
 		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amountToUnlock)),
 		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, expectedAccountBalance)),
@@ -457,7 +661,7 @@ func (h *C4eVestingUtils) UnlockUnbondedContinuousVestingAccountCoinsError(ctx s
 
 }
 
-func (h *C4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoinsError(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock sdk.Int, expectedAccountBalance sdk.Int, expectedLockedBalanceBefore sdk.Int, expectedError string) {
+func (h *C4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoinsError(ctx sdk.Context, ownerAddress sdk.AccAddress, amountToUnlock math.Int, expectedAccountBalance math.Int, expectedLockedBalanceBefore math.Int, expectedError string) {
 	h.UnlockUnbondedContinuousVestingAccountCoinsError(ctx, ownerAddress,
 		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, amountToUnlock)),
 		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, expectedAccountBalance)),
@@ -478,6 +682,10 @@ func NewContextC4eVestingUtils(t require.TestingT, testContext testenv.TestConte
 	return &ContextC4eVestingUtils{C4eVestingUtils: c4eVestingUtils, testContext: testContext}
 }
 
+func (h *ContextC4eVestingUtils) GetVestingDenom() string {
+	return h.C4eVestingUtils.GetVestingDenom(h.testContext.GetContext())
+}
+
 func (h *ContextC4eVestingUtils) SetupAccountVestingPools(address string, numberOfVestingPools int, vestingAmount math.Int, withdrawnAmount math.Int) cfevestingtypes.AccountVestingPools {
 	return h.C4eVestingUtils.SetupAccountVestingPools(h.testContext.GetContext(), address, numberOfVestingPools, vestingAmount, withdrawnAmount)
 }
@@ -491,6 +699,22 @@ func (h *ContextC4eVestingUtils) MessageCreateVestingPool(address sdk.AccAddress
 	accAmountAfter math.Int, moduleAmountAfter math.Int) {
 	h.C4eVestingUtils.MessageCreateVestingPool(h.testContext.GetContext(), address, accountVestingPoolsExistsBefore, accountVestingPoolsExistsAfter, vestingPoolName, lockupDuration,
 		vestingType, amountToVest, accAmountBefore, moduleAmountBefore, accAmountAfter, moduleAmountAfter)
+}
+
+func (h *ContextC4eVestingUtils) AddTestVestingPool(address sdk.AccAddress, vestingPoolName string, vested math.Int, lockupPeriodInHours int64, vestingPeriodInHours int64) {
+	accInitBalance := math.NewInt(10000)
+	h.bankUtils.AddDefaultDenomCoinsToAccount(h.testContext.GetContext(), accInitBalance, address)
+
+	vestingType := cfevestingtypes.VestingType{
+		Name:          "test-vesting-type",
+		LockupPeriod:  CreateDurationFromNumOfHours(lockupPeriodInHours),
+		VestingPeriod: CreateDurationFromNumOfHours(vestingPeriodInHours),
+		Free:          sdk.MustNewDecFromStr("0.05"),
+	}
+	h.helperCfevestingKeeper.SetVestingType(h.testContext.GetContext(), vestingType)
+
+	h.C4eVestingUtils.MessageCreateVestingPool(h.testContext.GetContext(), address, false, true, vestingPoolName, 1000,
+		vestingType, vested, accInitBalance, math.ZeroInt(), accInitBalance.Sub(vested), vested)
 }
 
 func (h *ContextC4eVestingUtils) MessageCreateGenesisVestingPool(address sdk.AccAddress, accountVestingPoolsExistsBefore bool, accountVestingPoolsExistsAfter bool,
@@ -616,7 +840,7 @@ func (h *C4eVestingUtils) MessageCreateVestingAccount(
 	_, accFound := h.helperCfevestingKeeper.GetAccountVestingPools(ctx, toAddress.String())
 	require.EqualValues(h.t, false, accFound)
 
-	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, fromAddress, amountBefore)
+	h.bankUtils.VerifyAccountDefaultDenomBalance(ctx, fromAddress, amountBefore)
 	vestingAccountCountBefore := h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx)
 	msgServer, msgServerCtx := cfevestingmodulekeeper.NewMsgServerImpl(*h.helperCfevestingKeeper), sdk.WrapSDKContext(ctx)
 
@@ -633,7 +857,7 @@ func (h *C4eVestingUtils) MessageCreateVestingAccount(
 	vestingAccountCountAfter := h.helperCfevestingKeeper.GetVestingAccountTraceCount(ctx)
 	require.EqualValues(h.t, vestingAccountCountBefore, vestingAccountCountAfter)
 
-	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, fromAddress, amountBefore.Sub(coins.AmountOf(testenv.DefaultTestDenom)))
+	h.bankUtils.VerifyAccountDefaultDenomBalance(ctx, fromAddress, amountBefore.Sub(coins.AmountOf(testenv.DefaultTestDenom)))
 	h.authUtils.VerifyVestingAccount(ctx, toAddress, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, coins.AmountOf(testenv.DefaultTestDenom))), startTime, endTime)
 	_, found := h.helperCfevestingKeeper.GetVestingAccountTraceById(ctx, vestingAccountCountBefore)
 	require.False(h.t, found)
@@ -684,17 +908,17 @@ func (h *C4eVestingUtils) MessageCreateVestingAccountError(
 	_, err := msgServer.CreateVestingAccount(msgServerCtx, &msg)
 	require.EqualValues(h.t, errorMessage, err.Error())
 
-	h.bankUtils.VerifyAccountDefultDenomBalance(ctx, fromAddress, amountBefore)
+	h.bankUtils.VerifyAccountDefaultDenomBalance(ctx, fromAddress, amountBefore)
 	require.EqualValues(h.t, vestingAccountCountBefore, vestingAccountCountAfter)
 	_, found := h.helperCfevestingKeeper.GetVestingAccountTraceById(ctx, vestingAccountCountBefore)
 	require.Equal(h.t, false, found)
 }
 
-func (h *ContextC4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(ownerAddress sdk.AccAddress, amountToUnlock sdk.Int, expectedAccountBalance sdk.Int, expectedLockedBalanceBefore sdk.Int) {
+func (h *ContextC4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(ownerAddress sdk.AccAddress, amountToUnlock math.Int, expectedAccountBalance math.Int, expectedLockedBalanceBefore math.Int) {
 	h.C4eVestingUtils.UnlockUnbondedDefaultDenomContinuousVestingAccountCoins(h.testContext.GetContext(), ownerAddress, amountToUnlock, expectedAccountBalance, expectedLockedBalanceBefore)
 }
 
-func (h *ContextC4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoinsError(ownerAddress sdk.AccAddress, amountToUnlock sdk.Int, expectedAccountBalance sdk.Int, expectedLockedBalanceBefore sdk.Int, expectedError string) {
+func (h *ContextC4eVestingUtils) UnlockUnbondedDefaultDenomContinuousVestingAccountCoinsError(ownerAddress sdk.AccAddress, amountToUnlock math.Int, expectedAccountBalance math.Int, expectedLockedBalanceBefore math.Int, expectedError string) {
 	h.C4eVestingUtils.UnlockUnbondedDefaultDenomContinuousVestingAccountCoinsError(h.testContext.GetContext(), ownerAddress, amountToUnlock, expectedAccountBalance, expectedLockedBalanceBefore, expectedError)
 }
 
@@ -704,5 +928,20 @@ func (h *ContextC4eVestingUtils) UnlockUnbondedContinuousVestingAccountCoins(own
 
 func (h *ContextC4eVestingUtils) UnlockUnbondedContinuousVestingAccountCoinsError(ownerAddress sdk.AccAddress, amountsToUnlock sdk.Coins, expectedAccountBalances sdk.Coins, expectedLockedBalancesBefore sdk.Coins, expectedError string) {
 	h.C4eVestingUtils.UnlockUnbondedContinuousVestingAccountCoinsError(h.testContext.GetContext(), ownerAddress, amountsToUnlock, expectedAccountBalances, expectedLockedBalancesBefore, expectedError)
+}
 
+func (h *ContextC4eVestingUtils) SendReservedToVestingAccount(fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount math.Int, reservationId uint64, free sdk.Dec, lockupPeriod time.Duration, vestingPeriod time.Duration, expectedLocked math.Int) {
+	h.C4eVestingUtils.SendReservedToVestingAccount(h.testContext.GetContext(), fromAddress, vestingAccAddress, vestingPoolName, amount, reservationId, free, lockupPeriod, vestingPeriod, expectedLocked)
+}
+
+func (h *ContextC4eVestingUtils) SendReservedToVestingAccountError(fromAddress sdk.AccAddress, vestingAccAddress sdk.AccAddress, vestingPoolName string, amount math.Int, reservationId uint64, free sdk.Dec, lockupPeriod time.Duration, vestingPeriod time.Duration, errorMessage string) {
+	h.C4eVestingUtils.SendToVestingAccountError(h.testContext.GetContext(), fromAddress, vestingAccAddress, vestingPoolName, amount, reservationId, free, lockupPeriod, vestingPeriod, errorMessage)
+}
+
+func (h *ContextC4eVestingUtils) AddReservationToVestingPool(address sdk.AccAddress, vestingPoolName string, reservationId uint64, amout math.Int) {
+	h.C4eVestingUtils.AddReservationToVestingPool(h.testContext.GetContext(), address, vestingPoolName, reservationId, amout)
+}
+
+func (h *ContextC4eVestingUtils) RemoveReservationToVestingPool(address sdk.AccAddress, vestingPoolName string, reservationId uint64, amout math.Int) {
+	h.C4eVestingUtils.RemoveVestingPoolReservation(h.testContext.GetContext(), address, vestingPoolName, reservationId, amout)
 }

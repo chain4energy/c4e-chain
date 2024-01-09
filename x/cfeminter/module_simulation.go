@@ -1,9 +1,10 @@
 package cfeminter
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/testutil/sample"
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -31,15 +32,15 @@ const SecondsInYear = int32(3600 * 24 * 365)
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	randAmount := helpers.RandomInt(simState.Rand, 40000000000000)
-	randStepDuration := helpers.RandomInt(simState.Rand, int(31536000*time.Second*4))
-	randomIntBetween := helpers.RandIntBetween(simState.Rand, 1, 100)
+	randAmount := utils.RandInt64(simState.Rand, 40000000000000)
+	randStepDuration := utils.RandInt64(simState.Rand, int(31536000*time.Second*4))
+	randomIntBetween := utils.RandIntBetween(simState.Rand, 1, 100)
 	amountMultiplierFloat := float64(randomIntBetween) / float64(100)
 	randAmountMultiplierFactor := fmt.Sprintf("%f", amountMultiplierFloat)
 	now := simState.GenTimestamp
 
 	exponentialStepMinting := types.ExponentialStepMinting{
-		Amount:           sdk.NewInt(randAmount),
+		Amount:           math.NewInt(randAmount),
 		StepDuration:     time.Duration(randStepDuration),
 		AmountMultiplier: sdk.MustNewDecFromStr(randAmountMultiplierFactor),
 	}
@@ -55,7 +56,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		Params: types.NewParams("stake", now, minters),
 		MinterState: types.MinterState{
 			SequenceId:   1,
-			AmountMinted: sdk.NewInt(0),
+			AmountMinted: math.NewInt(0),
 		},
 	}
 

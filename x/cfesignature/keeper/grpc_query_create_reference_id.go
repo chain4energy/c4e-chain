@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
 	"github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -24,7 +25,7 @@ func (k Keeper) CreateReferenceId(goCtx context.Context, req *types.QueryCreateR
 	rand32 := make([]byte, 32)
 	_, err := rand.Read(rand32)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "failed to generate referenceID")
+		return nil, errors.Wrap(sdkerrors.ErrLogic, "failed to generate referenceID")
 	}
 
 	// encode random numbers to hex string
@@ -43,13 +44,13 @@ func (k Keeper) CreateReferenceId(goCtx context.Context, req *types.QueryCreateR
 
 	data, err1 := k.GetSignature(ctx, storageKey.StorageKey)
 	if err != nil {
-		if !sdkerrors.IsOf(err1, sdkerrors.ErrKeyNotFound) {
+		if !errors.IsOf(err1, sdkerrors.ErrKeyNotFound) {
 			return nil, err1
 		}
 	}
 
 	if data != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "KVStore data for this referenceID already exists.")
+		return nil, errors.Wrap(sdkerrors.ErrLogic, "KVStore data for this referenceID already exists.")
 	}
 
 	return &types.QueryCreateReferenceIdResponse{ReferenceId: referenceID}, nil

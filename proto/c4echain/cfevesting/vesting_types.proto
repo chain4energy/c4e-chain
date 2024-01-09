@@ -12,7 +12,7 @@ message VestingTypes {
 
 message VestingType {
   // vesting type name
-  string name = 1; 
+  string name = 1;
   // period of locked coins (minutes) from vesting start
   google.protobuf.Duration lockup_period = 2 [
     (gogoproto.nullable) = false,

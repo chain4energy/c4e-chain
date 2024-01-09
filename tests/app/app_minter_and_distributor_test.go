@@ -5,7 +5,6 @@ import (
 	testgenesis "github.com/chain4energy/c4e-chain/tests/app/genesis"
 	"github.com/chain4energy/c4e-chain/testutil/app"
 	distributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"testing"
 	"time"
@@ -27,25 +26,25 @@ func TestMinterWithDistributor(t *testing.T) {
 		timeInYears int
 		want        testResult
 	}{
-		{"One year test", 1, testResult{developmentFundCoinsInt: sdk.NewInt(2000000000000),
-			governanceBoosterCoinInt: sdk.NewInt(4620000000000), greenEnergyBoosterCoinInt: sdk.NewInt(4760000000000),
-			lpProviders: sdk.NewInt(4620000000000), totalSupply: sdk.NewInt(40000000000000)}},
+		{"One year test", 1, testResult{developmentFundCoinsInt: math.NewInt(2000000000000),
+			governanceBoosterCoinInt: math.NewInt(4620000000000), greenEnergyBoosterCoinInt: math.NewInt(4760000000000),
+			lpProviders: math.NewInt(4620000000000), totalSupply: math.NewInt(40000000000000)}},
 
-		{"Two years test", 2, testResult{developmentFundCoinsInt: sdk.NewInt(2 * 2000000000000),
-			governanceBoosterCoinInt: sdk.NewInt(2 * 4620000000000), greenEnergyBoosterCoinInt: sdk.NewInt(2 * 4760000000000),
-			lpProviders: sdk.NewInt(2 * 4620000000000), totalSupply: sdk.NewInt(2 * 40000000000000)}},
+		{"Two years test", 2, testResult{developmentFundCoinsInt: math.NewInt(2 * 2000000000000),
+			governanceBoosterCoinInt: math.NewInt(2 * 4620000000000), greenEnergyBoosterCoinInt: math.NewInt(2 * 4760000000000),
+			lpProviders: math.NewInt(2 * 4620000000000), totalSupply: math.NewInt(2 * 40000000000000)}},
 
-		{"Four years test", 4, testResult{developmentFundCoinsInt: sdk.NewInt(4 * 2000000000000),
-			governanceBoosterCoinInt: sdk.NewInt(4 * 4620000000000), greenEnergyBoosterCoinInt: sdk.NewInt(4 * 4760000000000),
-			lpProviders: sdk.NewInt(4 * 4620000000000), totalSupply: sdk.NewInt(4 * 40000000000000)}},
+		{"Four years test", 4, testResult{developmentFundCoinsInt: math.NewInt(4 * 2000000000000),
+			governanceBoosterCoinInt: math.NewInt(4 * 4620000000000), greenEnergyBoosterCoinInt: math.NewInt(4 * 4760000000000),
+			lpProviders: math.NewInt(4 * 4620000000000), totalSupply: math.NewInt(4 * 40000000000000)}},
 
-		{"8 years test", 8, testResult{developmentFundCoinsInt: sdk.NewInt(6 * 2000000000000),
-			governanceBoosterCoinInt: sdk.NewInt(6 * 4620000000000), greenEnergyBoosterCoinInt: sdk.NewInt(6 * 4760000000000),
-			lpProviders: sdk.NewInt(6 * 4620000000000), totalSupply: sdk.NewInt(6 * 40000000000000)}},
+		{"8 years test", 8, testResult{developmentFundCoinsInt: math.NewInt(6 * 2000000000000),
+			governanceBoosterCoinInt: math.NewInt(6 * 4620000000000), greenEnergyBoosterCoinInt: math.NewInt(6 * 4760000000000),
+			lpProviders: math.NewInt(6 * 4620000000000), totalSupply: math.NewInt(6 * 40000000000000)}},
 
-		{"16 years test", 16, testResult{developmentFundCoinsInt: sdk.NewInt(7.5 * 2000000000000),
-			governanceBoosterCoinInt: sdk.NewInt(7.5 * 4620000000000), greenEnergyBoosterCoinInt: sdk.NewInt(7.5 * 4760000000000),
-			lpProviders: sdk.NewInt(7.5 * 4620000000000), totalSupply: sdk.NewInt(7.5 * 40000000000000)}},
+		{"16 years test", 16, testResult{developmentFundCoinsInt: math.NewInt(7.5 * 2000000000000),
+			governanceBoosterCoinInt: math.NewInt(7.5 * 4620000000000), greenEnergyBoosterCoinInt: math.NewInt(7.5 * 4760000000000),
+			lpProviders: math.NewInt(7.5 * 4620000000000), totalSupply: math.NewInt(7.5 * 40000000000000)}},
 	}
 
 	for _, tt := range tests {

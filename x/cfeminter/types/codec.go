@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,6 +12,7 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	legacy.RegisterAminoMsg(cdc, &MsgBurn{}, "cfeminter/Burn")
 	cdc.RegisterInterface((*MinterConfigI)(nil), nil)
 	cdc.RegisterConcrete(&ExponentialStepMinting{}, "c4e-chain/ExponentialStepMinting", nil)
 	cdc.RegisterConcrete(&LinearMinting{}, "c4e-chain/LinearMinting", nil)
@@ -31,6 +33,10 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&LinearMinting{},
 		&ExponentialStepMinting{},
 		&NoMinting{},
+	)
+
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgBurn{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

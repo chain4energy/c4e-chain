@@ -3,10 +3,7 @@ package chain4energy.c4echain.cfevesting;
 
 import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/duration.proto";
-import "c4echain/cfevesting/params.proto";
-import "cosmos/msg/v1/msg.proto";
 import "gogoproto/gogo.proto";
-import "cosmos_proto/cosmos.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
 
@@ -89,8 +86,10 @@ message MsgSendToVestingAccountResponse {}
 message MsgSplitVesting {
   string from_address = 1;
   string to_address = 2;
-  repeated cosmos.base.v1beta1.Coin amount = 3
-  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+  repeated cosmos.base.v1beta1.Coin amount = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 }
 
 message MsgSplitVestingResponse {
@@ -119,7 +118,6 @@ message MsgUpdateDenomParam {
   // authority is the address of the governance account.
   string authority = 1;
   string denom = 2;
-
 }
 
 message MsgUpdateDenomParamResponse {}

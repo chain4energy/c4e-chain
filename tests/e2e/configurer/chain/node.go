@@ -108,7 +108,21 @@ func (n *NodeConfig) WaitUntil(doneCondition func(syncInfo coretypes.SyncInfo) b
 		}
 		return
 	}
-	n.t.Error("node %s timed out waiting for condition, latest block height was %d", n.Name, latestBlockHeight)
+	n.t.Errorf("node %s timed out waiting for condition, latest block height was %d", n.Name, latestBlockHeight)
+}
+
+// WaitUntilSpecifiedTime waits until node reaches specified time. Return nil if reached, error otherwise.
+func (n *NodeConfig) WaitUntilSpecifiedTime(time time.Time) {
+	doneCondition := func(syncInfo coretypes.SyncInfo) bool {
+		curBlockTime := syncInfo.LatestBlockTime
+		if time.After(curBlockTime) {
+			n.t.Logf("current block time: %s, wait untill time %s", curBlockTime.String(), time.String())
+			return false
+		}
+
+		return !syncInfo.CatchingUp
+	}
+	n.WaitUntil(doneCondition)
 }
 
 func (n *NodeConfig) extractOperatorAddressIfValidator() error {

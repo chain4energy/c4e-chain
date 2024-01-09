@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"cosmossdk.io/math"
 	"testing"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
@@ -61,7 +62,7 @@ func TestVestingSomeToWithdrawAndSomeWithdrawn(t *testing.T) {
 
 	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
 	accountVestingPools.Owner = addr
-	accountVestingPools.VestingPools[0].Withdrawn = sdk.NewInt(500)
+	accountVestingPools.VestingPools[0].Withdrawn = math.NewInt(500)
 
 	keeper.SetAccountVestingPools(ctx, accountVestingPools)
 
@@ -107,7 +108,7 @@ func TestVestingSentAfterLockEndSendingSide(t *testing.T) {
 	accountVestingPools := testutils.GenerateOneAccountVestingPoolsWithAddressWith10BasedVestingPools(1, 1, 1)
 	accountVestingPools.Owner = addr
 
-	accountVestingPools.VestingPools[0].Sent = sdk.NewInt(100000)
+	accountVestingPools.VestingPools[0].Sent = math.NewInt(100000)
 
 	accountVestingPools.VestingPools[0].LockEnd = accountVestingPools.VestingPools[0].LockEnd.Add(testutils.CreateDurationFromNumOfHours(-100))
 

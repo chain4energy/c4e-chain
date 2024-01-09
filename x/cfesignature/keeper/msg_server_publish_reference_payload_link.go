@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 
 	"github.com/chain4energy/c4e-chain/x/cfesignature/types"
@@ -17,13 +18,13 @@ func (k msgServer) PublishReferencePayloadLink(goCtx context.Context, msg *types
 
 	// Check if a Payload Link was already stored at the given key
 	if !(k.checkIfPayloadLinkExists(ctx, msg.Key)) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "data was found at the given key, cannot overwrite present payloadlinks")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "data was found at the given key, cannot overwrite present payloadlinks")
 	}
 
 	// store payload link
 	err = k.AppendPayloadLink(ctx, msg.Key, msg.Value)
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "failed to store payload link")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "failed to store payload link")
 	}
 
 	timestampString := ctx.BlockTime().String()

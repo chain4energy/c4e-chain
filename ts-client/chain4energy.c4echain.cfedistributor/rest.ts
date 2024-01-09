@@ -26,6 +26,14 @@ export interface CfedistributorDestinations {
   shares?: CfedistributorDestinationShare[];
 }
 
+export type CfedistributorMsgUpdateParamsResponse = object;
+
+export type CfedistributorMsgUpdateSubDistributorBurnShareParamResponse = object;
+
+export type CfedistributorMsgUpdateSubDistributorDestinationShareParamResponse = object;
+
+export type CfedistributorMsgUpdateSubDistributorParamResponse = object;
+
 /**
  * Params defines the parameters for the module.
  */

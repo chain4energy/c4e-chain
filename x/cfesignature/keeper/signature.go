@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
 	"github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	"github.com/chain4energy/c4e-chain/x/cfesignature/util"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -30,7 +31,7 @@ func (k Keeper) GetSignature(ctx sdk.Context, storageKey string) (*types.Signatu
 	signatureBytes := store.Get(getStoreKeyBytes(storageKey)) // Get returns nil if key doesn't exist.
 
 	if signatureBytes == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "failed to get signature")
+		return nil, errors.Wrap(sdkerrors.ErrKeyNotFound, "failed to get signature")
 	}
 
 	k.cdc.MustUnmarshal(signatureBytes, &signature)
@@ -59,7 +60,7 @@ func (k Keeper) GetPayloadLink(ctx sdk.Context, referenceID string) (string, err
 
 	// check if there is no document
 	if referencePayloadLinkValue == nil {
-		return "", sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "no payloadlink found")
+		return "", errors.Wrap(sdkerrors.ErrInvalidRequest, "no payloadlink found")
 	}
 	// done, fetched link
 	return string(referencePayloadLinkValue), nil

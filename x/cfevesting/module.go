@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/x/cfevesting/exported"
+	"github.com/chain4energy/c4e-chain/types/subspace"
 
 	// this line is used by starport scaffolding # 1
 
@@ -105,7 +105,7 @@ type AppModule struct {
 	accountKeeper  types.AccountKeeper
 	bankKeeper     types.BankKeeper
 	stakingKeeper  types.StakingKeeper
-	legacySubspace exported.Subspace
+	legacySubspace subspace.Subspace
 }
 
 func NewAppModule(
@@ -114,8 +114,7 @@ func NewAppModule(
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
 	stakingKeeper types.StakingKeeper,
-	ls exported.Subspace,
-
+	ls subspace.Subspace,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),

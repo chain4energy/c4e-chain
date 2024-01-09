@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"cosmossdk.io/errors"
 
 	"github.com/chain4energy/c4e-chain/x/cfesignature/types"
 	"github.com/chain4energy/c4e-chain/x/cfesignature/util"
@@ -22,7 +23,7 @@ func (k Keeper) CreateReferencePayloadLink(goCtx context.Context, req *types.Que
 	_ = ctx
 
 	if len(req.ReferenceId) != 64 {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid input size of referenceID")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid input size of referenceID")
 	}
 
 	referenceKey := util.CalculateHash(req.ReferenceId)

@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"cosmossdk.io/math"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
@@ -102,7 +103,7 @@ var MainnetMinterConfigLong = cfemintertypes.Params{
 }
 var exponentialStepMintingConfig, _ = codectypes.NewAnyWithValue(
 	&cfemintertypes.ExponentialStepMinting{
-		Amount:           sdk.NewInt(160000000000000),
+		Amount:           math.NewInt(160000000000000),
 		AmountMultiplier: sdk.MustNewDecFromStr("0.5"),
 		StepDuration:     time.Second * 12,
 	},

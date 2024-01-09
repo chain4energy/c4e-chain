@@ -2,6 +2,9 @@ package app
 
 import (
 	"fmt"
+	v130 "github.com/chain4energy/c4e-chain/app/upgrades/v130"
+	cfeclaimmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
+	cfeclaimmoduletypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"io"
 	"os"
 	"path/filepath"
@@ -12,6 +15,7 @@ import (
 	v120 "github.com/chain4energy/c4e-chain/app/upgrades/v120"
 
 	"github.com/chain4energy/c4e-chain/docs"
+	cfeclaimmodule "github.com/chain4energy/c4e-chain/x/cfeclaim"
 	cfedistributormodule "github.com/chain4energy/c4e-chain/x/cfedistributor"
 	cfedistributormodulekeeper "github.com/chain4energy/c4e-chain/x/cfedistributor/keeper"
 	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
@@ -175,6 +179,7 @@ var (
 		cfesignaturemodule.AppModuleBasic{},
 		cfemintermodule.AppModuleBasic{},
 		cfedistributormodule.AppModuleBasic{},
+		cfeclaimmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -189,6 +194,7 @@ var (
 		ibctransfertypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		cfevestingmoduletypes.ModuleName: nil,
 		cfemintermoduletypes.ModuleName:  {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		cfeclaimmoduletypes.ModuleName:   nil,
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 		cfedistributormoduletypes.DistributorMainAccount:      {authtypes.Burner},
 		cfedistributormoduletypes.ValidatorsRewardsCollector:  nil,
@@ -201,7 +207,7 @@ var (
 	_ servertypes.Application = (*App)(nil)
 	_ simapp.App              = (*App)(nil)
 
-	Upgrades = []upgrades.Upgrade{v110.Upgrade, v120.Upgrade}
+	Upgrades = []upgrades.Upgrade{v110.Upgrade, v120.Upgrade, v130.Upgrade}
 )
 
 func init() {
@@ -261,6 +267,7 @@ type App struct {
 	CfesignatureKeeper   cfesignaturemodulekeeper.Keeper
 	CfeminterKeeper      cfemintermodulekeeper.Keeper
 	CfedistributorKeeper cfedistributormodulekeeper.Keeper
+	CfeclaimKeeper       cfeclaimmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 	configurator module.Configurator
 
@@ -284,7 +291,7 @@ func New(
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
-	appCodec := encodingConfig.Marshaler
+	appCodec := encodingConfig.Codec
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
@@ -303,6 +310,7 @@ func New(
 		cfesignaturemoduletypes.StoreKey,
 		cfemintermoduletypes.StoreKey,
 		cfedistributormoduletypes.StoreKey,
+		cfeclaimmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -343,6 +351,7 @@ func New(
 	app.ScopedICAControllerKeeper = app.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 
 	// this line is used by starport scaffolding # stargate/app/scopedKeeper
+	// this line is used by starport scaffolding # stargate/app/scopedKeeper
 	app.CapabilityKeeper.Seal()
 
 	// add keepers
@@ -370,7 +379,7 @@ func New(
 		app.BlockedModuleAccountAddrs(),
 	)
 
-	stakingKeeper := stakingkeeper.NewKeeper(
+	app.StakingKeeper = stakingkeeper.NewKeeper(
 		appCodec,
 		keys[stakingtypes.StoreKey],
 		app.AccountKeeper,
@@ -384,14 +393,14 @@ func New(
 		app.GetSubspace(distrtypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
-		&stakingKeeper,
+		&app.StakingKeeper,
 		cfedistributormoduletypes.ValidatorsRewardsCollector,
 	)
 
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec,
 		keys[slashingtypes.StoreKey],
-		&stakingKeeper,
+		&app.StakingKeeper,
 		app.GetSubspace(slashingtypes.ModuleName),
 	)
 
@@ -428,12 +437,6 @@ func New(
 		homePath,
 		app.BaseApp,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-	)
-
-	// register the staking hooks
-	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	app.StakingKeeper = *stakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
 	)
 
 	// ... other modules keepers
@@ -512,7 +515,7 @@ func New(
 		app.GetSubspace(govtypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
-		&stakingKeeper,
+		&app.StakingKeeper,
 		govRouter,
 		app.MsgServiceRouter(),
 		govConfig,
@@ -522,7 +525,6 @@ func New(
 		appCodec,
 		keys[cfevestingmoduletypes.StoreKey],
 		keys[cfevestingmoduletypes.MemStoreKey],
-		app.GetSubspace(cfevestingmoduletypes.ModuleName),
 		app.BankKeeper,
 		app.StakingKeeper,
 		app.AccountKeeper,
@@ -546,8 +548,6 @@ func New(
 		appCodec,
 		keys[cfemintermoduletypes.StoreKey],
 		keys[cfemintermoduletypes.MemStoreKey],
-		app.GetSubspace(cfemintermoduletypes.ModuleName),
-
 		app.BankKeeper,
 		app.StakingKeeper,
 		cfedistributormoduletypes.DistributorMainAccount,
@@ -560,7 +560,6 @@ func New(
 		appCodec,
 		keys[cfedistributormoduletypes.StoreKey],
 		keys[cfedistributormoduletypes.MemStoreKey],
-		app.GetSubspace(cfedistributormoduletypes.ModuleName),
 		app.BankKeeper,
 		app.AccountKeeper,
 		appparams.GetAuthority(),
@@ -568,6 +567,28 @@ func New(
 	cfedistributorModule := cfedistributormodule.NewAppModule(appCodec, app.CfedistributorKeeper, app.AccountKeeper,
 		app.BankKeeper, app.GetSubspace(cfedistributormoduletypes.ModuleName))
 
+	app.CfeclaimKeeper = *cfeclaimmodulekeeper.NewKeeper(
+		appCodec,
+		keys[cfeclaimmoduletypes.StoreKey],
+		keys[cfeclaimmoduletypes.MemStoreKey],
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.FeeGrantKeeper,
+		app.StakingKeeper,
+		app.CfevestingKeeper,
+	)
+	cfeclaimModule := cfeclaimmodule.NewAppModule(appCodec, app.CfeclaimKeeper, app.CfevestingKeeper, app.AccountKeeper, app.BankKeeper)
+
+	// register the staking and gov hooks
+	// NOTE: stakingKeeper and govKeeper above is passed by reference, so that it will contain these hooks
+	app.StakingKeeper = *app.StakingKeeper.SetHooks(
+		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks(), app.CfeclaimKeeper.NewMissionDelegationHooks()),
+	)
+	app.GovKeeper = *app.GovKeeper.SetHooks(
+		govtypes.NewMultiGovHooks(
+			app.CfeclaimKeeper.NewMissionVoteHooks(),
+		),
+	)
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -616,6 +637,7 @@ func New(
 		cfesignatureModule,
 		cfeminterModule,
 		cfedistributorModule,
+		cfeclaimModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -645,7 +667,7 @@ func New(
 		group.ModuleName,
 		paramstypes.ModuleName,
 		cfesignaturemoduletypes.ModuleName,
-
+		cfeclaimmoduletypes.ModuleName,
 		// ibc modules
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
@@ -674,7 +696,7 @@ func New(
 		cfesignaturemoduletypes.ModuleName,
 		cfemintermoduletypes.ModuleName,
 		cfedistributormoduletypes.ModuleName,
-
+		cfeclaimmoduletypes.ModuleName,
 		// ibc modules
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
@@ -695,10 +717,10 @@ func New(
 		stakingtypes.ModuleName,
 		vestingtypes.ModuleName,
 		slashingtypes.ModuleName,
+		cfevestingmoduletypes.ModuleName,
+		cfeclaimmoduletypes.ModuleName,
 		govtypes.ModuleName,
 		cfedistributormoduletypes.ModuleName,
-		cfevestingmoduletypes.ModuleName,
-		crisistypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		authz.ModuleName,
@@ -714,6 +736,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
+		crisistypes.ModuleName,
 	)
 
 	// Uncomment if you want to set a custom migration order here.
@@ -747,6 +770,7 @@ func New(
 		cfesignatureModule, // - no simulations yey
 		cfeminterModule,
 		cfedistributorModule,
+		cfeclaimModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 	app.sm.RegisterStoreDecoders()

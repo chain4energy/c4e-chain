@@ -34,6 +34,7 @@ func (k Keeper) VestingPools(goCtx context.Context, req *types.QueryVestingPools
 			InitiallyLocked: &coin,
 			CurrentlyLocked: current.String(),
 			SentAmount:      vesting.Sent.String(),
+			Reservations:    vesting.Reservations,
 		}
 		result.VestingPools = append(result.VestingPools, &vestingInfo)
 

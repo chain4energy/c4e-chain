@@ -1,12 +1,11 @@
 package cfevesting
 
 import (
+	"github.com/chain4energy/c4e-chain/testutil/utils"
+	cfevestingpoolsimulation "github.com/chain4energy/c4e-chain/x/cfevesting/simulation"
 	"math/rand"
 
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
-
 	"github.com/chain4energy/c4e-chain/testutil/sample"
-	cfevestingpoolsimulation "github.com/chain4energy/c4e-chain/x/cfevesting/simulation"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
@@ -24,22 +23,6 @@ var (
 	_ = baseapp.Paramspace
 )
 
-const (
-	opWeightMsgSplitVesting = "op_weight_msg_split_vesting"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgSplitVesting int = 100
-
-	opWeightMsgMoveAvailableVesting = "op_weight_msg_move_available_vesting"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgMoveAvailableVesting int = 100
-
-	opWeightMsgMoveAvailableVestingByDenoms = "op_weight_msg_move_available_vesting_by_denoms"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgMoveAvailableVestingByDenoms int = 100
-
-	// this line is used by starport scaffolding # simapp/module/const
-)
-
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	cfevestingGenesis := types.GenesisState{
@@ -47,31 +30,35 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 		VestingTypes: []types.GenesisVestingType{
 			{
 				Name:              "New vesting0",
-				VestingPeriod:     helpers.RandomInt(simState.Rand, 10000),
+				VestingPeriod:     utils.RandInt64(simState.Rand, 10000),
 				VestingPeriodUnit: "second",
-				LockupPeriod:      helpers.RandomInt(simState.Rand, 10000),
+				LockupPeriod:      utils.RandInt64(simState.Rand, 10000),
 				LockupPeriodUnit:  "second",
+				Free:              sdk.MustNewDecFromStr("0.6"),
 			},
 			{
 				Name:              "New vesting1",
-				VestingPeriod:     helpers.RandomInt(simState.Rand, 1000),
+				VestingPeriod:     utils.RandInt64(simState.Rand, 1000),
 				VestingPeriodUnit: "second",
-				LockupPeriod:      helpers.RandomInt(simState.Rand, 1000),
+				LockupPeriod:      utils.RandInt64(simState.Rand, 1000),
 				LockupPeriodUnit:  "second",
+				Free:              sdk.MustNewDecFromStr("0.5"),
 			},
 			{
 				Name:              "New vesting2",
-				VestingPeriod:     helpers.RandomInt(simState.Rand, 100),
+				VestingPeriod:     utils.RandInt64(simState.Rand, 100),
 				VestingPeriodUnit: "second",
-				LockupPeriod:      helpers.RandomInt(simState.Rand, 100),
+				LockupPeriod:      utils.RandInt64(simState.Rand, 100),
 				LockupPeriodUnit:  "second",
+				Free:              sdk.MustNewDecFromStr("0.4"),
 			},
 			{
 				Name:              "New vesting3",
-				VestingPeriod:     helpers.RandomInt(simState.Rand, 10),
+				VestingPeriod:     utils.RandInt64(simState.Rand, 10),
 				VestingPeriodUnit: "second",
-				LockupPeriod:      helpers.RandomInt(simState.Rand, 10),
+				LockupPeriod:      utils.RandInt64(simState.Rand, 10),
 				LockupPeriodUnit:  "second",
+				Free:              sdk.MustNewDecFromStr("0.3"),
 			},
 		},
 		AccountVestingPools: []*types.AccountVestingPools{},
@@ -98,10 +85,15 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
-	var weightSimulateSendToVestingAccount = 50
+	var weightSimulateSendToVestingAccount = 100
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightSimulateSendToVestingAccount,
 		cfevestingpoolsimulation.SimulateSendToVestingAccount(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+	var weightSimulateCreateVestingPool = 30
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightSimulateCreateVestingPool,
+		cfevestingpoolsimulation.SimulateCreateVestingPool(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 	var weightSimulateVestingOperations = 30
 	operations = append(operations, simulation.NewWeightedOperation(

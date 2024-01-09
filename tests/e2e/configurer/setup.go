@@ -47,8 +47,8 @@ func withUpgrade(setupHandler setupFn) setupFn {
 	}
 }
 
-func StartDockerContainers(t *testing.T, startIBC, isDebugLogEnabled bool, upgradeSettings UpgradeSettings) (Configurer, error) {
-	config, err := New(t, startIBC, isDebugLogEnabled, upgradeSettings)
+func StartDockerContainers(t *testing.T, startIBC, isDebugLogEnabled bool, signMode string, upgradeSettings UpgradeSettings) (Configurer, error) {
+	config, err := New(t, startIBC, isDebugLogEnabled, signMode, upgradeSettings)
 	if err != nil {
 		return nil, err
 	}

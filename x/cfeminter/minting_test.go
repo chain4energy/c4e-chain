@@ -1,6 +1,7 @@
 package cfeminter_test
 
 import (
+	"cosmossdk.io/math"
 	"github.com/chain4energy/c4e-chain/testutil/app"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"testing"
@@ -16,7 +17,7 @@ import (
 )
 
 func TestOneYearLinear(t *testing.T) {
-	totalSupply := sdk.NewInt(40000000000000)
+	totalSupply := math.NewInt(40000000000000)
 
 	testHelper := app.SetupTestApp(t)
 
@@ -30,7 +31,7 @@ func TestOneYearLinear(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params:      types.NewParams(testenv.DefaultTestDenom, testHelper.InitTime, minters),
-		MinterState: types.MinterState{SequenceId: 1, AmountMinted: sdk.ZeroInt(), LastMintBlockTime: testHelper.InitTime},
+		MinterState: types.MinterState{SequenceId: 1, AmountMinted: math.ZeroInt(), LastMintBlockTime: testHelper.InitTime},
 	}
 
 	testHelper.C4eMinterUtils.InitGenesis(genesisState)
@@ -40,9 +41,9 @@ func TestOneYearLinear(t *testing.T) {
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(consToAdd, acountsAddresses[0])
 
 	testHelper.C4eMinterUtils.VerifyInflation(sdk.NewDec(1))
-	testHelper.C4eMinterUtils.VerifyMinterState(1, sdk.ZeroInt(), sdk.ZeroDec(), testHelper.InitTime, sdk.ZeroDec())
+	testHelper.C4eMinterUtils.VerifyMinterState(1, math.ZeroInt(), sdk.ZeroDec(), testHelper.InitTime, sdk.ZeroDec())
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(testenv.DefaultDistributionDestination, sdk.ZeroInt())
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(testenv.DefaultDistributionDestination, math.ZeroInt())
 
 	numOfHours := 365 * 24
 	for i := 1; i <= numOfHours; i++ {
@@ -62,7 +63,7 @@ func TestOneYearLinear(t *testing.T) {
 			testHelper.C4eMinterUtils.VerifyMinterState(1, expectedMinted, remainder, testHelper.Context.BlockTime(), sdk.ZeroDec())
 		} else {
 			testHelper.C4eMinterUtils.VerifyInflation(sdk.ZeroDec())
-			testHelper.C4eMinterUtils.VerifyMinterState(2, sdk.ZeroInt(), sdk.ZeroDec(), testHelper.Context.BlockTime(), sdk.ZeroDec())
+			testHelper.C4eMinterUtils.VerifyMinterState(2, math.ZeroInt(), sdk.ZeroDec(), testHelper.Context.BlockTime(), sdk.ZeroDec())
 		}
 
 		testHelper.C4eMinterUtils.ExportGenesisAndValidate()
@@ -73,8 +74,8 @@ func TestOneYearLinear(t *testing.T) {
 }
 
 func TestFewYearsExponentialStepMinting(t *testing.T) {
-	totalSupply := sdk.NewInt(400000000000000)
-	startAmountYearly := sdk.NewInt(160000000000000)
+	totalSupply := math.NewInt(400000000000000)
+	startAmountYearly := math.NewInt(160000000000000)
 
 	testHelper := app.SetupTestApp(t)
 	minter := types.ExponentialStepMinting{Amount: startAmountYearly, StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
@@ -85,7 +86,7 @@ func TestFewYearsExponentialStepMinting(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params:      types.NewParams(testenv.DefaultTestDenom, testHelper.InitTime, minters),
-		MinterState: types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(0), LastMintBlockTime: testHelper.InitTime},
+		MinterState: types.MinterState{SequenceId: 1, AmountMinted: math.NewInt(0), LastMintBlockTime: testHelper.InitTime},
 	}
 
 	testHelper.C4eMinterUtils.InitGenesis(genesisState)
@@ -96,14 +97,14 @@ func TestFewYearsExponentialStepMinting(t *testing.T) {
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(consToAdd, acountsAddresses[0])
 
 	testHelper.C4eMinterUtils.VerifyInflation(sdk.MustNewDecFromStr("0.1"))
-	testHelper.C4eMinterUtils.VerifyMinterState(1, sdk.ZeroInt(), sdk.ZeroDec(), testHelper.InitTime, sdk.ZeroDec())
+	testHelper.C4eMinterUtils.VerifyMinterState(1, math.ZeroInt(), sdk.ZeroDec(), testHelper.InitTime, sdk.ZeroDec())
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(testenv.DefaultDistributionDestination, sdk.ZeroInt())
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(testenv.DefaultDistributionDestination, math.ZeroInt())
 
 	year := 365 //* 24
 	numOfHours := 4 * year
 	amountYearly := startAmountYearly.QuoRaw(4)
-	prevPeriodMinted := sdk.ZeroInt()
+	prevPeriodMinted := math.ZeroInt()
 
 	for MintersCount := 1; MintersCount <= 5; MintersCount++ {
 		for i := 1; i <= numOfHours; i++ {
@@ -131,14 +132,14 @@ func TestFewYearsExponentialStepMinting(t *testing.T) {
 		}
 		amountYearly = amountYearly.QuoRaw(2)
 	}
-	expectedMinted := sdk.NewInt(310000000000000)
+	expectedMinted := math.NewInt(310000000000000)
 	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(testenv.DefaultDistributionDestination, expectedMinted)
 	testHelper.BankUtils.VerifyDefultDenomTotalSupply(totalSupply.Add(expectedMinted))
 }
 
 func TestFewYearsExponentialStepMintingInOneBlock(t *testing.T) {
-	totalSupply := sdk.NewInt(400000000000000)
-	startAmountYearly := sdk.NewInt(160000000000000)
+	totalSupply := math.NewInt(400000000000000)
+	startAmountYearly := math.NewInt(160000000000000)
 	testHelper := app.SetupTestApp(t)
 
 	minter := types.ExponentialStepMinting{Amount: startAmountYearly, StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
@@ -148,7 +149,7 @@ func TestFewYearsExponentialStepMintingInOneBlock(t *testing.T) {
 
 	genesisState := types.GenesisState{
 		Params:      types.NewParams(testenv.DefaultTestDenom, testHelper.InitTime, minters),
-		MinterState: types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(0), LastMintBlockTime: testHelper.InitTime},
+		MinterState: types.MinterState{SequenceId: 1, AmountMinted: math.NewInt(0), LastMintBlockTime: testHelper.InitTime},
 	}
 
 	testHelper.C4eMinterUtils.InitGenesis(genesisState)
@@ -158,9 +159,9 @@ func TestFewYearsExponentialStepMintingInOneBlock(t *testing.T) {
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(consToAdd, acountsAddresses[0])
 
 	testHelper.C4eMinterUtils.VerifyInflation(sdk.MustNewDecFromStr("0.1"))
-	testHelper.C4eMinterUtils.VerifyMinterState(1, sdk.ZeroInt(), sdk.ZeroDec(), testHelper.InitTime, sdk.ZeroDec())
+	testHelper.C4eMinterUtils.VerifyMinterState(1, math.ZeroInt(), sdk.ZeroDec(), testHelper.InitTime, sdk.ZeroDec())
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(testenv.DefaultDistributionDestination, sdk.ZeroInt())
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(testenv.DefaultDistributionDestination, math.ZeroInt())
 
 	year := 365 //* 24
 	numOfHours := 301 * year
@@ -171,7 +172,7 @@ func TestFewYearsExponentialStepMintingInOneBlock(t *testing.T) {
 
 	testHelper.BeginBlocker(abci.RequestBeginBlock{})
 	testHelper.EndBlocker(abci.RequestEndBlock{})
-	expectedMinted := sdk.NewInt(320000000000000)
+	expectedMinted := math.NewInt(320000000000000)
 	expectedRemainder := sdk.MustNewDecFromStr("0.000000004235164732")
 	testHelper.C4eMinterUtils.VerifyMinterState(1, expectedMinted, expectedRemainder, testHelper.Context.BlockTime(), sdk.ZeroDec())
 
@@ -183,8 +184,8 @@ func TestFewYearsExponentialStepMintingInOneBlock(t *testing.T) {
 }
 
 func TestFewYearsLinearMintingAndExponentialStepMintingInOneBlock(t *testing.T) {
-	totalSupply := sdk.NewInt(400000000000000)
-	startAmountYearly := sdk.NewInt(160000000000000)
+	totalSupply := math.NewInt(400000000000000)
+	startAmountYearly := math.NewInt(160000000000000)
 
 	testHelper := app.SetupTestApp(t)
 
@@ -192,8 +193,8 @@ func TestFewYearsLinearMintingAndExponentialStepMintingInOneBlock(t *testing.T) 
 	endTime1 := testHelper.InitTime.Add(tenYears)
 	endTime2 := endTime1.Add(tenYears)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(200000000000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000000000000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(200000000000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(100000000000000)}
 	exponentialStepMinting := types.ExponentialStepMinting{Amount: startAmountYearly, StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 	config3, _ := codectypes.NewAnyWithValue(&exponentialStepMinting)
 	config1, _ := codectypes.NewAnyWithValue(&linearMinting1)
@@ -211,7 +212,7 @@ func TestFewYearsLinearMintingAndExponentialStepMintingInOneBlock(t *testing.T) 
 
 	genesisState := types.GenesisState{
 		Params:      types.NewParams(testenv.DefaultTestDenom, testHelper.InitTime, minters),
-		MinterState: types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(0), LastMintBlockTime: testHelper.InitTime},
+		MinterState: types.MinterState{SequenceId: 1, AmountMinted: math.NewInt(0), LastMintBlockTime: testHelper.InitTime},
 	}
 
 	testHelper.C4eMinterUtils.InitGenesis(genesisState)
@@ -222,9 +223,9 @@ func TestFewYearsLinearMintingAndExponentialStepMintingInOneBlock(t *testing.T) 
 	testHelper.BankUtils.AddDefaultDenomCoinsToAccount(consToAdd, acountsAddresses[0])
 
 	testHelper.C4eMinterUtils.VerifyInflation(sdk.MustNewDecFromStr("0.05"))
-	testHelper.C4eMinterUtils.VerifyMinterState(1, sdk.ZeroInt(), sdk.ZeroDec(), testHelper.InitTime, sdk.ZeroDec())
+	testHelper.C4eMinterUtils.VerifyMinterState(1, math.ZeroInt(), sdk.ZeroDec(), testHelper.InitTime, sdk.ZeroDec())
 
-	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(testenv.DefaultDistributionDestination, sdk.ZeroInt())
+	testHelper.BankUtils.VerifyModuleAccountDefultDenomBalance(testenv.DefaultDistributionDestination, math.ZeroInt())
 
 	year := 365 //* 24
 	numOfHours := 321 * year
@@ -236,10 +237,10 @@ func TestFewYearsLinearMintingAndExponentialStepMintingInOneBlock(t *testing.T) 
 	testHelper.BeginBlocker(abci.RequestBeginBlock{})
 	testHelper.EndBlocker(abci.RequestEndBlock{})
 
-	expectedMintedSequenceId3 := sdk.NewInt(320000000000000)
+	expectedMintedSequenceId3 := math.NewInt(320000000000000)
 	expectedRemainderSequenceId3 := sdk.MustNewDecFromStr("0.000000004235164732")
 
-	expectedMinted := sdk.NewInt(620000000000000)
+	expectedMinted := math.NewInt(620000000000000)
 
 	testHelper.C4eMinterUtils.VerifyMinterState(3, expectedMintedSequenceId3, expectedRemainderSequenceId3, testHelper.Context.BlockTime(), sdk.ZeroDec())
 
@@ -249,7 +250,7 @@ func TestFewYearsLinearMintingAndExponentialStepMintingInOneBlock(t *testing.T) 
 
 	expectedHist1 := types.MinterState{
 		SequenceId:                  1,
-		AmountMinted:                sdk.NewInt(200000000000000),
+		AmountMinted:                math.NewInt(200000000000000),
 		RemainderToMint:             sdk.ZeroDec(),
 		LastMintBlockTime:           testHelper.Context.BlockTime(),
 		RemainderFromPreviousMinter: sdk.ZeroDec(),
@@ -257,7 +258,7 @@ func TestFewYearsLinearMintingAndExponentialStepMintingInOneBlock(t *testing.T) 
 
 	expectedHist2 := types.MinterState{
 		SequenceId:                  2,
-		AmountMinted:                sdk.NewInt(100000000000000),
+		AmountMinted:                math.NewInt(100000000000000),
 		RemainderToMint:             sdk.ZeroDec(),
 		LastMintBlockTime:           testHelper.Context.BlockTime(),
 		RemainderFromPreviousMinter: sdk.ZeroDec(),

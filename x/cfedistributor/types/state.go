@@ -44,7 +44,7 @@ func (s State) stateIdString() string {
 	}
 }
 
-func StateSumIsInteger(states []State) (error, sdk.Coins) {
+func StateSumIsInteger(states []State) (sdk.Coins, error) {
 	statesSum := sdk.NewDecCoins()
 	for _, state := range states {
 		statesSum = statesSum.Add(state.Remains...)
@@ -52,10 +52,10 @@ func StateSumIsInteger(states []State) (error, sdk.Coins) {
 
 	remainsSum, change := statesSum.TruncateDecimal()
 	if !change.IsZero() {
-		return fmt.Errorf("\tthe sum of the states should be integer: sum: %v", statesSum), nil
+		return nil, fmt.Errorf("\tthe sum of the states should be integer: sum: %v", statesSum)
 	}
 
-	return nil, remainsSum
+	return remainsSum, nil
 }
 
 func (state State) GetStateKey() string {

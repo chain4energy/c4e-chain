@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"cosmossdk.io/errors"
 	"crypto/sha256"
 	"encoding/hex"
 	"github.com/chain4energy/c4e-chain/x/cfesignature/types"
@@ -27,19 +28,19 @@ func (k msgServer) StoreSignature(goCtx context.Context, msg *types.MsgStoreSign
 	signatureObject.Signature, err = util.ExtractFieldFromJSON(signatureJSON, "signature")
 	if err != nil {
 		// it is safe to forward local errors
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "failed to parse signature: "+signatureJSON)
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "failed to parse signature: "+signatureJSON)
 	}
 	// .algorithm
 	signatureObject.Algorithm, err = util.ExtractFieldFromJSON(signatureJSON, "algorithm")
 	if err != nil {
 		// it is safe to forward local errors
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "failed to parse algorithm")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "failed to parse algorithm")
 	}
 	// .certificate
 	signatureObject.Certificate, err = util.ExtractFieldFromJSON(signatureJSON, "certificate")
 	if err != nil {
 		// it is safe to forward local errors
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "failed to parse certificate")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "failed to parse certificate")
 	}
 
 	// .timestamp

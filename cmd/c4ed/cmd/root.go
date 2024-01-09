@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/chain4energy/c4e-chain/app"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
+	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	"io"
 	"os"
 	"path/filepath"
@@ -24,7 +25,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
-	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
@@ -42,12 +42,12 @@ import (
 func NewRootCmd() (*cobra.Command, appparams.EncodingConfig) {
 	encodingConfig := app.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
-		WithCodec(encodingConfig.Marshaler).
+		WithCodec(encodingConfig.Codec).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 		WithTxConfig(encodingConfig.TxConfig).
 		WithLegacyAmino(encodingConfig.Amino).
-		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
+		WithInput(os.Stdin).
 		WithHomeDir(app.DefaultNodeHome).
 		WithViper("")
 

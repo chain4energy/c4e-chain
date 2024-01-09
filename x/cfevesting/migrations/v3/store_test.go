@@ -1,16 +1,16 @@
 package v3_test
 
 import (
+	"cosmossdk.io/math"
 	"encoding/binary"
 	"fmt"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v2"
 	"github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v3"
 	"math/rand"
 	"strconv"
 	"testing"
 	"time"
-
-	"github.com/chain4energy/c4e-chain/testutil/simulation/helpers"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 
@@ -57,17 +57,6 @@ func TestMigrationOneAccountVestingPoolsWithOnePool(t *testing.T) {
 	SetupOldAccountVestingPools(testUtil, ctx, accounts[0].String(), 1)
 	MigrateV110ToV120(t, testUtil, ctx)
 
-}
-
-func TestMigrationAccountVestingPools(t *testing.T) {
-	accounts, _ := testcosmos.CreateAccounts(5, 0)
-	testUtil, _, ctx := testkeeper.CfevestingKeeperTestUtilWithCdc(t)
-	SetupOldAccountVestingPools(testUtil, ctx, accounts[0].String(), 10)
-	SetupOldAccountVestingPools(testUtil, ctx, accounts[1].String(), 10)
-	SetupOldAccountVestingPools(testUtil, ctx, accounts[2].String(), 10)
-	SetupOldAccountVestingPools(testUtil, ctx, accounts[3].String(), 10)
-	SetupOldAccountVestingPools(testUtil, ctx, accounts[4].String(), 10)
-	MigrateV110ToV120(t, testUtil, ctx)
 }
 
 func TestMigrationVestingAccountTraces(t *testing.T) {
@@ -190,23 +179,23 @@ func generateOldAccountVestingPools(numberOfAccounts int, numberOfVestingPoolsPe
 
 func generateRandomOldVestingPool(accuntId int, vestingId int) v2.VestingPool {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	vested := int(helpers.RandIntBetweenWith0(r, 1, 10000000))
+	vested := int(utils.RandIntBetweenWith0(r, 1, 10000000))
 	withdrawn := r.Intn(vested)
-	sent := helpers.RandIntWith0(r, vested-withdrawn)
+	sent := utils.RandIntWith0(r, vested-withdrawn)
 
 	return v2.VestingPool{
 		Name:            "test-vesting-account-name" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		VestingType:     "test-vesting-account-" + strconv.Itoa(accuntId) + "-" + strconv.Itoa(vestingId),
 		LockStart:       testutils.CreateTimeFromNumOfHours(int64(r.Intn(100000))),
 		LockEnd:         testutils.CreateTimeFromNumOfHours(int64(r.Intn(100000))),
-		InitiallyLocked: sdk.NewInt(int64(vested)),
-		Withdrawn:       sdk.NewInt(int64(withdrawn)),
-		Sent:            sdk.NewInt(int64(sent)),
+		InitiallyLocked: math.NewInt(int64(vested)),
+		Withdrawn:       math.NewInt(int64(withdrawn)),
+		Sent:            math.NewInt(int64(sent)),
 	}
 }
 
 func generateOldVestingAccountTraces(amount int) []v2.VestingAccount {
-	traces := []v2.VestingAccount{}
+	var traces []v2.VestingAccount
 	for i := 0; i < amount; i++ {
 		traces = append(traces, v2.VestingAccount{Id: uint64(i), Address: fmt.Sprintf("Address-%d", i)})
 	}

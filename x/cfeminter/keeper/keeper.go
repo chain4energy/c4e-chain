@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
 	"fmt"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"time"
@@ -11,7 +12,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 type (
@@ -19,7 +19,6 @@ type (
 		cdc           codec.BinaryCodec
 		storeKey      storetypes.StoreKey
 		memKey        storetypes.StoreKey
-		paramstore    paramtypes.Subspace
 		bankKeeper    types.BankKeeper
 		stakingKeeper types.StakingKeeper
 		collectorName string
@@ -31,7 +30,6 @@ func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
-	ps paramtypes.Subspace,
 	bankKeeper types.BankKeeper,
 	stakingKeeper types.StakingKeeper,
 	collectorName string,
@@ -41,7 +39,6 @@ func NewKeeper(
 		cdc:           cdc,
 		storeKey:      storeKey,
 		memKey:        memKey,
-		paramstore:    ps,
 		bankKeeper:    bankKeeper,
 		stakingKeeper: stakingKeeper,
 		collectorName: collectorName,
@@ -57,13 +54,13 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) { // TODO add unit tests
+func (k Keeper) GetCurrentInflation(ctx sdk.Context) (sdk.Dec, error) {
 	minterState := k.GetMinterState(ctx)
 	params := k.GetParams(ctx)
 	currentMinter, previousMinter := getCurrentAndPreviousMinter(params.Minters, &minterState)
 	if currentMinter == nil {
 		k.Logger(ctx).Error("minter current sequence id not found error", "SequenceId", minterState.SequenceId)
-		return sdk.ZeroDec(), sdkerrors.Wrapf(sdkerrors.ErrNotFound, "minter current period for SequenceId %d not found", minterState.SequenceId)
+		return sdk.ZeroDec(), errors.Wrapf(sdkerrors.ErrNotFound, "minter current period for SequenceId %d not found", minterState.SequenceId)
 	}
 
 	var startTime time.Time

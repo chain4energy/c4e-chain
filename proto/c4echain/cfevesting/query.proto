@@ -7,6 +7,7 @@ import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/timestamp.proto";
 import "c4echain/cfevesting/genesis.proto";
 import "c4echain/cfevesting/params.proto";
+import "c4echain/cfevesting/account_vesting_pool.proto";
 
 // this line is used by starport scaffolding # 1
 
@@ -81,6 +82,7 @@ message VestingPoolInfo {
   cosmos.base.v1beta1.Coin initially_locked = 6;
   string currently_locked = 7;
   string sent_amount = 8;
+  repeated VestingPoolReservation reservations = 9;
 }
 
 message QueryVestingsSummaryRequest {}

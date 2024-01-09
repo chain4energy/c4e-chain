@@ -1,6 +1,7 @@
 package cosmossdk
 
 import (
+	"cosmossdk.io/errors"
 	"fmt"
 	"time"
 
@@ -46,12 +47,12 @@ func (au *AuthUtils) CreateVestingAccount(ctx sdk.Context, address string, coins
 	to := sdk.MustAccAddressFromBech32(address)
 
 	if acc := au.helperAccountKeeper.GetAccount(ctx, to); acc != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "account %s already exists", address)
+		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "account %s already exists", address)
 	}
 
 	baseAccount := au.helperAccountKeeper.NewAccountWithAddress(ctx, to)
 	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid account type; expected: BaseAccount, got: %T", baseAccount)
+		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid account type; expected: BaseAccount, got: %T", baseAccount)
 	}
 
 	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), coins.Sort(), end.Unix())
@@ -68,12 +69,12 @@ func (au *AuthUtils) CreateBaseAccount(ctx sdk.Context, address string, coin sdk
 	to := sdk.MustAccAddressFromBech32(address)
 
 	if acc := au.helperAccountKeeper.GetAccount(ctx, to); acc != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "account %s already exists", address)
+		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "account %s already exists", address)
 	}
 
 	baseAccount := au.helperAccountKeeper.NewAccountWithAddress(ctx, to)
 	if _, ok := baseAccount.(*authtypes.BaseAccount); !ok {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid account type; expected: BaseAccount, got: %T", baseAccount)
+		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid account type; expected: BaseAccount, got: %T", baseAccount)
 	}
 
 	au.helperAccountKeeper.SetAccount(ctx, baseAccount)
@@ -109,7 +110,6 @@ func (au *AuthUtils) VerifyVestingAccount(ctx sdk.Context, address sdk.AccAddres
 	require.True(au.t, ok, ok)
 	locked := vacc.LockedCoins(ctx.BlockTime())
 	require.True(au.t, locked.IsEqual(lockedAmount))
-
 	require.Equal(au.t, endTime.Unix(), vacc.GetEndTime())
 	require.Equal(au.t, startTime.Unix(), vacc.GetStartTime())
 }
@@ -148,7 +148,7 @@ func (au *ContextAuthUtils) ModifyVestingAccountOriginalVesting(address string, 
 	return au.AuthUtils.ModifyVestingAccountOriginalVesting(au.testContext.GetContext(), address, newOrignalVestings)
 }
 
-func (au *ContextAuthUtils) CreateDefaultDenomBaseAccount(address string, amount sdk.Int) error {
+func (au *ContextAuthUtils) CreateDefaultDenomBaseAccount(address string, amount math.Int) error {
 	return au.AuthUtils.CreateDefaultDenomBaseAccount(au.testContext.GetContext(), address, amount)
 }
 

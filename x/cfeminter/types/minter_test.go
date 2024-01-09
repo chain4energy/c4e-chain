@@ -19,7 +19,7 @@ const NanoSecondsInFourYears = Year * 4
 const customDenom = "uc4e"
 
 func TestLinearMinting(t *testing.T) {
-	linearMinting := types.LinearMinting{Amount: sdk.NewInt(1000000)}
+	linearMinting := types.LinearMinting{Amount: math.NewInt(1000000)}
 
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 	endTime := startTime.Add(time.Duration(345600000000 * 1000000))
@@ -83,8 +83,8 @@ func TestValidateMinterPariodsOrder(t *testing.T) {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(100000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
@@ -102,8 +102,8 @@ func TestValidateMinterPariodsOrderInitialyNotOrdered(t *testing.T) {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(100000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
@@ -121,8 +121,8 @@ func TestValidateMinterPariodsOrderInitialyNotFromOne(t *testing.T) {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(100000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
@@ -140,8 +140,8 @@ func TestValidateMinterPariodsOrderWrongFirstId(t *testing.T) {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(100000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
@@ -159,8 +159,8 @@ func TestValidateMinterPariodsOrderWrongNotIncrementByOne(t *testing.T) {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(100000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
@@ -181,7 +181,7 @@ func TestValidateMinterNoMinters(t *testing.T) {
 func TestValidateMinterSecondMinterIsNil(t *testing.T) {
 	startTime := time.Now()
 	endTime1 := startTime.Add(PeriodDuration)
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
@@ -204,8 +204,8 @@ func TestValidateMinterLastPeriodWithEndDate(t *testing.T) {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(100000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
@@ -221,7 +221,7 @@ func TestValidateMinterLastPeriodWithEndDateOnePeriod(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime1 := startTime.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
@@ -236,8 +236,8 @@ func TestValidateMinterFirstPeriodWrongEnd(t *testing.T) {
 	endTime1 := startTime
 	endTime2 := endTime1.Add(2 * PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(100000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
@@ -255,8 +255,8 @@ func TestValidateMinterNextPeriodWrongEnd(t *testing.T) {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(100000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
@@ -283,7 +283,7 @@ func TestValidateMinterTimeLineraMinterTypeWithNoEndTimeInNotLastPeriod(t *testi
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime1 := startTime.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
@@ -299,7 +299,7 @@ func TestValidateMinterTimeLineraMinterTypeWithNoEndTime(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime1 := startTime.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
@@ -329,7 +329,7 @@ func TestValidateExponentialStepMintingAmountMultiplierIsLowerThan0(t *testing.T
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime1 := startTime.Add(PeriodDuration)
 
-	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(1000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("-1")}
+	exponentialStepMinting := types.ExponentialStepMinting{Amount: math.NewInt(1000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("-1")}
 	config, _ := codectypes.NewAnyWithValue(&exponentialStepMinting)
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
@@ -345,8 +345,8 @@ func TestValidateMinterTimeLinearAmountLessThanZero(t *testing.T) {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(-100000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(-100000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
@@ -364,8 +364,8 @@ func TestCointainsIdTrue(t *testing.T) {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(100000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
@@ -383,8 +383,8 @@ func TestCointainsIdFalse(t *testing.T) {
 	endTime1 := startTime.Add(PeriodDuration)
 	endTime2 := endTime1.Add(PeriodDuration)
 
-	linearMinting1 := types.LinearMinting{Amount: sdk.NewInt(1000000)}
-	linearMinting2 := types.LinearMinting{Amount: sdk.NewInt(100000)}
+	linearMinting1 := types.LinearMinting{Amount: math.NewInt(1000000)}
+	linearMinting2 := types.LinearMinting{Amount: math.NewInt(100000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting1)
 	config2, _ := codectypes.NewAnyWithValue(&linearMinting2)
 
@@ -398,25 +398,25 @@ func TestCointainsIdFalse(t *testing.T) {
 }
 
 func TestValidateMinterState(t *testing.T) {
-	minterState := types.MinterState{SequenceId: 1, AmountMinted: sdk.ZeroInt(), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousMinter: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
+	minterState := types.MinterState{SequenceId: 1, AmountMinted: math.ZeroInt(), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousMinter: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.NoError(t, minterState.Validate())
 
-	minterState = types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousMinter: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
+	minterState = types.MinterState{SequenceId: 1, AmountMinted: math.NewInt(123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousMinter: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.NoError(t, minterState.Validate())
 
-	minterState = types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(-123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousMinter: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
+	minterState = types.MinterState{SequenceId: 1, AmountMinted: math.NewInt(-123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousMinter: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.EqualError(t, minterState.Validate(), "minter state validation error: amountMinted cannot be less than 0")
 
-	minterState = types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.MustNewDecFromStr("231321.1234"), RemainderFromPreviousMinter: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
+	minterState = types.MinterState{SequenceId: 1, AmountMinted: math.NewInt(123), RemainderToMint: sdk.MustNewDecFromStr("231321.1234"), RemainderFromPreviousMinter: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.NoError(t, minterState.Validate())
 
-	minterState = types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.MustNewDecFromStr("-231321.1234"), RemainderFromPreviousMinter: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
+	minterState = types.MinterState{SequenceId: 1, AmountMinted: math.NewInt(123), RemainderToMint: sdk.MustNewDecFromStr("-231321.1234"), RemainderFromPreviousMinter: sdk.ZeroDec(), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.EqualError(t, minterState.Validate(), "minter state validation error: remainderToMint cannot be less than 0")
 
-	minterState = types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousMinter: sdk.MustNewDecFromStr("231321.1234"), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
+	minterState = types.MinterState{SequenceId: 1, AmountMinted: math.NewInt(123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousMinter: sdk.MustNewDecFromStr("231321.1234"), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.NoError(t, minterState.Validate())
 
-	minterState = types.MinterState{SequenceId: 1, AmountMinted: sdk.NewInt(123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousMinter: sdk.MustNewDecFromStr("-231321.1234"), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
+	minterState = types.MinterState{SequenceId: 1, AmountMinted: math.NewInt(123), RemainderToMint: sdk.ZeroDec(), RemainderFromPreviousMinter: sdk.MustNewDecFromStr("-231321.1234"), LastMintBlockTime: time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)}
 	require.EqualError(t, minterState.Validate(), "minter state validation error: remainderFromPreviousMinter cannot be less than 0")
 }
 
@@ -424,15 +424,15 @@ func TestLinearMintingInfation(t *testing.T) {
 	startTime := time.Now()
 	duration := time.Hour * 24 * 365
 	endTime := startTime.Add(duration)
-	linearMinting := types.LinearMinting{Amount: sdk.NewInt(1000000)}
+	linearMinting := types.LinearMinting{Amount: math.NewInt(1000000)}
 	config, _ := codectypes.NewAnyWithValue(&linearMinting)
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime, Config: config}
 
-	inflation := minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime.Add(-1000))
+	inflation := minter1.CalculateInflation(math.NewInt(10000000), startTime, startTime.Add(-1000))
 	require.EqualValues(t, sdk.ZeroDec(), inflation)
 
-	inflation = minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime)
+	inflation = minter1.CalculateInflation(math.NewInt(10000000), startTime, startTime)
 	expected, _ := sdk.NewDecFromStr("0.1")
 	require.EqualValues(t, expected, inflation)
 
@@ -440,7 +440,7 @@ func TestLinearMintingInfation(t *testing.T) {
 	endTime = startTime.Add(duration)
 	minter1.EndTime = &endTime
 
-	inflation = minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime)
+	inflation = minter1.CalculateInflation(math.NewInt(10000000), startTime, startTime)
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
@@ -448,7 +448,7 @@ func TestLinearMintingInfation(t *testing.T) {
 	endTime = startTime.Add(duration)
 	minter1.EndTime = &endTime
 
-	inflation = minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime)
+	inflation = minter1.CalculateInflation(math.NewInt(10000000), startTime, startTime)
 	expected, _ = sdk.NewDecFromStr("0.02")
 	require.EqualValues(t, expected, inflation)
 }
@@ -460,11 +460,11 @@ func TestNoMintingInfation(t *testing.T) {
 
 	minter1 := types.Minter{SequenceId: 3, Config: testenv.NoMintingConfig}
 
-	inflation := minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime.Add(-1000))
+	inflation := minter1.CalculateInflation(math.NewInt(10000000), startTime, startTime.Add(-1000))
 	expected := sdk.ZeroDec()
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime)
+	inflation = minter1.CalculateInflation(math.NewInt(10000000), startTime, startTime)
 	expected = sdk.ZeroDec()
 	require.EqualValues(t, expected, inflation)
 
@@ -472,19 +472,19 @@ func TestNoMintingInfation(t *testing.T) {
 	endTime = startTime.Add(duration)
 	minter1.EndTime = &endTime
 
-	inflation = minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime)
+	inflation = minter1.CalculateInflation(math.NewInt(10000000), startTime, startTime)
 	require.EqualValues(t, expected, inflation)
 
 	duration = time.Hour * 24 * 365 * 5
 	endTime = startTime.Add(duration)
 	minter1.EndTime = &endTime
 
-	inflation = minter1.CalculateInflation(sdk.NewInt(10000000), startTime, startTime)
+	inflation = minter1.CalculateInflation(math.NewInt(10000000), startTime, startTime)
 	require.EqualValues(t, expected, inflation)
 }
 
 func TestUnlimitedExponentialStepMinting(t *testing.T) {
-	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(160000000000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
+	exponentialStepMinting := types.ExponentialStepMinting{Amount: math.NewInt(160000000000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 
 	config, _ := codectypes.NewAnyWithValue(&exponentialStepMinting)
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
@@ -626,7 +626,7 @@ func TestUnlimitedExponentialStepMinting(t *testing.T) {
 }
 
 func TestLimitedExponentialStepMinting(t *testing.T) {
-	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(160000000000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
+	exponentialStepMinting := types.ExponentialStepMinting{Amount: math.NewInt(160000000000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 	config, _ := codectypes.NewAnyWithValue(&exponentialStepMinting)
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 	endTime := startTime.Add(7 * Year)
@@ -665,7 +665,7 @@ func TestValidateExponentialStepMintingAmountBelowZero(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime1 := startTime.Add(PeriodDuration)
 
-	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(-160000000000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
+	exponentialStepMinting := types.ExponentialStepMinting{Amount: math.NewInt(-160000000000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 	config, _ := codectypes.NewAnyWithValue(&exponentialStepMinting)
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
@@ -690,7 +690,7 @@ func TestValidateExponentialStepMinterLessThanZeror(t *testing.T) {
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.UTC)
 	endTime1 := startTime.Add(PeriodDuration)
 
-	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(140000000000000), StepDuration: -NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
+	exponentialStepMinting := types.ExponentialStepMinting{Amount: math.NewInt(140000000000000), StepDuration: -NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 	config, _ := codectypes.NewAnyWithValue(&exponentialStepMinting)
 
 	minter1 := types.Minter{SequenceId: 1, EndTime: &endTime1, Config: config}
@@ -702,93 +702,93 @@ func TestValidateExponentialStepMinterLessThanZeror(t *testing.T) {
 }
 
 func TestExponentialStepMintingInfationNotLimted(t *testing.T) {
-	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(160000000000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
+	exponentialStepMinting := types.ExponentialStepMinting{Amount: math.NewInt(160000000000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 	config, _ := codectypes.NewAnyWithValue(&exponentialStepMinting)
 
 	minter := types.Minter{SequenceId: 1, EndTime: nil, Config: config}
 
-	inflation := minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(-1000))
+	inflation := minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(-1000))
 	require.EqualValues(t, sdk.ZeroDec(), inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime)
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime)
 	expected, _ := sdk.NewDecFromStr("1")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(80000000000000), startTime, startTime.Add(Year))
+	inflation = minter.CalculateInflation(math.NewInt(80000000000000), startTime, startTime.Add(Year))
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(4*Year-1))
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(4*Year-1))
 	expected, _ = sdk.NewDecFromStr("1")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(4*Year))
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(4*Year))
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(6*Year))
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(6*Year))
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(8*Year))
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(8*Year))
 	expected, _ = sdk.NewDecFromStr("0.25")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(12*Year))
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(12*Year))
 	expected, _ = sdk.NewDecFromStr("0.125")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(16*Year))
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(16*Year))
 	expected, _ = sdk.NewDecFromStr("0.0625")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(20*Year))
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(20*Year))
 	expected, _ = sdk.NewDecFromStr("0.03125")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(24*Year))
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(24*Year))
 	expected, _ = sdk.NewDecFromStr("0.015625")
 	require.EqualValues(t, expected, inflation)
 }
 
 func TestExponentialStepMintingInfationLimted(t *testing.T) {
-	exponentialStepMinting := types.ExponentialStepMinting{Amount: sdk.NewInt(160000000000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
+	exponentialStepMinting := types.ExponentialStepMinting{Amount: math.NewInt(160000000000000), StepDuration: NanoSecondsInFourYears, AmountMultiplier: sdk.MustNewDecFromStr("0.5")}
 	startTime := time.Date(2022, 2, 3, 0, 0, 0, 0, time.Local)
 	endTime := startTime.Add(10 * Year)
 	config, _ := codectypes.NewAnyWithValue(&exponentialStepMinting)
 
 	minter := types.Minter{SequenceId: 1, EndTime: &endTime, Config: config}
 
-	inflation := minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime)
+	inflation := minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime)
 	expected, _ := sdk.NewDecFromStr("1")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(80000000000000), startTime, startTime.Add(Year))
+	inflation = minter.CalculateInflation(math.NewInt(80000000000000), startTime, startTime.Add(Year))
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(4*Year-1))
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(4*Year-1))
 	expected, _ = sdk.NewDecFromStr("1")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(4*Year))
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(4*Year))
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(6*Year))
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(6*Year))
 	expected, _ = sdk.NewDecFromStr("0.5")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(8*Year))
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(8*Year))
 	expected, _ = sdk.NewDecFromStr("0.25")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(12*Year))
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(12*Year))
 	expected, _ = sdk.NewDecFromStr("0")
 	require.EqualValues(t, expected, inflation)
 
-	inflation = minter.CalculateInflation(sdk.NewInt(40000000000000), startTime, startTime.Add(24*Year))
+	inflation = minter.CalculateInflation(math.NewInt(40000000000000), startTime, startTime.Add(24*Year))
 	expected, _ = sdk.NewDecFromStr("0")
 	require.EqualValues(t, expected, inflation)
 }
