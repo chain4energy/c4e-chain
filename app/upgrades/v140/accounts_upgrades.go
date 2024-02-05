@@ -3,8 +3,8 @@ package v140
 import (
 	"cosmossdk.io/math"
 	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
-	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
-	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -15,35 +15,28 @@ const (
 	StrategicReservceShortTermPoolAccount = "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54"
 	StrategicReservceShortTermPool        = "Strategic reserve short term round pool"
 
-	StrategicReservceAccount = "c4e1hcfjejmxzl8d95xka5j8cjegmf32u2lee3q422"
-	LiquidityPoolOwner       = "c4e16n7yweagu3fxfzvay6cz035hddda7z3ntdxq3l"
+	StrategicReserveAccount = "c4e1hcfjejmxzl8d95xka5j8cjegmf32u2lee3q422"
+	LiquidityPoolOwner      = "c4e16n7yweagu3fxfzvay6cz035hddda7z3ntdxq3l"
 )
 
 var (
-	AmountToBurnFromStrategicReservePool = math.NewInt(10000000000000)
-	AmountToBurnStrategicReserveAccount  = math.NewInt(30000000000000)
-	AmountToSendToLiquidtyPoolOwner      = math.NewInt(10000000000000)
-
-	CommunityPoolNewAmount = math.NewInt(40000000000000)
+	AmountToBurnFromStrategicReservePool = math.NewInt(20_000_000_000_000)
+	AmountToBurnStrategicReserveAccount  = math.NewInt(30_000_000_000_000)
+	AmountToSendToLiquidtyPoolOwner      = math.NewInt(10_000_000_000_000)
+	CommunityPoolNewAmount               = math.NewInt(40_000_000_000_000)
 )
 
 func UpdateStrategicReserveShortTermPool(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
-	ctx.Logger().Info("migrating airdrop module account")
+	ctx.Logger().Info("updating strategic reserve short term pool")
 
 	accountVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, StrategicReservceShortTermPoolAccount)
 	if !found {
 		ctx.Logger().Info("account vesting pools not found for StrategicReservceShortTermPoolAccount", "owner", StrategicReservceShortTermPoolAccount)
 		return nil
 	}
-	vestingDenom := appKeepers.GetC4eVestingKeeper().Denom(ctx)
-	coinsToBurn := sdk.NewCoins(sdk.NewCoin(vestingDenom, AmountToBurnFromStrategicReservePool))
-	if err := bankkeeper.Keeper.SendCoinsFromModuleToModule(*appKeepers.GetBankKeeper(), ctx, cfevestingmoduletypes.ModuleName, cfemintermoduletypes.ModuleName, coinsToBurn); err != nil {
-		ctx.Logger().Info("send coins from module to module error", "err", err)
-		return nil
-	}
 
-	if err := bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintermoduletypes.ModuleName, coinsToBurn); err != nil {
-		ctx.Logger().Info("burn coins error", "err", err)
+	if err := burnCoinsFromAnyModule(ctx, appKeepers, cfevestingtypes.ModuleName, AmountToBurnFromStrategicReservePool); err != nil {
+		ctx.Logger().Info("send and burn coins from module error", "err", err)
 		return nil
 	}
 
@@ -58,9 +51,9 @@ func UpdateStrategicReserveShortTermPool(ctx sdk.Context, appKeepers cfeupgradet
 }
 
 func UpdateStrategicReserveAccount(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
-	ctx.Logger().Info("migrating moondrop module account")
+	ctx.Logger().Info("updating strategic reserve account")
 
-	strategicReserveAccountAddress, err := sdk.AccAddressFromBech32(StrategicReservceAccount)
+	strategicReserveAccountAddress, err := sdk.AccAddressFromBech32(StrategicReserveAccount)
 	if err != nil {
 		return err
 	}
@@ -78,29 +71,35 @@ func UpdateStrategicReserveAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 
 	vestingAccount, ok := strategicReserveAccount.(*vestingtypes.ContinuousVestingAccount)
 	if !ok {
-		ctx.Logger().Info("moondrop account is not of *vestingtypes.ContinuousVestingAccount type", "vestingAccount", vestingAccount)
+		ctx.Logger().Info("strategic reserve account is not of *vestingtypes.ContinuousVestingAccount type", "vestingAccount", vestingAccount)
 		return nil
 	}
 
-	vestingDenom := appKeepers.GetC4eVestingKeeper().Denom(ctx)
-	vestingAccount.OriginalVesting = vestingAccount.OriginalVesting.Sub(sdk.NewCoin(vestingDenom, AmountToBurnStrategicReserveAccount))
+	denom := appKeepers.GetC4eVestingKeeper().Denom(ctx)
+	vestingAccount.OriginalVesting = vestingAccount.OriginalVesting.Sub(sdk.NewCoin(denom, AmountToBurnStrategicReserveAccount))
 	appKeepers.GetAccountKeeper().SetAccount(ctx, vestingAccount)
 
-	err = bankkeeper.Keeper.SendCoins(*appKeepers.GetBankKeeper(), ctx, strategicReserveAccountAddress, liquidityPoolOwnerAccountAddress, sdk.NewCoins(sdk.NewCoin(vestingDenom, AmountToSendToLiquidtyPoolOwner)))
+	coinsToSendToLiquidityPoolOwner := sdk.NewCoins(sdk.NewCoin(denom, AmountToSendToLiquidtyPoolOwner))
+	err = bankkeeper.Keeper.SendCoins(*appKeepers.GetBankKeeper(), ctx, strategicReserveAccountAddress, liquidityPoolOwnerAccountAddress, coinsToSendToLiquidityPoolOwner)
 	if err != nil {
 		ctx.Logger().Info("migrate moondrop vesting account error", "err", err)
 		return err
 	}
 
 	spendableCoins := bankkeeper.Keeper.SpendableCoins(*appKeepers.GetBankKeeper(), ctx, strategicReserveAccountAddress)
-
-	err = bankkeeper.Keeper.SendCoinsFromAccountToModule(*appKeepers.GetBankKeeper(), ctx, strategicReserveAccountAddress, cfemintermoduletypes.ModuleName, sdk.NewCoins(sdk.NewCoin(vestingDenom, AmountToSendToLiquidtyPoolOwner)))
+	err = bankkeeper.Keeper.SendCoinsFromAccountToModule(
+		*appKeepers.GetBankKeeper(),
+		ctx,
+		strategicReserveAccountAddress,
+		cfemintertypes.ModuleName,
+		spendableCoins,
+	)
 	if err != nil {
 		ctx.Logger().Info("migrate moondrop vesting account error", "err", err)
 		return err
 	}
 
-	if err = bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintermoduletypes.ModuleName, spendableCoins); err != nil {
+	if err = bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintertypes.ModuleName, spendableCoins); err != nil {
 		ctx.Logger().Info("burn coins error", "err", err)
 		return nil
 	}
@@ -111,22 +110,32 @@ func UpdateStrategicReserveAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 func UpdateCommunityPool(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
 	feePool := appKeepers.GetDistributionKeeper().GetFeePool(ctx)
 	communityPoolBefore := feePool.CommunityPool
+
 	denom := appKeepers.GetC4eVestingKeeper().Denom(ctx)
 	communityPool := sdk.NewDecCoinsFromCoins(sdk.NewCoin(denom, CommunityPoolNewAmount))
-
 	feePool.CommunityPool = communityPool
 
-	amountToBurn := communityPoolBefore.AmountOf(denom).TruncateInt().Sub(AmountToBurnFromStrategicReservePool)
-	coinsToBurn := sdk.NewCoins(sdk.NewCoin(denom, amountToBurn))
+	amountToBurn := communityPoolBefore.AmountOf(denom).TruncateInt().Sub(CommunityPoolNewAmount)
+	if err := burnCoinsFromAnyModule(ctx, appKeepers, distrtypes.ModuleName, amountToBurn); err != nil {
+		ctx.Logger().Info("send and burn coins from module error", "err", err)
+		return nil
+	}
 
-	if err := bankkeeper.Keeper.SendCoinsFromModuleToModule(*appKeepers.GetBankKeeper(), ctx, distrtypes.ModuleName, cfemintermoduletypes.ModuleName, coinsToBurn); err != nil {
+	appKeepers.GetDistributionKeeper().SetFeePool(ctx, feePool)
+	return nil
+}
+
+func burnCoinsFromAnyModule(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers, fromModule string, amount math.Int) error {
+	denom := appKeepers.GetC4eVestingKeeper().Denom(ctx)
+	coins := sdk.NewCoins(sdk.NewCoin(denom, amount))
+
+	if err := bankkeeper.Keeper.SendCoinsFromModuleToModule(*appKeepers.GetBankKeeper(), ctx, fromModule, cfemintertypes.ModuleName, coins); err != nil {
 		ctx.Logger().Info("send coins from module to module error", "err", err)
 		return nil
 	}
-	if err := bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintermoduletypes.ModuleName, coinsToBurn); err != nil {
+	if err := bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintertypes.ModuleName, coins); err != nil {
 		ctx.Logger().Info("burn coins error", "err", err)
 		return nil
 	}
-	appKeepers.GetDistributionKeeper().SetFeePool(ctx, feePool)
 	return nil
 }
