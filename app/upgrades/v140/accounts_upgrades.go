@@ -3,11 +3,12 @@ package v140
 import (
 	"cosmossdk.io/math"
 	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
-	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 )
 
 const (
@@ -35,10 +36,17 @@ func UpdateStrategicReserveShortTermPool(ctx sdk.Context, appKeepers cfeupgradet
 		return nil
 	}
 	vestingDenom := appKeepers.GetC4eVestingKeeper().Denom(ctx)
-	if err := bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfevestingtypes.ModuleName, sdk.NewCoins(sdk.NewCoin(vestingDenom, AmountToBurnFromStrategicReservePool))); err != nil {
+	coinsToBurn := sdk.NewCoins(sdk.NewCoin(vestingDenom, AmountToBurnFromStrategicReservePool))
+	if err := bankkeeper.Keeper.SendCoinsFromModuleToModule(*appKeepers.GetBankKeeper(), ctx, cfevestingmoduletypes.ModuleName, cfemintermoduletypes.ModuleName, coinsToBurn); err != nil {
+		ctx.Logger().Info("send coins from module to module error", "err", err)
+		return nil
+	}
+
+	if err := bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintermoduletypes.ModuleName, coinsToBurn); err != nil {
 		ctx.Logger().Info("burn coins error", "err", err)
 		return nil
 	}
+
 	for _, pool := range accountVestingPools.VestingPools {
 		if pool.Name == StrategicReservceShortTermPool {
 			pool.InitiallyLocked = pool.InitiallyLocked.Sub(AmountToBurnFromStrategicReservePool)
@@ -86,13 +94,13 @@ func UpdateStrategicReserveAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 
 	spendableCoins := bankkeeper.Keeper.SpendableCoins(*appKeepers.GetBankKeeper(), ctx, strategicReserveAccountAddress)
 
-	err = bankkeeper.Keeper.SendCoinsFromAccountToModule(*appKeepers.GetBankKeeper(), ctx, strategicReserveAccountAddress, cfevestingtypes.ModuleName, sdk.NewCoins(sdk.NewCoin(vestingDenom, AmountToSendToLiquidtyPoolOwner)))
+	err = bankkeeper.Keeper.SendCoinsFromAccountToModule(*appKeepers.GetBankKeeper(), ctx, strategicReserveAccountAddress, cfemintermoduletypes.ModuleName, sdk.NewCoins(sdk.NewCoin(vestingDenom, AmountToSendToLiquidtyPoolOwner)))
 	if err != nil {
 		ctx.Logger().Info("migrate moondrop vesting account error", "err", err)
 		return err
 	}
 
-	if err = bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfevestingtypes.ModuleName, spendableCoins); err != nil {
+	if err = bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintermoduletypes.ModuleName, spendableCoins); err != nil {
 		ctx.Logger().Info("burn coins error", "err", err)
 		return nil
 	}
@@ -110,7 +118,12 @@ func UpdateCommunityPool(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers)
 
 	amountToBurn := communityPoolBefore.AmountOf(denom).TruncateInt().Sub(AmountToBurnFromStrategicReservePool)
 	coinsToBurn := sdk.NewCoins(sdk.NewCoin(denom, amountToBurn))
-	if err := bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfedistributormoduletypes.ModuleName, coinsToBurn); err != nil {
+
+	if err := bankkeeper.Keeper.SendCoinsFromModuleToModule(*appKeepers.GetBankKeeper(), ctx, distrtypes.ModuleName, cfemintermoduletypes.ModuleName, coinsToBurn); err != nil {
+		ctx.Logger().Info("send coins from module to module error", "err", err)
+		return nil
+	}
+	if err := bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintermoduletypes.ModuleName, coinsToBurn); err != nil {
 		ctx.Logger().Info("burn coins error", "err", err)
 		return nil
 	}

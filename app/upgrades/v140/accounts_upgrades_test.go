@@ -9,10 +9,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
-	cfedistributormoduletypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
+)
+
+var (
+	CommunityPoolBeforeAmount = sdk.MustNewDecFromStr("100000000083683.601351991745061083")
 )
 
 func TestUpdateStrategicReserveShortTermPool_AccountVestingPoolsNotFound(t *testing.T) {
@@ -111,10 +115,11 @@ func TestUpdateStrategicReserveAccount_Success(t *testing.T) {
 
 func TestUpdateCommunityPool_Success(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-	feePool := cfedistributormoduletypes.FeePool{
-		CommunityPool: sdk.NewDecCoinsFromCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(100000000000000))),
+	feePool := distrtypes.FeePool{
+		CommunityPool: sdk.NewDecCoins(sdk.NewDecCoinFromDec(testenv.DefaultTestDenom, CommunityPoolBeforeAmount)),
 	}
 	testHelper.DistributionUtils.DistrKeeper.SetFeePool(testHelper.Context, feePool)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(CommunityPoolBeforeAmount.TruncateInt(), distrtypes.ModuleName)
 
 	err := v140.UpdateCommunityPool(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
@@ -123,5 +128,5 @@ func TestUpdateCommunityPool_Success(t *testing.T) {
 	require.Equal(t, sdk.NewDecCoinsFromCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(40000000000000))), feePool.CommunityPool)
 
 	communityPoolBalance := testHelper.DistributionUtils.DistrKeeper.GetFeePoolCommunityCoins(testHelper.Context)
-	require.Equal(t, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(10000000000000))), communityPoolBalance)
+	require.Equal(t, sdk.NewDecCoins(sdk.NewDecCoin(testenv.DefaultTestDenom, math.NewInt(40000000000000))), communityPoolBalance)
 }
