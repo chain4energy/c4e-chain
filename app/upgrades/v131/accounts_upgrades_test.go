@@ -25,7 +25,7 @@ func TestUpdateStrategicReserveShortTermPool_AccountVestingPoolsNotFound(t *test
 	require.False(t, found)
 	require.Equal(t, 0, len(accountVestingPools.VestingPools))
 
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.ValidateGenesisAndInvariants()
 }
 
 func TestUpdateStrategicReserveShortTermPool_InitiallyLockedNegative(t *testing.T) {
@@ -53,7 +53,7 @@ func TestUpdateStrategicReserveShortTermPool_InitiallyLockedNegative(t *testing.
 	require.Equal(t, 1, len(accountVestingPools.VestingPools))
 	require.Equal(t, accountVestingPools.VestingPools[0].InitiallyLocked, math.NewInt(1_000))
 
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.ValidateGenesisAndInvariants()
 }
 
 func TestUpdateStrategicReserveShortTermPool_BurnCoinsError(t *testing.T) {
@@ -103,7 +103,7 @@ func TestUpdateStrategicReserveShortTermPool_Success(t *testing.T) {
 	require.Equal(t, 1, len(accountVestingPools.VestingPools))
 	require.Equal(t, math.NewInt(20_000_000_000_000), accountVestingPools.VestingPools[0].InitiallyLocked)
 
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.ValidateGenesisAndInvariants()
 }
 
 func TestUpdateStrategicReserveAccount_AccountNotFound(t *testing.T) {
@@ -116,7 +116,7 @@ func TestUpdateStrategicReserveAccount_AccountNotFound(t *testing.T) {
 	strategicReserveAccount := testHelper.App.AccountKeeper.GetAccount(testHelper.Context, strategicReserveAccountAddress)
 	require.Nil(t, strategicReserveAccount)
 
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.ValidateGenesisAndInvariants()
 }
 
 func TestUpdateStrategicReserveAccount_NotContinuousVestingAccount(t *testing.T) {
@@ -134,7 +134,7 @@ func TestUpdateStrategicReserveAccount_NotContinuousVestingAccount(t *testing.T)
 	account := testHelper.App.AccountKeeper.GetAccount(testHelper.Context, strategicReserveAccountAddress)
 	_, ok := account.(*types.BaseAccount)
 	require.True(t, ok)
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.ValidateGenesisAndInvariants()
 }
 
 func TestUpdateStrategicReserveAccount_NegativeOriginalVesting(t *testing.T) {
@@ -151,7 +151,7 @@ func TestUpdateStrategicReserveAccount_NegativeOriginalVesting(t *testing.T) {
 	require.NoError(t, err)
 
 	testHelper.BankUtils.VerifyAccountDefaultDenomBalance(testHelper.Context, strategicReserveAccountAddress, math.NewInt(200_000))
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.ValidateGenesisAndInvariants()
 }
 
 func TestUpdateStrategicReserveAccount_SendCoinsError(t *testing.T) {
@@ -168,7 +168,7 @@ func TestUpdateStrategicReserveAccount_SendCoinsError(t *testing.T) {
 	require.NoError(t, err)
 
 	testHelper.BankUtils.VerifyAccountDefaultDenomBalance(testHelper.Context, strategicReserveAccountAddress, math.NewInt(31_000_000_000_000))
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.ValidateGenesisAndInvariants()
 }
 
 func TestUpdateStrategicReserveAccount_Success(t *testing.T) {
@@ -191,7 +191,7 @@ func TestUpdateStrategicReserveAccount_Success(t *testing.T) {
 	strategicReserveAccountBalance := testHelper.BankUtils.GetAccountAllBalances(strategicReserveAccountAddress)
 	require.Equal(t, math.NewInt(49999990000000), strategicReserveAccountBalance.AmountOf(testenv.DefaultTestDenom))
 
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.ValidateGenesisAndInvariants()
 }
 
 func addStrategicReserveVestingAccount(t *testing.T, testHelper *testapp.TestHelper) {
@@ -217,7 +217,7 @@ func TestUpdateCommunityPool_SuccessLatestValue(t *testing.T) {
 	communityPoolBalance := testHelper.DistributionUtils.DistrKeeper.GetFeePoolCommunityCoins(testHelper.Context)
 	require.Equal(t, sdk.NewDecCoins(sdk.NewDecCoin(testenv.DefaultTestDenom, math.NewInt(40_000_000_000_000))), communityPoolBalance)
 
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.ValidateGenesisAndInvariants()
 }
 
 func TestUpdateCommunityPool_SuccessDifferentValues(t *testing.T) {
@@ -257,7 +257,7 @@ func TestUpdateCommunityPool_SuccessDifferentValues(t *testing.T) {
 			communityPoolBalance := testHelper.DistributionUtils.DistrKeeper.GetFeePoolCommunityCoins(testHelper.Context)
 			require.Equal(t, sdk.NewDecCoins(sdk.NewDecCoin(testenv.DefaultTestDenom, math.NewInt(40_000_000_000_000))), communityPoolBalance)
 
-			testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+			testHelper.ValidateGenesisAndInvariants()
 		})
 	}
 }
@@ -280,7 +280,7 @@ func TestUpdateCommunityPool_AmountLower(t *testing.T) {
 	communityPoolBalance := testHelper.DistributionUtils.DistrKeeper.GetFeePoolCommunityCoins(testHelper.Context)
 	require.Equal(t, sdk.NewDecCoins(sdk.NewDecCoin(testenv.DefaultTestDenom, math.NewInt(39_000_000_000_000))), communityPoolBalance)
 
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.ValidateGenesisAndInvariants()
 }
 
 func addVestingTypes(testHelper *testapp.TestHelper) {

@@ -39,7 +39,7 @@ func TestModifyVestingTypesVcRoundTypeNameNotFound(t *testing.T) {
 	require.Equal(t, 1, len(vestingTypesAfter.VestingTypes))
 
 	require.Equal(t, vestingTypesBefore, vestingTypesAfter)
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.ValidateGenesisAndInvariants()
 }
 
 func TestModifyVestingTypesvalidatorRoundTypeBeforeNotFound(t *testing.T) {
@@ -64,7 +64,7 @@ func TestModifyVestingTypesvalidatorRoundTypeBeforeNotFound(t *testing.T) {
 	require.Equal(t, 1, len(vestingTypesAfter.VestingTypes))
 
 	require.Equal(t, vestingTypesBefore, vestingTypesAfter)
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.ValidateGenesisAndInvariants()
 }
 
 func TestModifyVestingTypesVestingTypeExists(t *testing.T) {
@@ -108,5 +108,5 @@ func TestModifyVestingTypesVestingTypeExists(t *testing.T) {
 		VestingPeriod: 305 * 24 * time.Hour,
 	}
 	require.EqualValues(t, expectedValidatorRoundType, validatorRoundTypeAfter)
-	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()
+	testHelper.ValidateGenesisAndInvariants()
 }

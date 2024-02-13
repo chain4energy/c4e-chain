@@ -267,3 +267,13 @@ func (bu *ContextBankUtils) DisableSend() {
 	bu.BankUtils.DisableSend(bu.testContext.GetContext())
 
 }
+
+func (bu *ContextBankUtils) ExportGenesisAndValidate() {
+	bu.BankUtils.ExportGenesisAndValidate(bu.testContext.GetContext())
+}
+
+func (bu *BankUtils) ExportGenesisAndValidate(ctx sdk.Context) {
+	exportedGenesis := bu.helperBankKeeper.ExportGenesis(ctx)
+	err := exportedGenesis.Validate()
+	require.NoError(bu.t, err)
+}
