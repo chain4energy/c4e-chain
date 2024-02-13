@@ -149,7 +149,7 @@ func UpdateCommunityPool(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers)
 		return nil
 	}
 
-	communityPool := sdk.NewDecCoinsFromCoins(sdk.NewCoin(denom, CommunityPoolNewAmount))
+	communityPool := sdk.NewDecCoins(sdk.NewDecCoin(denom, CommunityPoolNewAmount))
 	feePool.CommunityPool = communityPool
 
 	amountToBurn := communityPoolBefore.AmountOf(denom).TruncateInt().Sub(CommunityPoolNewAmount)

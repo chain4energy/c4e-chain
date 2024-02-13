@@ -13,7 +13,7 @@ const (
 )
 
 func ModifyVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
-	ctx.Logger().Info("modifying and adding new vesting types")
+	ctx.Logger().Info("modifying vesting types")
 
 	_, err := appKeepers.GetC4eVestingKeeper().MustGetVestingType(ctx, VcRoundTypeName)
 	if err != nil {

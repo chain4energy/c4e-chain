@@ -185,7 +185,10 @@ test-e2e-params-change: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestParamsChangeSuite
 
 test-e2e-migration: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationSuite"
+	@VERSION=$(VERSION) C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestMainnetMigrationSuite
+
+test-e2e-no-data-migration: e2e-setup
+	@VERSION=$(VERSION) C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestNonMainnetMigrationSuite
 
 test-e2e-migration-chaining: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationChainingSuite"
