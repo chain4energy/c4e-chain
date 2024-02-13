@@ -3,7 +3,7 @@ package app
 import (
 	"fmt"
 	v130 "github.com/chain4energy/c4e-chain/app/upgrades/v130"
-	v140 "github.com/chain4energy/c4e-chain/app/upgrades/v140"
+	v131 "github.com/chain4energy/c4e-chain/app/upgrades/v131"
 	cfeclaimmodulekeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	cfeclaimmoduletypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"io"
@@ -208,7 +208,7 @@ var (
 	_ servertypes.Application = (*App)(nil)
 	_ simapp.App              = (*App)(nil)
 
-	Upgrades = []upgrades.Upgrade{v110.Upgrade, v120.Upgrade, v130.Upgrade, v140.Upgrade}
+	Upgrades = []upgrades.Upgrade{v110.Upgrade, v120.Upgrade, v130.Upgrade, v131.Upgrade}
 )
 
 func init() {

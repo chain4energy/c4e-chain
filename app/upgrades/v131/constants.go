@@ -1,4 +1,4 @@
-package v140
+package v131
 
 import (
 	"github.com/chain4energy/c4e-chain/app/upgrades"
@@ -6,7 +6,7 @@ import (
 	store "github.com/cosmos/cosmos-sdk/store/types"
 )
 
-const UpgradeName = "v1.4.0"
+const UpgradeName = "v1.3.1"
 
 var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,

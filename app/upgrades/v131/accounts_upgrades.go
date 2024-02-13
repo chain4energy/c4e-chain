@@ -1,4 +1,4 @@
-package v140
+package v131
 
 import (
 	"cosmossdk.io/math"
@@ -35,15 +35,20 @@ func UpdateStrategicReserveShortTermPool(ctx sdk.Context, appKeepers cfeupgradet
 		return nil
 	}
 
-	if err := burnCoinsFromAnyModule(ctx, appKeepers, cfevestingtypes.ModuleName, AmountToBurnFromStrategicReservePool); err != nil {
-		ctx.Logger().Info("send and burn coins from module error", "err", err)
-		return nil
-	}
-
 	for _, pool := range accountVestingPools.VestingPools {
 		if pool.Name == StrategicReservceShortTermPool {
 			pool.InitiallyLocked = pool.InitiallyLocked.Sub(AmountToBurnFromStrategicReservePool)
+			if pool.InitiallyLocked.IsNegative() {
+				ctx.Logger().Info("after substracting amount to burn from strategic reserve pool initially locked amount is negative")
+				return nil
+			}
+			break
 		}
+	}
+
+	if err := burnCoinsFromAnyModule(ctx, appKeepers, cfevestingtypes.ModuleName, AmountToBurnFromStrategicReservePool); err != nil {
+		ctx.Logger().Info("send and burn coins from module error", "err", err)
+		return err
 	}
 
 	appKeepers.GetC4eVestingKeeper().SetAccountVestingPools(ctx, accountVestingPools)
@@ -71,12 +76,22 @@ func UpdateStrategicReserveAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 
 	vestingAccount, ok := strategicReserveAccount.(*vestingtypes.ContinuousVestingAccount)
 	if !ok {
-		ctx.Logger().Info("strategic reserve account is not of *vestingtypes.ContinuousVestingAccount type", "vestingAccount", vestingAccount)
+		ctx.Logger().Info("strategic reserve account is not of *vestingtypes.ContinuousVestingAccount type")
 		return nil
 	}
 
 	denom := appKeepers.GetC4eVestingKeeper().Denom(ctx)
+
+	if vestingAccount.OriginalVesting.AmountOf(denom).Sub(AmountToBurnStrategicReserveAccount).Sub(AmountToSendToLiquidtyPoolOwner).IsNegative() {
+		ctx.Logger().Info("after substracting amount to burn strategic reserve account and amount to send to liquidity pool owner from vesting account original vesting is negative")
+		return nil
+	}
+
 	vestingAccount.OriginalVesting = vestingAccount.OriginalVesting.Sub(sdk.NewCoin(denom, AmountToBurnStrategicReserveAccount))
+	if vestingAccount.OriginalVesting.IsAnyNegative() {
+		ctx.Logger().Info("after substracting amount to burn strategic reserve account from vesting account original vesting is negative")
+		return nil
+	}
 	appKeepers.GetAccountKeeper().SetAccount(ctx, vestingAccount)
 
 	coinsToSendToLiquidityPoolOwner := sdk.NewCoins(sdk.NewCoin(denom, AmountToSendToLiquidtyPoolOwner))
@@ -101,7 +116,7 @@ func UpdateStrategicReserveAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 
 	if err = bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintertypes.ModuleName, spendableCoins); err != nil {
 		ctx.Logger().Info("burn coins error", "err", err)
-		return nil
+		return err
 	}
 
 	return nil
@@ -112,13 +127,19 @@ func UpdateCommunityPool(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers)
 	communityPoolBefore := feePool.CommunityPool
 
 	denom := appKeepers.GetC4eVestingKeeper().Denom(ctx)
+
+	if communityPoolBefore.AmountOf(denom).LTE(sdk.NewDecFromInt(CommunityPoolNewAmount)) {
+		ctx.Logger().Info("community pool amount before migration was lower or equal to community pool new amount")
+		return nil
+	}
+
 	communityPool := sdk.NewDecCoinsFromCoins(sdk.NewCoin(denom, CommunityPoolNewAmount))
 	feePool.CommunityPool = communityPool
 
 	amountToBurn := communityPoolBefore.AmountOf(denom).TruncateInt().Sub(CommunityPoolNewAmount)
 	if err := burnCoinsFromAnyModule(ctx, appKeepers, distrtypes.ModuleName, amountToBurn); err != nil {
 		ctx.Logger().Info("send and burn coins from module error", "err", err)
-		return nil
+		return err
 	}
 
 	appKeepers.GetDistributionKeeper().SetFeePool(ctx, feePool)
@@ -131,11 +152,11 @@ func burnCoinsFromAnyModule(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepe
 
 	if err := bankkeeper.Keeper.SendCoinsFromModuleToModule(*appKeepers.GetBankKeeper(), ctx, fromModule, cfemintertypes.ModuleName, coins); err != nil {
 		ctx.Logger().Info("send coins from module to module error", "err", err)
-		return nil
+		return err
 	}
 	if err := bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintertypes.ModuleName, coins); err != nil {
 		ctx.Logger().Info("burn coins error", "err", err)
-		return nil
+		return err
 	}
 	return nil
 }
