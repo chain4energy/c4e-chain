@@ -21,7 +21,7 @@ const (
 
 var (
 	AmountToBurnFromStrategicReservePool = math.NewInt(20_000_000_000_000)
-	AmountToBurnStrategicReserveAccount  = math.NewInt(30_000_000_000_000)
+	StrategicReserveAccountNewAmount     = math.NewInt(50_000_000_000_000)
 	AmountToSendToLiquidtyPoolOwner      = math.NewInt(10_000_000_000_000)
 	CommunityPoolNewAmount               = math.NewInt(40_000_000_000_000)
 )
@@ -35,6 +35,7 @@ func UpdateStrategicReserveShortTermPool(ctx sdk.Context, appKeepers cfeupgradet
 		return nil
 	}
 
+	strategicReserveShortTermPoolFound := false
 	for _, pool := range accountVestingPools.VestingPools {
 		if pool.Name == StrategicReservceShortTermPool {
 			pool.InitiallyLocked = pool.InitiallyLocked.Sub(AmountToBurnFromStrategicReservePool)
@@ -42,12 +43,18 @@ func UpdateStrategicReserveShortTermPool(ctx sdk.Context, appKeepers cfeupgradet
 				ctx.Logger().Info("after substracting amount to burn from strategic reserve pool initially locked amount is negative")
 				return nil
 			}
+			strategicReserveShortTermPoolFound = true
 			break
 		}
 	}
 
+	if !strategicReserveShortTermPoolFound {
+		ctx.Logger().Info("strategic reserve short term pool not found", "owner", StrategicReservceShortTermPoolAccount)
+		return nil
+	}
+
 	if err := burnCoinsFromAnyModule(ctx, appKeepers, cfevestingtypes.ModuleName, AmountToBurnFromStrategicReservePool); err != nil {
-		ctx.Logger().Info("send and burn coins from module error", "err", err)
+		ctx.Logger().Error("send and burn coins from module error", "err", err)
 		return err
 	}
 
@@ -82,26 +89,34 @@ func UpdateStrategicReserveAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 
 	denom := appKeepers.GetC4eVestingKeeper().Denom(ctx)
 
-	if vestingAccount.OriginalVesting.AmountOf(denom).Sub(AmountToBurnStrategicReserveAccount).Sub(AmountToSendToLiquidtyPoolOwner).IsNegative() {
+	if vestingAccount.OriginalVesting.AmountOf(denom).LTE(StrategicReserveAccountNewAmount) {
 		ctx.Logger().Info("after substracting amount to burn strategic reserve account and amount to send to liquidity pool owner from vesting account original vesting is negative")
 		return nil
 	}
 
-	vestingAccount.OriginalVesting = vestingAccount.OriginalVesting.Sub(sdk.NewCoin(denom, AmountToBurnStrategicReserveAccount))
-	if vestingAccount.OriginalVesting.IsAnyNegative() {
-		ctx.Logger().Info("after substracting amount to burn strategic reserve account from vesting account original vesting is negative")
-		return nil
-	}
+	vestingAccount.OriginalVesting = sdk.NewCoins(sdk.NewCoin(denom, StrategicReserveAccountNewAmount))
 	appKeepers.GetAccountKeeper().SetAccount(ctx, vestingAccount)
 
+	ctx.Logger().Info("strategic reserve account updated, new original vesting", "originalVesting", vestingAccount.OriginalVesting)
+	spendableCoins := bankkeeper.Keeper.SpendableCoins(*appKeepers.GetBankKeeper(), ctx, strategicReserveAccountAddress)
+
+	if AmountToSendToLiquidtyPoolOwner.GT(spendableCoins.AmountOf(denom)) {
+		ctx.Logger().Info("spendable coins are less than coins to send to liquidity pool owner",
+			"spendableCoins", spendableCoins, "amountToSendToLiquidtyPoolOwner", AmountToSendToLiquidtyPoolOwner)
+		return nil
+	}
+
 	coinsToSendToLiquidityPoolOwner := sdk.NewCoins(sdk.NewCoin(denom, AmountToSendToLiquidtyPoolOwner))
+
 	err = bankkeeper.Keeper.SendCoins(*appKeepers.GetBankKeeper(), ctx, strategicReserveAccountAddress, liquidityPoolOwnerAccountAddress, coinsToSendToLiquidityPoolOwner)
 	if err != nil {
-		ctx.Logger().Info("migrate moondrop vesting account error", "err", err)
+		ctx.Logger().Error("migrate moondrop vesting account error", "err", err)
 		return err
 	}
 
-	spendableCoins := bankkeeper.Keeper.SpendableCoins(*appKeepers.GetBankKeeper(), ctx, strategicReserveAccountAddress)
+	spendableCoins = bankkeeper.Keeper.SpendableCoins(*appKeepers.GetBankKeeper(), ctx, strategicReserveAccountAddress)
+	ctx.Logger().Info("spendable coins after sending coins to liquidity pool owner", "spendableCoins", spendableCoins)
+
 	err = bankkeeper.Keeper.SendCoinsFromAccountToModule(
 		*appKeepers.GetBankKeeper(),
 		ctx,
@@ -110,12 +125,12 @@ func UpdateStrategicReserveAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 		spendableCoins,
 	)
 	if err != nil {
-		ctx.Logger().Info("migrate moondrop vesting account error", "err", err)
+		ctx.Logger().Error("migrate moondrop vesting account error", "err", err)
 		return err
 	}
 
 	if err = bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintertypes.ModuleName, spendableCoins); err != nil {
-		ctx.Logger().Info("burn coins error", "err", err)
+		ctx.Logger().Error("burn coins error", "err", err)
 		return err
 	}
 
@@ -123,6 +138,7 @@ func UpdateStrategicReserveAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 }
 
 func UpdateCommunityPool(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
+	ctx.Logger().Info("updating community pool")
 	feePool := appKeepers.GetDistributionKeeper().GetFeePool(ctx)
 	communityPoolBefore := feePool.CommunityPool
 
@@ -138,7 +154,7 @@ func UpdateCommunityPool(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers)
 
 	amountToBurn := communityPoolBefore.AmountOf(denom).TruncateInt().Sub(CommunityPoolNewAmount)
 	if err := burnCoinsFromAnyModule(ctx, appKeepers, distrtypes.ModuleName, amountToBurn); err != nil {
-		ctx.Logger().Info("send and burn coins from module error", "err", err)
+		ctx.Logger().Error("send and burn coins from module error", "err", err)
 		return err
 	}
 
@@ -151,11 +167,11 @@ func burnCoinsFromAnyModule(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepe
 	coins := sdk.NewCoins(sdk.NewCoin(denom, amount))
 
 	if err := bankkeeper.Keeper.SendCoinsFromModuleToModule(*appKeepers.GetBankKeeper(), ctx, fromModule, cfemintertypes.ModuleName, coins); err != nil {
-		ctx.Logger().Info("send coins from module to module error", "err", err)
+		ctx.Logger().Error("send coins from module to module error", "err", err)
 		return err
 	}
 	if err := bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintertypes.ModuleName, coins); err != nil {
-		ctx.Logger().Info("burn coins error", "err", err)
+		ctx.Logger().Error("burn coins error", "err", err)
 		return err
 	}
 	return nil

@@ -84,6 +84,7 @@ func (th *TestHelper) ValidateGenesisAndInvariants() {
 	th.AuthUtils.ExportGenesisAndValidate()
 	th.StakingUtils.ExportGenesisAndValidate()
 	th.BankUtils.ExportGenesisAndValidate()
+	th.App.CrisisKeeper.AssertInvariants(th.Context)
 }
 
 func newTestHelper(t require.TestingT, ctx sdk.Context, app *c4eapp.App, initTime time.Time, initialValidatorsCoin sdk.Coin) *TestHelper {

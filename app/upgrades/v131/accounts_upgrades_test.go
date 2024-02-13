@@ -56,6 +56,34 @@ func TestUpdateStrategicReserveShortTermPool_InitiallyLockedNegative(t *testing.
 	testHelper.ValidateGenesisAndInvariants()
 }
 
+func TestUpdateStrategicReserveShortTermPool_strategicReserveShortTermPoolNotFound(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	addVestingTypes(testHelper)
+	accountVestingPools := cfevestingtypes.AccountVestingPools{
+		Owner: v131.StrategicReservceShortTermPoolAccount,
+		VestingPools: []*cfevestingtypes.VestingPool{
+			{
+				Name:            "Test pool",
+				InitiallyLocked: math.NewInt(1_000),
+				VestingType:     "Strategic reserve short term round",
+			},
+		},
+	}
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(1_000), cfevestingtypes.ModuleName)
+
+	testHelper.C4eVestingUtils.GetC4eVestingKeeper().SetAccountVestingPools(testHelper.Context, accountVestingPools)
+
+	err := v131.UpdateStrategicReserveShortTermPool(testHelper.Context, testHelper.App)
+	require.NoError(t, err)
+
+	accountVestingPools, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v131.StrategicReservceShortTermPoolAccount)
+	require.True(t, found)
+	require.Equal(t, 1, len(accountVestingPools.VestingPools))
+	require.Equal(t, accountVestingPools.VestingPools[0].InitiallyLocked, math.NewInt(1_000))
+
+	testHelper.ValidateGenesisAndInvariants()
+}
+
 func TestUpdateStrategicReserveShortTermPool_BurnCoinsError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	addVestingTypes(testHelper)
@@ -183,13 +211,13 @@ func TestUpdateStrategicReserveAccount_Success(t *testing.T) {
 
 	strategicReserveAccount := testHelper.App.AccountKeeper.GetAccount(testHelper.Context, strategicReserveAccountAddress).(*vestingtypes.ContinuousVestingAccount)
 	require.NotNil(t, strategicReserveAccount)
-	require.Equal(t, math.NewInt(49999990000000), strategicReserveAccount.OriginalVesting.AmountOf(testenv.DefaultTestDenom))
+	require.Equal(t, math.NewInt(50000000000000), strategicReserveAccount.OriginalVesting.AmountOf(testenv.DefaultTestDenom))
 
 	liquidityPoolOwnerBalance := testHelper.BankUtils.GetAccountAllBalances(liquidityPoolOwnerAccountAddress)
 	require.Equal(t, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(20000000000000))), liquidityPoolOwnerBalance)
 
 	strategicReserveAccountBalance := testHelper.BankUtils.GetAccountAllBalances(strategicReserveAccountAddress)
-	require.Equal(t, math.NewInt(49999990000000), strategicReserveAccountBalance.AmountOf(testenv.DefaultTestDenom))
+	require.Equal(t, math.NewInt(50000000000000), strategicReserveAccountBalance.AmountOf(testenv.DefaultTestDenom))
 
 	testHelper.ValidateGenesisAndInvariants()
 }
