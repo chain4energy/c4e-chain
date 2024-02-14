@@ -48,6 +48,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Misc Improvements
 
+## [v1.3.1](https://github.com/chain4energy/c4e-chain/releases/tag/v1.3.1) - 2023-08-21
+
+**Adjustments and Financial Operations**
+
+- decreased the vesting pool "Strategic reserve short term round pool" by 20 million C4E.
+- transferred 10M C4E from the account `c4e1hcfjejmxzl8d95xka5j8cjegmf32u2lee3q422` to `c4e16n7yweagu3fxfzvay6cz035hddda7z3ntdxq3l`.
+- burned all tokens in the account `c4e1hcfjejmxzl8d95xka5j8cjegmf32u2lee3q422` to leave 50M C4E remaining.
+
+**Vesting Parameters Modification**
+
+- modified the vesting parameters of Valdiator round pool and VC round pool from free 5%, lockup 18 months, and vesting 18 months to free 8%, lockup 4 months, and vesting 10 months.
+
+**Community Pool Reduction**
+
+- decreased the community pool from 100M C4E to 40M C4E.
+
 ## [v1.3.0](https://github.com/chain4energy/c4e-chain/releases/tag/v1.3.0) - 2023-08-21
 
 **Upgrades**
