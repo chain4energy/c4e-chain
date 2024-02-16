@@ -217,7 +217,7 @@ func TestModifyVestingTypesVestingTypeExists(t *testing.T) {
 	testHelper.App.CfevestingKeeper.SetVestingType(testHelper.Context, vcRoundTypeBefore)
 
 	validatorRoundTypeBefore := cfevestingtypes.VestingType{
-		Name:          "Valdiator round",
+		Name:          "Validator round",
 		Free:          sdk.MustNewDecFromStr("0.05"),
 		LockupPeriod:  274 * 24 * time.Hour,
 		VestingPeriod: 548 * 24 * time.Hour,
@@ -255,10 +255,10 @@ func TestModifyVestingTypesVestingTypeExists(t *testing.T) {
 	}
 	require.EqualValues(t, expectedVcRoundType, vcRoundTypeAfter)
 
-	validatorRoundTypeAfter, err := testHelper.C4eVestingUtils.GetC4eVestingKeeper().MustGetVestingType(testHelper.Context, "Valdiator round")
+	validatorRoundTypeAfter, err := testHelper.C4eVestingUtils.GetC4eVestingKeeper().MustGetVestingType(testHelper.Context, "Validator round")
 	require.Nil(t, err)
 	expectedValidatorRoundType := &cfevestingtypes.VestingType{
-		Name:          "Valdiator round",
+		Name:          "Validator round",
 		Free:          sdk.MustNewDecFromStr("0.08"),
 		LockupPeriod:  122 * 24 * time.Hour,
 		VestingPeriod: 305 * 24 * time.Hour,

@@ -9,7 +9,7 @@ import (
 
 const (
 	VcRoundTypeName        = "VC round"
-	ValidatorRoundTypeName = "Valdiator round"
+	ValidatorRoundTypeName = "Validator round"
 	PublicRoundTypeName    = "Public round"
 	EarlyBirdRoundTypeName = "Early-bird round"
 )

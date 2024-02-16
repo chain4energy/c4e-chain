@@ -48,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Misc Improvements
 
-## [v1.3.1](https://github.com/chain4energy/c4e-chain/releases/tag/v1.3.1) - 2023-08-21
+## [v1.3.1](https://github.com/chain4energy/c4e-chain/releases/tag/v1.3.1) - 2024-02-20
 
 **Adjustments and Financial Operations**
 

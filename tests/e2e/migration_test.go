@@ -162,7 +162,7 @@ func createNonMainnetVestingTypes() []types.GenesisVestingType {
 }
 func createMainnetVestingTypes() []types.GenesisVestingType {
 	vt1 := types.GenesisVestingType{
-		Name:              "Valdiator round",
+		Name:              "Validator round",
 		LockupPeriod:      122,
 		LockupPeriodUnit:  "day",
 		VestingPeriod:     305,

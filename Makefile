@@ -101,7 +101,7 @@ test-all:
 	$(MAKE) test-simulation-import-export SIM_NUM_BLOCKS=500 > $(RESULTS_DIR)/simulation_tests.log
 	@echo "--> Building docker images"
 	$(MAKE) docker-build-debug
-	$(MAKE) docker-build-v1.2.0-chain
+	$(MAKE) docker-build-v1.3.0-chain
 	@echo "--> Running e2e tests"
 	$(MAKE) test-e2e > $(RESULTS_DIR)/e2e_tests.log
 

@@ -372,7 +372,7 @@
     "vesting_account_traces": [],
     "vesting_types": [
       {
-        "name": "Valdiator round",
+        "name": "Validator round",
         "lockup_period": "274",
         "lockup_period_unit": "day",
         "vesting_period": "548",
