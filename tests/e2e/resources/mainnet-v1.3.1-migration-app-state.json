@@ -394,6 +394,22 @@
         "vesting_period": "548",
         "vesting_period_unit": "day",
         "free": "0.050000000000000000"
+      },
+      {
+        "name": "Early-bird round",
+        "lockup_period": "0",
+        "lockup_period_unit": "day",
+        "vesting_period": "274",
+        "vesting_period_unit": "day",
+        "free": "0.150000000000000000"
+      },
+      {
+        "name": "Public round",
+        "lockup_period": "0",
+        "lockup_period_unit": "day",
+        "vesting_period": "183",
+        "vesting_period_unit": "day",
+        "free": "0.200000000000000000"
       }
     ]
   },

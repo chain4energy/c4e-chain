@@ -59,6 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Vesting Parameters Modification**
 
 - modified the vesting parameters of Valdiator round pool and VC round pool from free 5%, lockup 18 months, and vesting 18 months to free 8%, lockup 4 months, and vesting 10 months.
+- modified the vesting parameters of Early-bird (private) round pool lockup none, and vesting 9 months to lockup 2 months, and vesting 7 months.
+- modified the vesting parameters of Public round pool lockup none, and vesting 6 months to lockup 1 month, and vesting 5 months.
 
 **Community Pool Reduction**
 

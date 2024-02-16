@@ -10,6 +10,8 @@ import (
 const (
 	VcRoundTypeName        = "VC round"
 	ValidatorRoundTypeName = "Valdiator round"
+	PublicRoundTypeName    = "Public round"
+	EarlyBirdRoundTypeName = "Early-bird round"
 )
 
 func ModifyVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
@@ -24,6 +26,18 @@ func ModifyVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) 
 	_, err = appKeepers.GetC4eVestingKeeper().MustGetVestingType(ctx, ValidatorRoundTypeName)
 	if err != nil {
 		ctx.Logger().Info("vesting type not found", "vestingType", ValidatorRoundTypeName)
+		return nil
+	}
+
+	_, err = appKeepers.GetC4eVestingKeeper().MustGetVestingType(ctx, PublicRoundTypeName)
+	if err != nil {
+		ctx.Logger().Info("vesting type not found", "vestingType", PublicRoundTypeName)
+		return nil
+	}
+
+	_, err = appKeepers.GetC4eVestingKeeper().MustGetVestingType(ctx, EarlyBirdRoundTypeName)
+	if err != nil {
+		ctx.Logger().Info("vesting type not found", "vestingType", EarlyBirdRoundTypeName)
 		return nil
 	}
 
@@ -42,6 +56,24 @@ func ModifyVestingTypes(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) 
 		VestingPeriod: 305 * 24 * time.Hour,
 	}
 	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, validatorRoundType)
+
+	publicRoundType := cfevestingtypes.VestingType{
+		Name:          PublicRoundTypeName,
+		Free:          sdk.MustNewDecFromStr("0.2"),
+		LockupPeriod:  30 * 24 * time.Hour,
+		VestingPeriod: 152 * 24 * time.Hour,
+	}
+
+	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, publicRoundType)
+
+	earlyBirdRoundType := cfevestingtypes.VestingType{
+		Name:          EarlyBirdRoundTypeName,
+		Free:          sdk.MustNewDecFromStr("0.15"),
+		LockupPeriod:  61 * 24 * time.Hour,
+		VestingPeriod: 213 * 24 * time.Hour,
+	}
+
+	appKeepers.GetC4eVestingKeeper().SetVestingType(ctx, earlyBirdRoundType)
 
 	return nil
 }

@@ -36,7 +36,7 @@ func (s *MainnetMigrationSetupSuite) TestMainnetMigration() {
 
 	// verify vesting types
 	vestingTypes := node.QueryVestingTypes()
-	s.Equal(5, len(vestingTypes))
+	s.Equal(7, len(vestingTypes))
 
 	s.ElementsMatch(createMainnetVestingTypes(), vestingTypes)
 
@@ -204,5 +204,24 @@ func createMainnetVestingTypes() []types.GenesisVestingType {
 		VestingPeriod:     30,
 		Free:              sdk.MustNewDecFromStr("0.000000000000000000"),
 	}
-	return []types.GenesisVestingType{vt1, vt2, vt3, vt4, vt5}
+
+	vt6 := types.GenesisVestingType{
+		Name:              "Early-bird round",
+		LockupPeriod:      61,
+		LockupPeriodUnit:  "day",
+		VestingPeriod:     213,
+		VestingPeriodUnit: "day",
+		Free:              sdk.MustNewDecFromStr("0.150000000000000000"),
+	}
+
+	vt7 := types.GenesisVestingType{
+		Name:              "Public round",
+		LockupPeriod:      30,
+		LockupPeriodUnit:  "day",
+		VestingPeriod:     152,
+		VestingPeriodUnit: "day",
+		Free:              sdk.MustNewDecFromStr("0.200000000000000000"),
+	}
+
+	return []types.GenesisVestingType{vt1, vt2, vt3, vt4, vt5, vt6, vt7}
 }
