@@ -8,6 +8,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
@@ -132,4 +133,14 @@ func (su *StakingUtils) GetValidators(ctx sdk.Context) []stakingtypes.Validator 
 
 func (su *ContextStakingUtils) GetStakingDenom() string {
 	return su.StakingUtils.GetStakingDenom(su.testContext.GetContext())
+}
+
+func (su *ContextStakingUtils) ExportGenesisAndValidate() {
+	su.StakingUtils.ExportGenesisAndValidate(su.testContext.GetContext())
+}
+
+func (su *StakingUtils) ExportGenesisAndValidate(ctx sdk.Context) {
+	exportedGenesis := su.helperStakingkeeper.ExportGenesis(ctx)
+	err := staking.ValidateGenesis(exportedGenesis)
+	require.NoError(su.t, err)
 }

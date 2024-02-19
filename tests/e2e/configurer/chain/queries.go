@@ -8,6 +8,7 @@ import (
 	cfeclaimmoduletypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"io"
 	"net/http"
@@ -129,6 +130,17 @@ func (n *NodeConfig) QueryPropStatus(proposalNumber int) (string, error) {
 	proposalStatus := propResp.Proposal.Status
 
 	return proposalStatus.String(), nil
+}
+
+func (n *NodeConfig) QueryCommunityPool() sdk.DecCoins {
+	path := "cosmos/distribution/v1beta1/community_pool"
+	bz, err := n.QueryGRPCGateway(path)
+	require.NoError(n.t, err)
+
+	var communityPool distrtypes.QueryCommunityPoolResponse
+	err = util.Cdc.UnmarshalJSON(bz, &communityPool)
+	require.NoError(n.t, err)
+	return communityPool.GetPool()
 }
 
 // QueryHashFromBlock gets block hash at a specific height. Otherwise, error.

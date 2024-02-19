@@ -2,11 +2,11 @@ package e2e
 
 import (
 	"cosmossdk.io/math"
-	v130 "github.com/chain4energy/c4e-chain/app/upgrades/v130"
+	v131 "github.com/chain4energy/c4e-chain/app/upgrades/v131"
 	testenv "github.com/chain4energy/c4e-chain/testutil/env"
-	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	vestexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/stretchr/testify/suite"
 	"os"
 	"testing"
@@ -22,124 +22,126 @@ func TestMainnetMigrationSuite(t *testing.T) {
 }
 
 func (s *MainnetMigrationSetupSuite) SetupSuite() {
-	bytes, err := os.ReadFile("./resources/mainnet-migration-app-state.json")
+	bytes, err := os.ReadFile("./resources/mainnet-v1.3.1-migration-app-state.json")
 	if err != nil {
 		panic(err)
 	}
 	s.BaseSetupSuite.SetupSuiteWithUpgradeAppState(true, false, false, bytes)
 }
 
-func (s *MainnetMigrationSetupSuite) TestMainnetVestingsMigration() {
+func (s *MainnetMigrationSetupSuite) TestMainnetMigration() {
 	chainA := s.configurer.GetChainConfig(0)
 	node, err := chainA.GetDefaultNode()
 	s.NoError(err)
 
-	campaigns := node.QueryCampaigns()
-	s.Equal(6, len(campaigns))
-	s.Equal(campaigns, createMainetCampaigns())
+	// verify vesting types
+	vestingTypes := node.QueryVestingTypes()
+	s.Equal(7, len(vestingTypes))
 
-	userEntries := node.QueryUserEntries()
-	s.Equal(108359, len(userEntries))
+	s.ElementsMatch(createMainnetVestingTypes(), vestingTypes)
+
+	// verify community pool
+	s.Equal(sdk.MustNewDecFromStr("40000000084088.934910103606810233"), node.QueryCommunityPool().AmountOf(testenv.DefaultTestDenom))
+
+	// verify strategic reserve account
+	acc := node.QueryAccount(v131.StrategicReserveAccount)
+	s.NotNil(acc)
+	vAcc, ok := acc.(*vestexported.ContinuousVestingAccount)
+	s.True(ok)
+	s.EqualValues(v131.StrategicReserveAccount, vAcc.Address)
+	s.EqualValues(1727222400, vAcc.StartTime)
+	s.EqualValues(1821830400, vAcc.EndTime)
+	s.EqualValues(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(49999990000000))), vAcc.OriginalVesting)
+
+	// verify strategic reserve short term pool
+	vestingPools := node.QueryVestingPoolsInfo(v131.StrategicReservceShortTermPoolAccount)
+
+	s.Equal(3, len(vestingPools))
+	s.ElementsMatch(s.createVestingPools(), vestingPools)
+}
+
+type NonMainnetMigrationSetupSuite struct {
+	BaseSetupSuite
+}
+
+func TestNonMainnetMigrationSuite(t *testing.T) {
+	suite.Run(t, new(NonMainnetMigrationSetupSuite))
+}
+
+func (s *NonMainnetMigrationSetupSuite) SetupSuite() {
+	s.BaseSetupSuite.SetupSuiteWithUpgradeAppState(true, false, false, nil)
+}
+
+func (s *NonMainnetMigrationSetupSuite) TestNonMainnetVestingsMigration() {
+	chainA := s.configurer.GetChainConfig(0)
+	node, err := chainA.GetDefaultNode()
+	s.NoError(err)
 
 	vestingTypes := node.QueryVestingTypes()
-	s.Equal(6, len(vestingTypes))
-	s.ElementsMatch(createMainnetVestingTypes(), vestingTypes)
-	balances, err := node.QueryBalances(v130.AirdropModuleAccountAddress)
+	s.Equal(2, len(vestingTypes))
+
+	s.ElementsMatch(createNonMainnetVestingTypes(), vestingTypes)
+
+	node.QueryVestingPoolsNotFound(v131.StrategicReservceShortTermPoolAccount)
+
+	node.QueryAccountNotFound(v131.StrategicReserveAccount)
+}
+
+func (s *MainnetMigrationSetupSuite) createVestingPools() []*types.VestingPoolInfo {
+	earlyBirdLockStart, err := time.Parse(time.RFC3339, "2022-03-30T00:00:00Z")
 	s.NoError(err)
-	s.True(balances.IsEqual(sdk.NewCoins()))
-
-	moondropAccount := node.QueryAccount(v130.MoondropVestingAccount)
-	s.NotNil(moondropAccount)
-	moondropVestingPools := node.QueryVestingPoolsInfo(v130.MoondropVestingAccount)
-	s.Equal(1, len(moondropVestingPools))
-	s.Equal(moondropVestingPools[0].VestingType, "Moondrop")
-
-	moondropCampaign := node.QueryCampaign("0")
-	s.NotNil(moondropCampaign)
-
-	s.Equal(moondropVestingPools[0].Reservations[0].Amount, moondropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
-	s.Equal(moondropVestingPools[0].CurrentlyLocked, "8899990000000")
-	s.Equal(moondropVestingPools[0].InitiallyLocked.Amount, sdk.NewInt(8899990000000))
-	s.Equal(moondropVestingPools[0].SentAmount, math.ZeroInt().String())
-	s.Equal(moondropCampaign.CampaignCurrentAmount, moondropCampaign.CampaignTotalAmount)
-
-	stakedropCampaign := node.QueryCampaign("1")
-	s.NotNil(stakedropCampaign)
-	s.Equal(stakedropCampaign.CampaignCurrentAmount, stakedropCampaign.CampaignTotalAmount)
-
-	santadropCampaign := node.QueryCampaign("2")
-	s.NotNil(santadropCampaign)
-	s.Equal(santadropCampaign.CampaignCurrentAmount, santadropCampaign.CampaignTotalAmount)
-
-	greendropCampaign := node.QueryCampaign("3")
-	s.NotNil(greendropCampaign)
-	s.Equal(greendropCampaign.CampaignCurrentAmount, greendropCampaign.CampaignTotalAmount)
-
-	zealaydropCampaign := node.QueryCampaign("4")
-	s.NotNil(zealaydropCampaign)
-	s.Equal(zealaydropCampaign.CampaignCurrentAmount, zealaydropCampaign.CampaignTotalAmount)
-
-	amadropCampaign := node.QueryCampaign("5")
-	s.NotNil(amadropCampaign)
-	s.Equal(amadropCampaign.CampaignCurrentAmount, amadropCampaign.CampaignTotalAmount)
-
-	fairdropVestingPools := node.QueryVestingPoolsInfo(v130.NewAirdropVestingPoolOwner)
-	for _, vestingPoolInfo := range fairdropVestingPools {
-		if vestingPoolInfo.Name == "Fairdrop" {
-			s.Equal(vestingPoolInfo.VestingType, "Fairdrop")
-			s.Equal(vestingPoolInfo.InitiallyLocked.Amount, math.NewInt(20000000000000))
-			s.Equal(vestingPoolInfo.SentAmount, math.ZeroInt().String())
-			s.Equal(vestingPoolInfo.Reservations[0].Amount, stakedropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
-			s.Equal(vestingPoolInfo.Reservations[1].Amount, santadropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
-			s.Equal(vestingPoolInfo.Reservations[2].Amount, greendropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
-			s.Equal(vestingPoolInfo.Reservations[3].Amount, zealaydropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
-			s.Equal(vestingPoolInfo.Reservations[4].Amount, amadropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
-		}
+	earlyBirdLockEnd, err := time.Parse(time.RFC3339, "2025-03-30T00:00:00Z")
+	s.NoError(err)
+	earlyBirdCoin := sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(8000000000000))
+	earlyBirdPool := types.VestingPoolInfo{
+		Name:            "Early-bird round pool",
+		VestingType:     "Early-bird round",
+		InitiallyLocked: &earlyBirdCoin,
+		LockStart:       earlyBirdLockStart,
+		LockEnd:         earlyBirdLockEnd,
+		Withdrawable:    math.ZeroInt().String(),
+		SentAmount:      math.ZeroInt().String(),
+		Reservations:    []*types.VestingPoolReservation{},
+		CurrentlyLocked: earlyBirdCoin.Amount.String(),
 	}
+
+	publicRoundLockStart, err := time.Parse(time.RFC3339, "2022-03-30T00:00:00Z")
+	s.NoError(err)
+	publicRoundLockEnd, err := time.Parse(time.RFC3339, "2024-03-30T00:00:00Z")
+	s.NoError(err)
+	publicRoundCoin := sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(9000000000000))
+	publicRoundPool := types.VestingPoolInfo{
+		Name:            "Public round pool",
+		VestingType:     "Public round",
+		InitiallyLocked: &publicRoundCoin,
+		LockStart:       publicRoundLockStart,
+		LockEnd:         publicRoundLockEnd,
+		Withdrawable:    math.ZeroInt().String(),
+		SentAmount:      math.ZeroInt().String(),
+		Reservations:    []*types.VestingPoolReservation{},
+		CurrentlyLocked: publicRoundCoin.Amount.String(),
+	}
+
+	strategicReserveLockStart, err := time.Parse(time.RFC3339, "2022-09-22T14:00:00Z")
+	strategicReserveLockEnd, err := time.Parse(time.RFC3339, "2024-09-22T14:00:00Z")
+	strategicReserveCoin := sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(20000000000000))
+	strategicReservePool := types.VestingPoolInfo{
+		Name:            "Strategic reserve short term round pool",
+		VestingType:     "Strategic reserve short term round",
+		InitiallyLocked: &strategicReserveCoin,
+		LockStart:       strategicReserveLockStart,
+		LockEnd:         strategicReserveLockEnd,
+		Withdrawable:    math.ZeroInt().String(),
+		SentAmount:      math.NewInt(250000000000).String(),
+		Reservations:    []*types.VestingPoolReservation{},
+		CurrentlyLocked: strategicReserveCoin.Amount.Sub(math.NewInt(250000000000)).String(),
+	}
+
+	return []*types.VestingPoolInfo{&earlyBirdPool, &publicRoundPool, &strategicReservePool}
 }
 
-func (s *MainnetMigrationSetupSuite) validateAllTokensReserved(vestingPoolInfo *cfevestingtypes.VestingPoolInfo, campaignTotalAmount sdk.Coins, campaignCurrentAmount sdk.Coins) {
-	s.Equal(campaignTotalAmount, campaignCurrentAmount)
-	s.Equal(vestingPoolInfo.CurrentlyLocked, campaignTotalAmount.AmountOf(testenv.DefaultTestDenom).String())
-	s.Equal(vestingPoolInfo.InitiallyLocked.Amount, campaignTotalAmount.AmountOf(testenv.DefaultTestDenom))
-	s.Equal(vestingPoolInfo.SentAmount, math.ZeroInt().String())
-}
-
-func createMainnetVestingTypes() []cfevestingtypes.GenesisVestingType {
-	fairdropVestingType := cfevestingtypes.GenesisVestingType{
-		Name:              "Fairdrop",
-		LockupPeriod:      183,
-		LockupPeriodUnit:  "day",
-		VestingPeriod:     91,
-		VestingPeriodUnit: "day",
-		Free:              sdk.MustNewDecFromStr("0.01"),
-	}
-
-	moondropVestingType := cfevestingtypes.GenesisVestingType{
-		Name:              "Moondrop",
-		Free:              sdk.ZeroDec(),
-		LockupPeriod:      730,
-		LockupPeriodUnit:  "day",
-		VestingPeriod:     730,
-		VestingPeriodUnit: "day",
-	}
-	earlyBirdRoundVestingType := cfevestingtypes.GenesisVestingType{
-		Name:              "Early-bird round",
-		Free:              sdk.MustNewDecFromStr("0.15"),
-		LockupPeriod:      0,
-		LockupPeriodUnit:  "day",
-		VestingPeriod:     274,
-		VestingPeriodUnit: "day",
-	}
-	publicRoundVestingType := cfevestingtypes.GenesisVestingType{
-		Name:              "Public round",
-		Free:              sdk.MustNewDecFromStr("0.20"),
-		LockupPeriod:      0,
-		LockupPeriodUnit:  "day",
-		VestingPeriod:     183,
-		VestingPeriodUnit: "day",
-	}
-	advisorsPool := cfevestingtypes.GenesisVestingType{
+func createNonMainnetVestingTypes() []types.GenesisVestingType {
+	vt1 := types.GenesisVestingType{
 		Name:              "Advisors",
 		LockupPeriod:      365,
 		LockupPeriodUnit:  "day",
@@ -147,229 +149,79 @@ func createMainnetVestingTypes() []cfevestingtypes.GenesisVestingType {
 		VestingPeriodUnit: "day",
 		Free:              sdk.MustNewDecFromStr("0.000000000000000000"),
 	}
-	testVestingPool := cfevestingtypes.GenesisVestingType{
+	vt2 := types.GenesisVestingType{
 		Name:              "TestVestingPool",
 		LockupPeriod:      30,
 		LockupPeriodUnit:  "second",
-		VestingPeriod:     30,
 		VestingPeriodUnit: "second",
+		VestingPeriod:     30,
 		Free:              sdk.MustNewDecFromStr("0.000000000000000000"),
 	}
-	return []cfevestingtypes.GenesisVestingType{fairdropVestingType, moondropVestingType, earlyBirdRoundVestingType, publicRoundVestingType, advisorsPool, testVestingPool}
+
+	return []types.GenesisVestingType{vt1, vt2}
 }
-
-var (
-	airdropStartTime      = time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC)
-	airdropEndTime        = time.Date(2031, 1, 1, 0, 0, 0, 0, time.UTC)
-	airdropLockupPeriod   = 183 * 24 * time.Hour
-	airdropVestingPeriod  = 91 * 24 * time.Hour
-	moondropLockupPeriod  = 730 * 24 * time.Hour
-	moondropVestingPeriod = 730 * 24 * time.Hour
-)
-
-func createMainetCampaigns() []cfeclaimtypes.Campaign {
-	moondropCampaign := cfeclaimtypes.Campaign{
-		Id:                     0,
-		Owner:                  "c4e1dsm96gwcv35m4rqd93pzcsztpkrqe0ev7getj8",
-		Name:                   "Moon Drop",
-		Description:            "",
-		CampaignType:           cfeclaimtypes.VestingPoolCampaign,
-		RemovableClaimRecords:  true,
-		FeegrantAmount:         math.ZeroInt(),
-		InitialClaimFreeAmount: math.ZeroInt(),
-		Free:                   sdk.ZeroDec(),
-		Enabled:                false,
-		StartTime:              airdropStartTime,
-		EndTime:                airdropEndTime,
-		LockupPeriod:           moondropLockupPeriod,
-		VestingPeriod:          moondropVestingPeriod,
-		CampaignCurrentAmount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(7280002000000))),
-		CampaignTotalAmount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(7280002000000))),
-		VestingPoolName:        "Moondrop",
+func createMainnetVestingTypes() []types.GenesisVestingType {
+	vt1 := types.GenesisVestingType{
+		Name:              "Validator round",
+		LockupPeriod:      122,
+		LockupPeriodUnit:  "day",
+		VestingPeriod:     305,
+		VestingPeriodUnit: "day",
+		Free:              sdk.MustNewDecFromStr("0.080000000000000000"),
 	}
 
-	stakedropCampaign := cfeclaimtypes.Campaign{
-		Id:                     1,
-		Owner:                  "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54",
-		Name:                   "Stake Drop",
-		Description:            "Stake Drop is the airdrop aimed to spread knowledge about the C4E ecosystem among the Cosmos $ATOM stakers community. The airdrop snapshot has been taken on September 28th, 2022 at 9:30 PM UTC (during the ATOM 2.0 roadmap announcement at the Cosmoverse Conference.",
-		CampaignType:           cfeclaimtypes.VestingPoolCampaign,
-		RemovableClaimRecords:  false,
-		FeegrantAmount:         math.ZeroInt(),
-		InitialClaimFreeAmount: math.ZeroInt(),
-		Free:                   sdk.MustNewDecFromStr("0.01"),
-		Enabled:                false,
-		StartTime:              airdropStartTime,
-		EndTime:                airdropEndTime,
-		LockupPeriod:           airdropLockupPeriod,
-		VestingPeriod:          airdropVestingPeriod,
-		CampaignCurrentAmount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(8999999989680))),
-		CampaignTotalAmount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(8999999989680))),
-		VestingPoolName:        "Fairdrop",
+	vt2 := types.GenesisVestingType{
+		Name:              "Strategic reserve short term round",
+		LockupPeriod:      365,
+		LockupPeriodUnit:  "day",
+		VestingPeriod:     365,
+		VestingPeriodUnit: "day",
+		Free:              sdk.MustNewDecFromStr("0.200000000000000000"),
 	}
 
-	santadropCampaign := cfeclaimtypes.Campaign{
-		Id:                     2,
-		Owner:                  "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54",
-		Name:                   "Santa Drop",
-		Description:            "Santa Drop prize pool for was 10.000 C4E Tokens, with 10 lucky winners getting 1000 tokens per each. The participants had to complete the tasks to get a chance to be among lucky winners.",
-		CampaignType:           cfeclaimtypes.VestingPoolCampaign,
-		RemovableClaimRecords:  false,
-		FeegrantAmount:         math.ZeroInt(),
-		InitialClaimFreeAmount: math.ZeroInt(),
-		Free:                   sdk.MustNewDecFromStr("0.01"),
-		Enabled:                false,
-		StartTime:              airdropStartTime,
-		EndTime:                airdropEndTime,
-		LockupPeriod:           airdropLockupPeriod,
-		VestingPeriod:          airdropVestingPeriod,
-		CampaignCurrentAmount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(10000000000))),
-		CampaignTotalAmount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(10000000000))),
-		VestingPoolName:        "Fairdrop",
+	vt3 := types.GenesisVestingType{
+		Name:              "VC round",
+		LockupPeriod:      122,
+		LockupPeriodUnit:  "day",
+		VestingPeriod:     305,
+		VestingPeriodUnit: "day",
+		Free:              sdk.MustNewDecFromStr("0.080000000000000000"),
 	}
 
-	greendropCampaign := cfeclaimtypes.Campaign{
-		Id:                     3,
-		Owner:                  "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54",
-		Name:                   "Green Drop",
-		Description:            "It was the first airdrop competition aimed at spreading knowledge about the C4E ecosystem. The Prize Pool was 1.000.000 C4E tokens and what is best — all the participants who completed the tasks are eligible for the c4e tokens from it!",
-		CampaignType:           cfeclaimtypes.VestingPoolCampaign,
-		RemovableClaimRecords:  false,
-		FeegrantAmount:         math.ZeroInt(),
-		InitialClaimFreeAmount: math.ZeroInt(),
-		Free:                   sdk.MustNewDecFromStr("0.01"),
-		Enabled:                false,
-		StartTime:              airdropStartTime,
-		EndTime:                airdropEndTime,
-		LockupPeriod:           airdropLockupPeriod,
-		VestingPeriod:          airdropVestingPeriod,
-		CampaignCurrentAmount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(996647490000))),
-		CampaignTotalAmount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(996647490000))),
-		VestingPoolName:        "Fairdrop",
+	vt4 := types.GenesisVestingType{
+		Name:              "Advisors",
+		LockupPeriod:      365,
+		LockupPeriodUnit:  "day",
+		VestingPeriod:     730,
+		VestingPeriodUnit: "day",
+		Free:              sdk.MustNewDecFromStr("0.000000000000000000"),
+	}
+	vt5 := types.GenesisVestingType{
+		Name:              "TestVestingPool",
+		LockupPeriod:      30,
+		LockupPeriodUnit:  "second",
+		VestingPeriodUnit: "second",
+		VestingPeriod:     30,
+		Free:              sdk.MustNewDecFromStr("0.000000000000000000"),
 	}
 
-	zealydropCampaign := cfeclaimtypes.Campaign{
-		Id:                     4,
-		Owner:                  "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54",
-		Name:                   "Incentived Testnet I",
-		Description:            "Incentivized Testnet Zealy campaign, is innovative approach designed to foster engagement and bolster network security. Community members are rewarded for participating in testnet and marketing tasks, receiving C4E tokens as a result of their contributions.",
-		CampaignType:           cfeclaimtypes.VestingPoolCampaign,
-		RemovableClaimRecords:  false,
-		FeegrantAmount:         math.ZeroInt(),
-		InitialClaimFreeAmount: math.ZeroInt(),
-		Free:                   sdk.MustNewDecFromStr("0.01"),
-		Enabled:                false,
-		StartTime:              airdropStartTime,
-		EndTime:                airdropEndTime,
-		LockupPeriod:           airdropLockupPeriod,
-		VestingPeriod:          airdropVestingPeriod,
-		CampaignCurrentAmount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(392677840916))),
-		CampaignTotalAmount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(392677840916))),
-		VestingPoolName:        "Fairdrop",
+	vt6 := types.GenesisVestingType{
+		Name:              "Early-bird round",
+		LockupPeriod:      61,
+		LockupPeriodUnit:  "day",
+		VestingPeriod:     213,
+		VestingPeriodUnit: "day",
+		Free:              sdk.MustNewDecFromStr("0.150000000000000000"),
 	}
 
-	amadropCampaign := cfeclaimtypes.Campaign{
-		Id:                     5,
-		Owner:                  "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54",
-		Name:                   "AMA Drop",
-		Description:            "Have you been active at our AMA sessions and won C4E prizes? This Drop belongs to you.",
-		CampaignType:           cfeclaimtypes.VestingPoolCampaign,
-		RemovableClaimRecords:  false,
-		FeegrantAmount:         math.ZeroInt(),
-		InitialClaimFreeAmount: math.ZeroInt(),
-		Free:                   sdk.MustNewDecFromStr("0.01"),
-		Enabled:                false,
-		StartTime:              airdropStartTime,
-		EndTime:                airdropEndTime,
-		LockupPeriod:           airdropLockupPeriod,
-		VestingPeriod:          airdropVestingPeriod,
-		CampaignCurrentAmount:  sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2900000000))),
-		CampaignTotalAmount:    sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, sdk.NewInt(2900000000))),
-		VestingPoolName:        "Fairdrop",
+	vt7 := types.GenesisVestingType{
+		Name:              "Public round",
+		LockupPeriod:      30,
+		LockupPeriodUnit:  "day",
+		VestingPeriod:     152,
+		VestingPeriodUnit: "day",
+		Free:              sdk.MustNewDecFromStr("0.200000000000000000"),
 	}
-	return []cfeclaimtypes.Campaign{moondropCampaign, stakedropCampaign, santadropCampaign, greendropCampaign, zealydropCampaign, amadropCampaign}
-}
 
-type MainnetMigrationChainingSetupSuite struct {
-	BaseSetupSuite
-}
-
-func TestMainnetMigrationChainingSuite(t *testing.T) {
-	suite.Run(t, new(MainnetMigrationChainingSetupSuite))
-}
-
-func (s *MainnetMigrationChainingSetupSuite) SetupSuite() {
-	//bytes, err := os.ReadFile("./resources/mainnet-v1.1.0-migration-app-state.json")
-	//if err != nil {
-	//	panic(err)
-	//}
-	s.BaseSetupSuite.SetupSuiteWithUpgradeAppState(true, true, false, nil)
-}
-
-func (s *MainnetMigrationChainingSetupSuite) TestMainnetVestingsMigrationWhenChainingMigrations() {
-	chainA := s.configurer.GetChainConfig(0)
-	node, err := chainA.GetDefaultNode()
-	s.NoError(err)
-
-	campaigns := node.QueryCampaigns()
-	s.Equal(6, len(campaigns))
-
-	userEntries := node.QueryUserEntries()
-	s.Equal(108359, len(userEntries))
-
-	vestingTypes := node.QueryVestingTypes()
-	s.Equal(6, len(vestingTypes))
-	s.ElementsMatch(createMainnetVestingTypes(), vestingTypes)
-	balances, err := node.QueryBalances(v130.AirdropModuleAccountAddress)
-	s.NoError(err)
-	s.True(balances.IsEqual(sdk.NewCoins()))
-
-	moondropAccount := node.QueryAccount(v130.MoondropVestingAccount)
-	s.NotNil(moondropAccount)
-	moondropVestingPools := node.QueryVestingPoolsInfo(v130.MoondropVestingAccount)
-	s.Equal(1, len(moondropVestingPools))
-	s.Equal(moondropVestingPools[0].VestingType, "Moondrop")
-
-	moondropCampaign := node.QueryCampaign("0")
-	s.NotNil(moondropCampaign)
-
-	s.Equal(moondropVestingPools[0].Reservations[0].Amount, moondropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
-	s.Equal(moondropVestingPools[0].CurrentlyLocked, "8899990000000")
-	s.Equal(moondropVestingPools[0].InitiallyLocked.Amount, sdk.NewInt(8899990000000))
-	s.Equal(moondropVestingPools[0].SentAmount, math.ZeroInt().String())
-	s.Equal(moondropCampaign.CampaignCurrentAmount, moondropCampaign.CampaignTotalAmount)
-
-	stakedropCampaign := node.QueryCampaign("1")
-	s.NotNil(stakedropCampaign)
-	s.Equal(stakedropCampaign.CampaignCurrentAmount, stakedropCampaign.CampaignTotalAmount)
-
-	santadropCampaign := node.QueryCampaign("2")
-	s.NotNil(santadropCampaign)
-	s.Equal(santadropCampaign.CampaignCurrentAmount, santadropCampaign.CampaignTotalAmount)
-
-	greendropCampaign := node.QueryCampaign("3")
-	s.NotNil(greendropCampaign)
-	s.Equal(greendropCampaign.CampaignCurrentAmount, greendropCampaign.CampaignTotalAmount)
-
-	zealaydropCampaign := node.QueryCampaign("4")
-	s.NotNil(zealaydropCampaign)
-	s.Equal(zealaydropCampaign.CampaignCurrentAmount, zealaydropCampaign.CampaignTotalAmount)
-
-	amadropCampaign := node.QueryCampaign("5")
-	s.NotNil(amadropCampaign)
-	s.Equal(amadropCampaign.CampaignCurrentAmount, amadropCampaign.CampaignTotalAmount)
-
-	fairdropVestingPools := node.QueryVestingPoolsInfo(v130.NewAirdropVestingPoolOwner)
-	for _, vestingPoolInfo := range fairdropVestingPools {
-		if vestingPoolInfo.Name == "Fairdrop" {
-			s.Equal(vestingPoolInfo.VestingType, "Fairdrop")
-			s.Equal(vestingPoolInfo.InitiallyLocked.Amount, math.NewInt(20000000000000))
-			s.Equal(vestingPoolInfo.SentAmount, math.ZeroInt().String())
-			s.Equal(vestingPoolInfo.Reservations[0].Amount, stakedropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
-			s.Equal(vestingPoolInfo.Reservations[1].Amount, santadropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
-			s.Equal(vestingPoolInfo.Reservations[2].Amount, greendropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
-			s.Equal(vestingPoolInfo.Reservations[3].Amount, zealaydropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
-			s.Equal(vestingPoolInfo.Reservations[4].Amount, amadropCampaign.CampaignCurrentAmount.AmountOf(testenv.DefaultTestDenom))
-		}
-	}
+	return []types.GenesisVestingType{vt1, vt2, vt3, vt4, vt5, vt6, vt7}
 }

@@ -43,6 +43,12 @@ func (au *AuthUtils) ModifyVestingAccountOriginalVesting(ctx sdk.Context, addres
 	return nil
 }
 
+func (au *AuthUtils) ExportGenesisAndValidate(ctx sdk.Context) {
+	exportedGenesis := au.helperAccountKeeper.ExportGenesis(ctx)
+	err := authtypes.ValidateGenesis(*exportedGenesis)
+	require.NoError(au.t, err)
+}
+
 func (au *AuthUtils) CreateVestingAccount(ctx sdk.Context, address string, coins sdk.Coins, start time.Time, end time.Time) error {
 	to := sdk.MustAccAddressFromBech32(address)
 
@@ -159,4 +165,8 @@ func (au *ContextAuthUtils) VerifyIsContinuousVestingAccount(address sdk.AccAddr
 func (au *ContextAuthUtils) VerifyAccountDoesNotExist(address sdk.AccAddress) {
 	au.AuthUtils.VerifyAccountDoesNotExist(au.testContext.GetContext(), address)
 
+}
+
+func (au *ContextAuthUtils) ExportGenesisAndValidate() {
+	au.AuthUtils.ExportGenesisAndValidate(au.testContext.GetContext())
 }
