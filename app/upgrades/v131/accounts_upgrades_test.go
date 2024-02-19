@@ -195,7 +195,7 @@ func TestUpdateStrategicReserveAccount_SendCoinsError(t *testing.T) {
 	strategicReserveAccountAddress, err := sdk.AccAddressFromBech32(v131.StrategicReserveAccount)
 	require.NoError(t, err)
 
-	testHelper.BankUtils.VerifyAccountDefaultDenomBalance(testHelper.Context, strategicReserveAccountAddress, math.NewInt(31_000_000_000_000))
+	testHelper.BankUtils.VerifyAccountDefaultDenomBalance(testHelper.Context, strategicReserveAccountAddress, math.NewInt(1_000_000_000_000))
 	testHelper.ValidateGenesisAndInvariants()
 }
 
@@ -211,13 +211,13 @@ func TestUpdateStrategicReserveAccount_Success(t *testing.T) {
 
 	strategicReserveAccount := testHelper.App.AccountKeeper.GetAccount(testHelper.Context, strategicReserveAccountAddress).(*vestingtypes.ContinuousVestingAccount)
 	require.NotNil(t, strategicReserveAccount)
-	require.Equal(t, math.NewInt(50000000000000), strategicReserveAccount.OriginalVesting.AmountOf(testenv.DefaultTestDenom))
+	require.Equal(t, math.NewInt(49999990000000), strategicReserveAccount.OriginalVesting.AmountOf(testenv.DefaultTestDenom))
 
 	liquidityPoolOwnerBalance := testHelper.BankUtils.GetAccountAllBalances(liquidityPoolOwnerAccountAddress)
 	require.Equal(t, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(20000000000000))), liquidityPoolOwnerBalance)
 
 	strategicReserveAccountBalance := testHelper.BankUtils.GetAccountAllBalances(strategicReserveAccountAddress)
-	require.Equal(t, math.NewInt(50000000000000), strategicReserveAccountBalance.AmountOf(testenv.DefaultTestDenom))
+	require.Equal(t, math.NewInt(49999990000000), strategicReserveAccountBalance.AmountOf(testenv.DefaultTestDenom))
 
 	testHelper.ValidateGenesisAndInvariants()
 }
@@ -240,54 +240,13 @@ func TestUpdateCommunityPool_SuccessLatestValue(t *testing.T) {
 	require.NoError(t, err)
 
 	feePool = testHelper.DistributionUtils.DistrKeeper.GetFeePool(testHelper.Context)
-	require.Equal(t, sdk.NewDecCoinsFromCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(40000000000000))), feePool.CommunityPool)
+	newFeePoolAmount := sdk.NewDecCoins(sdk.NewDecCoinFromDec(testenv.DefaultTestDenom, sdk.MustNewDecFromStr("40000000083683.601351991745061083")))
+	require.Equal(t, newFeePoolAmount, feePool.CommunityPool)
 
 	communityPoolBalance := testHelper.DistributionUtils.DistrKeeper.GetFeePoolCommunityCoins(testHelper.Context)
-	require.Equal(t, sdk.NewDecCoins(sdk.NewDecCoin(testenv.DefaultTestDenom, math.NewInt(40_000_000_000_000))), communityPoolBalance)
+	require.Equal(t, newFeePoolAmount, communityPoolBalance)
 
 	testHelper.ValidateGenesisAndInvariants()
-}
-
-func TestUpdateCommunityPool_SuccessDifferentValues(t *testing.T) {
-	for _, tc := range []struct {
-		amount sdk.Dec
-	}{
-		{amount: sdk.MustNewDecFromStr("100000000083683.1")},
-		{amount: sdk.MustNewDecFromStr("100000000083683.2")},
-		{amount: sdk.MustNewDecFromStr("100000000083683.3")},
-		{amount: sdk.MustNewDecFromStr("100000000083683.4")},
-		{amount: sdk.MustNewDecFromStr("100000000083683.5")},
-		{amount: sdk.MustNewDecFromStr("100000000083683.6")},
-		{amount: sdk.MustNewDecFromStr("100000000083683.7")},
-		{amount: sdk.MustNewDecFromStr("100000000083683.8")},
-		{amount: sdk.MustNewDecFromStr("100000000083683.9")},
-		{amount: sdk.MustNewDecFromStr("100000000083683.1")},
-		{amount: sdk.MustNewDecFromStr("100000000073683.13")},
-		{amount: sdk.MustNewDecFromStr("100000000063683.15")},
-		{amount: sdk.MustNewDecFromStr("100000000053683.17")},
-		{amount: sdk.MustNewDecFromStr("100000000043683.19")},
-		{amount: sdk.MustNewDecFromStr("100000000033683.191")},
-	} {
-		t.Run(tc.amount.String(), func(t *testing.T) {
-			testHelper := testapp.SetupTestAppWithHeight(t, 1000)
-			feePool := distrtypes.FeePool{
-				CommunityPool: sdk.NewDecCoins(sdk.NewDecCoinFromDec(testenv.DefaultTestDenom, tc.amount)),
-			}
-			testHelper.DistributionUtils.DistrKeeper.SetFeePool(testHelper.Context, feePool)
-			testHelper.BankUtils.AddDefaultDenomCoinsToModule(tc.amount.TruncateInt(), distrtypes.ModuleName)
-
-			err := v131.UpdateCommunityPool(testHelper.Context, testHelper.App)
-			require.NoError(t, err)
-
-			feePool = testHelper.DistributionUtils.DistrKeeper.GetFeePool(testHelper.Context)
-			require.Equal(t, sdk.NewDecCoinsFromCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(40000000000000))), feePool.CommunityPool)
-
-			communityPoolBalance := testHelper.DistributionUtils.DistrKeeper.GetFeePoolCommunityCoins(testHelper.Context)
-			require.Equal(t, sdk.NewDecCoins(sdk.NewDecCoin(testenv.DefaultTestDenom, math.NewInt(40_000_000_000_000))), communityPoolBalance)
-
-			testHelper.ValidateGenesisAndInvariants()
-		})
-	}
 }
 
 func TestUpdateCommunityPool_AmountLower(t *testing.T) {

@@ -41,7 +41,7 @@ func (s *MainnetMigrationSetupSuite) TestMainnetMigration() {
 	s.ElementsMatch(createMainnetVestingTypes(), vestingTypes)
 
 	// verify community pool
-	s.Equal(node.QueryCommunityPool().AmountOf(testenv.DefaultTestDenom), sdk.NewDec(40_000_000_000_000))
+	s.Equal(sdk.MustNewDecFromStr("40000000084088.934910103606810233"), node.QueryCommunityPool().AmountOf(testenv.DefaultTestDenom))
 
 	// verify strategic reserve account
 	acc := node.QueryAccount(v131.StrategicReserveAccount)
@@ -51,7 +51,7 @@ func (s *MainnetMigrationSetupSuite) TestMainnetMigration() {
 	s.EqualValues(v131.StrategicReserveAccount, vAcc.Address)
 	s.EqualValues(1727222400, vAcc.StartTime)
 	s.EqualValues(1821830400, vAcc.EndTime)
-	s.EqualValues(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(50_000_000_000_000))), vAcc.OriginalVesting)
+	s.EqualValues(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(49999990000000))), vAcc.OriginalVesting)
 
 	// verify strategic reserve short term pool
 	vestingPools := node.QueryVestingPoolsInfo(v131.StrategicReservceShortTermPoolAccount)

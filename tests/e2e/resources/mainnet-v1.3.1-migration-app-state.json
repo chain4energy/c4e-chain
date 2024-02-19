@@ -12,10 +12,10 @@
         "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
         "base_vesting_account": {
           "base_account": {
+            "account_number": "36",
             "address": "c4e1hcfjejmxzl8d95xka5j8cjegmf32u2lee3q422",
             "pub_key": {
               "@type": "/cosmos.crypto.multisig.LegacyAminoPubKey",
-              "threshold": 2,
               "public_keys": [
                 {
                   "@type": "/cosmos.crypto.secp256k1.PubKey",
@@ -29,25 +29,25 @@
                   "@type": "/cosmos.crypto.secp256k1.PubKey",
                   "key": "AhUZ6WL3CmlOCzChxnfgSB+eRoLOGsLbPkbSHIJv+iDG"
                 }
-              ]
+              ],
+              "threshold": 2
             },
-            "account_number": "36",
             "sequence": "102"
           },
-          "original_vesting": [
-            {
-              "denom": "uc4e",
-              "amount": "79999990000000"
-            }
-          ],
           "delegated_free": [],
           "delegated_vesting": [
             {
-              "denom": "uc4e",
-              "amount": "38350965986340"
+              "amount": "44350965986340",
+              "denom": "uc4e"
             }
           ],
-          "end_time": "1821830400"
+          "end_time": "1821830400",
+          "original_vesting": [
+            {
+              "amount": "79999990000000",
+              "denom": "uc4e"
+            }
+          ]
         },
         "start_time": "1727222400"
       },
@@ -210,8 +210,8 @@
         "address": "c4e1hcfjejmxzl8d95xka5j8cjegmf32u2lee3q422",
         "coins": [
           {
-            "denom": "uc4e",
-            "amount": "37772649799750"
+            "amount": "37772649799750",
+            "denom": "uc4e"
           }
         ]
       },
