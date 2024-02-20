@@ -21,7 +21,7 @@ func TestUpdateStrategicReserveShortTermPool_AccountVestingPoolsNotFound(t *test
 	err := v131.UpdateStrategicReserveShortTermPool(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
 
-	accountVestingPools, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v131.StrategicReservceShortTermPoolAccount)
+	accountVestingPools, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v131.StrategicReservcePoolOwnerAccount)
 	require.False(t, found)
 	require.Equal(t, 0, len(accountVestingPools.VestingPools))
 
@@ -32,7 +32,7 @@ func TestUpdateStrategicReserveShortTermPool_InitiallyLockedNegative(t *testing.
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	addVestingTypes(testHelper)
 	accountVestingPools := cfevestingtypes.AccountVestingPools{
-		Owner: v131.StrategicReservceShortTermPoolAccount,
+		Owner: v131.StrategicReservcePoolOwnerAccount,
 		VestingPools: []*cfevestingtypes.VestingPool{
 			{
 				Name:            v131.StrategicReservceShortTermPool,
@@ -48,7 +48,7 @@ func TestUpdateStrategicReserveShortTermPool_InitiallyLockedNegative(t *testing.
 	err := v131.UpdateStrategicReserveShortTermPool(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
 
-	accountVestingPools, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v131.StrategicReservceShortTermPoolAccount)
+	accountVestingPools, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v131.StrategicReservcePoolOwnerAccount)
 	require.True(t, found)
 	require.Equal(t, 1, len(accountVestingPools.VestingPools))
 	require.Equal(t, accountVestingPools.VestingPools[0].InitiallyLocked, math.NewInt(1_000))
@@ -60,26 +60,102 @@ func TestUpdateStrategicReserveShortTermPool_strategicReserveShortTermPoolNotFou
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	addVestingTypes(testHelper)
 	accountVestingPools := cfevestingtypes.AccountVestingPools{
-		Owner: v131.StrategicReservceShortTermPoolAccount,
+		Owner: v131.StrategicReservcePoolOwnerAccount,
 		VestingPools: []*cfevestingtypes.VestingPool{
 			{
-				Name:            "Test pool",
-				InitiallyLocked: math.NewInt(1_000),
-				VestingType:     "Strategic reserve short term round",
+				Name:            v131.EarlyBirdRoundPoolName,
+				InitiallyLocked: math.NewInt(8000000000000),
+				VestingType:     "Early-bird round",
+				Sent:            math.NewInt(75001000000),
+			},
+			{
+				Name:            v131.PublicRoundPoolName,
+				InitiallyLocked: math.NewInt(9000000000000),
+				VestingType:     "Public round",
 			},
 		},
 	}
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(1_000), cfevestingtypes.ModuleName)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(16924999000000), cfevestingtypes.ModuleName)
 
 	testHelper.C4eVestingUtils.GetC4eVestingKeeper().SetAccountVestingPools(testHelper.Context, accountVestingPools)
 
 	err := v131.UpdateStrategicReserveShortTermPool(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
 
-	accountVestingPools, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v131.StrategicReservceShortTermPoolAccount)
+	accountVestingPools, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v131.StrategicReservcePoolOwnerAccount)
 	require.True(t, found)
-	require.Equal(t, 1, len(accountVestingPools.VestingPools))
-	require.Equal(t, accountVestingPools.VestingPools[0].InitiallyLocked, math.NewInt(1_000))
+	require.Equal(t, 2, len(accountVestingPools.VestingPools))
+	require.Equal(t, accountVestingPools.VestingPools[0].InitiallyLocked, math.NewInt(8000000000000))
+	require.Equal(t, accountVestingPools.VestingPools[1].InitiallyLocked, math.NewInt(9000000000000))
+
+	testHelper.ValidateGenesisAndInvariants()
+}
+
+func TestUpdateStrategicReserveShortTermPool_earlyBirdRoundNotFound(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	addVestingTypes(testHelper)
+	accountVestingPools := cfevestingtypes.AccountVestingPools{
+		Owner: v131.StrategicReservcePoolOwnerAccount,
+		VestingPools: []*cfevestingtypes.VestingPool{
+			{
+				Name:            v131.StrategicReservceShortTermPool,
+				InitiallyLocked: math.NewInt(40_000_000_000_000),
+				VestingType:     "Strategic reserve short term round",
+			},
+			{
+				Name:            v131.PublicRoundPoolName,
+				InitiallyLocked: math.NewInt(9000000000000),
+				VestingType:     "Public round",
+			},
+		},
+	}
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(49000000000000), cfevestingtypes.ModuleName)
+
+	testHelper.C4eVestingUtils.GetC4eVestingKeeper().SetAccountVestingPools(testHelper.Context, accountVestingPools)
+
+	err := v131.UpdateStrategicReserveShortTermPool(testHelper.Context, testHelper.App)
+	require.NoError(t, err)
+
+	accountVestingPools, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v131.StrategicReservcePoolOwnerAccount)
+	require.True(t, found)
+	require.Equal(t, 2, len(accountVestingPools.VestingPools))
+	require.Equal(t, accountVestingPools.VestingPools[0].InitiallyLocked, math.NewInt(40_000_000_000_000))
+	require.Equal(t, accountVestingPools.VestingPools[1].InitiallyLocked, math.NewInt(9000000000000))
+
+	testHelper.ValidateGenesisAndInvariants()
+}
+
+func TestUpdateStrategicReserveShortTermPool_publicRoundNotFound(t *testing.T) {
+	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
+	addVestingTypes(testHelper)
+	accountVestingPools := cfevestingtypes.AccountVestingPools{
+		Owner: v131.StrategicReservcePoolOwnerAccount,
+		VestingPools: []*cfevestingtypes.VestingPool{
+			{
+				Name:            v131.StrategicReservceShortTermPool,
+				InitiallyLocked: math.NewInt(40_000_000_000_000),
+				VestingType:     "Strategic reserve short term round",
+			},
+			{
+				Name:            v131.EarlyBirdRoundPoolName,
+				InitiallyLocked: math.NewInt(8000000000000),
+				VestingType:     "Early-bird round",
+				Sent:            math.NewInt(75001000000),
+			},
+		},
+	}
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(47924999000000), cfevestingtypes.ModuleName)
+
+	testHelper.C4eVestingUtils.GetC4eVestingKeeper().SetAccountVestingPools(testHelper.Context, accountVestingPools)
+
+	err := v131.UpdateStrategicReserveShortTermPool(testHelper.Context, testHelper.App)
+	require.NoError(t, err)
+
+	accountVestingPools, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v131.StrategicReservcePoolOwnerAccount)
+	require.True(t, found)
+	require.Equal(t, 2, len(accountVestingPools.VestingPools))
+	require.Equal(t, accountVestingPools.VestingPools[0].InitiallyLocked, math.NewInt(40_000_000_000_000))
+	require.Equal(t, accountVestingPools.VestingPools[1].InitiallyLocked, math.NewInt(8000000000000))
 
 	testHelper.ValidateGenesisAndInvariants()
 }
@@ -88,12 +164,23 @@ func TestUpdateStrategicReserveShortTermPool_BurnCoinsError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	addVestingTypes(testHelper)
 	accountVestingPools := cfevestingtypes.AccountVestingPools{
-		Owner: v131.StrategicReservceShortTermPoolAccount,
+		Owner: v131.StrategicReservcePoolOwnerAccount,
 		VestingPools: []*cfevestingtypes.VestingPool{
 			{
 				Name:            v131.StrategicReservceShortTermPool,
 				InitiallyLocked: math.NewInt(40_000_000_000_000),
 				VestingType:     "Strategic reserve short term round",
+			},
+			{
+				Name:            v131.EarlyBirdRoundPoolName,
+				InitiallyLocked: math.NewInt(8000000000000),
+				VestingType:     "Early-bird round",
+				Sent:            math.NewInt(75001000000),
+			},
+			{
+				Name:            v131.PublicRoundPoolName,
+				InitiallyLocked: math.NewInt(9000000000000),
+				VestingType:     "Public round",
 			},
 		},
 	}
@@ -110,26 +197,42 @@ func TestUpdateStrategicReserveShortTermPool_Success(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	addVestingTypes(testHelper)
 	accountVestingPools := cfevestingtypes.AccountVestingPools{
-		Owner: v131.StrategicReservceShortTermPoolAccount,
+		Owner: v131.StrategicReservcePoolOwnerAccount,
 		VestingPools: []*cfevestingtypes.VestingPool{
 			{
 				Name:            v131.StrategicReservceShortTermPool,
 				InitiallyLocked: math.NewInt(40_000_000_000_000),
 				VestingType:     "Strategic reserve short term round",
 			},
+			{
+				Name:            v131.EarlyBirdRoundPoolName,
+				InitiallyLocked: math.NewInt(8000000000000),
+				VestingType:     "Early-bird round",
+				Sent:            math.NewInt(75001000000),
+			},
+			{
+				Name:            v131.PublicRoundPoolName,
+				InitiallyLocked: math.NewInt(9000000000000),
+				VestingType:     "Public round",
+			},
 		},
 	}
-	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(40_000_000_000_000), cfevestingtypes.ModuleName)
+	testHelper.BankUtils.AddDefaultDenomCoinsToModule(math.NewInt(56924999000000), cfevestingtypes.ModuleName)
 
 	testHelper.C4eVestingUtils.GetC4eVestingKeeper().SetAccountVestingPools(testHelper.Context, accountVestingPools)
 
 	err := v131.UpdateStrategicReserveShortTermPool(testHelper.Context, testHelper.App)
 	require.NoError(t, err)
 
-	accountVestingPools, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v131.StrategicReservceShortTermPoolAccount)
+	accountVestingPools, found := testHelper.C4eVestingUtils.GetC4eVestingKeeper().GetAccountVestingPools(testHelper.Context, v131.StrategicReservcePoolOwnerAccount)
 	require.True(t, found)
-	require.Equal(t, 1, len(accountVestingPools.VestingPools))
+	require.Equal(t, 3, len(accountVestingPools.VestingPools))
 	require.Equal(t, math.NewInt(20_000_000_000_000), accountVestingPools.VestingPools[0].InitiallyLocked)
+	require.Equal(t, math.NewInt(75001000000), accountVestingPools.VestingPools[1].InitiallyLocked)
+	require.Equal(t, math.ZeroInt(), accountVestingPools.VestingPools[2].InitiallyLocked)
+
+	strategicReservePoolOwnerAccountAddress, _ := sdk.AccAddressFromBech32(v131.StrategicReservcePoolOwnerAccount)
+	testHelper.BankUtils.VerifyAccountDefaultDenomBalance(testHelper.Context, strategicReservePoolOwnerAccountAddress, math.NewInt(16924999000000))
 
 	testHelper.ValidateGenesisAndInvariants()
 }
@@ -185,7 +288,7 @@ func TestUpdateStrategicReserveAccount_NegativeOriginalVesting(t *testing.T) {
 func TestUpdateStrategicReserveAccount_SendCoinsError(t *testing.T) {
 	testHelper := testapp.SetupTestAppWithHeight(t, 1000)
 	err := testHelper.AuthUtils.CreateVestingAccount(v131.StrategicReserveAccount,
-		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(31_000_000_000_000))),
+		sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(35_000_000_000_000))),
 		time.Unix(1727222400, 0), time.Unix(1821830400, 0))
 	require.NoError(t, err)
 
@@ -195,7 +298,7 @@ func TestUpdateStrategicReserveAccount_SendCoinsError(t *testing.T) {
 	strategicReserveAccountAddress, err := sdk.AccAddressFromBech32(v131.StrategicReserveAccount)
 	require.NoError(t, err)
 
-	testHelper.BankUtils.VerifyAccountDefaultDenomBalance(testHelper.Context, strategicReserveAccountAddress, math.NewInt(1_000_000_000_000))
+	testHelper.BankUtils.VerifyAccountDefaultDenomBalance(testHelper.Context, strategicReserveAccountAddress, math.NewInt(800000000000))
 	testHelper.ValidateGenesisAndInvariants()
 }
 
@@ -211,13 +314,13 @@ func TestUpdateStrategicReserveAccount_Success(t *testing.T) {
 
 	strategicReserveAccount := testHelper.App.AccountKeeper.GetAccount(testHelper.Context, strategicReserveAccountAddress).(*vestingtypes.ContinuousVestingAccount)
 	require.NotNil(t, strategicReserveAccount)
-	require.Equal(t, math.NewInt(49999990000000), strategicReserveAccount.OriginalVesting.AmountOf(testenv.DefaultTestDenom))
+	require.Equal(t, math.NewInt(45799990000000), strategicReserveAccount.OriginalVesting.AmountOf(testenv.DefaultTestDenom))
 
 	liquidityPoolOwnerBalance := testHelper.BankUtils.GetAccountAllBalances(liquidityPoolOwnerAccountAddress)
 	require.Equal(t, sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(20000000000000))), liquidityPoolOwnerBalance)
 
 	strategicReserveAccountBalance := testHelper.BankUtils.GetAccountAllBalances(strategicReserveAccountAddress)
-	require.Equal(t, math.NewInt(49999990000000), strategicReserveAccountBalance.AmountOf(testenv.DefaultTestDenom))
+	require.Equal(t, math.NewInt(45799990000000), strategicReserveAccountBalance.AmountOf(testenv.DefaultTestDenom))
 
 	testHelper.ValidateGenesisAndInvariants()
 }
@@ -272,12 +375,32 @@ func TestUpdateCommunityPool_AmountLower(t *testing.T) {
 
 func addVestingTypes(testHelper *testapp.TestHelper) {
 	vestingTypes := cfevestingtypes.VestingTypes{
-		VestingTypes: []*cfevestingtypes.VestingType{{
-			Name:          "Strategic reserve short term round",
-			Free:          sdk.MustNewDecFromStr("0.10"),
-			LockupPeriod:  222 * 24 * time.Hour,
-			VestingPeriod: 365 * 24 * time.Hour,
-		}},
+		VestingTypes: []*cfevestingtypes.VestingType{
+			{
+				Name:          "Strategic reserve short term round",
+				Free:          sdk.MustNewDecFromStr("0.10"),
+				LockupPeriod:  222 * 24 * time.Hour,
+				VestingPeriod: 365 * 24 * time.Hour,
+			},
+			{
+				Name:          "Early-bird round",
+				Free:          sdk.MustNewDecFromStr("0.15"),
+				LockupPeriod:  0,
+				VestingPeriod: 274 * 24 * time.Hour,
+			},
+			{
+				Name:          "VC round",
+				Free:          sdk.MustNewDecFromStr("0.05"),
+				LockupPeriod:  548 * 24 * time.Hour,
+				VestingPeriod: 548 * 24 * time.Hour,
+			},
+			{
+				Name:          "Public round",
+				Free:          sdk.MustNewDecFromStr("0.2"),
+				LockupPeriod:  0,
+				VestingPeriod: 183 * 24 * time.Hour,
+			},
+		},
 	}
-	testHelper.App.CfevestingKeeper.SetVestingTypes(testHelper.Context, vestingTypes)
+	testHelper.C4eVestingUtils.GetC4eVestingKeeper().SetVestingTypes(testHelper.Context, vestingTypes)
 }

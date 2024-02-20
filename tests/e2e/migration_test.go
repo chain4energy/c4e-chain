@@ -51,13 +51,17 @@ func (s *MainnetMigrationSetupSuite) TestMainnetMigration() {
 	s.EqualValues(v131.StrategicReserveAccount, vAcc.Address)
 	s.EqualValues(1727222400, vAcc.StartTime)
 	s.EqualValues(1821830400, vAcc.EndTime)
-	s.EqualValues(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(49999990000000))), vAcc.OriginalVesting)
+	s.EqualValues(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(45799990000000))), vAcc.OriginalVesting)
 
 	// verify strategic reserve short term pool
-	vestingPools := node.QueryVestingPoolsInfo(v131.StrategicReservceShortTermPoolAccount)
+	vestingPools := node.QueryVestingPoolsInfo(v131.StrategicReservcePoolOwnerAccount)
 
 	s.Equal(3, len(vestingPools))
 	s.ElementsMatch(s.createVestingPools(), vestingPools)
+
+	balances, err := node.QueryBalances(v131.StrategicReservcePoolOwnerAccount)
+	s.NoError(err)
+	s.Equal(sdk.NewCoins(sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(16924999000000))), balances)
 }
 
 type NonMainnetMigrationSetupSuite struct {
@@ -82,7 +86,7 @@ func (s *NonMainnetMigrationSetupSuite) TestNonMainnetVestingsMigration() {
 
 	s.ElementsMatch(createNonMainnetVestingTypes(), vestingTypes)
 
-	node.QueryVestingPoolsNotFound(v131.StrategicReservceShortTermPoolAccount)
+	node.QueryVestingPoolsNotFound(v131.StrategicReservcePoolOwnerAccount)
 
 	node.QueryAccountNotFound(v131.StrategicReserveAccount)
 }
@@ -92,34 +96,34 @@ func (s *MainnetMigrationSetupSuite) createVestingPools() []*types.VestingPoolIn
 	s.NoError(err)
 	earlyBirdLockEnd, err := time.Parse(time.RFC3339, "2025-03-30T00:00:00Z")
 	s.NoError(err)
-	earlyBirdCoin := sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(8000000000000))
+	earlyBirdPoolAmount := sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(75001000000))
 	earlyBirdPool := types.VestingPoolInfo{
 		Name:            "Early-bird round pool",
 		VestingType:     "Early-bird round",
-		InitiallyLocked: &earlyBirdCoin,
+		InitiallyLocked: &earlyBirdPoolAmount,
 		LockStart:       earlyBirdLockStart,
 		LockEnd:         earlyBirdLockEnd,
 		Withdrawable:    math.ZeroInt().String(),
-		SentAmount:      math.ZeroInt().String(),
+		SentAmount:      math.NewInt(75001000000).String(),
 		Reservations:    []*types.VestingPoolReservation{},
-		CurrentlyLocked: earlyBirdCoin.Amount.String(),
+		CurrentlyLocked: "0",
 	}
 
 	publicRoundLockStart, err := time.Parse(time.RFC3339, "2022-03-30T00:00:00Z")
 	s.NoError(err)
 	publicRoundLockEnd, err := time.Parse(time.RFC3339, "2024-03-30T00:00:00Z")
 	s.NoError(err)
-	publicRoundCoin := sdk.NewCoin(testenv.DefaultTestDenom, math.NewInt(9000000000000))
+	publicRoundPoolAmount := sdk.NewCoin(testenv.DefaultTestDenom, math.ZeroInt())
 	publicRoundPool := types.VestingPoolInfo{
 		Name:            "Public round pool",
 		VestingType:     "Public round",
-		InitiallyLocked: &publicRoundCoin,
+		InitiallyLocked: &publicRoundPoolAmount,
 		LockStart:       publicRoundLockStart,
 		LockEnd:         publicRoundLockEnd,
 		Withdrawable:    math.ZeroInt().String(),
 		SentAmount:      math.ZeroInt().String(),
 		Reservations:    []*types.VestingPoolReservation{},
-		CurrentlyLocked: publicRoundCoin.Amount.String(),
+		CurrentlyLocked: "0",
 	}
 
 	strategicReserveLockStart, err := time.Parse(time.RFC3339, "2022-09-22T14:00:00Z")
