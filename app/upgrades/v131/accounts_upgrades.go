@@ -11,16 +11,19 @@ import (
 )
 
 const (
-	StrategicReservceShortTermPoolAccount = "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54"
-	StrategicReservceShortTermPool        = "Strategic reserve short term round pool"
+	StrategicReservcePoolOwnerAccount = "c4e1p0smw03cwhqn05fkalfpcr0ngqv5jrpnx2cp54"
+	StrategicReservceShortTermPool    = "Strategic reserve short term round pool"
 
 	StrategicReserveAccount = "c4e1hcfjejmxzl8d95xka5j8cjegmf32u2lee3q422"
 	LiquidityPoolOwner      = "c4e16n7yweagu3fxfzvay6cz035hddda7z3ntdxq3l"
+	EarlyBirdRoundPoolName  = "Early-bird round pool"
+	PublicRoundPoolName     = "Public round pool"
 )
 
 var (
 	liquidityPoolOwnerAccountAddress, _ = sdk.AccAddressFromBech32(LiquidityPoolOwner)
 	strategicReserveAccountAddress, _   = sdk.AccAddressFromBech32(StrategicReserveAccount)
+	strategicReservePoolOwnerAddress, _ = sdk.AccAddressFromBech32(StrategicReservcePoolOwnerAccount)
 )
 
 var (
@@ -28,41 +31,72 @@ var (
 
 	AmountToBurnFromCommunityPool = math.NewInt(60_000_000_000_000)
 
-	AmountToUnlockFromStrategicReserveAccount = math.NewInt(30_000_000_000_000)
+	AmountToUnlockFromStrategicReserveAccount = math.NewInt(34_200_000_000_000)
 	AmountToSendToLiquidtyPoolOwner           = math.NewInt(10_000_000_000_000)
-	AmountToBurnFromStrategicReserveAccount   = math.NewInt(20_000_000_000_000)
+	AmountToBurnFromStrategicReserveAccount   = math.NewInt(24_200_000_000_000)
 )
 
 func UpdateStrategicReserveShortTermPool(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
 	ctx.Logger().Info("updating strategic reserve short term pool")
 
-	accountVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, StrategicReservceShortTermPoolAccount)
+	accountVestingPools, found := appKeepers.GetC4eVestingKeeper().GetAccountVestingPools(ctx, StrategicReservcePoolOwnerAccount)
 	if !found {
-		ctx.Logger().Info("account vesting pools not found for StrategicReservceShortTermPoolAccount", "owner", StrategicReservceShortTermPoolAccount)
+		ctx.Logger().Info("account vesting pools not found for StrategicReservcePoolOwnerAccount", "owner", StrategicReservcePoolOwnerAccount)
 		return nil
 	}
 
+	strategicReservePoolFound := false
+	earlyBirdPoolFound := false
+	publicRoundPoolFound := false
+
+	mergedPoolsAmountSum := math.ZeroInt()
 	for _, pool := range accountVestingPools.VestingPools {
-		if pool.Name == StrategicReservceShortTermPool {
+		switch pool.Name {
+		case StrategicReservceShortTermPool:
 			if pool.GetLockedNotReserved().Sub(AmountToBurnFromStrategicReservePool).IsNegative() {
 				ctx.Logger().Info("after substracting amount to burn from strategic reserve pool initially currently locked amount is negative")
 				return nil
 			}
 
 			pool.InitiallyLocked = pool.InitiallyLocked.Sub(AmountToBurnFromStrategicReservePool)
+			strategicReservePoolFound = true
+			break
 
-			if err := burnCoinsFromAnyModule(ctx, appKeepers, cfevestingtypes.ModuleName, AmountToBurnFromStrategicReservePool); err != nil {
-				ctx.Logger().Error("send and burn coins from module error", "err", err)
-				return err
-			}
+		case EarlyBirdRoundPoolName:
+			lockedNotReserved := pool.GetLockedNotReserved()
+			pool.InitiallyLocked = pool.InitiallyLocked.Sub(lockedNotReserved)
+			mergedPoolsAmountSum = mergedPoolsAmountSum.Add(lockedNotReserved)
+			earlyBirdPoolFound = true
+			break
 
-			appKeepers.GetC4eVestingKeeper().SetAccountVestingPools(ctx, accountVestingPools)
-			ctx.Logger().Info("strategic reserve short term pool updated")
-			return nil
+		case PublicRoundPoolName:
+			lockedNotReserved := pool.GetLockedNotReserved()
+			pool.InitiallyLocked = pool.InitiallyLocked.Sub(lockedNotReserved)
+			mergedPoolsAmountSum = mergedPoolsAmountSum.Add(lockedNotReserved)
+			publicRoundPoolFound = true
+			break
 		}
 	}
+	if !strategicReservePoolFound || !earlyBirdPoolFound || !publicRoundPoolFound {
+		ctx.Logger().Info("one of the pools not found", "strategicReservePoolFound", strategicReservePoolFound,
+			"earlyBirdPoolFound", earlyBirdPoolFound, "publicRoundPoolFound", publicRoundPoolFound)
+		return nil
+	}
 
-	ctx.Logger().Info("strategic reserve short term pool not found", "owner", StrategicReservceShortTermPoolAccount)
+	if err := burnCoinsFromAnyModule(ctx, appKeepers, cfevestingtypes.ModuleName, AmountToBurnFromStrategicReservePool); err != nil {
+		ctx.Logger().Error("send and burn coins from module error", "err", err)
+		return err
+	}
+
+	denom := appKeepers.GetC4eVestingKeeper().Denom(ctx)
+	coins := sdk.NewCoins(sdk.NewCoin(denom, mergedPoolsAmountSum))
+	if err := bankkeeper.Keeper.SendCoinsFromModuleToAccount(*appKeepers.GetBankKeeper(), ctx, cfevestingtypes.ModuleName, strategicReservePoolOwnerAddress, coins); err != nil {
+		ctx.Logger().Error("send coins from module to module error", "err", err)
+		return err
+	}
+
+	appKeepers.GetC4eVestingKeeper().SetAccountVestingPools(ctx, accountVestingPools)
+	ctx.Logger().Info("strategic reserve short term pool updated")
 	return nil
 }
 
@@ -105,19 +139,7 @@ func UpdateStrategicReserveAccount(ctx sdk.Context, appKeepers cfeupgradetypes.A
 		return err
 	}
 
-	coinsToBurnFromStrategicReserveAccount := sdk.NewCoins(sdk.NewCoin(denom, AmountToBurnFromStrategicReserveAccount))
-	if err = bankkeeper.Keeper.SendCoinsFromAccountToModule(
-		*appKeepers.GetBankKeeper(),
-		ctx,
-		strategicReserveAccountAddress,
-		cfemintertypes.ModuleName,
-		coinsToBurnFromStrategicReserveAccount,
-	); err != nil {
-		ctx.Logger().Error("send coins from account to module error", "err", err)
-		return err
-	}
-
-	return bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintertypes.ModuleName, coinsToBurnFromStrategicReserveAccount)
+	return burnCoinsFromAccount(ctx, appKeepers, strategicReserveAccountAddress, AmountToBurnFromStrategicReserveAccount)
 }
 
 func UpdateCommunityPool(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers) error {
@@ -138,18 +160,24 @@ func UpdateCommunityPool(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers)
 		return err
 	}
 
+	return burnCoinsFromAccount(ctx, appKeepers, liquidityPoolOwnerAccountAddress, AmountToBurnFromCommunityPool)
+}
+
+func burnCoinsFromAccount(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers, accountAddress sdk.AccAddress, amount math.Int) error {
+	denom := appKeepers.GetC4eVestingKeeper().Denom(ctx)
+	coins := sdk.NewCoins(sdk.NewCoin(denom, amount))
 	if err := bankkeeper.Keeper.SendCoinsFromAccountToModule(
 		*appKeepers.GetBankKeeper(),
 		ctx,
-		liquidityPoolOwnerAccountAddress,
+		accountAddress,
 		cfemintertypes.ModuleName,
-		coinsToBurnFromCommunityPool,
+		coins,
 	); err != nil {
 		ctx.Logger().Error("send coins from account to module error", "err", err)
 		return err
 	}
 
-	return bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintertypes.ModuleName, coinsToBurnFromCommunityPool)
+	return bankkeeper.Keeper.BurnCoins(*appKeepers.GetBankKeeper(), ctx, cfemintertypes.ModuleName, coins)
 }
 
 func burnCoinsFromAnyModule(ctx sdk.Context, appKeepers cfeupgradetypes.AppKeepers, fromModule string, amount math.Int) error {

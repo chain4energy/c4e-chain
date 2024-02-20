@@ -265,7 +265,7 @@
         "coins": [
           {
             "denom": "uc4e",
-            "amount": "56750000000000"
+            "amount": "56674999000000"
           }
         ]
       }
@@ -338,7 +338,7 @@
             "lock_end": "2025-03-30T00:00:00Z",
             "lock_start": "2022-03-30T00:00:00Z",
             "name": "Early-bird round pool",
-            "sent": "0",
+            "sent": "75001000000",
             "vesting_type": "Early-bird round",
             "withdrawn": "0"
           },
