@@ -79,6 +79,15 @@ type TestHelper struct {
 	C4eClaimUtils         *testcfeclaim.ContextC4eClaimUtils
 }
 
+func (th *TestHelper) ValidateGenesisAndInvariants() {
+	th.C4eVestingUtils.ValidateGenesisAndInvariants()
+	th.DistributionUtils.ExportGenesisAndValidate()
+	th.AuthUtils.ExportGenesisAndValidate()
+	th.StakingUtils.ExportGenesisAndValidate()
+	th.BankUtils.ExportGenesisAndValidate()
+	th.App.CrisisKeeper.AssertInvariants(th.Context)
+}
+
 func newTestHelper(t require.TestingT, ctx sdk.Context, app *c4eapp.App, initTime time.Time, initialValidatorsCoin sdk.Coin) *TestHelper {
 	maccPerms := testcosmos.AddHelperModuleAccountPermissions(c4eapp.GetMaccPerms())
 

@@ -7,6 +7,7 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
+	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 )
 
@@ -22,6 +23,10 @@ func (app *App) GetBankKeeper() *bankkeeper.Keeper {
 
 func (app *App) GetC4eVestingKeeper() *cfevestingkeeper.Keeper {
 	return &app.CfevestingKeeper
+}
+
+func (app *App) GetDistributionKeeper() *distrkeeper.Keeper {
+	return &app.DistrKeeper
 }
 
 func (app *App) GetParamKeeper() *paramskeeper.Keeper {

@@ -14,10 +14,6 @@ func (m *UserEntry) Validate() error {
 		return err
 	}
 
-	if len(m.ClaimRecords) == 0 {
-		return fmt.Errorf("at least one campaign record is required")
-	}
-
 	campaignIDMap := make(map[uint64]struct{})
 	for _, elem := range m.ClaimRecords {
 		if _, ok := campaignIDMap[elem.CampaignId]; ok {
