@@ -1,4 +1,4 @@
-package v200
+package v140
 
 import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"

@@ -1,4 +1,4 @@
-package v200
+package v140
 
 import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -8,7 +8,7 @@ import (
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 )
 
-const UpgradeName = "v2.0.0"
+const UpgradeName = "v1.4.0"
 
 var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,

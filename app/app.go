@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	wasmd "github.com/CosmWasm/wasmd/app"
+	v131 "github.com/chain4energy/c4e-chain/app/upgrades/v131"
+	v140 "github.com/chain4energy/c4e-chain/app/upgrades/v140"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	ibcfee "github.com/cosmos/ibc-go/v7/modules/apps/29-fee"
 	ibcfeekeeper "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/keeper"
@@ -13,7 +15,6 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	v200 "github.com/chain4energy/c4e-chain/app/upgrades/v200"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
@@ -252,7 +253,7 @@ var (
 	_ servertypes.Application = (*App)(nil)
 	_ runtime.AppI            = (*App)(nil)
 
-	Upgrades = []upgrades.Upgrade{v110.Upgrade, v120.Upgrade, v130.Upgrade, v200.Upgrade}
+	Upgrades = []upgrades.Upgrade{v110.Upgrade, v120.Upgrade, v130.Upgrade, v131.Upgrade, v140.Upgrade}
 )
 
 func init() {
