@@ -233,5 +233,5 @@ docker-build-v1.0.0-chain:
 	@docker build -t chain4energy-old-chain-init:v1.0.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.0.0.init.Dockerfile .
 	@docker build -t chain4energy-old-dev:v1.0.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.0.0.Dockerfile .
 
-docker-build-all: docker-build-v1.3.0-chain docker-build-debug
+docker-build-all: docker-build-v1.3.1-chain docker-build-debug
 

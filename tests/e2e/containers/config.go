@@ -24,10 +24,10 @@ const (
 	// It must be built from previous branch.  startUpgrade in test suite should be unset
 	// for this functionality to be used.
 	previousVersionC4eRepository = "chain4energy-old-dev"
-	previousVersionC4eTag        = "v1.3.0"
+	previousVersionC4eTag        = "v1.3.1"
 	// Pre-upgrade repo/tag for c4e-chain initialization (this should be one version below upgradeVersion)
 	previousVersionInitRepository = "chain4energy-old-chain-init"
-	previousVersionInitTag        = "v1.3.0"
+	previousVersionInitTag        = "v1.3.1"
 	// If migration chain is used, we need to set the repo/tag for migration chain initialization to the penultimate version
 	penultimateVersionC4eRepository = "chain4energy-old-dev"
 	penultimateVersionC4eTag        = "v1.0.0"
