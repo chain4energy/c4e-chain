@@ -503,7 +503,8 @@ func New(
 		appCodec,
 		keys[feegrant.StoreKey],
 		app.AccountKeeper,
-	)
+	).SetBankKeeper(app.BankKeeper)
+	// TODO: remove this line when the new way of storing parameters is implemented
 
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(
 		skipUpgradeHeights,
