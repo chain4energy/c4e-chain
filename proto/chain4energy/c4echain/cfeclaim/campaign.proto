@@ -6,7 +6,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
-option go_package = "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types";
+option go_package = "github.com/chain4energy/c4e-chain/x/cfeclaim/types";
 
 message Campaign {
   uint64 id = 1;

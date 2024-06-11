@@ -5,17 +5,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/keeper"
-	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	testapp "github.com/chain4energy/c4e-chain/v2/testutil/app"
-	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
-	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
+	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 )
 
 func TestMoveAvailableVesting(t *testing.T) {

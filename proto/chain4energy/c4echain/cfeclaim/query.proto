@@ -11,7 +11,7 @@ import "chain4energy/c4echain/cfeclaim/claim_record.proto";
 
 // this line is used by starport scaffolding # 1
 
-option go_package = "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types";
+option go_package = "github.com/chain4energy/c4e-chain/x/cfeclaim/types";
 
 // Query defines the gRPC querier service.
 service Query {

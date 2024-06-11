@@ -2,8 +2,8 @@ package v130
 
 import (
 	"cosmossdk.io/math"
-	cfeupgradetypes "github.com/chain4energy/c4e-chain/v2/app/upgrades"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"

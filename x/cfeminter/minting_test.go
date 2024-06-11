@@ -2,18 +2,18 @@ package cfeminter_test
 
 import (
 	"cosmossdk.io/math"
-	"github.com/chain4energy/c4e-chain/v2/testutil/app"
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/v2/x/cfeminter/types"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
-	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 )
 
 func TestOneYearLinear(t *testing.T) {

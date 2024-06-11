@@ -2,11 +2,11 @@ package simulation
 
 import (
 	"cosmossdk.io/math"
-	"github.com/chain4energy/c4e-chain/v2/testutil/simulation"
-	"github.com/chain4energy/c4e-chain/v2/testutil/utils"
-	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/keeper"
-	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
-	cfevestingkeeper "github.com/chain4energy/c4e-chain/v2/x/cfevesting/keeper"
+	"github.com/chain4energy/c4e-chain/testutil/simulation"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
+	"github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
+	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"

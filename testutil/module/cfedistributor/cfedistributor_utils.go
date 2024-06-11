@@ -1,15 +1,15 @@
 package cfedistributorutils
 
 import (
-	c4eapp "github.com/chain4energy/c4e-chain/v2/app"
-	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
-	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
+	c4eapp "github.com/chain4energy/c4e-chain/app"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor"
-	cfedistributormodulekeeper "github.com/chain4energy/c4e-chain/v2/x/cfedistributor/keeper"
-	cfedistributortypes "github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor"
+	cfedistributormodulekeeper "github.com/chain4energy/c4e-chain/x/cfedistributor/keeper"
+	cfedistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/stretchr/testify/require"
 
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"

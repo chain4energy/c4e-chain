@@ -2,11 +2,11 @@ package cli
 
 import (
 	"fmt"
-	"github.com/chain4energy/c4e-chain/v2/app/params"
+	"github.com/chain4energy/c4e-chain/app/params"
 	"strconv"
 	"strings"
 
-	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"

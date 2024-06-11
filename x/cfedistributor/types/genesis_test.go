@@ -1,10 +1,10 @@
 package types_test
 
 import (
-	cfedistributortestutils "github.com/chain4energy/c4e-chain/v2/testutil/module/cfedistributor"
+	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
 	"testing"
 
-	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/stretchr/testify/require"
 )
 

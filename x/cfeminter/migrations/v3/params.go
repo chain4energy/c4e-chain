@@ -1,8 +1,8 @@
 package v3
 
 import (
-	"github.com/chain4energy/c4e-chain/v2/types/subspace"
-	"github.com/chain4energy/c4e-chain/v2/x/cfeminter/migrations/v2"
+	"github.com/chain4energy/c4e-chain/types/subspace"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v2"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"

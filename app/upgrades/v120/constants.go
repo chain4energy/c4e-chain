@@ -1,7 +1,7 @@
 package v120
 
 import (
-	"github.com/chain4energy/c4e-chain/v2/app/upgrades"
+	"github.com/chain4energy/c4e-chain/app/upgrades"
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"

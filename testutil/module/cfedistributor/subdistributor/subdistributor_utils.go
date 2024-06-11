@@ -1,9 +1,9 @@
 package subdistributor
 
 import (
-	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
-	"github.com/chain4energy/c4e-chain/v2/testutil/utils"
-	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )

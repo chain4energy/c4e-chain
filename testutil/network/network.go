@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/v2/app"
+	"github.com/chain4energy/c4e-chain/app"
 	tmdb "github.com/cometbft/cometbft-db"
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 	"github.com/cosmos/cosmos-sdk/baseapp"

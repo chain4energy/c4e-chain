@@ -5,7 +5,7 @@ import (
 	"cosmossdk.io/errors"
 	"encoding/hex"
 	"fmt"
-	appparams "github.com/chain4energy/c4e-chain/v2/app/params"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 

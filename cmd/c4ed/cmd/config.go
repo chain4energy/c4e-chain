@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/chain4energy/c4e-chain/v2/app"
+	"github.com/chain4energy/c4e-chain/app"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

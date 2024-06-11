@@ -2,12 +2,12 @@ package cfedistributor_test
 
 import (
 	"cosmossdk.io/math"
-	"github.com/chain4energy/c4e-chain/v2/testutil/app"
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
 
-	subdistributortestutils "github.com/chain4energy/c4e-chain/v2/testutil/module/cfedistributor/subdistributor"
+	subdistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor/subdistributor"
 
-	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"

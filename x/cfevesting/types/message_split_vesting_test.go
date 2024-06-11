@@ -4,9 +4,9 @@ import (
 	"cosmossdk.io/math"
 	"testing"
 
-	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
-	"github.com/chain4energy/c4e-chain/v2/testutil/sample"
-	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	"github.com/chain4energy/c4e-chain/testutil/sample"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )

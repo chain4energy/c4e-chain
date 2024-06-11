@@ -1,12 +1,12 @@
 package v130_test
 
 import (
-	v130 "github.com/chain4energy/c4e-chain/v2/app/upgrades/v130"
+	v130 "github.com/chain4energy/c4e-chain/app/upgrades/v130"
 	"testing"
 	"time"
 
-	testapp "github.com/chain4energy/c4e-chain/v2/testutil/app"
-	cfevestingtypes "github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+	cfevestingtypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )

@@ -1,9 +1,9 @@
 package v3_test
 
 import (
-	testkeeper "github.com/chain4energy/c4e-chain/v2/testutil/keeper"
-	v2 "github.com/chain4energy/c4e-chain/v2/x/cfedistributor/migrations/v2"
-	v3 "github.com/chain4energy/c4e-chain/v2/x/cfedistributor/migrations/v3"
+	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
+	v2 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v2"
+	v3 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v3"
 	"testing"
 
 	"github.com/stretchr/testify/require"

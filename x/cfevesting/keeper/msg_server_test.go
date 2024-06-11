@@ -3,11 +3,11 @@ package keeper_test
 import (
 	"time"
 
-	testutils "github.com/chain4energy/c4e-chain/v2/testutil/module/cfevesting"
+	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 
-	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 
-	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 
 	"testing"
 

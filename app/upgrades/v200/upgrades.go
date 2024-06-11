@@ -2,7 +2,7 @@ package v200
 
 import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/chain4energy/c4e-chain/v2/app/upgrades"
+	"github.com/chain4energy/c4e-chain/app/upgrades"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"

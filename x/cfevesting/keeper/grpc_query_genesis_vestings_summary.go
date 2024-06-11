@@ -3,7 +3,7 @@ package keeper
 import (
 	"context"
 
-	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

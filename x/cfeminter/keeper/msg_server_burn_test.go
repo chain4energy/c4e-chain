@@ -2,9 +2,9 @@ package keeper_test
 
 import (
 	"cosmossdk.io/math"
-	"github.com/chain4energy/c4e-chain/v2/testutil/app"
-	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
-	"github.com/chain4energy/c4e-chain/v2/testutil/sample"
+	"github.com/chain4energy/c4e-chain/testutil/app"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	"github.com/chain4energy/c4e-chain/testutil/sample"
 	"testing"
 )
 

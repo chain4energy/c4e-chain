@@ -2,9 +2,9 @@ package chain
 
 import (
 	"fmt"
-	"github.com/chain4energy/c4e-chain/v2/app/params"
-	"github.com/chain4energy/c4e-chain/v2/tests/e2e/configurer/config"
-	"github.com/chain4energy/c4e-chain/v2/tests/e2e/initialization"
+	"github.com/chain4energy/c4e-chain/app/params"
+	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
+	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"os"

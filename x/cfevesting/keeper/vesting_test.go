@@ -4,9 +4,9 @@ import (
 	"cosmossdk.io/math"
 	"testing"
 
-	testutils "github.com/chain4energy/c4e-chain/v2/testutil/module/cfevesting"
-	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/keeper"
-	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	testutils "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/stretchr/testify/require"
 )
 

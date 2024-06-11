@@ -1,13 +1,13 @@
 package keeper_test
 
 import (
-	"github.com/chain4energy/c4e-chain/v2/testutil/app"
+	"github.com/chain4energy/c4e-chain/testutil/app"
 	"testing"
 	"time"
 
-	testkeeper "github.com/chain4energy/c4e-chain/v2/testutil/keeper"
-	testminter "github.com/chain4energy/c4e-chain/v2/testutil/module/cfeminter"
-	"github.com/chain4energy/c4e-chain/v2/x/cfeminter/types"
+	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
+	testminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/stretchr/testify/require"
 )
 

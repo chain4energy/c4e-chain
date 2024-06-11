@@ -2,16 +2,16 @@ package cfeminter
 
 import (
 	"cosmossdk.io/math"
-	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
-	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 	"time"
 
-	routingdistributortypes "github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
-	"github.com/chain4energy/c4e-chain/v2/x/cfeminter"
-	cfemintermodulekeeper "github.com/chain4energy/c4e-chain/v2/x/cfeminter/keeper"
-	cfemintertypes "github.com/chain4energy/c4e-chain/v2/x/cfeminter/types"
+	routingdistributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	"github.com/chain4energy/c4e-chain/x/cfeminter"
+	cfemintermodulekeeper "github.com/chain4energy/c4e-chain/x/cfeminter/keeper"
+	cfemintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/stretchr/testify/require"
 
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"

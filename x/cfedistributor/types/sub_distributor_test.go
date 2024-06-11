@@ -1,12 +1,12 @@
 package types_test
 
 import (
-	"github.com/chain4energy/c4e-chain/v2/testutil/utils"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
 	"testing"
 
-	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
-	cfedistributortestutils "github.com/chain4energy/c4e-chain/v2/testutil/module/cfedistributor"
-	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )

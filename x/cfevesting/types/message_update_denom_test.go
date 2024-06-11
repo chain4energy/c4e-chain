@@ -1,9 +1,9 @@
 package types_test
 
 import (
-	appparams "github.com/chain4energy/c4e-chain/v2/app/params"
-	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
-	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/stretchr/testify/require"
 	"testing"
 )

@@ -5,8 +5,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 
-	testkeeper "github.com/chain4energy/c4e-chain/v2/testutil/keeper"
-	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/stretchr/testify/require"
 )
 

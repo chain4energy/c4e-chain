@@ -4,16 +4,16 @@ import (
 	"cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
-	appparams "github.com/chain4energy/c4e-chain/v2/app/params"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"os"
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/v2/tests/e2e/configurer/chain"
-	"github.com/chain4energy/c4e-chain/v2/tests/e2e/configurer/config"
-	"github.com/chain4energy/c4e-chain/v2/tests/e2e/containers"
-	"github.com/chain4energy/c4e-chain/v2/tests/e2e/initialization"
+	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/chain"
+	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
+	"github.com/chain4energy/c4e-chain/tests/e2e/containers"
+	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 )
 
 type UpgradeSettings struct {

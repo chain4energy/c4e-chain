@@ -1,8 +1,8 @@
 package params_test
 
 import (
-	"github.com/chain4energy/c4e-chain/v2/testutil/app"
-	"github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
+	"github.com/chain4energy/c4e-chain/testutil/app"
+	"github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"testing"

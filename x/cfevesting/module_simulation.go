@@ -1,9 +1,9 @@
 package cfevesting
 
 import (
-	"github.com/chain4energy/c4e-chain/v2/testutil/utils"
-	cfevestingpoolsimulation "github.com/chain4energy/c4e-chain/v2/x/cfevesting/simulation"
-	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
+	cfevestingpoolsimulation "github.com/chain4energy/c4e-chain/x/cfevesting/simulation"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"

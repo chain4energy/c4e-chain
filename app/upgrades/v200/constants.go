@@ -2,7 +2,7 @@ package v200
 
 import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/chain4energy/c4e-chain/v2/app/upgrades"
+	"github.com/chain4energy/c4e-chain/app/upgrades"
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"

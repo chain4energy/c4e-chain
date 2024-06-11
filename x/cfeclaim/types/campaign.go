@@ -4,7 +4,7 @@ import (
 	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	"fmt"
-	c4eerrors "github.com/chain4energy/c4e-chain/v2/types/errors"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"time"

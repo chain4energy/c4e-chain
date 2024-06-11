@@ -3,10 +3,10 @@ package keeper_test
 import (
 	"cosmossdk.io/math"
 	"fmt"
-	testapp "github.com/chain4energy/c4e-chain/v2/testutil/app"
-	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
-	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
-	cfeclaimtypes "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
+	testapp "github.com/chain4energy/c4e-chain/testutil/app"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	cfeclaimtypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 )

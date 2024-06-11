@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/v2/tests/e2e/util"
+	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"

@@ -1,7 +1,7 @@
 package types_test
 
 import (
-	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"

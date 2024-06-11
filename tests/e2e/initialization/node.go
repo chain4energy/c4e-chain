@@ -31,8 +31,8 @@ import (
 	"github.com/cosmos/go-bip39"
 	"github.com/spf13/viper"
 
-	c4eapp "github.com/chain4energy/c4e-chain/v2/app"
-	"github.com/chain4energy/c4e-chain/v2/tests/e2e/util"
+	c4eapp "github.com/chain4energy/c4e-chain/app"
+	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 )
 
 const configTomlFile = "config.toml"

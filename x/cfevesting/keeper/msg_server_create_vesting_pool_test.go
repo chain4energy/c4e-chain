@@ -2,12 +2,12 @@ package keeper_test
 
 import (
 	"cosmossdk.io/math"
-	"github.com/chain4energy/c4e-chain/v2/testutil/app"
-	"github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	"github.com/chain4energy/c4e-chain/testutil/app"
+	"github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	"testing"
 	"time"
 
-	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 )
 
 func TestCreateVestingPool(t *testing.T) {

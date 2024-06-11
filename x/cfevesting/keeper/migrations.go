@@ -1,9 +1,9 @@
 package keeper
 
 import (
-	"github.com/chain4energy/c4e-chain/v2/types/subspace"
-	v2 "github.com/chain4energy/c4e-chain/v2/x/cfevesting/migrations/v2"
-	v3 "github.com/chain4energy/c4e-chain/v2/x/cfevesting/migrations/v3"
+	"github.com/chain4energy/c4e-chain/types/subspace"
+	v2 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v2"
+	v3 "github.com/chain4energy/c4e-chain/x/cfevesting/migrations/v3"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

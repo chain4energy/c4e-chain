@@ -5,7 +5,7 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 
-	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

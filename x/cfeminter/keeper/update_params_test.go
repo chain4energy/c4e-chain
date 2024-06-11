@@ -2,12 +2,12 @@ package keeper_test
 
 import (
 	"cosmossdk.io/math"
-	appparams "github.com/chain4energy/c4e-chain/v2/app/params"
-	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	"testing"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/v2/x/cfeminter/types"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

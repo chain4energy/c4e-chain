@@ -1,4 +1,4 @@
-module github.com/chain4energy/c4e-chain/v2
+module github.com/chain4energy/c4e-chain
 
 go 1.20
 

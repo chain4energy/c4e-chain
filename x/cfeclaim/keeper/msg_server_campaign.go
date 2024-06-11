@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"context"
-	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
+	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

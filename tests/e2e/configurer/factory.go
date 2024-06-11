@@ -3,9 +3,9 @@ package configurer
 import (
 	"testing"
 
-	"github.com/chain4energy/c4e-chain/v2/tests/e2e/configurer/chain"
-	"github.com/chain4energy/c4e-chain/v2/tests/e2e/containers"
-	"github.com/chain4energy/c4e-chain/v2/tests/e2e/initialization"
+	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/chain"
+	"github.com/chain4energy/c4e-chain/tests/e2e/containers"
+	"github.com/chain4energy/c4e-chain/tests/e2e/initialization"
 )
 
 type Configurer interface {

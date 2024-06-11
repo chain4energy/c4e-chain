@@ -1,8 +1,8 @@
 package upgrades
 
 import (
-	cfeclaimkeeper "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/keeper"
-	cfevestingkeeper "github.com/chain4energy/c4e-chain/v2/x/cfevesting/keeper"
+	cfeclaimkeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
+	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/cometbft/cometbft/proto/tendermint/types"
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"

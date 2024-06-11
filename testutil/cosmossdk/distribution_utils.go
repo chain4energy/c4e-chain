@@ -1,7 +1,7 @@
 package cosmossdk
 
 import (
-	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	"github.com/stretchr/testify/require"
 )

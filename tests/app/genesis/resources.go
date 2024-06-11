@@ -2,13 +2,13 @@ package genesis
 
 import (
 	"cosmossdk.io/math"
-	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"time"
 
-	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
-	distributortypes "github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
-	mintertypes "github.com/chain4energy/c4e-chain/v2/x/cfeminter/types"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	distributortypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	mintertypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

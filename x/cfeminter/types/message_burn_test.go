@@ -1,10 +1,10 @@
 package types_test
 
 import (
-	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
-	"github.com/chain4energy/c4e-chain/v2/testutil/sample"
-	c4eerrors "github.com/chain4energy/c4e-chain/v2/types/errors"
-	"github.com/chain4energy/c4e-chain/v2/x/cfeminter/types"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	"github.com/chain4energy/c4e-chain/testutil/sample"
+	c4eerrors "github.com/chain4energy/c4e-chain/types/errors"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"

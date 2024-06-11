@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/chain4energy/c4e-chain/v2/app/params"
+	"github.com/chain4energy/c4e-chain/app/params"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/std"

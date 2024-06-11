@@ -5,15 +5,15 @@ import (
 	"cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
-	cfeclaimmoduletypes "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
-	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
-	cfemintermoduletypes "github.com/chain4energy/c4e-chain/v2/x/cfeminter/types"
+	cfeclaimmoduletypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"io"
 	"net/http"
 	"time"
 
-	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/v2/x/cfevesting/types"
+	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,7 +23,7 @@ import (
 	tmabcitypes "github.com/cometbft/cometbft/abci/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/chain4energy/c4e-chain/v2/tests/e2e/util"
+	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 )
 
 const outputJsonFlag = "--output=json"

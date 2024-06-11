@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "chain4energy/c4echain/cfeminter/minter.proto";
 
-option go_package = "github.com/chain4energy/c4e-chain/v2/x/cfeminter/types";
+option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
 
 // Params defines the parameters for the module.
 message Params {

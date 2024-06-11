@@ -1,9 +1,9 @@
 package util
 
 import (
-	c4eapp "github.com/chain4energy/c4e-chain/v2/app"
-	"github.com/chain4energy/c4e-chain/v2/app/params"
-	cfemintermoduletypes "github.com/chain4energy/c4e-chain/v2/x/cfeminter/types"
+	c4eapp "github.com/chain4energy/c4e-chain/app"
+	"github.com/chain4energy/c4e-chain/app/params"
+	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"

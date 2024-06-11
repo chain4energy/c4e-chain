@@ -3,7 +3,7 @@ package v2
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/chain4energy/c4e-chain/v2/x/cfeminter/migrations/v1"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/migrations/v1"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"

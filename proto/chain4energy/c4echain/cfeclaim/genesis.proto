@@ -6,7 +6,7 @@ import "chain4energy/c4echain/cfeclaim/campaign.proto";
 import "chain4energy/c4echain/cfeclaim/mission.proto";
 import "chain4energy/c4echain/cfeclaim/claim_record.proto";
 
-option go_package = "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types";
+option go_package = "github.com/chain4energy/c4e-chain/x/cfeclaim/types";
 
 // GenesisState defines the cfeclaim module's genesis state.
 message GenesisState {

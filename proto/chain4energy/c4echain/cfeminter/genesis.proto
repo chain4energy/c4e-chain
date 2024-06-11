@@ -6,7 +6,7 @@ import "chain4energy/c4echain/cfeminter/params.proto";
 import "chain4energy/c4echain/cfeminter/minter.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
-option go_package = "github.com/chain4energy/c4e-chain/v2/x/cfeminter/types";
+option go_package = "github.com/chain4energy/c4e-chain/x/cfeminter/types";
 
 // GenesisState defines the cfeminter module's genesis state.
 message GenesisState {

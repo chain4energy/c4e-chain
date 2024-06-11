@@ -1,8 +1,8 @@
 package cfeclaim
 
 import (
-	cfeclaimsimulation "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/simulation"
-	"github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types"
+	cfeclaimsimulation "github.com/chain4energy/c4e-chain/x/cfeclaim/simulation"
+	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"

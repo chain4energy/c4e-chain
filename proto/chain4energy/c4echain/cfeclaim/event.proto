@@ -7,7 +7,7 @@ import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "chain4energy/c4echain/cfeclaim/mission.proto";
 
-option go_package = "github.com/chain4energy/c4e-chain/v2/x/cfeclaim/types";
+option go_package = "github.com/chain4energy/c4e-chain/x/cfeclaim/types";
 
 message EventNewCampaign {
     uint64 id = 1;

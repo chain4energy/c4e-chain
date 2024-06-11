@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"encoding/binary"
-	"github.com/chain4energy/c4e-chain/v2/x/cfeminter/types"
+	"github.com/chain4energy/c4e-chain/x/cfeminter/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

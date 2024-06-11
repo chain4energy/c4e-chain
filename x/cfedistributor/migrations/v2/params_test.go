@@ -1,12 +1,12 @@
 package v2_test
 
 import (
-	testkeeper "github.com/chain4energy/c4e-chain/v2/testutil/keeper"
-	cfedistributortestutils "github.com/chain4energy/c4e-chain/v2/testutil/module/cfedistributor"
-	"github.com/chain4energy/c4e-chain/v2/testutil/utils"
-	v1 "github.com/chain4energy/c4e-chain/v2/x/cfedistributor/migrations/v1"
-	v2 "github.com/chain4energy/c4e-chain/v2/x/cfedistributor/migrations/v2"
-	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
+	testkeeper "github.com/chain4energy/c4e-chain/testutil/keeper"
+	cfedistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
+	"github.com/chain4energy/c4e-chain/testutil/utils"
+	v1 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v1"
+	v2 "github.com/chain4energy/c4e-chain/x/cfedistributor/migrations/v2"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"

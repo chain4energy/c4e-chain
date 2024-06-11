@@ -2,18 +2,18 @@ package app
 
 import (
 	"context"
-	appparams "github.com/chain4energy/c4e-chain/v2/app/params"
+	appparams "github.com/chain4energy/c4e-chain/app/params"
 	"time"
 
 	"github.com/stretchr/testify/require"
 
-	c4eapp "github.com/chain4energy/c4e-chain/v2/app"
-	testcosmos "github.com/chain4energy/c4e-chain/v2/testutil/cosmossdk"
-	testenv "github.com/chain4energy/c4e-chain/v2/testutil/env"
-	testcfeclaim "github.com/chain4energy/c4e-chain/v2/testutil/module/cfeclaim"
-	testcfedistributor "github.com/chain4energy/c4e-chain/v2/testutil/module/cfedistributor"
-	testcfeminter "github.com/chain4energy/c4e-chain/v2/testutil/module/cfeminter"
-	testcfevesting "github.com/chain4energy/c4e-chain/v2/testutil/module/cfevesting"
+	c4eapp "github.com/chain4energy/c4e-chain/app"
+	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
+	testenv "github.com/chain4energy/c4e-chain/testutil/env"
+	testcfeclaim "github.com/chain4energy/c4e-chain/testutil/module/cfeclaim"
+	testcfedistributor "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor"
+	testcfeminter "github.com/chain4energy/c4e-chain/testutil/module/cfeminter"
+	testcfevesting "github.com/chain4energy/c4e-chain/testutil/module/cfevesting"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"

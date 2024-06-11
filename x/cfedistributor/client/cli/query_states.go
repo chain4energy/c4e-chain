@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/chain4energy/c4e-chain/v2/x/cfedistributor/types"
+	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/version"

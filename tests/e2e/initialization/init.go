@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/chain4energy/c4e-chain/v2/tests/e2e/util"
+	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 )
 
 func InitChain(id, dataDir string, nodeConfigs []*NodeConfig, votingPeriod, expeditedVotingPeriod time.Duration, forkHeight int, appState map[string]json.RawMessage) (*Chain, error) {
