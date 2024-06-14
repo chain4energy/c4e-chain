@@ -146,10 +146,8 @@ func (k Keeper) claimMission(ctx sdk.Context, campaign *types.Campaign, mission 
 		}
 	}
 
-	campaign.DecrementCampaignCurrentAmount(claimableAmount)
+	campaign.CampaignCurrentAmount = campaign.CampaignCurrentAmount.Sub(claimableAmount...)
 	k.SetCampaign(ctx, *campaign)
-
-	*campaign, _ = k.GetCampaign(ctx, campaign.Id)
 	return nil
 }
 
