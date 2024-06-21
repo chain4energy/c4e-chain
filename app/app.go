@@ -9,9 +9,7 @@ import (
 	v131 "github.com/chain4energy/c4e-chain/app/upgrades/v131"
 	v140 "github.com/chain4energy/c4e-chain/app/upgrades/v140"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	ibcfee "github.com/cosmos/ibc-go/v7/modules/apps/29-fee"
-	ibcfeekeeper "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/keeper"
-	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
+
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -305,7 +303,6 @@ type App struct {
 	GroupKeeper           groupkeeper.Keeper
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
 	WasmKeeper            wasmkeeper.Keeper
-	IBCFeeKeeper          ibcfeekeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -570,12 +567,6 @@ func New(
 	if err != nil {
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
 	}
-	app.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
-		appCodec, keys[ibcfeetypes.StoreKey],
-		app.IBCKeeper.ChannelKeeper, // may be replaced with IBC middleware
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper, app.AccountKeeper, app.BankKeeper,
-	)
 
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	evidenceKeeper := evidencekeeper.NewKeeper(
@@ -609,6 +600,7 @@ func New(
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	availableCapabilities := strings.Join(wasmd.AllCapabilities(), ",")
+
 	app.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
 		keys[wasmtypes.StoreKey],
@@ -616,7 +608,7 @@ func New(
 		app.BankKeeper,
 		app.StakingKeeper,
 		distrkeeper.NewQuerier(app.DistrKeeper),
-		app.IBCFeeKeeper, // ISC4 Wrapper: fee IBC middleware
+		app.IBCKeeper.ChannelKeeper, // ISC4 Wrapper: fee IBC middleware
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		scopedWasmKeeper,
@@ -703,8 +695,7 @@ func New(
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	var wasmStack porttypes.IBCModule
-	wasmStack = wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper, app.IBCFeeKeeper)
-	wasmStack = ibcfee.NewIBCMiddleware(wasmStack, app.IBCFeeKeeper)
+	wasmStack = wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper, app.IBCKeeper.ChannelKeeper)
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.
