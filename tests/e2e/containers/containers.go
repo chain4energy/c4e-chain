@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"regexp"
 	"strings"
 	"testing"
@@ -291,6 +292,11 @@ func (m *Manager) RunHermesResource(chainAID, c4eARelayerNodeName, c4eAValMnemon
 // RunNodeResource runs a node container. Assings containerName to the container.
 // Mounts the container on valConfigDir volume on the running host. Returns the container resource and error if any.
 func (m *Manager) RunNodeResource(containerName, valCondifDir string) (*dockertest.Resource, error) {
+	pwd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+
 	runOpts := &dockertest.RunOptions{
 		Name:       containerName,
 		Repository: m.C4eRepository,
@@ -300,6 +306,7 @@ func (m *Manager) RunNodeResource(containerName, valCondifDir string) (*dockerte
 		Cmd:        []string{"start"},
 		Mounts: []string{
 			fmt.Sprintf("%s/:/chain4energy/.c4e-chain", valCondifDir),
+			fmt.Sprintf("%s/scripts/bytecode:/chain4energy/bytecode", pwd),
 		},
 	}
 

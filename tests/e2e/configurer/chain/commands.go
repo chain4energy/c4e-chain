@@ -1,6 +1,7 @@
 package chain
 
 import (
+	"errors"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
@@ -9,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -444,4 +446,67 @@ func formatFromFlag(from string) string {
 
 func formatDepositFlag(desposit sdk.Coin) string {
 	return fmt.Sprintf("--deposit=%s", desposit)
+}
+
+func (n *NodeConfig) InstantiateWasmContract(codeId, initMsg, from string) {
+	n.LogActionF("instantiating wasm contract %s with %s", codeId, initMsg)
+	initMsg = replaceAllQuotes(initMsg)
+	cmd := []string{"c4ed", "tx", "wasm", "instantiate", codeId, initMsg, fmt.Sprintf("--from=%s", from), "--no-admin", "--label=contract"}
+	n.LogActionF(strings.Join(cmd, " "))
+	_, _, err := n.containerManager.ExecTxCmdNew(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	n.LogActionF("successfully initialized")
+}
+
+func (n *NodeConfig) WasmExecute(contract, execMsg, from string) {
+	n.LogActionF("executing %s on wasm contract %s from %s", execMsg, contract, from)
+	execMsg = replaceAllQuotes(execMsg)
+	cmd := []string{"c4ed", "tx", "wasm", "execute", contract, execMsg, fmt.Sprintf("--from=%s", from)}
+	n.LogActionF(strings.Join(cmd, " "))
+	_, _, err := n.containerManager.ExecTxCmdNew(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	n.LogActionF("successfully executed")
+}
+
+func (n *NodeConfig) StoreWasmCode(wasmFile, from string) int {
+	n.LogActionF("storing wasm code from file %s", wasmFile)
+	cmd := []string{"c4ed", "tx", "wasm", "store", wasmFile, fmt.Sprintf("--from=%s", from), "--gas=auto", "--gas-prices=0.1uc4e", "--gas-adjustment=1.3"}
+	resp, _, err := n.containerManager.ExecTxCmdNew(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	n.LogActionF(resp.String())
+	codeId, err := extractCodeIdFromResponse(resp.String())
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully stored")
+	return codeId
+}
+
+func extractCodeIdFromResponse(response string) (int, error) {
+	response = formatNonJsonResponse(response)
+
+	r := regexp.MustCompile(`code_id value: "(\d+)"`)
+	matches := r.FindStringSubmatch(response)
+
+	// Check if we found a match
+	if len(matches) < 2 {
+		return 0, errors.New("code_id not found")
+	}
+
+	// Convert the code ID from string to int
+	codeId, err := strconv.Atoi(matches[1])
+	if err != nil {
+		return 0, err
+	}
+
+	return codeId, nil
+}
+
+func formatNonJsonResponse(resp string) string {
+	resp = strings.ReplaceAll(resp, "\n", " ")
+	resp = strings.ReplaceAll(resp, "-", " ")
+	return strings.Join(strings.Fields(resp), " ")
+}
+
+func replaceAllQuotes(msg string) string {
+	return strings.ReplaceAll(msg, "\"", "\\\"")
 }
