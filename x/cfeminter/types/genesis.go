@@ -21,7 +21,7 @@ func DefaultGenesis() *GenesisState {
 			SequenceId:                  1,
 			AmountMinted:                math.ZeroInt(),
 			RemainderToMint:             sdk.ZeroDec(),
-			LastMintBlockTime:           time.Now(),
+			LastMintBlockTime:           time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 			RemainderFromPreviousMinter: sdk.ZeroDec(),
 		},
 	}
