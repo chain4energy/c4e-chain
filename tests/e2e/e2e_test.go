@@ -8,7 +8,7 @@ import (
 func TestRunChainWithOptions(t *testing.T) {
 	var upgradeSettings configurer.UpgradeSettings
 
-	upgradeSettings.Version = "v1.3.0"
+	upgradeSettings.Version = "v1.3.1"
 	upgradeSettings.IsEnabled = false
 
 	_, err := configurer.StartDockerContainers(t, false, true, "", upgradeSettings)

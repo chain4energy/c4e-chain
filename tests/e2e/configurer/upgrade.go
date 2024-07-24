@@ -124,9 +124,9 @@ func (uc *UpgradeConfigurer) runProposalUpgrade() error {
 					node.SubmitUpgradeProposal(uc.upgradeVersion, chainConfig.UpgradePropHeight, sdk.NewCoin(appparams.MicroC4eUnit, math.NewInt(config.InitialMinDeposit)))
 				}
 				chainConfig.LatestProposalNumber += 1
-				node.DepositProposal(chainConfig.LatestProposalNumber)
+				node.DepositProposalLegacy(chainConfig.LatestProposalNumber)
 			}
-			node.VoteYesProposal(initialization.ValidatorWalletName, chainConfig.LatestProposalNumber)
+			node.VoteYesProposalLegacy(initialization.ValidatorWalletName, chainConfig.LatestProposalNumber)
 		}
 	}
 

@@ -22,7 +22,7 @@ type AppKeepers interface {
 	GetC4eVestingKeeper() *cfevestingkeeper.Keeper
 	GetC4eClaimKeeper() *cfeclaimkeeper.Keeper
 	GetC4eParamsKeeper() *paramsKeeper.Keeper
-	GetC4eConsensurParamsKeeper() *consensusparamkeeper.Keeper
+	GetC4eConsensusParamsKeeper() *consensusparamkeeper.Keeper
 	GetDistributionKeeper() *distributionkeeper.Keeper
 }
 

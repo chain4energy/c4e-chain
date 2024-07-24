@@ -57,29 +57,29 @@ func NewManager(startUpgrade, migrationChainging bool, isDebugLogEnabled bool, s
 	return docker, nil
 }
 
-// ExecTxCmd Runs ExecCmdWithResponseString searching for `code: 0`
+// ExecTxCmdLegacy Runs ExecCmdWithResponseStringLegacy searching for `code: 0`
+func (m *Manager) ExecTxCmdLegacy(t *testing.T, chainId string, containerName string, command []string) (outBuff bytes.Buffer, errBuff bytes.Buffer, err error) {
+	return m.ExecCmdWithResponseStringLegacy(t, chainId, containerName, command, "code: 0")
+}
+
+// ExecTxCmdLegacy Runs ExecCmdWithResponseStringLegacy searching for `code: 0`
 func (m *Manager) ExecTxCmd(t *testing.T, chainId string, containerName string, command []string) (outBuff bytes.Buffer, errBuff bytes.Buffer, err error) {
 	return m.ExecCmdWithResponseString(t, chainId, containerName, command, "code: 0")
 }
 
-// ExecTxCmd Runs ExecCmdWithResponseString searching for `code: 0`
-func (m *Manager) ExecTxCmdNew(t *testing.T, chainId string, containerName string, command []string) (outBuff bytes.Buffer, errBuff bytes.Buffer, err error) {
-	return m.ExecCmdWithResponseStringNew(t, chainId, containerName, command, "code: 0")
-}
-
-// ExecCmdWithResponseString Runs ExecCmd, with flags for txs added.
+// ExecCmdWithResponseStringLegacy Runs ExecCmd, with flags for txs added.
 // namely adding flags `--chain-id={chain-id} -b=block --yes --keyring-backend=test "--log_format=json"`,
 // and searching for `successStr`
-func (m *Manager) ExecCmdWithResponseString(t *testing.T, chainId string, containerName string, command []string, successStr string) (bytes.Buffer, bytes.Buffer, error) {
+func (m *Manager) ExecCmdWithResponseStringLegacy(t *testing.T, chainId string, containerName string, command []string, successStr string) (bytes.Buffer, bytes.Buffer, error) {
 	allTxArgs := []string{fmt.Sprintf("--chain-id=%s", chainId), "--yes", "--keyring-backend=test", "--gas=auto", "--gas-adjustment=1.15", "--log_format=json", fmt.Sprintf("--sign-mode=%s", m.signMode)}
 	txCommand := append(command, allTxArgs...)
 	return m.ExecCmd(t, containerName, txCommand, successStr)
 }
 
-// ExecCmdWithResponseString Runs ExecCmd, with flags for txs added.
+// ExecCmdWithResponseStringLegacy Runs ExecCmd, with flags for txs added.
 // namely adding flags `--chain-id={chain-id} -b=block --yes --keyring-backend=test "--log_format=json"`,
 // and searching for `successStr`
-func (m *Manager) ExecCmdWithResponseStringNew(t *testing.T, chainId string, containerName string, command []string, successStr string) (bytes.Buffer, bytes.Buffer, error) {
+func (m *Manager) ExecCmdWithResponseString(t *testing.T, chainId string, containerName string, command []string, successStr string) (bytes.Buffer, bytes.Buffer, error) {
 	allTxArgs := []string{fmt.Sprintf("--chain-id=%s", chainId), "--yes", "--keyring-backend=test", "--gas=auto", "--gas-adjustment=1.15", "--log_format=json", "--output=json", fmt.Sprintf("--sign-mode=%s", m.signMode)}
 	txCommand := append(command, allTxArgs...)
 	return m.ExecCmdNew(t, containerName, txCommand, successStr)

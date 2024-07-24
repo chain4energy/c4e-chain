@@ -18,6 +18,17 @@ import (
 	"time"
 )
 
+func TestCoin(t *testing.T) {
+	var vestingPeriodCoins sdk.Coins
+	fmt.Println(vestingPeriodCoins)
+	fmt.Println(len(vestingPeriodCoins))
+
+	vestingPeriodCoins = vestingPeriodCoins.Add(sdk.NewCoin("uc4e", math.ZeroInt()))
+
+	fmt.Println(vestingPeriodCoins)
+	fmt.Println(len(vestingPeriodCoins))
+}
+
 func TestCreateAccount(t *testing.T) {
 	startTime := testenv.TestEnvTime.Add(-24 * 100 * time.Hour)
 	endTime := testenv.TestEnvTime.Add(24 * 100 * time.Hour)

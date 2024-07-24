@@ -202,9 +202,9 @@ func (s *ParamsSetupSuite) TestCfevestingNewDenomAndWhenVestingPoolExists() {
 	s.NoError(err)
 	node.SubmitParamChangeProposal(proposalJSON, initialization.ValidatorWalletName)
 	chainA.LatestProposalNumber += 1
-	node.DepositProposalNew(chainA.LatestProposalNumber)
+	node.DepositProposal(chainA.LatestProposalNumber)
 	for _, n := range chainA.NodeConfigs {
-		n.VoteYesProposalNew(initialization.ValidatorWalletName, chainA.LatestProposalNumber)
+		n.VoteYesProposal(initialization.ValidatorWalletName, chainA.LatestProposalNumber)
 	}
 
 	s.Eventually(

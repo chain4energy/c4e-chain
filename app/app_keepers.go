@@ -41,6 +41,6 @@ func (app *App) GetC4eParamsKeeper() *paramskeeper.Keeper {
 	return &app.ParamsKeeper
 }
 
-func (app *App) GetC4eConsensurParamsKeeper() *consensusparamkeeper.Keeper {
+func (app *App) GetC4eConsensusParamsKeeper() *consensusparamkeeper.Keeper {
 	return &app.ConsensusParamsKeeper
 }

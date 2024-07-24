@@ -43,6 +43,7 @@ const (
 	MinGasPrice         = "0.000"
 	IbcSendAmount       = 3300000000
 	ValidatorWalletName = "val"
+	ApiAddress          = "tcp://0.0.0.0:1317"
 	// chainA
 	ChainAID      = "c4e-chain-test-a"
 	C4eBalanceA   = 200000000000

@@ -70,7 +70,7 @@ func CreateUpgradeHandler(
 		}
 
 		baseAppLegacySS := appKeepers.GetC4eParamsKeeper().Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
-		baseapp.MigrateParams(ctx, baseAppLegacySS, appKeepers.GetC4eConsensurParamsKeeper())
+		baseapp.MigrateParams(ctx, baseAppLegacySS, appKeepers.GetC4eConsensusParamsKeeper())
 
 		return mm.RunMigrations(ctx, configurator, vm)
 	}

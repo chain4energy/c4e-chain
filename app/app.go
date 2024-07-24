@@ -146,6 +146,7 @@ const (
 	AccountAddressPrefix = "c4e"
 	Name                 = "c4e"
 	HomeName             = "c4e-chain"
+	wasmDirName          = "wasm"
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
@@ -553,7 +554,7 @@ func New(
 
 	icaModule := ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper)
 	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
-	wasmDir := filepath.Join(homePath, "wasm")
+	wasmDir := filepath.Join(homePath, wasmDirName)
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
