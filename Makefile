@@ -163,7 +163,7 @@ open-memory-profiler-result:
 
 PACKAGES_E2E=./tests/e2e
 BUILDDIR ?= $(CURDIR)/build
-E2E_UPGRADE_VERSION="v1.4.0"
+E2E_UPGRADE_VERSION="v1.4.1"
 E2E_SCRIPT_NAME=chain
 C4E_E2E_SIGN_MODE = "direct"
 
@@ -215,6 +215,11 @@ build-e2e-script:
 
 docker-build-debug:
 	@docker build -t chain4energy:debug --build-arg BASE_IMG_TAG=debug -f dockerfiles/Dockerfile .
+
+docker-build-v1.4.0-chain:
+	@docker build -t chain4energy-old-chain-init:v1.4.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.4.0.init.Dockerfile .
+	@docker build -t chain4energy-old-dev:v1.4.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.4.0.Dockerfile .
+
 
 docker-build-v1.3.1-chain:
 	@docker build -t chain4energy-old-chain-init:v1.3.1 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.3.1.init.Dockerfile .
