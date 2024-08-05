@@ -48,6 +48,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Misc Improvements
 
+## [v1.4.0](https://github.com/chain4energy/c4e-chain/releases/tag/v1.4.0) - 2024-08-05
+
+### Upgrades
+
+- **Cosmos SDK Upgrade**: Bumped cosmos-sdk to `v0.47.12`, providing enhanced performance, security patches, and new features.
+- **IBC-go Upgrade**: Bumped ibc-go to `v7.3.0`, introducing improvements in IBC protocol handling and interoperability.
+- **CometBFT Upgrade**: Bumped cometbft to `v0.37.5`
+
+### Improvements
+
+- **WASM Module Integration**: Added a new **[`wasm`](https://github.com/CosmWasm/wasmd)** module that provides the functionality to compile, store, and execute CosmWasm smart contracts on the chain.
+  - Included all necessary dependencies to support WASM functionalities.
+  - Configured the module seamlessly into the chain infrastructure.
+  - Added new antehandlers for improved transaction processing in the `wasm` module.
+  - Introduced ICS20 wrapper to facilitate token transfers between WASM contracts and IBC modules.
+  - Added `wasm` module snapshot manager for efficient state management.
+  - Implemented E2E tests for the `wasm` module.
+- Added a new `consensusparam` module that provides advanced functionality to manage and modify consensus parameters dynamically, enhancing flexibility and control over network operations.
+- Introduced a new `crisis` module designed to manage and mitigate critical situations within the blockchain, ensuring network stability and resilience.
+- Added a new `ibchooks` module that provides enhanced functionality to manage IBC hooks, enabling the chain to interact more efficiently with other IBC-enabled chains.
+- Migrated legacy Cosmos SDK params to new Cosmos SDK [ADR-046](https://github.com/cosmos/cosmos-sdk/blob/main/docs/architecture/adr-046-module-params.md) module params, streamlining parameter management and improving system consistency.
+- Removed the unused `x/cfesignature` module, reducing codebase complexity and improving maintainability.
+- Updated the structure of `proto` files to align with the latest standards, improving code organization and readability.
+- Performed extensive code clean-ups using Sonar, addressing code smells, vulnerabilities, and ensuring adherence to best coding practices.
+- Updated all Docker files used to build the chain, ensuring compatibility with the latest software versions and improving deployment processes.
+- Added QueryEventForTxCmd to root cmd for querying transaction events.
+- Updated Ignite config to work seamlessly with the latest cosmos-sdk version, enhancing the developer experience and build processes.
+
+### Bug Fixes
+
+- Fixed cfeminter init genesis bug that affected the initial configuration of the cfeminter module.
+- Fixed E2E Makefile test-e2e command to ensure end-to-end tests run smoothly without errors.
+
+### Tests that have been carried out
+
+- Simulation tests
+- Performance/stability tests
+- Manual E2E tests
+- Automatic E2E tests
+- Unit tests
+- Manulat IBC integration tests
+- Manual ICS721 integration tests
+- Automatic and manual migration tests
+
 ## [v1.3.1](https://github.com/chain4energy/c4e-chain/releases/tag/v1.3.1) - 2024-02-20
 
 **Adjustments and Financial Operations**
