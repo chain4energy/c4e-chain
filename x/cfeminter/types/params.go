@@ -9,7 +9,7 @@ import (
 
 var (
 	DefaultMintDenom = "uc4e"
-	DefaultStartTime = time.Now()
+	DefaultStartTime = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	DefaultMinters   = []*Minter{
 		{
 			SequenceId: 1,

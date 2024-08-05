@@ -11,6 +11,9 @@ import (
 
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	"github.com/chain4energy/c4e-chain/x/cfeclaim/types"
+	tmdb "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -18,11 +21,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmdb "github.com/tendermint/tm-db"
 
 	commontestutils "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
 	cfeclaimtestutils "github.com/chain4energy/c4e-chain/testutil/module/cfeclaim"
@@ -60,27 +59,13 @@ func cfeclaimKeeperWithBlockHeightAndTime(t testing.TB, blockHeight int64, block
 	authtypes.RegisterInterfaces(registry)
 	cdc := codec.NewProtoCodec(registry)
 
-	accParamsSubspace := typesparams.NewSubspace(cdc,
-		types.Amino,
-		authStoreKey,
-		authStoreKey,
-		"acc",
-	)
-
-	bankParamsSubspace := typesparams.NewSubspace(cdc,
-		types.Amino,
-		bankStoreKey,
-		bankStoreKey,
-		"bankParams",
-	)
-
 	accountKeeper := authkeeper.NewAccountKeeper(
-		cdc, authStoreKey, accParamsSubspace, authtypes.ProtoBaseAccount,
-		commontestutils.AddHelperModuleAccountPermissions(map[string][]string{types.ModuleName: nil}), appparams.Bech32PrefixAccAddr,
+		cdc, authStoreKey, authtypes.ProtoBaseAccount,
+		commontestutils.AddHelperModuleAccountPermissions(map[string][]string{types.ModuleName: nil}), appparams.Bech32PrefixAccAddr, appparams.GetAuthority(),
 	)
 
 	bankKeeper := bankkeeper.NewBaseKeeper(
-		cdc, bankStoreKey, accountKeeper, bankParamsSubspace, map[string]bool{},
+		cdc, bankStoreKey, accountKeeper, map[string]bool{}, appparams.GetAuthority(),
 	)
 	feegrantKeeper := feegrantkeeper.NewKeeper(
 		cdc, feegrantStoreKey, accountKeeper,

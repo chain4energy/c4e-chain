@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 	vestingTypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"path/filepath"
 	"time"
 
+	tmjson "github.com/cometbft/cometbft/libs/json"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -17,10 +19,8 @@ import (
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/gogo/protobuf/proto"
-	tmjson "github.com/tendermint/tendermint/libs/json"
 )
 
 // NodeConfig is a confiuration for the node supplied from the test runner
@@ -43,6 +43,7 @@ const (
 	MinGasPrice         = "0.000"
 	IbcSendAmount       = 3300000000
 	ValidatorWalletName = "val"
+	ApiAddress          = "tcp://0.0.0.0:1317"
 	// chainA
 	ChainAID      = "c4e-chain-test-a"
 	C4eBalanceA   = 200000000000
@@ -299,10 +300,10 @@ func updateCrisisGenesis(crisisGenState *crisistypes.GenesisState) {
 
 func updateGovGenesis(votingPeriod time.Duration) func(*govv1.GenesisState) {
 	return func(govGenState *govv1.GenesisState) {
-		govGenState.VotingParams = &govv1.VotingParams{
-			VotingPeriod: &votingPeriod,
-		}
-		govGenState.DepositParams.MinDeposit = tenC4e
+		params := govv1.DefaultParams()
+		govGenState.Params = &params
+		govGenState.Params.VotingPeriod = &votingPeriod
+		govGenState.Params.MinDeposit = tenC4e
 	}
 }
 

@@ -8,10 +8,10 @@ import (
 	subdistributortestutils "github.com/chain4energy/c4e-chain/testutil/module/cfedistributor/subdistributor"
 
 	"github.com/chain4energy/c4e-chain/x/cfedistributor/types"
+	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func TestBurningDistributorMainCollectorDes(t *testing.T) {

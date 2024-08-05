@@ -1,6 +1,7 @@
 package chain
 
 import (
+	"errors"
 	"fmt"
 	"github.com/chain4energy/c4e-chain/app/params"
 	"github.com/chain4energy/c4e-chain/tests/e2e/configurer/config"
@@ -9,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -64,7 +66,7 @@ func (n *NodeConfig) FailIBCTransfer(from, recipient, amount string) {
 
 	cmd := []string{"c4ed", "tx", "ibc-transfer", "transfer", "transfer", "channel-0", recipient, amount, formatFromFlag(from)}
 
-	_, _, err := n.containerManager.ExecCmdWithResponseString(n.t, n.chainId, n.Name, cmd, "rate limit exceeded")
+	_, _, err := n.containerManager.ExecCmdWithResponseStringLegacy(n.t, n.chainId, n.Name, cmd, "rate limit exceeded")
 	require.NoError(n.t, err)
 
 	n.LogActionF("Failed to send IBC transfer (as expected)")
@@ -73,7 +75,7 @@ func (n *NodeConfig) FailIBCTransfer(from, recipient, amount string) {
 func (n *NodeConfig) SubmitUpgradeProposal(upgradeVersion string, upgradeHeight int64, initialDeposit sdk.Coin) {
 	n.LogActionF("submitting upgrade proposal %s for height %d", upgradeVersion, upgradeHeight)
 	cmd := []string{"c4ed", "tx", "gov", "submit-legacy-proposal", "software-upgrade", upgradeVersion, fmt.Sprintf("--title=\"%s upgrade\"", upgradeVersion), "--description=\"upgrade proposal submission\"", fmt.Sprintf("--upgrade-height=%d", upgradeHeight), "--upgrade-info=\"\"", formatFromFlag("val"), formatDepositFlag(initialDeposit), "--no-validate"}
-	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	_, _, err := n.containerManager.ExecTxCmdLegacy(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully submitted upgrade proposal")
 }
@@ -81,7 +83,7 @@ func (n *NodeConfig) SubmitUpgradeProposal(upgradeVersion string, upgradeHeight 
 func (n *NodeConfig) SubmitLegacyUpgradeProposal(upgradeVersion string, upgradeHeight int64, initialDeposit sdk.Coin) {
 	n.LogActionF("submitting upgrade proposal %s for height %d", upgradeVersion, upgradeHeight)
 	cmd := []string{"c4ed", "tx", "gov", "submit-proposal", "software-upgrade", upgradeVersion, fmt.Sprintf("--title=\"%s upgrade\"", upgradeVersion), "--description=\"upgrade proposal submission\"", fmt.Sprintf("--upgrade-height=%d", upgradeHeight), "--upgrade-info=\"\"", formatFromFlag("val"), formatDepositFlag(initialDeposit)}
-	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	_, _, err := n.containerManager.ExecTxCmdLegacy(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully submitted upgrade proposal")
 }
@@ -92,7 +94,7 @@ func (n *NodeConfig) SubmitTextProposal(text string, initialDeposit sdk.Coin, is
 	if isExpedited {
 		cmd = append(cmd, "--is-expedited=true")
 	}
-	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	_, _, err := n.containerManager.ExecTxCmdLegacy(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully submitted text gov proposal")
 }
@@ -106,6 +108,23 @@ func (n *NodeConfig) DepositProposal(proposalNumber int) {
 	n.LogActionF("successfully deposited on proposal %d", proposalNumber)
 }
 
+func (n *NodeConfig) DepositProposalLegacy(proposalNumber int) {
+	n.LogActionF("depositing on proposal: %d", proposalNumber)
+	deposit := sdk.NewCoin(params.MicroC4eUnit, config.MinDepositValue)
+	cmd := []string{"c4ed", "tx", "gov", "deposit", fmt.Sprintf("%d", proposalNumber), deposit.String(), formatFromFlag("val")}
+	_, _, err := n.containerManager.ExecTxCmdLegacy(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	n.LogActionF("successfully deposited on proposal %d", proposalNumber)
+}
+
+func (n *NodeConfig) VoteYesProposalLegacy(from string, proposalNumber int) {
+	n.LogActionF("voting yes on proposal: %d", proposalNumber)
+	cmd := []string{"c4ed", "tx", "gov", "vote", fmt.Sprintf("%d", proposalNumber), "yes", formatFromFlag(from)}
+	_, _, err := n.containerManager.ExecTxCmdLegacy(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	n.LogActionF("successfully voted yes on proposal %d", proposalNumber)
+}
+
 func (n *NodeConfig) VoteYesProposal(from string, proposalNumber int) {
 	n.LogActionF("voting yes on proposal: %d", proposalNumber)
 	cmd := []string{"c4ed", "tx", "gov", "vote", fmt.Sprintf("%d", proposalNumber), "yes", formatFromFlag(from)}
@@ -117,7 +136,7 @@ func (n *NodeConfig) VoteYesProposal(from string, proposalNumber int) {
 func (n *NodeConfig) VoteNoProposal(from string, proposalNumber int) {
 	n.LogActionF("voting no on proposal: %d", proposalNumber)
 	cmd := []string{"c4ed", "tx", "gov", "vote", fmt.Sprintf("%d", proposalNumber), "no", formatFromFlag(from)}
-	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	_, _, err := n.containerManager.ExecTxCmdLegacy(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully voted no on proposal: %d", proposalNumber)
 }
@@ -125,7 +144,7 @@ func (n *NodeConfig) VoteNoProposal(from string, proposalNumber int) {
 func (n *NodeConfig) BankSend(amount string, sendAddress string, receiveAddress string) {
 	n.LogActionF("bank sending %s from address %s to %s", amount, sendAddress, receiveAddress)
 	cmd := []string{"c4ed", "tx", "bank", "send", sendAddress, receiveAddress, amount, formatFromFlag("val")}
-	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	_, _, err := n.containerManager.ExecTxCmdLegacy(n.t, n.chainId, n.Name, cmd)
 	require.NoError(n.t, err)
 	n.LogActionF("successfully sent bank sent %s from address %s to %s", amount, sendAddress, receiveAddress)
 }
@@ -427,4 +446,67 @@ func formatFromFlag(from string) string {
 
 func formatDepositFlag(desposit sdk.Coin) string {
 	return fmt.Sprintf("--deposit=%s", desposit)
+}
+
+func (n *NodeConfig) InstantiateWasmContract(codeId, initMsg, from string) {
+	n.LogActionF("instantiating wasm contract %s with %s", codeId, initMsg)
+	initMsg = replaceAllQuotes(initMsg)
+	cmd := []string{"c4ed", "tx", "wasm", "instantiate", codeId, initMsg, fmt.Sprintf("--from=%s", from), "--no-admin", "--label=contract"}
+	n.LogActionF(strings.Join(cmd, " "))
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	n.LogActionF("successfully initialized")
+}
+
+func (n *NodeConfig) WasmExecute(contract, execMsg, from string) {
+	n.LogActionF("executing %s on wasm contract %s from %s", execMsg, contract, from)
+	execMsg = replaceAllQuotes(execMsg)
+	cmd := []string{"c4ed", "tx", "wasm", "execute", contract, execMsg, fmt.Sprintf("--from=%s", from)}
+	n.LogActionF(strings.Join(cmd, " "))
+	_, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	n.LogActionF("successfully executed")
+}
+
+func (n *NodeConfig) StoreWasmCode(wasmFile, from string) int {
+	n.LogActionF("storing wasm code from file %s", wasmFile)
+	cmd := []string{"c4ed", "tx", "wasm", "store", wasmFile, fmt.Sprintf("--from=%s", from), "--gas=auto", "--gas-prices=0.1uc4e", "--gas-adjustment=1.3"}
+	resp, _, err := n.containerManager.ExecTxCmd(n.t, n.chainId, n.Name, cmd)
+	require.NoError(n.t, err)
+	n.LogActionF(resp.String())
+	codeId, err := extractCodeIdFromResponse(resp.String())
+	require.NoError(n.t, err)
+
+	n.LogActionF("successfully stored")
+	return codeId
+}
+
+func extractCodeIdFromResponse(response string) (int, error) {
+	response = formatNonJsonResponse(response)
+
+	r := regexp.MustCompile(`code_id value: "(\d+)"`)
+	matches := r.FindStringSubmatch(response)
+
+	// Check if we found a match
+	if len(matches) < 2 {
+		return 0, errors.New("code_id not found")
+	}
+
+	// Convert the code ID from string to int
+	codeId, err := strconv.Atoi(matches[1])
+	if err != nil {
+		return 0, err
+	}
+
+	return codeId, nil
+}
+
+func formatNonJsonResponse(resp string) string {
+	resp = strings.ReplaceAll(resp, "\n", " ")
+	resp = strings.ReplaceAll(resp, "-", " ")
+	return strings.Join(strings.Fields(resp), " ")
+}
+
+func replaceAllQuotes(msg string) string {
+	return strings.ReplaceAll(msg, "\"", "\\\"")
 }

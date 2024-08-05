@@ -190,7 +190,7 @@ func TestUpdateStrategicReserveShortTermPool_BurnCoinsError(t *testing.T) {
 	testHelper.C4eVestingUtils.GetC4eVestingKeeper().SetAccountVestingPools(testHelper.Context, accountVestingPools)
 
 	err := v131.UpdateStrategicReserveShortTermPool(testHelper.Context, testHelper.App)
-	require.EqualError(t, err, "1uc4e is smaller than 20000000000000uc4e: insufficient funds")
+	require.EqualError(t, err, "spendable balance 1uc4e is smaller than 20000000000000uc4e: insufficient funds")
 }
 
 func TestUpdateStrategicReserveShortTermPool_Success(t *testing.T) {

@@ -6,6 +6,7 @@ import (
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 )
@@ -34,4 +35,12 @@ func (app *App) GetParamKeeper() *paramskeeper.Keeper {
 
 func (app *App) GetC4eClaimKeeper() *cfeclaimkeeper.Keeper {
 	return &app.CfeclaimKeeper
+}
+
+func (app *App) GetC4eParamsKeeper() *paramskeeper.Keeper {
+	return &app.ParamsKeeper
+}
+
+func (app *App) GetC4eConsensusParamsKeeper() *consensusparamkeeper.Keeper {
+	return &app.ConsensusParamsKeeper
 }

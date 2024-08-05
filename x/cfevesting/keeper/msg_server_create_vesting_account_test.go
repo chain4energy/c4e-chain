@@ -138,7 +138,7 @@ func TestCreateVestingAccountNotEnoughFunds(t *testing.T) {
 		startTime,
 		endTime,
 		accBalance,
-		"create vesting account - send coins to vesting account error (from: "+accAddr1.String()+", to: "+accAddr3.String()+", amount: "+coins.String()+"): "+accBalance.String()+testenv.DefaultTestDenom+" is smaller than "+coins.String()+": insufficient funds: failed to send coins",
+		"create vesting account - send coins to vesting account error (from: "+accAddr1.String()+", to: "+accAddr3.String()+", amount: "+coins.String()+"): spendable balance "+accBalance.String()+testenv.DefaultTestDenom+" is smaller than "+coins.String()+": insufficient funds: failed to send coins",
 	)
 
 	testHelper.C4eVestingUtils.ValidateGenesisAndInvariants()

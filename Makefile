@@ -118,26 +118,26 @@ release:
 
 # blockchain simulation tests
 
-SIM_NUM_BLOCKS = 1000
-SIM_BLOCK_SIZE = 25
+SIM_NUM_BLOCKS = 100
+SIM_BLOCK_SIZE = 50
 SIM_COMMIT = true
 SIM_SEED = 50
 SIMAPP = ./app
 
-test-simulation-benchmark:
+test-simulation-full-app:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -Seed=$(SIM_SEED) -v -Period=25 -PrintAllInvariants \
+	@go test -mod=readonly -benchmem -run=TestFullAppSimulation $(SIMAPP) -bench ^TestFullAppSimulation -Seed=$(SIM_SEED) -v -Period=25 -PrintAllInvariants \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -Verbose=true
 
 test-simulation-benchmark-profile:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimulation$$ -v -Seed=$(SIM_SEED) -Period=1 -PrintAllInvariants \
-		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) \
+	@go test -mod=readonly -benchmem -run=TestFullAppSimulation $(SIMAPP) -bench ^TestFullAppSimulation -Seed=$(SIM_SEED) -v -Period=25 -PrintAllInvariants \
+		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -Verbose=true \
 		-timeout 24h -cpuprofile cpu.out -memprofile mem.out
 
 test-simulation-import-export:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkSimTest$$ -Seed=$(SIM_SEED) -v -Period=25 -PrintAllInvariants \
+	@go test -mod=readonly -benchmem -run=TestAppImportExport $(SIMAPP) -bench ^TestAppImportExport -Seed=$(SIM_SEED) -v -Period=25 -PrintAllInvariants \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -Verbose=true
 
 stop-running-simulations:
@@ -163,11 +163,11 @@ open-memory-profiler-result:
 
 PACKAGES_E2E=./tests/e2e
 BUILDDIR ?= $(CURDIR)/build
-E2E_UPGRADE_VERSION="v1.3.1"
+E2E_UPGRADE_VERSION="v1.4.0"
 E2E_SCRIPT_NAME=chain
 C4E_E2E_SIGN_MODE = "direct"
 
-test-e2e: test-e2e-vesting test-e2e-ibc test-e2e-params-change test-e2e-claim test-e2e-migration
+test-e2e: test-e2e-vesting test-e2e-params-change test-e2e-claim test-e2e-migration test-e2e-wasm
 
 run-e2e-chain: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestRunChainWithOptions -count=1
@@ -185,16 +185,16 @@ test-e2e-params-change: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestParamsChangeSuite
 
 test-e2e-migration: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestMainnetMigrationSuite
-
-test-e2e-no-data-migration: e2e-setup
-	@VERSION=$(VERSION) C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestNonMainnetMigrationSuite
+	@VERSION=$(VERSION) C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationSuite"
 
 test-e2e-migration-chaining: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_SKIP_CLEANUP=True C4E_E2E_SIGN_MODE=$(C4E_E2E_SIGN_MODE) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run "Test.*MainnetMigrationChainingSuite"
 
-SPECIFIC_TEST_NAME=TestMainnetVestingsMigration
-SPECIFIC_TESTING_SUITE_NAME=TestMainnetMigrationSuite
+test-e2e-wasm: e2e-setup
+	@VERSION=$(VERSION) E2E_SIGN_MODE=$(E2E_SIGN_MODE) E2E_DEBUG_LOG=True go test -mod=readonly -timeout=25m -v $(PACKAGES_E2E) -run TestWasmSuite
+
+SPECIFIC_TEST_NAME=TestSendToVestingAccount
+SPECIFIC_TESTING_SUITE_NAME=TestVestingSuite
 test-e2e-run-specific-test: e2e-setup
 	@VERSION=$(VERSION) C4E_E2E_UPGRADE_VERSION=$(E2E_UPGRADE_VERSION) C4E_E2E_DEBUG_LOG=True C4E_E2E_SKIP_CLEANUP=true go test -mod=readonly -timeout=25m -v $ -run $(SPECIFIC_TESTING_SUITE_NAME) $(PACKAGES_E2E) -testify.m $(SPECIFIC_TEST_NAME)
 
@@ -216,6 +216,10 @@ build-e2e-script:
 docker-build-debug:
 	@docker build -t chain4energy:debug --build-arg BASE_IMG_TAG=debug -f dockerfiles/Dockerfile .
 
+docker-build-v1.3.1-chain:
+	@docker build -t chain4energy-old-chain-init:v1.3.1 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.3.1.init.Dockerfile .
+	@docker build -t chain4energy-old-dev:v1.3.1 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.3.1.Dockerfile .
+
 docker-build-v1.3.0-chain:
 	@docker build -t chain4energy-old-chain-init:v1.3.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.3.0.init.Dockerfile .
 	@docker build -t chain4energy-old-dev:v1.3.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.3.0.Dockerfile .
@@ -232,5 +236,5 @@ docker-build-v1.0.0-chain:
 	@docker build -t chain4energy-old-chain-init:v1.0.0 --build-arg E2E_SCRIPT_NAME=chain -f dockerfiles/v1.0.0.init.Dockerfile .
 	@docker build -t chain4energy-old-dev:v1.0.0 --build-arg BASE_IMG_TAG=debug -f dockerfiles/v1.0.0.Dockerfile .
 
-docker-build-all: docker-build-old-chain docker-build-debug
+docker-build-all: docker-build-v1.3.1-chain docker-build-debug
 

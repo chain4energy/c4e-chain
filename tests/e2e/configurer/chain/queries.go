@@ -3,8 +3,10 @@ package chain
 import (
 	"context"
 	"cosmossdk.io/math"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	cfeclaimmoduletypes "github.com/chain4energy/c4e-chain/x/cfeclaim/types"
 	cfedistributormoduletypes "github.com/chain4energy/c4e-chain/x/cfedistributor/types"
 	cfemintermoduletypes "github.com/chain4energy/c4e-chain/x/cfeminter/types"
@@ -21,8 +23,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
+	tmabcitypes "github.com/cometbft/cometbft/abci/types"
 	"github.com/stretchr/testify/require"
-	tmabcitypes "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/chain4energy/c4e-chain/tests/e2e/util"
 )
@@ -243,8 +245,7 @@ func (n *NodeConfig) QueryAccountNotFound(address string) {
 
 	_, err := n.QueryGRPCGateway(path)
 	require.Error(n.t, err)
-	require.EqualError(n.t, err, "unexpected status code: 404, body: {\n  \"code\": 5,\n  \"message\": \"account "+address+" not found\",\n  \"details\": [\n  ]\n}")
-
+	require.EqualError(n.t, err, "unexpected status code: 404, body: {\"code\":5,\"message\":\"account "+address+" not found\",\"details\":[]}")
 }
 
 func (n *NodeConfig) QueryCampaign(campaignId string) cfeclaimmoduletypes.Campaign {
@@ -373,4 +374,50 @@ func (n *NodeConfig) QueryPropStatusTimed(proposalNumber int, desiredStatus stri
 	)
 	elapsed := time.Since(start)
 	totalTime <- elapsed
+}
+
+func (n *NodeConfig) QueryContractsFromId(codeId int) ([]string, error) {
+	path := fmt.Sprintf("/cosmwasm/wasm/v1/code/%d/contracts", codeId)
+	bz, err := n.QueryGRPCGateway(path)
+
+	require.NoError(n.t, err)
+
+	var contractsResponse wasmtypes.QueryContractsByCodeResponse
+	if err := util.Cdc.UnmarshalJSON(bz, &contractsResponse); err != nil {
+		return nil, err
+	}
+
+	return contractsResponse.Contracts, nil
+}
+
+func (n *NodeConfig) QueryWasmSmart(contract string, msg string, result any) error {
+	n.LogActionF("querying wasm contract %s with %s", contract, msg)
+	encodedMsg := base64.StdEncoding.EncodeToString([]byte(msg))
+	path := fmt.Sprintf("/cosmwasm/wasm/v1/contract/%s/smart/%s", contract, encodedMsg)
+	n.LogActionF("path: %s", path)
+	bz, err := n.QueryGRPCGateway(path)
+	if err != nil {
+		return err
+	}
+
+	var response wasmtypes.QuerySmartContractStateResponse
+	err = util.Cdc.UnmarshalJSON(bz, &response)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(response.Data, &result)
+	n.LogActionF("result: %v", result)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (n *NodeConfig) QueryWasmSmartObject(contract string, msg string) (resultObject map[string]interface{}, err error) {
+	err = n.QueryWasmSmart(contract, msg, &resultObject)
+	if err != nil {
+		return nil, err
+	}
+	return resultObject, nil
 }

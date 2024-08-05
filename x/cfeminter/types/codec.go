@@ -21,7 +21,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterInterface(
-		"chain4energy.c4echain.cfeminter.MinterConfigI",
+		"c4echain.cfeminter.MinterConfigI",
 		(*MinterConfigI)(nil),
 		&LinearMinting{},
 		&ExponentialStepMinting{},

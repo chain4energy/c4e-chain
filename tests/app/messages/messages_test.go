@@ -5,7 +5,7 @@ import (
 	"time"
 
 	testcosmos "github.com/chain4energy/c4e-chain/testutil/cosmossdk"
-	"github.com/gogo/protobuf/proto"
+	"github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/require"
 
 	"testing"
