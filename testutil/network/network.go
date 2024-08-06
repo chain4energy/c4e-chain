@@ -3,7 +3,6 @@ package network
 import (
 	"fmt"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/store/pruning/types"
 	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -69,7 +68,6 @@ func DefaultConfig() network.Config {
 				tmdb.NewMemDB(),
 				nil,
 				true,
-				wasmtypes.EnableAllProposals,
 				map[int64]bool{},
 				val.GetCtx().Config.RootDir,
 				0,

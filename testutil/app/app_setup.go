@@ -3,7 +3,6 @@ package app
 import (
 	"cosmossdk.io/math"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -57,7 +56,6 @@ func BaseSetup() (*c4eapp.App, c4eapp.GenesisState) {
 		db,
 		nil,
 		true,
-		wasmtypes.EnableAllProposals,
 		map[int64]bool{},
 		c4eapp.DefaultNodeHome,
 		0,
