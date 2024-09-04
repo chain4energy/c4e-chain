@@ -1,6 +1,7 @@
 package upgrades
 
 import (
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	cfeclaimkeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	"github.com/cometbft/cometbft/proto/tendermint/types"
@@ -20,6 +21,7 @@ type AppKeepers interface {
 	GetBankKeeper() *bankkeeper.Keeper
 	GetParamKeeper() *paramsKeeper.Keeper
 	GetC4eVestingKeeper() *cfevestingkeeper.Keeper
+	GetWasmKeeper() *wasmkeeper.Keeper
 	GetC4eClaimKeeper() *cfeclaimkeeper.Keeper
 	GetC4eParamsKeeper() *paramsKeeper.Keeper
 	GetC4eConsensusParamsKeeper() *consensusparamkeeper.Keeper

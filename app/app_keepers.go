@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/CosmWasm/wasmd/x/wasm"
 	cfeupgradetypes "github.com/chain4energy/c4e-chain/app/upgrades"
 	cfeclaimkeeper "github.com/chain4energy/c4e-chain/x/cfeclaim/keeper"
 	cfevestingkeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
@@ -43,4 +44,8 @@ func (app *App) GetC4eParamsKeeper() *paramskeeper.Keeper {
 
 func (app *App) GetC4eConsensusParamsKeeper() *consensusparamkeeper.Keeper {
 	return &app.ConsensusParamsKeeper
+}
+
+func (app *App) GetWasmKeeper() *wasm.Keeper {
+	return &app.WasmKeeper
 }

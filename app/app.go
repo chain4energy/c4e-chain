@@ -8,6 +8,7 @@ import (
 	wasmd "github.com/CosmWasm/wasmd/app"
 	v131 "github.com/chain4energy/c4e-chain/app/upgrades/v131"
 	v140 "github.com/chain4energy/c4e-chain/app/upgrades/v140"
+	v141 "github.com/chain4energy/c4e-chain/app/upgrades/v141"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	ibchookstypes "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7/types"
 
@@ -231,7 +232,7 @@ var (
 	_ servertypes.Application = (*App)(nil)
 	_ runtime.AppI            = (*App)(nil)
 
-	Upgrades = []upgrades.Upgrade{v110.Upgrade, v120.Upgrade, v130.Upgrade, v131.Upgrade, v140.Upgrade}
+	Upgrades = []upgrades.Upgrade{v110.Upgrade, v120.Upgrade, v130.Upgrade, v131.Upgrade, v140.Upgrade, v141.Upgrade}
 )
 
 func init() {
@@ -307,6 +308,14 @@ type App struct {
 	sm *module.SimulationManager
 }
 
+// overrideWasmVariables overrides the wasm variables to:
+//   - allow for larger wasm files
+func overrideWasmVariables() {
+	// Override Wasm size limitation from WASMD.
+	wasmtypes.MaxWasmSize = 3 * 1024 * 1024
+	wasmtypes.MaxProposalWasmSize = wasmtypes.MaxWasmSize
+}
+
 // New returns a reference to an initialized blockchain app
 func New(
 	logger log.Logger,
@@ -321,6 +330,7 @@ func New(
 	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
+	overrideWasmVariables()
 	appCodec := encodingConfig.Codec
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
