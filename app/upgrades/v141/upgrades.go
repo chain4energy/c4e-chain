@@ -29,7 +29,7 @@ func CreateUpgradeHandler(
 	appKeepers upgrades.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		if _, exists := vm[wasmtypes.ModuleName]; exists {
+		if _, exists := vm[wasmtypes.ModuleName]; !exists {
 			ctx.Logger().Info("wasm not exist")
 			for _, subspace := range appKeepers.GetC4eParamsKeeper().GetSubspaces() {
 				subspace := subspace
