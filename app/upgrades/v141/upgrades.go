@@ -93,6 +93,8 @@ func CreateUpgradeHandler(
 						"c4e183f5fu67gagckux336kmjw75qw7dha5ycn5f6r",
 						"c4e10qfgech3v82uztzl20tl7uldsq8nk9gl92mm55",
 						"c4e16cwpandmj9np4huguzs32g0htm58p0cp9df8gj",
+						"c4e10ep2sxpf2kj6j26w7f4uuafedkuf9sf9xqq3sl",
+						"c4e16n7yweagu3fxfzvay6cz035hddda7z3ntdxq3l",
 					},
 				},
 				InstantiateDefaultPermission: wasmtypes.AccessTypeEverybody,
