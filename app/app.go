@@ -232,7 +232,7 @@ var (
 	_ servertypes.Application = (*App)(nil)
 	_ runtime.AppI            = (*App)(nil)
 
-	Upgrades = []upgrades.Upgrade{v110.Upgrade, v120.Upgrade, v130.Upgrade, v131.Upgrade, v140.Upgrade, v141.Upgrade}
+	Upgrades = []upgrades.Upgrade{v110.Upgrade, v120.Upgrade, v130.Upgrade, v131.Upgrade, v140.Upgrade, v141.Upgrade, v141.UpgradeTn}
 )
 
 func init() {
