@@ -10,6 +10,7 @@ import (
 )
 
 const UpgradeName = "v1.4.1"
+const UpgradeNameTn = "v1.4.1-tn"
 
 var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,
@@ -25,4 +26,10 @@ var Upgrade = upgrades.Upgrade{
 			"cfesignature",
 		},
 	},
+}
+
+var UpgradeTn = upgrades.Upgrade{
+	UpgradeName:          UpgradeNameTn,
+	CreateUpgradeHandler: CreateUpgradeHandlerTn,
+	StoreUpgrades:        store.StoreUpgrades{},
 }
