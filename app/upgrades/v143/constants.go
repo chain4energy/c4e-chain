@@ -1,4 +1,4 @@
-package v141
+package v143
 
 import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -9,8 +9,8 @@ import (
 	ibchookstypes "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7/types"
 )
 
-const UpgradeName = "v1.4.1"
-const UpgradeNameTn = "v1.4.1-tn"
+const UpgradeName = "v1.4.3"
+const UpgradeNameTn = "v1.4.3-tn"
 
 var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,
