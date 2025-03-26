@@ -49,6 +49,9 @@ import (
 	cfevestingmodule "github.com/chain4energy/c4e-chain/x/cfevesting"
 	cfevestingmodulekeeper "github.com/chain4energy/c4e-chain/x/cfevesting/keeper"
 	cfevestingmoduletypes "github.com/chain4energy/c4e-chain/x/cfevesting/types"
+	compatibilitymodule "github.com/chain4energy/c4e-chain/x/compatibility"
+	compatibilitymodulekeeper "github.com/chain4energy/c4e-chain/x/compatibility/keeper"
+	compatibilitymoduletypes "github.com/chain4energy/c4e-chain/x/compatibility/types"
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
@@ -204,6 +207,7 @@ var (
 		cfedistributormodule.AppModuleBasic{},
 		cfeclaimmodule.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
+		compatibilitymodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -298,6 +302,8 @@ type App struct {
 	CfeminterKeeper      cfemintermodulekeeper.Keeper
 	CfedistributorKeeper cfedistributormodulekeeper.Keeper
 	CfeclaimKeeper       cfeclaimmodulekeeper.Keeper
+
+	CompatibilityKeeper compatibilitymodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 	configurator module.Configurator
 
@@ -369,6 +375,7 @@ func New(
 		cfedistributormoduletypes.StoreKey,
 		cfeclaimmoduletypes.StoreKey,
 		ibchookstypes.StoreKey,
+		compatibilitymoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -690,6 +697,18 @@ func New(
 			app.CfeclaimKeeper.NewMissionVoteHooks(),
 		),
 	)
+
+	app.CompatibilityKeeper = *compatibilitymodulekeeper.NewKeeper(
+		appCodec,
+		keys[compatibilitymoduletypes.StoreKey],
+		keys[compatibilitymoduletypes.MemStoreKey],
+		app.GetSubspace(compatibilitymoduletypes.ModuleName),
+
+		app.StakingKeeper,
+		app.CfevestingKeeper,
+	)
+	compatibilityModule := compatibilitymodule.NewAppModule(appCodec, app.CompatibilityKeeper, app.AccountKeeper, app.BankKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 	var wasmStack porttypes.IBCModule
 	wasmStack = wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper, app.IBCKeeper.ChannelKeeper)
@@ -745,6 +764,7 @@ func New(
 		cfeminterModule,
 		cfedistributorModule,
 		cfeclaimModule,
+		compatibilityModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 
 		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)), // always be last to make sure that it checks for all invariants and not only part of them
@@ -783,6 +803,7 @@ func New(
 		icatypes.ModuleName,
 		ibchookstypes.ModuleName,
 		wasmtypes.ModuleName,
+		compatibilitymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -814,6 +835,7 @@ func New(
 		icatypes.ModuleName,
 		ibchookstypes.ModuleName,
 		wasmtypes.ModuleName,
+		compatibilitymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -845,6 +867,7 @@ func New(
 		upgradetypes.ModuleName,
 		cfemintermoduletypes.ModuleName,
 		consensusparamtypes.ModuleName,
+		compatibilitymoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 
 		// ibc modules
@@ -1112,6 +1135,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(cfemintermoduletypes.ModuleName)
 	paramsKeeper.Subspace(cfedistributormoduletypes.ModuleName)
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
+	paramsKeeper.Subspace(compatibilitymoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
