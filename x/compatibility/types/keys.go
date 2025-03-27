@@ -1,6 +1,7 @@
 package types
 
 var C4eVestingV1AccountVestingsKeyPrefix = []byte{0x02}
+var C4eVestingV2AccountVestingPoolsKeyPrefix = []byte{0x02}
 
 
 const (

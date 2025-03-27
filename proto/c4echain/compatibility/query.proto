@@ -12,7 +12,6 @@ import "cosmos_proto/cosmos.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/timestamp.proto";
 
-
 option go_package = "github.com/chain4energy/c4e-chain/x/compatibility/types";
 
 // Query defines the gRPC querier service.
@@ -33,6 +32,12 @@ service Query {
   // Queries a list of CfevestingV1VestingPools items.
   rpc CfevestingV1VestingPools (QueryCfevestingV1VestingPoolsRequest) returns (QueryCfevestingV1VestingPoolsResponse) {
     option (google.api.http).get = "/c4e/compatibility/cfevesting/v1/vesting_pools/{address}";
+  
+  }
+  
+  // Queries a list of CfevestingV2VestingPools items.
+  rpc CfevestingV2VestingPools (QueryCfevestingV2VestingPoolsRequest) returns (QueryCfevestingV2VestingPoolsResponse) {
+    option (google.api.http).get = "/c4e/compatibility/cfevesting/v2/vesting_pools/{address}";
   
   }
 }
@@ -71,18 +76,43 @@ message QueryCfevestingV1VestingPoolsRequest {
 }
 
 message QueryCfevestingV1VestingPoolsResponse {
-  string delegable_address = 1 [(gogoproto.moretags) = "yaml:\"delegable_address\""];
-  repeated CfevestingV1VestingPoolInfo vesting_pools = 2; 
+           string                      delegable_address = 1 [(gogoproto.moretags) = "yaml:\"delegable_address\""];
+  repeated CfevestingV1VestingPoolInfo vesting_pools     = 2;
 }
 
 message CfevestingV1VestingPoolInfo {
-  int32 id = 1;
-  string name = 2;
-  string vesting_type = 3;
-  google.protobuf.Timestamp lock_start = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  google.protobuf.Timestamp lock_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
-  string withdrawable = 6;
-  cosmos.base.v1beta1.Coin vested = 7;
-  string current_vested_amount = 8;
-  string sent_amount = 9;
+  int32                     id                    = 1;
+  string                    name                  = 2;
+  string                    vesting_type          = 3;
+  google.protobuf.Timestamp lock_start            = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp lock_end              = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  string                    withdrawable          = 6;
+  cosmos.base.v1beta1.Coin  vested                = 7;
+  string                    current_vested_amount = 8;
+  string                    sent_amount           = 9;
+}
+
+message QueryCfevestingV2VestingPoolsRequest {
+  string address = 1;
+}
+
+message QueryCfevestingV2VestingPoolsResponse {
+  repeated CfevestingV2VestingPoolInfo vesting_pools = 2; 
+}
+
+message CfevestingV2VestingPoolInfo {
+  string name = 1;
+  string vesting_type = 2;
+  google.protobuf.Timestamp lock_start = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  google.protobuf.Timestamp lock_end = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true
+  ];
+  string withdrawable = 5;
+  cosmos.base.v1beta1.Coin initially_locked = 6;
+  string currently_locked = 7;
+  string sent_amount = 8;
 }
