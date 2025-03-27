@@ -5,8 +5,10 @@ import (
 
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
-	// storetypes "github.com/cosmos/cosmos-sdk/store/types"
+
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	// paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/chain4energy/c4e-chain/x/compatibility/types"
@@ -14,8 +16,8 @@ import (
 
 type (
 	Keeper struct {
-		cdc        codec.BinaryCodec
-		// storeKey   storetypes.StoreKey
+		cdc             codec.BinaryCodec
+		stakingStoreKey storetypes.StoreKey
 		// memKey     storetypes.StoreKey
 		// paramstore paramtypes.Subspace
 
@@ -26,6 +28,7 @@ type (
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
+	stakingStoreKey storetypes.StoreKey,
 	// storeKey,
 	// memKey storetypes.StoreKey,
 	// ps paramtypes.Subspace,
@@ -39,7 +42,8 @@ func NewKeeper(
 	// }
 
 	return &Keeper{
-		cdc:        cdc,
+		cdc:             cdc,
+		stakingStoreKey: stakingStoreKey,
 		// storeKey:   storeKey,
 		// memKey:     memKey,
 		// paramstore: ps,
