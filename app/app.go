@@ -1,10 +1,11 @@
 package app
 
 import (
-	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
-	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
 	"encoding/json"
 	"fmt"
+
+	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
+	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
 	wasmd "github.com/CosmWasm/wasmd/app"
 	v131 "github.com/chain4energy/c4e-chain/app/upgrades/v131"
 	v140 "github.com/chain4energy/c4e-chain/app/upgrades/v140"
@@ -14,13 +15,18 @@ import (
 
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 
+	"strings"
+
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	solomachine "github.com/cosmos/ibc-go/v7/modules/light-clients/06-solomachine"
-	"strings"
+
+	"io"
+	"os"
+	"path/filepath"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	appparams "github.com/chain4energy/c4e-chain/app/params"
@@ -33,9 +39,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
-	"io"
-	"os"
-	"path/filepath"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/chain4energy/c4e-chain/docs"
@@ -375,7 +378,7 @@ func New(
 		cfedistributormoduletypes.StoreKey,
 		cfeclaimmoduletypes.StoreKey,
 		ibchookstypes.StoreKey,
-		compatibilitymoduletypes.StoreKey,
+		// compatibilitymoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -700,9 +703,9 @@ func New(
 
 	app.CompatibilityKeeper = *compatibilitymodulekeeper.NewKeeper(
 		appCodec,
-		keys[compatibilitymoduletypes.StoreKey],
-		keys[compatibilitymoduletypes.MemStoreKey],
-		app.GetSubspace(compatibilitymoduletypes.ModuleName),
+		// keys[compatibilitymoduletypes.StoreKey],
+		// keys[compatibilitymoduletypes.MemStoreKey],
+		// app.GetSubspace(compatibilitymoduletypes.ModuleName),
 
 		app.StakingKeeper,
 		app.CfevestingKeeper,
@@ -1135,7 +1138,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(cfemintermoduletypes.ModuleName)
 	paramsKeeper.Subspace(cfedistributormoduletypes.ModuleName)
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
-	paramsKeeper.Subspace(compatibilitymoduletypes.ModuleName)
+	// paramsKeeper.Subspace(compatibilitymoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
