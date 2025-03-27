@@ -450,10 +450,9 @@ func New(
 		appparams.GetAuthority(),
 	)
 
-	stakingKeeperKVStoreKey := keys[stakingtypes.StoreKey]
 	app.StakingKeeper = stakingkeeper.NewKeeper(
 		appCodec,
-		stakingKeeperKVStoreKey,
+		keys[stakingtypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
 		appparams.GetAuthority(),
@@ -704,7 +703,8 @@ func New(
 
 	app.CompatibilityKeeper = *compatibilitymodulekeeper.NewKeeper(
 		appCodec,
-		stakingKeeperKVStoreKey,
+		keys[stakingtypes.StoreKey],
+		keys[cfevestingmoduletypes.StoreKey],
 		// keys[compatibilitymoduletypes.StoreKey],
 		// keys[compatibilitymoduletypes.MemStoreKey],
 		// app.GetSubspace(compatibilitymoduletypes.ModuleName),

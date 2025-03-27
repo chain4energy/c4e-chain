@@ -8,7 +8,7 @@ import (
 
 type StakingKeeper interface {
 	// Methods imported from staking should be defined here
-	BondDenom(ctx sdk.Context) string 
+	BondDenom(ctx sdk.Context) string
 	GetValidator(ctx sdk.Context, addr sdk.ValAddress) (validator stakingtypes.Validator, found bool)
 }
 

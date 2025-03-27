@@ -9,6 +9,9 @@ import "c4echain/compatibility/params.proto";
 import "cosmos/staking/v1beta1/staking.proto";
 import "amino/amino.proto";
 import "cosmos_proto/cosmos.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "google/protobuf/timestamp.proto";
+
 
 option go_package = "github.com/chain4energy/c4e-chain/x/compatibility/types";
 
@@ -26,6 +29,12 @@ service Query {
     option (google.api.http).get = "/c4e/compatibility/v1beta1/staking/v3/delegations/{delegator_addr}";
   
   }
+  
+  // Queries a list of CfevestingV1VestingPools items.
+  rpc CfevestingV1VestingPools (QueryCfevestingV1VestingPoolsRequest) returns (QueryCfevestingV1VestingPoolsResponse) {
+    option (google.api.http).get = "/c4e/compatibility/cfevesting/v1/vesting_pools/{address}";
+  
+  }
 }
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
@@ -38,21 +47,42 @@ message QueryParamsResponse {
 }
 
 message QueryStakingV3DelegatorDelegationsRequest {
-  option (gogoproto.equal)           = false;
+  option           (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
-
+  
   // delegator_addr defines the delegator address to query for.
   string delegator_addr = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-
+  
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QueryStakingV3DelegatorDelegationsResponse {
+  
   // delegation_responses defines all the delegations' info of a delegator.
   repeated cosmos.staking.v1beta1.DelegationResponse delegation_responses = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
-
+  
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+message QueryCfevestingV1VestingPoolsRequest {
+  string address = 1;
+}
+
+message QueryCfevestingV1VestingPoolsResponse {
+  string delegable_address = 1 [(gogoproto.moretags) = "yaml:\"delegable_address\""];
+  repeated CfevestingV1VestingPoolInfo vesting_pools = 2; 
+}
+
+message CfevestingV1VestingPoolInfo {
+  int32 id = 1;
+  string name = 2;
+  string vesting_type = 3;
+  google.protobuf.Timestamp lock_start = 4 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp lock_end = 5 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  string withdrawable = 6;
+  cosmos.base.v1beta1.Coin vested = 7;
+  string current_vested_amount = 8;
+  string sent_amount = 9;
+}

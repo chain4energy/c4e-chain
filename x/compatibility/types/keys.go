@@ -1,5 +1,8 @@
 package types
 
+var C4eVestingV1AccountVestingsKeyPrefix = []byte{0x02}
+
+
 const (
 	// ModuleName defines the module name
 	ModuleName = "compatibility"

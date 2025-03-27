@@ -1,0 +1,23 @@
+syntax = "proto3";
+package c4echain.compatibility;
+
+import "google/protobuf/duration.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/chain4energy/c4e-chain/x/compatibility/types";
+
+message C4eVestingV1VestingTypes {
+  
+  repeated C4eVestingV1VestingType vesting_types = 1; 
+}
+
+message C4eVestingV1VestingType {
+  
+  // vesting type name
+  string name = 1; 
+  // period of locked coins (minutes) from vesting start
+  google.protobuf.Duration lockup_period = 2 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true]; 
+  // period of veesting coins (minutes) from lockup period end
+  google.protobuf.Duration vesting_period = 3 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true]; 
+
+}
