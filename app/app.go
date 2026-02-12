@@ -601,6 +601,8 @@ func New(
 	)
 	transferModule := ibctransfermodule.NewAppModule(app.IBCTransferKeeper)
 	transferIBCModule := ibctransfermodule.NewIBCModule(app.IBCTransferKeeper)
+	// axelar requires the transfer module to be wrapped in ibc hooks middleware
+	transferStack := ibchooks.NewIBCMiddleware(&transferIBCModule, &hooksICS4Wrapper)
 
 	app.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
@@ -697,7 +699,8 @@ func New(
 
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.
-		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
+		//AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
+		AddRoute(ibctransfertypes.ModuleName, transferStack). // now uses wrapped module
 		AddRoute(icacontrollertypes.SubModuleName, icaHostIBCModule).
 		AddRoute(wasmtypes.ModuleName, wasmStack).
 		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule)
